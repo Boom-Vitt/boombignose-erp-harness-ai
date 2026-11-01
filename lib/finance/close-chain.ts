@@ -25,6 +25,9 @@ export const CLOSE_CHAIN_META_KEYS = [
   "entryDate",
   "debitSatang",
   "lineCount",
+  "invoiceId",
+  "invoiceNumber",
+  "vatTreatment",
 ] as const
 
 export type CloseChainInput = {

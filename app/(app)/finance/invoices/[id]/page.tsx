@@ -58,6 +58,7 @@ import {
 import { LineGrid } from "@/components/line-grid/line-grid"
 import { gridRows } from "@/lib/line-grid/queries"
 import { IssueInvoiceForm } from "../../_components/issue-invoice-form"
+import { PostSalesInvoiceButton } from "./post-journal-button"
 import { AdoptLegacyInvoiceForm } from "../../_components/adopt-legacy-invoice-form"
 import { PaymentForm } from "../../_components/payment-form"
 import { ReviewClaimForm } from "../../_components/review-claim-form"
@@ -140,6 +141,11 @@ export default async function InvoiceDetailPage({
 
   const invoice = invoiceRes.data
   if (!invoice) notFound()
+  const canPostJournal = can(ctx.role, "profit:view")
+  const postedJournal = canPostJournal && invoice.issued_snapshot_id
+    ? await supabase.from("journal_entries").select("id").eq("org_id", ctx.orgId).eq("source_invoice_id", invoice.id).maybeSingle()
+    : null
+  if (postedJournal?.error) throw new Error("Draft journal unavailable")
 
   const creditLines = lineRows.filter(row => row.kind === "line")
   const payments = paymentsRes.data ?? []
@@ -256,6 +262,7 @@ export default async function InvoiceDetailPage({
       {invoice.issued_snapshot_id && invoice.wht_satang > 0 ? <p className="text-sm"><Link className="underline" href={`/finance/invoices/${invoice.id}/wht`}>ร่าง 50 ทวิ / Draft withholding certificate</Link>. The payer issues the statutory certificate. This draft is not a Revenue Department form.</p> : null}
       {invoice.status === "draft" && canFinance ? <Card id="issue-invoice"><CardHeader><CardTitle className="text-base">ออกใบแจ้งหนี้ / Issue invoice</CardTitle></CardHeader><CardContent><RequireSaved message="Save your invoice changes below before issuing it."><IssueInvoiceForm orgId={ctx.orgId} invoiceId={invoice.id} version={invoice.version} /></RequireSaved><CancelDraftButton invoiceId={invoice.id} /></CardContent></Card> : null}
       {invoice.issued_snapshot_id ? <p className="text-sm">Issued snapshot retained. Corrections must preserve the original document.</p> : invoice.status !== "draft" ? <div className="space-y-3"><p role="alert" className="text-sm">This legacy record has no issued snapshot. Review it before treating the printable record as an issued document.</p>{can(ctx.role, "payment:verify") && ["sent", "partially_paid", "paid", "overdue"].includes(invoice.status) ? <AdoptLegacyInvoiceForm orgId={ctx.orgId} invoiceId={invoice.id} version={invoice.version} /> : null}</div> : null}
+      {canPostJournal && invoice.issued_snapshot_id ? <Card className="max-w-3xl"><CardHeader><CardTitle className="text-base">บันทึกรายวันฉบับร่าง / Draft journal</CardTitle></CardHeader><CardContent><PostSalesInvoiceButton invoiceId={invoice.id} posted={Boolean(postedJournal?.data)} /></CardContent></Card> : null}
       <div className="grid min-w-0 grid-cols-[minmax(0,1fr)] gap-6 lg:grid-cols-3">
         <div className="min-w-0 space-y-6 lg:col-span-2">
           <Card>

@@ -15,6 +15,7 @@ const screens = [
   "app/(app)/finance/journal/journal-form.tsx",
   "app/(app)/finance/journal/trial-balance/page.tsx",
   "app/(app)/finance/journal/trial-balance-view.tsx",
+  "app/(app)/finance/invoices/[id]/post-journal-button.tsx",
   "app/(app)/settings/chart/page.tsx",
   "ee/accounting/settings-page.tsx",
 ] as const
@@ -70,6 +71,12 @@ describe("close screens stay support data", () => {
     const trialPage = readFileSync("app/(app)/finance/journal/trial-balance/page.tsx", "utf8")
     expect(trialPage).toContain("งบทดลองฉบับร่าง / Draft trial balance")
     expect(trialPage).toContain("TRIAL_BALANCE_LIMIT_TH")
+
+    const salesJournal = readFileSync("lib/finance/sales-invoice-journal.ts", "utf8")
+    expect(salesJournal).toContain("ไม่ใช่การยื่นแบบ ภ.พ.30")
+    expect(salesJournal).toContain("not signed statutory books")
+    expect(salesJournal).toContain("Withholding, deposits, credit notes, and a legacy adoption are refused.")
+    expect(salesJournal).not.toMatch(/ยื่นแบบสำเร็จ|e-Tax Invoice/)
 
     const chart = readFileSync("app/(app)/settings/chart/page.tsx", "utf8")
     expect(chart).toContain("/finance/journal")

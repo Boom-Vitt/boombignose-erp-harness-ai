@@ -12,7 +12,10 @@ Run the SQL file when a local Supabase stack is already up:
 ```sh
 pnpm exec supabase test db --workdir .local-stack supabase/tests/close_chain.sql
 pnpm exec supabase test db --workdir .local-stack supabase/tests/draft_journal.sql
+pnpm exec supabase test db --workdir .local-stack supabase/tests/sales_invoice_journal.sql
 ```
+
+`sales_invoice_journal.sql` posts one VAT-exclusive invoice, one VAT-inclusive invoice, and one zero-VAT invoice into a locked day. It refuses withholding, a draft, a second post, and a member.
 
 `draft_journal.sql` checks a balanced post into a locked period, and it checks that an unbalanced journal, an unknown account, an open period, a member, and a forged audit row are refused.
 
