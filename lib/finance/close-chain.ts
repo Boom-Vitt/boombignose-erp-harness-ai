@@ -32,6 +32,9 @@ export const CLOSE_CHAIN_META_KEYS = [
   "paymentId",
   "source",
   "depositSatang",
+  "through",
+  "creditSatang",
+  "figuresSha256",
 ] as const
 
 export type CloseChainInput = {

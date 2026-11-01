@@ -81,6 +81,12 @@ export type Database = {
         Update: { name_th?: string; name_en?: string; kind?: "asset" | "liability" | "equity" | "income" | "expense" }
         Relationships: []
       }
+      draft_close_acceptance_requests: {
+        Row: { id: string; org_id: string; requested_by: string; through_date: string; debit_satang: number; credit_satang: number; line_count: number; figures_sha256: string; status: string; confirmed_by: string | null; created_at: string; confirmed_at: string | null }
+        Insert: never
+        Update: never
+        Relationships: []
+      }
       journal_entries: {
         Row: { id: string; org_id: string; entry_date: string; memo: string; created_by: string | null; created_at: string; source_invoice_id: string | null; source_credit_note_id: string | null; source_payment_id: string | null }
         Insert: never
@@ -1540,6 +1546,9 @@ isOneToOne: false
             post_issued_sales_invoice: { Args: { p_org_id: string; p_invoice_id: string }; Returns: string }
             post_deposit_invoice: { Args: { p_org_id: string; p_invoice_id: string }; Returns: string }
             post_final_with_deposit: { Args: { p_org_id: string; p_invoice_id: string }; Returns: string }
+            propose_draft_close_acceptance: { Args: { p_org_id: string; p_through: string }; Returns: Json }
+            confirm_draft_close_acceptance: { Args: { p_org_id: string; p_request_id: string }; Returns: Json }
+            cancel_draft_close_acceptance: { Args: { p_org_id: string; p_request_id: string }; Returns: undefined }
             post_issued_credit_note: { Args: { p_org_id: string; p_credit_note_id: string }; Returns: string }
             post_cash_receipt: { Args: { p_org_id: string; p_payment_id: string }; Returns: string }
             add_bank_line: { Args: { p_org_id: string; p_booked_on: string; p_amount_satang: number; p_reference: string }; Returns: string }
