@@ -28,7 +28,7 @@ The sidebar accepts a rendered workspace header, so it imports no Pro code.
 - Signup and confirmed-account login, first-org setup in `app/onboarding/`,
   team invitation creation/revocation in `app/(app)/settings/org-actions.ts`,
   invitation management components, and acceptance at `app/invite/[token]/`.
-  The setup actor becomes owner. Owners and admins invite admin/member roles;
+  The setup actor becomes owner. Owners and admins invite admin, accountant, and member roles;
   ordinary team membership does not require Pro. Shared cookie/retry helpers
   and tests remain in `lib/supabase/`.
 - CRM, deals, projects, tasks, milestones, quotes, operational invoices, receipt
@@ -40,7 +40,9 @@ The sidebar accepts a rendered workspace header, so it imports no Pro code.
   accounting integration.
 - Dashboard, calendar, template library, blueprint/showcase, and warehouse view.
 - Basic AI assists in `lib/ai/`: single-request deal summaries, follow-up drafts,
-  and meeting intake. There is no ERP agent loop, tool-executing planner,
+  meeting intake, and the month-end note on Finance. The note asks local Ollama
+  for a short reading of overdue receivables, unpaid vendor bills, and unmatched
+  bank lines. There is no ERP agent loop, tool-executing planner,
   automation-pack marketplace, or advanced agent pack in these modules.
 - `lib/automation/`, cron routes and n8n webhooks: baseline reminders, recurring
   billing commands, durable outbox/retries, and inbound receipt deduplication.
@@ -48,8 +50,8 @@ The sidebar accepts a rendered workspace header, so it imports no Pro code.
 - `lib/mcp/`: tenant-scoped ERP data tools, not the BigNose agent runtime.
 - Authentication/session context (`lib/auth.ts`), membership validation, the
   active-org cookie contract, sign-out/account recovery, and fixed
-  owner/admin/member checks (`lib/permissions.ts`). A capability lookup over
-  those three roles is basic RBAC; no custom roles, policy editor, or SSO exists.
+  owner/admin/accountant/member checks (`lib/permissions.ts`). A capability lookup over
+  those four roles is basic RBAC; no custom roles, policy editor, or SSO exists.
 - Shared Supabase clients, generated database types, schema, migrations, RLS,
   and atomic finance/workspace/claim RPC contracts. Historical migrations mix
   these contracts and security fixes across features; they are retained under

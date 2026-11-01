@@ -38,6 +38,8 @@ Those v0.2.0 installers do not bundle Node, Docker, Postgres, or Ollama. They ha
 
 The desktop app name is BoomBigNose. From tag `boombignose-v0.3.0` the BoomBigNose installers include a private Node runtime, `server.js`, Postgres, Auth, PostgREST, and Ollama inside the app. Node is not the product name.
 
+The product you run is that desktop window. It opens the local ERP at `http://127.0.0.1:3100`. Month-end close, bank lines, cash at close, statements, the accountant pack, sheet import, and the local backup control are screens in that window. The page on GitHub Pages is the brochure and the installer download. It is not where those screens run.
+
 ## BoomBigNose ERP
 
 BoomBigNose ERP runs sales, purchasing, inventory, projects and billing for a business on one database. It is built for Thai businesses first, with VAT and withholding tax on documents, THB amounts and the Asia/Bangkok time zone built in, and it works for a two-person shop as well as a growing company with several teams.
@@ -57,10 +59,10 @@ Most businesses start with a CRM, a project tool, a spreadsheet of invoices and 
 - **Products**: A catalog with SKU, unit, price, cost, tax rate and a stockable flag. Picking a product on a quote or invoice line fills in its details.
 - **Expenses**: Expense claims that staff submit and a manager approves or rejects. Nobody can approve their own claim, and approved claims become costs in Finance.
 - **Projects and Timesheets**: Projects as a list or kanban board, with tasks, milestones and logged time. Billable time turns into a draft invoice in one step. Member cost rates and project profit are visible to owners and admins only.
-- **Reports and Calendar**: Revenue by month and by client, hours by project and cost of goods sold, shown as bar, line or pivot views. Saved views, CSV export, and a calendar of follow-ups, meetings, due dates and deadlines.
-- **Automation and AI**: Reusable automation templates, scheduled follow-up reminders, an outbox that delivers events to n8n, and inbound n8n webhooks. AI deal summaries, follow-up drafts and meeting-note intake call Ollama on this machine (`127.0.0.1:11434` by default). If Ollama is not running, those screens say so and do not call a cloud model.
+- **Reports and Calendar**: Revenue by month and by client, hours by project and cost of goods sold, shown as bar, line or pivot views. Operational profit, VAT, and aging statements. A month-end close checklist, cash at close, and an accountant pack of output VAT, purchase VAT, and withholding for the external accountant. Saved views, CSV export, and a calendar of follow-ups, meetings, due dates and deadlines.
+- **Automation and AI**: Reusable automation templates, scheduled follow-up reminders, an outbox that delivers events to n8n, and inbound n8n webhooks. AI deal summaries, follow-up drafts, meeting-note intake, and the Finance month-end note call Ollama on this machine (`127.0.0.1:11434` by default). If Ollama is not running, those screens say so and do not call a cloud model.
 - **Across the app**: A command palette on Ctrl/Cmd+K, a search and filter bar on list pages, a status header and a history of notes, attachments and activities on business records, and an audit log for owners and admins.
-- **Team**: Owner, admin and member roles, and invitations shared by link.
+- **Team**: Owner, admin, accountant, and member roles, and invitations shared by link. An accountant can record finance and review the close. A member cannot.
 
 ### Under the Hood
 
@@ -78,7 +80,7 @@ BoomBigNose ERP is not a general ledger. Statutory accounting, tax filing, payro
 |---|:---:|:---:|
 | License | [AGPL-3.0](./LICENSE) or [Commercial](./COMMERCIAL-LICENSE.md) | [Commercial](./ee/LICENSE) |
 | Every module listed above | Yes | Yes |
-| Sign-up, first workspace, team invitations, owner/admin/member roles | Yes | Yes |
+| Sign-up, first workspace, team invitations, owner/admin/accountant/member roles | Yes | Yes |
 | AI assistant, automation and scheduled jobs | Yes | Yes |
 | Client portal: customers view documents, accept quotes and report payments | | Yes |
 | FlowAccount invoice export (fixture demo on this machine, or sandbox when a server token is set). PEAK and Xero are not connected in this build | | Yes |
