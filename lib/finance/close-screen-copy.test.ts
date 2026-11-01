@@ -11,6 +11,9 @@ const screens = [
   "app/(app)/settings/finance/page.tsx",
   "app/(app)/audit/close/page.tsx",
   "app/(app)/audit/close/review-pack-button.tsx",
+  "app/(app)/finance/journal/page.tsx",
+  "app/(app)/finance/journal/journal-form.tsx",
+  "app/(app)/settings/chart/page.tsx",
   "ee/accounting/settings-page.tsx",
 ] as const
 
@@ -47,6 +50,19 @@ describe("close screens stay support data", () => {
     expect(closeActivity).toContain("/audit/close/export")
     expect(closeActivity).toContain("ดาวน์โหลด CSV / Download CSV")
     expect(closeActivity).toContain("SUPPORT_REVIEW_MARK_EN")
+
+    const journal = readFileSync("lib/finance/draft-journal.ts", "utf8")
+    expect(journal).toContain("ไม่ใช่การยื่นแบบ ภ.พ.30")
+    expect(journal).toContain("not signed statutory books")
+    expect(journal).not.toMatch(/ยื่นแบบสำเร็จ|e-Tax Invoice/)
+
+    const journalPage = readFileSync("app/(app)/finance/journal/page.tsx", "utf8")
+    expect(journalPage).toContain("บันทึกรายวันฉบับร่าง / Draft journal")
+    expect(journalPage).toContain("DRAFT_JOURNAL_LIMIT_TH")
+
+    const chart = readFileSync("app/(app)/settings/chart/page.tsx", "utf8")
+    expect(chart).toContain("/finance/journal")
+    expect(chart).toContain("not signed statutory books")
 
     const review = readFileSync("lib/finance/support-review.ts", "utf8")
     expect(review).toContain("not a statutory sign-off")
