@@ -24,6 +24,7 @@ export default async function ChartPage() {
     </CardContent></Card>
     <p className="flex flex-wrap gap-4 text-sm">
       <Link href="/finance/journal" className="underline">บันทึกรายวันฉบับร่าง / Draft journal</Link>
+      <Link href="/finance/journal/trial-balance" className="underline">งบทดลองฉบับร่าง / Draft trial balance</Link>
       <Link href="/settings/finance" className="underline">Finance settings</Link>
     </p>
   </div>
