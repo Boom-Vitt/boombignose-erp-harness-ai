@@ -10,6 +10,7 @@ const screens = [
   "app/(app)/reports/accountant-pack/page.tsx",
   "app/(app)/settings/finance/page.tsx",
   "app/(app)/audit/close/page.tsx",
+  "app/(app)/audit/close/review-pack-button.tsx",
   "ee/accounting/settings-page.tsx",
 ] as const
 
@@ -45,6 +46,12 @@ describe("close screens stay support data", () => {
     expect(closeActivity).toContain("Not a Revenue Department filing")
     expect(closeActivity).toContain("/audit/close/export")
     expect(closeActivity).toContain("ดาวน์โหลด CSV / Download CSV")
+    expect(closeActivity).toContain("SUPPORT_REVIEW_MARK_EN")
+
+    const review = readFileSync("lib/finance/support-review.ts", "utf8")
+    expect(review).toContain("not a statutory sign-off")
+    expect(review).toContain("ไม่ใช่การยื่นแบบ ภ.พ.30")
+    expect(review).not.toMatch(/ยื่นแบบสำเร็จ|e-Tax Invoice/)
 
     const flowaccount = readFileSync("ee/accounting/settings-page.tsx", "utf8")
     expect(flowaccount).toContain("ส่งออก FlowAccount ไม่ใช่บัญชีแยกประเภท / FlowAccount export — not a general ledger")

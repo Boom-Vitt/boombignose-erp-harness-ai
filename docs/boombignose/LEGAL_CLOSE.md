@@ -78,7 +78,7 @@ Still not a statutory close.
 
 - Close-activity rows form a hash chain. Each row stores the SHA-256 of the row before it, and the workspace stores the latest hash. `/audit/close` checks that chain. A missing middle row, an edited row, or a deleted last row whose head was left behind fails the check. The export-file checksum is a different hash. The database owner can disable the trigger and rewrite the chain. This is not an external timestamp and not a filing. `pnpm test` proves the chain rules without Postgres. `supabase/tests/close_chain.sql` proves them in Postgres. See `docs/boombignose/PGTAP.md`. GitHub Actions does not run that SQL file.
 
-Still next: nothing in this risk track until an accountant review mark. The hash chain does not replace that mark.
+- A support-pack review mark records that the signed-in owner, admin, or accountant looked at one stored checksum. The row names that person and the time, and it joins the close chain. The same person does not get a second row for the same file. The mark is not a legal opinion, not a statutory sign-off, and not a ภ.พ.30 filing.
 
 ### R2 — enterprise
 
@@ -96,9 +96,9 @@ For a payer who needs a control report, not a filing product.
 
 Operational close, phases 1–5, plus the R0 controls above. Copy and the database both say this is not a filing.
 
-### S1 — next
+### S1 — review mark, not a sign-off
 
-An accountant review mark on a support pack: a named person, a time, and the checksum they reviewed. The mark means "I looked at this file." It is not a legal opinion, not a sign-off letter, and not a filing receipt.
+An owner, admin, or accountant can record that they looked at one stored support file. The row keeps their name, the time, and the checksum. It means "I looked at this file." It is not a legal opinion, not a sign-off letter, and not a filing receipt.
 
 ### S2 — later
 
