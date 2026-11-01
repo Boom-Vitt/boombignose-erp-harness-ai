@@ -76,7 +76,9 @@ Still not a statutory close.
 - `/audit/close/export` downloads every close-activity row that exists at that moment. The checksum is stored with the same command as the other support files, after the file bytes are fixed, so the file does not include its own checksum row. The saved file can be checked on the close activity page. The screen still shows the latest 100 rows.
 - A reopen with no reason is labeled on the screen and in that file as the older lock command. `update_finance_lock_date(org, date)` still applies a reopen immediately, including with no reason, so existing database checks can unlock a period. The screen does not call it.
 
-Still next: a hash chain over these rows, so a missing row is visible. That is not this file's checksum.
+- Close-activity rows form a hash chain. Each row stores the SHA-256 of the row before it, and the workspace stores the latest hash. `/audit/close` checks that chain. A missing middle row, an edited row, or a deleted last row whose head was left behind fails the check. The export-file checksum is a different hash. The database owner can disable the trigger and rewrite the chain. This is not an external timestamp and not a filing. `pnpm test` proves the chain rules without Postgres. `supabase/tests/close_chain.sql` proves them in Postgres. See `docs/boombignose/PGTAP.md`. GitHub Actions does not run that SQL file.
+
+Still next: nothing in this risk track until an accountant review mark. The hash chain does not replace that mark.
 
 ### R2 — enterprise
 
