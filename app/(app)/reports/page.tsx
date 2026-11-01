@@ -1,4 +1,6 @@
 import { ReportChart } from "./_components/report-chart"
+import { MonthEndCloseSection } from "./_components/month-end-close"
+import { loadMonthEndCloseChecklist } from "@/lib/finance/close-checklist-load"
 import type { SearchParams } from "@/lib/search-facets"
 import Link from "next/link"
 import { TrendingUp, Timer, Printer, BarChart3, Clock, Package } from "lucide-react"
@@ -30,8 +32,8 @@ function fmtHours(hours: number): string {
 export default async function ReportsPage({ searchParams }: { searchParams: Promise<SearchParams> } = { searchParams: Promise.resolve({}) }) {
   const params = await searchParams
   const view = params.view === "line" || params.view === "pivot" ? params.view : "bar"
-  const { months, rangeLabel, revenue, hours, totalRevenueSatang, cogsByMonth, totalCogsSatang, purchaseVatByMonth } =
-    await getReportData()
+  const [{ months, rangeLabel, revenue, hours, totalRevenueSatang, cogsByMonth, totalCogsSatang, purchaseVatByMonth }, close] =
+    await Promise.all([getReportData(), loadMonthEndCloseChecklist()])
 
   return (
     <div className="space-y-6">
@@ -48,6 +50,8 @@ export default async function ReportsPage({ searchParams }: { searchParams: Prom
           <Printer /> Print / PDF
         </Button>
       </PageHeader>
+
+      {close ? <MonthEndCloseSection checklist={close} /> : null}
 
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <StatCard
@@ -100,7 +104,7 @@ export default async function ReportsPage({ searchParams }: { searchParams: Prom
         </CardContent>
       </Card>
 
-      <Card><CardHeader><CardTitle><h2>Purchase VAT by month</h2></CardTitle></CardHeader><CardContent>
+      <Card id="purchase-vat" className="scroll-mt-20"><CardHeader><CardTitle><h2>Purchase VAT by month</h2></CardTitle></CardHeader><CardContent>
         <p className="mb-3 text-sm text-muted-foreground">Matched vendor invoices and linked credit notes by bill month, including inventory purchases. Credit notes reduce the totals. Operational report only.</p>
         <Table><TableHeader><TableRow><TableHead>Month</TableHead><TableHead>Purchase base</TableHead><TableHead>Input VAT</TableHead><TableHead>Vendor total</TableHead></TableRow></TableHeader>
           <TableBody>{purchaseVatByMonth.map(row => <TableRow key={row.month}><TableCell>{row.month}</TableCell><TableCell>{formatTHB(row.base_satang)}</TableCell><TableCell>{formatTHB(row.input_vat_satang)}</TableCell><TableCell>{formatTHB(row.total_satang)}</TableCell></TableRow>)}</TableBody>

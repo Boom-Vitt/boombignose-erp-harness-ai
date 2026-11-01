@@ -19,6 +19,7 @@ export default async function FinanceSettingsPage() {
   if (error) throw new Error("Finance settings unavailable")
   return <div className="space-y-6">
     <PageHeader title="Finance settings" description="Close a financial period after reviewing its documents and receipts." breadcrumbs={[{ label: "Settings", href: "/settings" }]} />
+    <p className="text-sm"><Link href="/reports#month-end-close" className="underline">ปิดงบเดือน / Month-end checklist</Link> lists what to review before you lock a month.</p>
     <Card className="max-w-2xl"><CardContent><FinanceLockForm orgId={ctx.orgId} lockDate={data?.lock_date ?? ""} today={todayISO()} /></CardContent></Card>
     <Card className="max-w-2xl"><CardContent><PaymentReviewForm orgId={ctx.orgId} required={data?.require_different_payment_reviewer ?? false} /></CardContent></Card>
     <Card className="max-w-2xl"><CardContent><BillToleranceForm toleranceBps={data?.bill_variance_tolerance_bps ?? 100} /></CardContent></Card>
