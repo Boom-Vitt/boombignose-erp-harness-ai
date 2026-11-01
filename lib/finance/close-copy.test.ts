@@ -19,6 +19,7 @@ describe("close display copy", () => {
     expect(closeDateLabel("2026-01-31")).toBe("2026-01-31 (31/01/2569)")
     expect(closeDateLabel("2024-02-29")).toBe("2024-02-29 (29/02/2567)")
     expect(closeDateLabel("2026-02-29")).toBe("2026-02-29")
+    expect(closeDateLabel("2026-02-31")).toBe("2026-02-31")
     expect(closeMonthLabel("2026-01")).toBe("2026-01 (01/2569)")
     expect(closeMonthLabel("2025-12")).toBe("2025-12 (12/2568)")
     expect(closeDateLabel("2026-01-01")).toBe("2026-01-01 (01/01/2569)")

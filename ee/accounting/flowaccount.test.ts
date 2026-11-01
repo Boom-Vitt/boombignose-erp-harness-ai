@@ -176,6 +176,40 @@ describe("FlowAccount push", () => {
     })).rejects.toThrow(/redirected/)
   })
 
+  it("refuses a password, a non-https host, and a missing issue date", async () => {
+    let thrown = ""
+    try {
+      flowAccountPushUrl("https://user:sandbox-token@openapi.flowaccount.com")
+    } catch (error) {
+      thrown = String(error)
+    }
+    expect(thrown).toMatch(/password/)
+    expect(thrown).not.toContain("sandbox-token")
+    expect(() => flowAccountPushUrl("http://openapi.flowaccount.com/sandbox")).toThrow(/https:\/\/openapi\.flowaccount\.com/)
+    expect(() => flowAccountPushUrl("ftp://127.0.0.1/sandbox")).toThrow(/http or https/)
+    expect(connectionTransport(null)).toBe("fixture")
+    expect(connectionTransport([])).toBe("fixture")
+    expect(connectionTransport({ transport: "peak" })).toBe("fixture")
+    expect(() => toFlowAccountDocument({
+      ...invoice,
+      payload: { ...invoice.payload, issueDate: null, dueDate: null },
+    })).toThrow(/issue date/)
+    const fetchImpl = vi.fn(async () => { throw new Error("ECONNREFUSED 10.1.2.3") })
+    await expect(pushFlowAccountInvoice(toFlowAccountDocument(invoice), {
+      transport: "sandbox",
+      token: "   ",
+      fetchImpl: fetchImpl as typeof fetch,
+    })).rejects.toThrow(/FLOWACCOUNT_ACCESS_TOKEN/)
+    await expect(pushFlowAccountInvoice(toFlowAccountDocument(invoice), {
+      transport: "sandbox",
+      token: "sandbox-token",
+      fetchImpl: fetchImpl as typeof fetch,
+    })).rejects.toThrow("FlowAccount could not be reached.")
+    expect(parseFlowAccountPushResponse({ status: true, data: { recordId: "15" } })).toEqual({ externalId: "15" })
+    expect(() => parseFlowAccountPushResponse({ status: true, data: {} })).toThrow(/no document number/)
+    expect(fetchImpl).toHaveBeenCalledOnce()
+  })
+
   it("refuses PEAK and Xero in this build", async () => {
     await expect(getProvider("peak").pushInvoice(invoice, { transport: "fixture" })).rejects.toThrow(/FlowAccount only/)
     await expect(getProvider("xero").pushInvoice(invoice, { transport: "fixture" })).rejects.toThrow(/FlowAccount only/)

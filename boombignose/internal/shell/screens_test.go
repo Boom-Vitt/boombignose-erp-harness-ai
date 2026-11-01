@@ -34,4 +34,22 @@ func TestFinanceScreensStayOnTheDesktopERP(t *testing.T) {
 	if _, err := ScreenURL("", "https://example.com/finance"); err == nil {
 		t.Fatal("absolute screen URL was accepted")
 	}
+	for _, blocked := range []string{"", "//finance", "/finance/../site", "/reports/../../site/download"} {
+		if _, err := ScreenURL("", blocked); err == nil {
+			t.Fatalf("screen path %q was accepted", blocked)
+		}
+	}
+	cash, err := ScreenURL("", "/finance/cash?month=2026-01")
+	if err != nil || cash != "http://127.0.0.1:3100/finance/cash?month=2026-01" {
+		t.Fatalf("cash query: %q %v", cash, err)
+	}
+	for _, screen := range []string{"/settings/finance", "/settings/accounting"} {
+		got, err := ScreenURL("", screen)
+		if err != nil || got != DefaultERPURL+screen {
+			t.Fatalf("%s: %q %v", screen, got, err)
+		}
+		if _, err := ScreenURL("https://boom-vitt.github.io/boombignose-erp-harness-ai/", screen); err == nil {
+			t.Fatalf("%s was placed on the brochure", screen)
+		}
+	}
 }
