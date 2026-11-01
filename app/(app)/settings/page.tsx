@@ -220,7 +220,7 @@ export default async function SettingsPage() {
         </Card>
       </div>
 
-      <Card>
+      <Card className="bbn-deck-panel ring-0">
         <CardHeader>
           <CardTitle className="text-base">โมเดล AI บนเครื่องนี้ / Local AI models</CardTitle>
           <CardDescription>ดาวน์โหลดในแอปนี้ ไม่ต้องเปิดโปรแกรม AI อื่น / Download inside this app. No separate AI program.</CardDescription>
@@ -245,7 +245,7 @@ export default async function SettingsPage() {
       </Card> : null}
 
       <div className="grid gap-6 lg:grid-cols-2">
-        <Card>
+        <Card className="bbn-deck-panel ring-0">
           <CardHeader>
             <CardTitle className="text-base">อัปเดตแอป / App update</CardTitle>
             <CardDescription>ตรวจรุ่นที่เผยแพร่เมื่อกด บน macOS Apple Silicon ติดตั้งจากในแอปได้ / Check the published release when you ask. macOS Apple Silicon can install it here.</CardDescription>

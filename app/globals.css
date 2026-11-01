@@ -43,6 +43,8 @@
   --color-bbn-ink: var(--bbn-ink);
   --color-bbn-paper: var(--bbn-paper);
   --color-bbn-navy: var(--bbn-navy);
+  --color-bbn-gold: var(--bbn-gold);
+  --font-deck: var(--font-deck);
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
@@ -52,81 +54,47 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
-:root {
-  --background: #07090d;
-  --foreground: #e8eaf0;
-  --card: #0b1e3a;
-  --card-foreground: #e8eaf0;
-  --popover: #0b1e3a;
-  --popover-foreground: #e8eaf0;
-  --primary: #ff7a45;
-  --primary-foreground: #0b0d12;
-  --secondary: #10243f;
-  --secondary-foreground: #e8eaf0;
-  --muted: #10243f;
-  --muted-foreground: #9aabc4;
-  --accent: #ff7a45;
-  --accent-foreground: #0b0d12;
-  --destructive: #e11d48;
-  --border: #16345c;
-  --input: #16345c;
-  --ring: #ff7a45;
-  --chart-1: #ff7a45;
-  --chart-2: #3d6fad;
-  --chart-3: #0b1e3a;
-  --chart-4: #e8eaf0;
-  --chart-5: #9aabc4;
-  --radius: 0.625rem;
-  --sidebar: #07090d;
-  --sidebar-foreground: #e8eaf0;
-  --sidebar-primary: #ff7a45;
-  --sidebar-primary-foreground: #0b0d12;
-  --sidebar-accent: #0b1e3a;
-  --sidebar-accent-foreground: #e8eaf0;
-  --sidebar-border: #16345c;
-  --sidebar-ring: #ff7a45;
-  --bbn-accent: #ff7a45;
-  --bbn-ink: #e8eaf0;
-  --bbn-paper: #07090d;
-  --bbn-navy: #0b1e3a;
-}
-
+:root,
 .dark {
-  --background: #07090d;
-  --foreground: #e8eaf0;
-  --card: #0b1e3a;
-  --card-foreground: #e8eaf0;
-  --popover: #0b1e3a;
-  --popover-foreground: #e8eaf0;
-  --primary: #ff7a45;
-  --primary-foreground: #0b0d12;
-  --secondary: #10243f;
-  --secondary-foreground: #e8eaf0;
-  --muted: #10243f;
-  --muted-foreground: #9aabc4;
-  --accent: #ff7a45;
-  --accent-foreground: #0b0d12;
-  --destructive: #fb7185;
-  --border: #16345c;
-  --input: #16345c;
-  --ring: #ff7a45;
-  --chart-1: #ff7a45;
-  --chart-2: #3d6fad;
-  --chart-3: #0b1e3a;
-  --chart-4: #e8eaf0;
-  --chart-5: #9aabc4;
-  --sidebar: #07090d;
-  --sidebar-foreground: #e8eaf0;
-  --sidebar-primary: #ff7a45;
-  --sidebar-primary-foreground: #0b0d12;
-  --sidebar-accent: #0b1e3a;
-  --sidebar-accent-foreground: #e8eaf0;
-  --sidebar-border: #16345c;
-  --sidebar-ring: #ff7a45;
-  --bbn-accent: #ff7a45;
-  --bbn-ink: #e8eaf0;
-  --bbn-paper: #07090d;
-  --bbn-navy: #0b1e3a;
+  --background: #0b1222;
+  --foreground: #f8f3ea;
+  --card: #1b2a4a;
+  --card-foreground: #f8f3ea;
+  --popover: #1b2a4a;
+  --popover-foreground: #f8f3ea;
+  --primary: #e0a84a;
+  --primary-foreground: #0b1222;
+  --secondary: #121a2e;
+  --secondary-foreground: #f8f3ea;
+  --muted: #121a2e;
+  --muted-foreground: #d9d0bd;
+  --accent: #e0a84a;
+  --accent-foreground: #0b1222;
+  --destructive: #e11d48;
+  --border: #2a3d66;
+  --input: #2a3d66;
+  --ring: #e0a84a;
+  --chart-1: #e0a84a;
+  --chart-2: #b7791f;
+  --chart-3: #1b2a4a;
+  --chart-4: #efe9dc;
+  --chart-5: #d9d0bd;
+  --radius: 0.625rem;
+  --sidebar: #070b14;
+  --sidebar-foreground: #f8f3ea;
+  --sidebar-primary: #e0a84a;
+  --sidebar-primary-foreground: #0b1222;
+  --sidebar-accent: #1b2a4a;
+  --sidebar-accent-foreground: #f8f3ea;
+  --sidebar-border: #2a3d66;
+  --sidebar-ring: #e0a84a;
+  --bbn-accent: #e0a84a;
+  --bbn-gold: #b7791f;
+  --bbn-ink: #0b1222;
+  --bbn-paper: #efe9dc;
+  --bbn-paper-2: #f8f3ea;
+  --bbn-stage: #0b1222;
+  --bbn-navy: #1b2a4a;
 }
 
 @layer base {
@@ -141,13 +109,26 @@
   }
 }
 
-/* Local AI and update surfaces. Sketch borders stay on these cards only. */
-.bbn-sketch-card {
-  border: 2px solid var(--border);
-  border-radius: 18px 14px 16px 12px;
+/* Local AI and update surfaces. Drawing language from the Excalidraw decks. */
+.bbn-sketch,
+.bbn-deck-panel {
+  font-family: var(--font-deck), var(--font-sans), sans-serif;
+}
+
+.bbn-deck-panel {
+  border: 2.5px solid var(--bbn-gold);
+  border-radius: 22px 16px 26px 14px / 18px 24px 14px 20px;
   background: var(--bbn-navy);
-  color: var(--bbn-ink);
-  box-shadow: 3px 3px 0 #000;
+  color: var(--bbn-paper-2);
+  box-shadow: 5px 6px 0 #070b14;
+}
+
+.bbn-sketch-card {
+  border: 2.5px solid var(--bbn-accent);
+  border-radius: 18px 12px 22px 14px / 14px 20px 12px 18px;
+  background: #070b14;
+  color: var(--bbn-paper-2);
+  box-shadow: 4px 5px 0 #070b14;
 }
 
 .bbn-step-pill {
@@ -157,13 +138,14 @@
   min-width: 1.5rem;
   height: 1.5rem;
   padding: 0 0.45rem;
-  border: 2px solid var(--bbn-accent);
-  border-radius: 999px;
+  border: 2px solid var(--bbn-gold);
+  border-radius: 999px 999px 999px 14px;
   background: var(--bbn-accent);
-  color: #0b0d12;
+  color: var(--bbn-ink);
   font-size: 0.75rem;
   font-weight: 700;
   line-height: 1;
+  transform: rotate(-0.5deg);
 }
 
 .bbn-sketch-steps {
@@ -181,14 +163,15 @@
 }
 
 .bbn-sticky {
-  border: 2px solid var(--bbn-accent);
-  border-radius: 2px 14px 4px 12px;
-  background: var(--bbn-accent);
-  color: #0b0d12;
+  border: 2px solid var(--bbn-gold);
+  border-radius: 3px 16px 4px 14px;
+  background: var(--bbn-paper);
+  color: var(--bbn-ink);
   padding: 0.75rem 0.9rem;
-  box-shadow: 4px 4px 0 #000;
+  box-shadow: 4px 4px 0 #070b14;
+  transform: rotate(-0.5deg);
 }
 
 .bbn-sticky a {
-  color: #0b0d12;
+  color: var(--bbn-ink);
 }
