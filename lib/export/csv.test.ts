@@ -78,6 +78,11 @@ describe("toCsv — CSV injection defense", () => {
     expect(toCsv(["x"], [["@SUM(A1)"]]).slice(BOM.length)).toBe("x\r\n'@SUM(A1)")
   })
 
+  it("leaves a plain negative decimal string parseable", () => {
+    expect(toCsv(["amount"], [["-7.01"]]).slice(BOM.length)).toBe("amount\r\n-7.01")
+    expect(toCsv(["amount"], [["-0.70"]]).slice(BOM.length)).toBe("amount\r\n-0.70")
+  })
+
   it("guards a leading TAB", () => {
     expect(toCsv(["x"], [["\thi"]]).slice(BOM.length)).toBe("x\r\n'\thi")
   })
