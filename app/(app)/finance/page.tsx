@@ -23,6 +23,7 @@ import {
 
 import { createClient } from "@/lib/supabase/server"
 import { requireOrgContext } from "@/lib/auth"
+import { canDownloadAccountantPack } from "@/lib/finance/accountant-pack"
 import { currentMonthKey, todayISO } from "@/lib/dates"
 import { formatTHB, sumSatang } from "@/lib/money"
 import { canReviewMonthEndClose } from "@/lib/finance/close-checklist"
@@ -162,6 +163,7 @@ export default async function FinancePage({
           <Repeat /> Subscriptions
         </Button>
         <Button variant="outline" render={<Link href="/finance/payments/export" />}>Receipt evidence CSV</Button>
+        {canDownloadAccountantPack(ctx.role) ? <Button variant="outline" render={<Link href="/reports/accountant-pack" />}>Accountant pack</Button> : null}
         <Button variant="outline" render={<Link href="/finance/costs/new" />}>
           <Coins /> New cost
         </Button>

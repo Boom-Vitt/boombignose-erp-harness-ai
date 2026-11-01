@@ -5,6 +5,8 @@ import type { SearchParams } from "@/lib/search-facets"
 import Link from "next/link"
 import { TrendingUp, Timer, Printer, BarChart3, Clock, Package } from "lucide-react"
 
+import { requireOrgContext } from "@/lib/auth"
+import { canDownloadAccountantPack } from "@/lib/finance/accountant-pack"
 import { formatTHB } from "@/lib/money"
 import { getReportData } from "./_data"
 
@@ -32,6 +34,7 @@ function fmtHours(hours: number): string {
 export default async function ReportsPage({ searchParams }: { searchParams: Promise<SearchParams> } = { searchParams: Promise.resolve({}) }) {
   const params = await searchParams
   const view = params.view === "line" || params.view === "pivot" ? params.view : "bar"
+  const ctx = await requireOrgContext()
   const [{ months, rangeLabel, revenue, hours, totalRevenueSatang, cogsByMonth, totalCogsSatang, purchaseVatByMonth }, close] =
     await Promise.all([getReportData(), loadMonthEndCloseChecklist()])
 
@@ -111,6 +114,11 @@ export default async function ReportsPage({ searchParams }: { searchParams: Prom
           <TableBody>{purchaseVatByMonth.map(row => <TableRow key={row.month}><TableCell>{row.month}</TableCell><TableCell>{formatTHB(row.base_satang)}</TableCell><TableCell>{formatTHB(row.input_vat_satang)}</TableCell><TableCell>{formatTHB(row.total_satang)}</TableCell></TableRow>)}</TableBody>
         </Table>
       </CardContent></Card>
+
+      {canDownloadAccountantPack(ctx.role) ? <p className="text-sm text-muted-foreground">
+        <Link className="underline" href="/reports/accountant-pack">ชุดข้อมูลนักบัญชี / Accountant pack</Link>
+        {" "}exports one month of output VAT, matched purchase VAT, and stored withholding for an external accountant. It does not file ภ.พ.30.
+      </p> : null}
 
       {view !== "pivot" ? <div className="space-y-6">
         <Card><CardHeader><CardTitle>Revenue by month</CardTitle></CardHeader><CardContent>
