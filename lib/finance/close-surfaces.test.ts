@@ -12,7 +12,7 @@ vi.mock("@/app/(app)/finance/close-summary-actions", () => ({ summarizeMonthEnd:
 vi.mock("@/app/(app)/finance/bank/actions", () => ({ addBankLine: vi.fn(), matchBankLine: vi.fn(), noteBankLine: vi.fn() }))
 
 import { CloseSummary } from "@/app/(app)/finance/_components/close-summary"
-import { AddBankLineForm } from "@/app/(app)/finance/bank/bank-forms"
+import { AddBankLineForm, ExplainBankLineForm, MatchBankLineButton } from "@/app/(app)/finance/bank/bank-forms"
 import { FinanceLockForm } from "@/app/(app)/settings/finance/finance-lock-form"
 import { SupportFigures } from "@/app/(app)/reports/statements/support-figures"
 
@@ -39,6 +39,9 @@ describe("close surfaces", () => {
     expect(html).toContain("ไม่ใช่การยื่นแบบ ภ.พ.30")
     expect(html).toContain("Not a ภ.พ.30 filing")
     expect(html).toContain("ยังไม่ถึงกำหนด / Not yet due")
+    expect(html).toContain("เกิน 1–30 วัน / 1–30 days")
+    expect(html).toContain("เกิน 91 วันขึ้นไป / 91 days or more")
+    expect(html).toContain("ต้นทุนขาย / Cost of goods sold")
     expect(html).toContain("ลูกหนี้ / Receivables")
     expect(html).toContain("เจ้าหนี้ / Payables")
     expect(html).not.toMatch(/ยื่นแบบสำเร็จ|e-Tax Invoice/i)
@@ -69,5 +72,29 @@ describe("close surfaces", () => {
     expect(html).toContain("จำนวนเงิน (บาท ติดลบคือเงินออก) / Amount (THB, negative for money out)")
     expect(html).toContain("เพิ่มรายการธนาคาร / Add bank line")
     expect(html).toContain("2026-10-31")
+  })
+
+  it("labels a close note and a receipt match without turning either into a journal", () => {
+    const empty = renderToStaticMarkup(createElement(ExplainBankLineForm, { lineId: "line", note: null }))
+    expect(empty).toContain("บันทึกเหตุผล / Note for close")
+    expect(empty).toContain("บันทึกเหตุผล / Save note")
+    expect(empty).not.toContain("ล้างเหตุผล / Clear note")
+
+    const noted = renderToStaticMarkup(createElement(ExplainBankLineForm, { lineId: "line", note: "ค่าธรรมเนียม" }))
+    expect(noted).toContain("แก้เหตุผล / Update note")
+    expect(noted).toContain("ล้างเหตุผล / Clear note")
+    expect(noted).toContain("ค่าธรรมเนียม")
+
+    const match = renderToStaticMarkup(createElement(MatchBankLineButton, { lineId: "line", paymentId: "receipt" }))
+    expect(match).toContain("จับคู่ใบเสร็จนี้ / Match this receipt")
+    expect(match).not.toMatch(/ยื่นแบบ|e-Filing|journal/)
+  })
+
+  it("does not invent a Buddhist-era label when the lock date is blank", () => {
+    const html = renderToStaticMarkup(createElement(FinanceLockForm, { orgId: "org", lockDate: "", today: "2026-02-15" }))
+    expect(html).toContain("Lock transactions through")
+    expect(html).toContain("Save finance lock")
+    expect(html).not.toContain("2569")
+    expect(html).not.toContain("2568")
   })
 })

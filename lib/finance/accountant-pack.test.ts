@@ -120,6 +120,37 @@ describe("accountant pack assembly", () => {
     expect(result.outputVatSatang).toBe(0)
     expect(result.inputVatSatang).toBe(0)
     expect(result.whtParties).toEqual([])
+    const html = renderAccountantPackHtml(result, "2026-03-01")
+    expect(html).toContain("ไม่มีใบแจ้งหนี้ที่ออกหรือใบลดหนี้ในเดือนนี้")
+    expect(html).toContain("ไม่มีบิลผู้ขายที่จับคู่ในเดือนนี้")
+    expect(html).toContain("ไม่มีหัก ณ ที่จ่ายที่บันทึกไว้ในเดือนนี้")
+    expect(html).toContain("2026-03-01 (01/03/2569)")
+    expect(html).toContain("02/2569")
+    expect(html).not.toMatch(/ยื่นแบบสำเร็จ|e-Tax Invoice/)
+  })
+
+  it("prints each stored document kind in Thai and keeps CSV dates Gregorian", () => {
+    const result = assembleAccountantPack({
+      orgName: "ร้านทดสอบ",
+      month: "2026-02",
+      invoices: [invoice({ issueDate: "2026-02-02", number: "INV-FEB" })],
+      credits: [credit({ issueDate: "2026-02-03", number: "CN-FEB", baseSatang: 100, vatSatang: 7, whtSatang: 3 })],
+      purchaseLines: [
+        bill({ id: "b1", billDate: "2026-02-04", reference: "BILL-FEB", amountSatang: 214, inputVatSatang: 14, kind: "bill" }),
+        bill({ id: "b2", billDate: "2026-02-05", reference: "VCN-FEB", amountSatang: -107, inputVatSatang: -7, kind: "credit" }),
+        bill({ id: "b3", billDate: "2026-02-06", reference: "RET-FEB", amountSatang: 0, inputVatSatang: 0, kind: "return_adjustment" }),
+      ],
+      purchaseVat: [{ month: "2026-02-01", baseSatang: 100, inputVatSatang: 7 }],
+    })
+    const html = renderAccountantPackHtml(result, "2026-03-01")
+    const csv = accountantPackCsv(result)
+    for (const label of ["ใบแจ้งหนี้ / Invoice", "ใบลดหนี้ / Credit note", "บิลผู้ขาย / Vendor bill", "ใบลดหนี้ผู้ขาย / Vendor credit", "ปรับคืนสินค้า / Return adjustment", "ลูกค้า / Customer", "2026-02-02 (02/02/2569)"]) {
+      expect(html).toContain(label)
+    }
+    expect(csv).toContain("2026-02-02")
+    expect(csv).not.toContain("02/02/2569")
+    expect(csv).not.toContain("วันที่ / Date")
+    expect(csv).toContain("ไม่ใช่การยื่นแบบหัก ณ ที่จ่าย")
   })
 
   it("reads withholding and VAT stored on a credit note snapshot", () => {
