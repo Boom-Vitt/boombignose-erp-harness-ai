@@ -13,7 +13,7 @@ export function ChecksumCheck() {
 
   return <section className="space-y-3 rounded-lg border p-4 text-sm">
     <h2 className="font-medium">ตรวจไฟล์ที่บันทึกไว้ / Check a saved file</h2>
-    <p className="text-muted-foreground">เลือกไฟล์ CSV หรือ HTML ที่ดาวน์โหลดไว้ เครื่องนี้คำนวณ SHA-256 แล้วเทียบกับบันทึกกิจกรรม ไม่ได้อัปโหลดไฟล์ และไม่ใช่ลายเซ็นหรือการยื่นแบบ / Choose a downloaded CSV or HTML file. This machine hashes it and compares that checksum with the activity log. The file is not uploaded. This is not a signature and not a filing.</p>
+    <p className="text-muted-foreground">เลือกไฟล์ CSV หรือ HTML ที่ดาวน์โหลดไว้ รวมไฟล์กิจกรรมปิดงวด เครื่องนี้คำนวณ SHA-256 แล้วเทียบกับบันทึกกิจกรรม ไม่ได้อัปโหลดไฟล์ และไม่ใช่ลายเซ็นหรือการยื่นแบบ / Choose a downloaded CSV or HTML file, including the close activity file. This machine hashes it and compares that checksum with the activity log. The file is not uploaded. This is not a signature and not a filing.</p>
     <input
       type="file"
       disabled={pending}
