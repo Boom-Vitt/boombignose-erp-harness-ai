@@ -13,6 +13,12 @@ export const CLOSE_ACTIVITY_LEGACY_TH =
 export const CLOSE_ACTIVITY_LEGACY_EN =
   "A reopen with no reason came from the older lock command. The screen now requires a reason, and a second owner or admin when the workspace has more than one."
 
+export const CLOSE_ACTIVITY_CHAIN_TH =
+  "แต่ละแถวเก็บ SHA-256 ของแถวก่อนหน้า แถวที่หายหรือถูกแก้จะทำให้โซ่ขาด เจ้าของฐานข้อมูลยังแก้โซ่ได้ นี่ไม่ใช่ตราเวลาจากภายนอก และไม่ใช่การยื่นแบบ"
+
+export const CLOSE_ACTIVITY_CHAIN_EN =
+  "Each close-activity row stores the SHA-256 of the previous row. A missing or edited row breaks the chain. The database owner can still rewrite it. This is not an external timestamp and not a filing."
+
 /** Activity rows that belong to the operational close. Not a statutory ledger. */
 export const CLOSE_AUDIT_ACTIONS = [
   "finance_lock_updated",
@@ -54,6 +60,9 @@ export type CloseActivityRow = {
   action: string
   summary: string
   meta: unknown
+  chainSeq: number | null
+  chainPrev: string | null
+  chainSha256: string | null
 }
 
 const CSV_HEADERS = [
@@ -72,6 +81,9 @@ const CSV_HEADERS = [
   "Period",
   "SHA-256",
   "Bytes",
+  "Chain seq",
+  "Chain previous",
+  "Chain SHA-256",
 ]
 
 function text(meta: Record<string, unknown>, key: string): string | null {
@@ -132,10 +144,12 @@ function byNewest(a: CloseActivityRow, b: CloseActivityRow): number {
 /** Full close-activity CSV. The checksum row for this file is written after these bytes. */
 export function closeActivityCsv(rows: readonly CloseActivityRow[], exportedOn: string): string {
   const notes: (string | number | null)[][] = [
-    ["note", "", exportedOn, "", "", CLOSE_ACTIVITY_DISCLAIMER_TH, "", "", "", "", "", "", "", "", ""],
-    ["note", "", exportedOn, "", "", CLOSE_ACTIVITY_DISCLAIMER_EN, "", "", "", "", "", "", "", "", ""],
-    ["note", "", exportedOn, "", "", CLOSE_ACTIVITY_LEGACY_TH, "", "", "", "", "", "", "", "", ""],
-    ["note", "", exportedOn, "", "", CLOSE_ACTIVITY_LEGACY_EN, "", "", "", "", "", "", "", "", ""],
+    ["note", "", exportedOn, "", "", CLOSE_ACTIVITY_DISCLAIMER_TH, "", "", "", "", "", "", "", "", "", "", "", ""],
+    ["note", "", exportedOn, "", "", CLOSE_ACTIVITY_DISCLAIMER_EN, "", "", "", "", "", "", "", "", "", "", "", ""],
+    ["note", "", exportedOn, "", "", CLOSE_ACTIVITY_LEGACY_TH, "", "", "", "", "", "", "", "", "", "", "", ""],
+    ["note", "", exportedOn, "", "", CLOSE_ACTIVITY_LEGACY_EN, "", "", "", "", "", "", "", "", "", "", "", ""],
+    ["note", "", exportedOn, "", "", CLOSE_ACTIVITY_CHAIN_TH, "", "", "", "", "", "", "", "", "", "", "", ""],
+    ["note", "", exportedOn, "", "", CLOSE_ACTIVITY_CHAIN_EN, "", "", "", "", "", "", "", "", "", "", "", ""],
   ]
   const body = [...rows].sort(byNewest).map(row => {
     const view = closeActivityView(row.action, row.meta)
@@ -155,6 +169,9 @@ export function closeActivityCsv(rows: readonly CloseActivityRow[], exportedOn: 
       view.period,
       view.sha256,
       view.bytes,
+      row.chainSeq,
+      row.chainPrev,
+      row.chainSha256,
     ]
   })
   return toCsv(CSV_HEADERS, [...notes, ...body])

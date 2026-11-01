@@ -259,14 +259,14 @@ isOneToOne: false
                   ]
                 },"audit_log": {
                   Row: {
-                    "action": string,"actor_email": string | null,"actor_id": string | null,"created_at": string,"entity": string,"entity_id": string | null,"id": string,"meta": NonNullable<Json>,"org_id": string,"summary": string
+                    "action": string,"actor_email": string | null,"actor_id": string | null,"close_chain_prev": string | null,"close_chain_seq": number | null,"close_chain_sha256": string | null,"created_at": string,"entity": string,"entity_id": string | null,"id": string,"meta": NonNullable<Json>,"org_id": string,"summary": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "action": string,"actor_email"?: string | null,"actor_id"?: string | null,"created_at"?: string,"entity": string,"entity_id"?: string | null,"id"?: string,"meta"?: NonNullable<Json>,"org_id": string,"summary": string
+                    "action": string,"actor_email"?: string | null,"actor_id"?: string | null,"close_chain_prev"?: string | null,"close_chain_seq"?: number | null,"close_chain_sha256"?: string | null,"created_at"?: string,"entity": string,"entity_id"?: string | null,"id"?: string,"meta"?: NonNullable<Json>,"org_id": string,"summary": string
                   }
                   Update: {
-                    "action"?: string,"actor_email"?: string | null,"actor_id"?: string | null,"created_at"?: string,"entity"?: string,"entity_id"?: string | null,"id"?: string,"meta"?: NonNullable<Json>,"org_id"?: string,"summary"?: string
+                    "action"?: string,"actor_email"?: string | null,"actor_id"?: string | null,"close_chain_prev"?: string | null,"close_chain_seq"?: number | null,"close_chain_sha256"?: string | null,"created_at"?: string,"entity"?: string,"entity_id"?: string | null,"id"?: string,"meta"?: NonNullable<Json>,"org_id"?: string,"summary"?: string
                   }
                   Relationships: [
                     {
@@ -1521,6 +1521,7 @@ isOneToOne: false
             cancel_finance_lock_reopen: { Args: { p_org_id: string; p_request_id: string }; Returns: undefined }
             list_finance_lock_reopen_requests: { Args: { p_org_id: string }; Returns: Json }
             find_support_export: { Args: { p_org_id: string; p_sha256: string }; Returns: Json }
+            verify_close_activity_chain: { Args: { p_org_id: string }; Returns: Json }
             install_thai_sme_chart: { Args: { p_org_id: string }; Returns: undefined }
             add_bank_line: { Args: { p_org_id: string; p_booked_on: string; p_amount_satang: number; p_reference: string }; Returns: string }
             match_bank_line: { Args: { p_org_id: string; p_line_id: string; p_payment_id: string }; Returns: undefined }

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { CLOSE_ACTIVITY_DISCLAIMER_EN, CLOSE_ACTIVITY_LEGACY_EN, closeActivityCsv, closeActivityView, isCloseAuditAction } from "@/lib/finance/close-activity"
+import { CLOSE_ACTIVITY_CHAIN_EN, CLOSE_ACTIVITY_DISCLAIMER_EN, CLOSE_ACTIVITY_LEGACY_EN, closeActivityCsv, closeActivityView, isCloseAuditAction } from "@/lib/finance/close-activity"
 import { readReopenRequests, readStoredSupportExport } from "@/lib/finance/reopen-request"
 
 describe("close activity fields", () => {
@@ -37,11 +37,12 @@ describe("close activity fields", () => {
 describe("close activity export", () => {
   it("exports the existing rows in a stable order and does not claim a filing", () => {
     const csv = closeActivityCsv([
-      { id: "b", createdAt: "2026-02-01T00:00:00Z", actorEmail: "owner@example.invalid", action: "finance_lock_reopened", summary: "Reopened the finance lock", meta: {} },
-      { id: "a", createdAt: "2026-02-01T00:00:00Z", actorEmail: null, action: "period_closed", summary: "Closed operational month 2026-01", meta: { month: "2026-01", lockDate: "2026-01-31", kind: "operational_close" } },
+      { id: "b", createdAt: "2026-02-01T00:00:00Z", actorEmail: "owner@example.invalid", action: "finance_lock_reopened", summary: "Reopened the finance lock", meta: {}, chainSeq: 2, chainPrev: "aa", chainSha256: "bb" },
+      { id: "a", createdAt: "2026-02-01T00:00:00Z", actorEmail: null, action: "period_closed", summary: "Closed operational month 2026-01", meta: { month: "2026-01", lockDate: "2026-01-31", kind: "operational_close" }, chainSeq: 1, chainPrev: "", chainSha256: "aa" },
     ], "2026-11-01")
     expect(csv).toContain(CLOSE_ACTIVITY_DISCLAIMER_EN)
     expect(csv).toContain(CLOSE_ACTIVITY_LEGACY_EN)
+    expect(csv).toContain(CLOSE_ACTIVITY_CHAIN_EN)
     expect(csv).toContain("older command, no reason recorded")
     expect(csv.indexOf(",a,")).toBeGreaterThan(csv.indexOf(",b,"))
     expect(csv).toContain("2026-01-31")

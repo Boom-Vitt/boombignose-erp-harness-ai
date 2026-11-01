@@ -16,7 +16,7 @@ export async function GET() {
   const supabase = await createClient()
   const loaded = await readAll((from, to) => supabase
     .from("audit_log")
-    .select("id, actor_email, action, summary, meta, created_at")
+    .select("id, actor_email, action, summary, meta, created_at, close_chain_seq, close_chain_prev, close_chain_sha256")
     .eq("org_id", ctx.orgId)
     .in("action", [...CLOSE_AUDIT_ACTIONS])
     .order("created_at", { ascending: false })
@@ -33,6 +33,9 @@ export async function GET() {
     action: row.action,
     summary: row.summary,
     meta: row.meta,
+    chainSeq: row.close_chain_seq,
+    chainPrev: row.close_chain_prev,
+    chainSha256: row.close_chain_sha256,
   }))
   const body = closeActivityCsv(rows, exportedOn)
   const recorded = await commitSupportExport(ctx.orgId, "close_activity_csv", exportedOn, body)
