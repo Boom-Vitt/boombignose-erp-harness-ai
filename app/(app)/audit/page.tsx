@@ -50,6 +50,7 @@ export default async function AuditPage() {
         title="Activity"
         description="A running history of changes across your workspace. Finance lock changes, completed-month closes, and support-file checksums are included. Signed-in users cannot edit or delete these rows. This log is not a Revenue Department filing and not a qualified timestamp."
       />
+      <p className="text-sm"><Link className="underline" href="/audit/close">กิจกรรมปิดงวด / Close activity</Link></p>
 
       {entries.length === 0 ? (
         <EmptyState

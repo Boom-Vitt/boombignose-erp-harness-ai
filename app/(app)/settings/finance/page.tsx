@@ -7,6 +7,8 @@ import { Card, CardContent } from "@/components/ui/card"
 import { BillToleranceForm } from "./bill-tolerance-form"
 import { todayISO } from "@/lib/dates"
 import { FinanceLockForm } from "./finance-lock-form"
+import { ReopenRequests } from "./reopen-requests"
+import { readReopenRequests } from "@/lib/finance/reopen-request"
 import { FilingResponsibility } from "@/components/finance/filing-responsibility"
 
 export const dynamic = "force-dynamic"
@@ -16,12 +18,16 @@ export default async function FinanceSettingsPage() {
   try { requireCapability(ctx, "settings:manage") }
   catch { return <p>เฉพาะเจ้าของและผู้ดูแลที่เปลี่ยนการตั้งค่างวดบัญชีได้ / Only owners and admins can change finance settings.</p> }
   const supabase = await createClient()
-  const { data, error } = await supabase.from("org_settings").select("lock_date, require_different_payment_reviewer, bill_variance_tolerance_bps").eq("org_id", ctx.orgId).maybeSingle()
-  if (error) throw new Error("Finance settings unavailable")
+  const [{ data, error }, pending] = await Promise.all([
+    supabase.from("org_settings").select("lock_date, require_different_payment_reviewer, bill_variance_tolerance_bps").eq("org_id", ctx.orgId).maybeSingle(),
+    supabase.rpc("list_finance_lock_reopen_requests", { p_org_id: ctx.orgId }),
+  ])
+  if (error || pending.error) throw new Error("Finance settings unavailable")
   return <div className="space-y-6">
     <PageHeader title="ตั้งค่างวดบัญชี / Finance settings" description="ปิดงวดหลังตรวจเอกสารและใบเสร็จ ล็อกวันที่ ไม่ใช่การปิดบัญชีแยกประเภทและไม่ใช่การยื่นภาษี / Close a financial period after reviewing its documents and receipts. The lock is a date block, not a general-ledger close and not a tax filing." breadcrumbs={[{ label: "Settings", href: "/settings" }]} />
     <FilingResponsibility />
-    <p className="text-sm"><Link href="/reports#month-end-close" className="underline">ปิดงบเดือน / Month-end checklist</Link> lists what to review before you lock a month. A lock, a reopen, a completed-month close, and a support-file checksum are written to the <Link href="/audit" className="underline">activity log</Link>. Signed-in users cannot edit or delete those rows.</p>
+    <p className="text-sm"><Link href="/reports#month-end-close" className="underline">ปิดงบเดือน / Month-end checklist</Link> lists what to review before you lock a month. A lock, a reopen, a completed-month close, and a support-file checksum are written to the <Link href="/audit/close" className="underline">close activity</Link>. Signed-in users cannot edit or delete those rows.</p>
+    <ReopenRequests orgId={ctx.orgId} viewerId={ctx.userId} requests={readReopenRequests(pending.data)} />
     <Card className="max-w-2xl"><CardContent><FinanceLockForm orgId={ctx.orgId} lockDate={data?.lock_date ?? ""} today={todayISO()} /></CardContent></Card>
     <Card className="max-w-2xl"><CardContent><PaymentReviewForm orgId={ctx.orgId} required={data?.require_different_payment_reviewer ?? false} /></CardContent></Card>
     <Card className="max-w-2xl"><CardContent><BillToleranceForm toleranceBps={data?.bill_variance_tolerance_bps ?? 100} /></CardContent></Card>

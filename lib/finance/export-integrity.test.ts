@@ -1,6 +1,6 @@
 import { createHash } from "node:crypto"
 import { describe, expect, it } from "vitest"
-import { sha256Utf8, supportExportCall, supportExportHeaders } from "@/lib/finance/export-integrity"
+import { checksumVerdict, normalizeSha256, sha256HexBytes, sha256Utf8, supportExportCall, supportExportHeaders } from "@/lib/finance/export-integrity"
 
 describe("support export checksum", () => {
   it("hashes the UTF-8 bytes that will be downloaded", () => {
@@ -30,5 +30,21 @@ describe("support export checksum", () => {
 describe("sha256Utf8", () => {
   it("changes when the body changes", () => {
     expect(sha256Utf8("a")).not.toBe(sha256Utf8("b"))
+  })
+})
+
+describe("saved file checksum", () => {
+  it("matches a saved file to the stored export and rejects a different file", async () => {
+    const bytes = new TextEncoder().encode("ก,b\n")
+    const sha256 = await sha256HexBytes(bytes)
+    expect(sha256).toBe(createHash("sha256").update(Buffer.from(bytes)).digest("hex"))
+    expect(normalizeSha256(sha256.toUpperCase())).toBe(sha256)
+    expect(normalizeSha256("not-a-hash")).toBeNull()
+    const record = { sha256, kind: "accountant_pack_csv", period: "2026-01", bytes: bytes.byteLength }
+    expect(checksumVerdict({ sha256, bytes: bytes.byteLength }, record)).toEqual({ match: true, kind: "accountant_pack_csv", period: "2026-01" })
+    expect(checksumVerdict({ sha256: "ab".repeat(32), bytes: 1 }, null).match).toBe(false)
+    const size = checksumVerdict({ sha256, bytes: bytes.byteLength + 1 }, record)
+    expect(size.match).toBe(false)
+    if (!size.match) expect(size.message).toContain("file size")
   })
 })

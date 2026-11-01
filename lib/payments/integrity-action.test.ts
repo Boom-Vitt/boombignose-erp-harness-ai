@@ -42,9 +42,17 @@ it("cancels a draft only through the org-scoped command", async () => {
 })
 it("sets and clears the finance lock with an active workspace check", async () => {
   expect(await updateFinanceLockDate({ expectedOrgId: orgId, lockDate: "2026-01-31" })).toEqual({})
-  expect(rpc).toHaveBeenCalledWith("update_finance_lock_date", { p_org_id: orgId, p_lock_date: "2026-01-31" })
-  expect(await updateFinanceLockDate({ expectedOrgId: orgId, lockDate: "" })).toEqual({})
-  expect(rpc).toHaveBeenLastCalledWith("update_finance_lock_date", { p_org_id: orgId, p_lock_date: null })
+  expect(rpc).toHaveBeenCalledWith("propose_finance_lock", { p_org_id: orgId, p_lock_date: "2026-01-31", p_reason: null })
+  expect(await updateFinanceLockDate({ expectedOrgId: orgId, lockDate: "", reason: "Correction" })).toEqual({})
+  expect(rpc).toHaveBeenLastCalledWith("propose_finance_lock", { p_org_id: orgId, p_lock_date: null, p_reason: "Correction" })
+})
+it("tells the screen when another owner or admin must confirm a reopen", async () => {
+  rpc.mockResolvedValueOnce({ data: { pending: true, requestId: "req-1" }, error: null })
+  expect(await updateFinanceLockDate({ expectedOrgId: orgId, lockDate: "", reason: "Need a second person" })).toEqual({ pending: true })
+})
+it("refuses a reopen reason longer than 200 characters before the database call", async () => {
+  expect((await updateFinanceLockDate({ expectedOrgId: orgId, lockDate: "", reason: "x".repeat(201) })).error).toBeTruthy()
+  expect(rpc).not.toHaveBeenCalled()
 })
 it("refuses a future lock date before the database call", async () => {
   expect((await updateFinanceLockDate({ expectedOrgId: orgId, lockDate: "2099-01-31" })).error).toBe("Finance lock date cannot be in the future.")

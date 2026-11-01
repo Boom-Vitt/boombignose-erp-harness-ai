@@ -68,6 +68,7 @@ test("VAT-registered invoice with WHT 3% freezes and presents the same totals", 
     await expect(page.getByText("Finance period is locked", { exact: true })).toBeVisible()
     await page.goto("/settings/finance")
     await page.getByLabel("Lock transactions through").fill("")
+    await page.getByLabel("Reason for reopening").fill("Unlock the draft so it can be issued")
     await page.getByRole("button", { name: "Save finance lock", exact: true }).click()
     await expect.poll(async () => (await admin.from("org_settings").select("lock_date").eq("org_id", org).single()).data?.lock_date).toBeNull()
     await page.goto(invoiceUrl)

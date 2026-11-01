@@ -37,6 +37,26 @@ export function financeLockChange(lockDate: string, today: string): FinanceLockC
   return { ok: true, lockDate }
 }
 
+/** Clearing a date, or moving it earlier, reopens days that were locked. */
+export function lockChangeIsReopen(currentLock: string, nextLock: string): boolean {
+  if (nextLock === currentLock) return false
+  if (nextLock === "") return currentLock !== ""
+  if (!isCalendarDate(nextLock) || !isCalendarDate(currentLock)) return false
+  return nextLock < currentLock
+}
+
+export type ReopenReason =
+  | { ok: true; reason: string }
+  | { ok: false; error: string }
+
+/** A reopen reason is required text, at most 200 characters. */
+export function reopenReason(reason: string): ReopenReason {
+  const trimmed = reason.trim()
+  if (trimmed.length < 1) return { ok: false, error: "A reason is required to reopen the finance lock." }
+  if (trimmed.length > 200) return { ok: false, error: "The reopen reason can be 200 characters." }
+  return { ok: true, reason: trimmed }
+}
+
 export function closeAccountingPeriod(month: string, today: string, currentLock: string | null): PeriodClose {
   const lockDate = lastDay(month)
   if (!lockDate) return { ok: false, error: "Enter a month as YYYY-MM." }

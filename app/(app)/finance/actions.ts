@@ -428,8 +428,12 @@ export async function cancelDraftInvoice(input: z.input<typeof CancelDraft>): Pr
   return {}
 }
 
-const FinanceLock = z.object({ expectedOrgId: z.guid(), lockDate: z.union([z.iso.date(), z.literal("")]) })
-export async function updateFinanceLockDate(input: z.input<typeof FinanceLock>): Promise<{ error?: string }> {
+const FinanceLock = z.object({
+  expectedOrgId: z.guid(),
+  lockDate: z.union([z.iso.date(), z.literal("")]),
+  reason: z.string().max(200).optional(),
+})
+export async function updateFinanceLockDate(input: z.input<typeof FinanceLock>): Promise<{ error?: string; pending?: boolean }> {
   const ctx = await requireOrgContext()
   try { requireCapability(ctx, "settings:manage") }
   catch { return { error: "Only owners and admins can change the finance lock date." } }
@@ -438,12 +442,46 @@ export async function updateFinanceLockDate(input: z.input<typeof FinanceLock>):
   if (parsed.data.expectedOrgId !== ctx.orgId) return { error: "Workspace changed. Reload before saving." }
   const decision = financeLockChange(parsed.data.lockDate, todayISO())
   if (!decision.ok) return { error: decision.error }
+  const reason = (parsed.data.reason ?? "").trim()
+  if (reason.length > 200) return { error: "The reopen reason can be 200 characters." }
   const supabase = await createSupabaseClient()
-  const { error } = await supabase.rpc("update_finance_lock_date", { p_org_id: ctx.orgId, p_lock_date: decision.lockDate })
+  const { data, error } = await supabase.rpc("propose_finance_lock", {
+    p_org_id: ctx.orgId,
+    p_lock_date: decision.lockDate,
+    p_reason: reason || null,
+  })
   if (error) return { error: error.message }
+  const pending = !!data && typeof data === "object" && !Array.isArray(data) && data.pending === true
   revalidatePath("/settings")
   revalidatePath("/settings/finance")
   revalidatePath("/audit")
+  revalidatePath("/audit/close")
+  return pending ? { pending: true } : {}
+}
+
+export async function confirmFinanceLockReopen(input: { expectedOrgId: string; requestId: string }): Promise<{ error?: string }> {
+  const ctx = await requireOrgContext()
+  try { requireCapability(ctx, "settings:manage") }
+  catch { return { error: "Only owners and admins can change the finance lock date." } }
+  if (input.expectedOrgId !== ctx.orgId) return { error: "Workspace changed. Reload before saving." }
+  const supabase = await createSupabaseClient()
+  const { error } = await supabase.rpc("confirm_finance_lock_reopen", { p_org_id: ctx.orgId, p_request_id: input.requestId })
+  if (error) return { error: error.message }
+  revalidatePath("/settings/finance")
+  revalidatePath("/audit/close")
+  return {}
+}
+
+export async function cancelFinanceLockReopen(input: { expectedOrgId: string; requestId: string }): Promise<{ error?: string }> {
+  const ctx = await requireOrgContext()
+  try { requireCapability(ctx, "settings:manage") }
+  catch { return { error: "Only owners and admins can change the finance lock date." } }
+  if (input.expectedOrgId !== ctx.orgId) return { error: "Workspace changed. Reload before saving." }
+  const supabase = await createSupabaseClient()
+  const { error } = await supabase.rpc("cancel_finance_lock_reopen", { p_org_id: ctx.orgId, p_request_id: input.requestId })
+  if (error) return { error: error.message }
+  revalidatePath("/settings/finance")
+  revalidatePath("/audit/close")
   return {}
 }
 

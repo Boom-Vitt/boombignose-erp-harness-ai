@@ -4,23 +4,33 @@ import { useState, useTransition } from "react"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
 import { closeCompletedMonth, updateFinanceLockDate } from "@/app/(app)/finance/actions"
 import { closeDateLabel } from "@/lib/finance/close-copy"
-import { closeAccountingPeriod, financeLockChange } from "@/lib/finance/period-close"
+import { closeAccountingPeriod, financeLockChange, lockChangeIsReopen, reopenReason } from "@/lib/finance/period-close"
 
 export function FinanceLockForm({ orgId, lockDate, today }: { orgId: string; lockDate: string; today: string }) {
   const [value, setValue] = useState(lockDate)
+  const [reason, setReason] = useState("")
   const [month, setMonth] = useState("")
   const [pending, startTransition] = useTransition()
   const router = useRouter()
   function saveLock(lock: string, success: string) {
     const decision = financeLockChange(lock, today)
     if (!decision.ok) { toast.error(decision.error); return }
+    const reopening = lockChangeIsReopen(lockDate, decision.lockDate ?? "")
+    const reasonDecision = reopening ? reopenReason(reason) : null
+    if (reasonDecision && !reasonDecision.ok) { toast.error(reasonDecision.error); return }
     startTransition(async () => {
       try {
-        const result = await updateFinanceLockDate({ expectedOrgId: orgId, lockDate: lock })
+        const result = await updateFinanceLockDate({ expectedOrgId: orgId, lockDate: lock, reason: reasonDecision?.ok ? reasonDecision.reason : reason.trim() })
         if (result.error) { toast.error(result.error); return }
+        if (result.pending) {
+          toast.success("รอเจ้าของหรือผู้ดูแลอีกคนยืนยัน / Another owner or admin must confirm this reopen.")
+          router.refresh()
+          return
+        }
         toast.success(success)
         router.refresh()
       } catch { toast.error("ยืนยันล็อกงวดไม่ได้ โหลดหน้าใหม่ก่อนลองอีกครั้ง / Could not confirm the finance lock. Reload before retrying.") }
@@ -33,7 +43,9 @@ export function FinanceLockForm({ orgId, lockDate, today }: { orgId: string; loc
     <label htmlFor="finance-lock-date" className="block text-sm font-medium"><span aria-hidden="true">ล็อกเอกสารถึงวันที่ / </span>Lock transactions through</label>
     <Input id="finance-lock-date" type="date" value={value} disabled={pending} aria-describedby="finance-lock-help" onChange={event => setValue(event.target.value)} />
     {/^\d{4}-\d{2}-\d{2}$/.test(value) ? <p className="text-sm text-muted-foreground">{closeDateLabel(value)}</p> : null}
-    <p id="finance-lock-help" className="text-sm text-muted-foreground">การออกใบแจ้งหนี้ ใบเสร็จ และการแก้ไขที่มีวันที่ในวันนี้หรือก่อนหน้านั้นถูกบล็อก เว้นว่างไว้เพื่อเปิดทุกวัน วันที่ในอนาคตถูกปฏิเสธ การล้างวันที่หรือเลื่อนวันที่ให้เร็วขึ้นถูกบันทึกในบันทึกกิจกรรมว่าเป็นการเปิดงวดใหม่ ล็อกนี้เป็นการดำเนินงาน ไม่ใช่การปิดงบตามกฎหมาย / Invoice issues, receipts and corrections dated on or before this date are blocked. Leave blank to reopen every day. A future date is refused. Clearing the date, or moving it earlier, is written to the activity log as a reopen. This lock is operational. It is not a statutory close.</p>
+    <p id="finance-lock-help" className="text-sm text-muted-foreground">การออกใบแจ้งหนี้ ใบเสร็จ และการแก้ไขที่มีวันที่ในวันนี้หรือก่อนหน้านั้นถูกบล็อก เว้นว่างไว้เพื่อเปิดทุกวัน วันที่ในอนาคตถูกปฏิเสธ การล้างวันที่หรือเลื่อนวันที่ให้เร็วขึ้นต้องมีเหตุผล ถ้ามีเจ้าของหรือผู้ดูแลมากกว่าหนึ่งคน อีกคนต้องยืนยัน ล็อกนี้เป็นการดำเนินงาน ไม่ใช่การปิดงบตามกฎหมาย / Invoice issues, receipts and corrections dated on or before this date are blocked. Leave blank to reopen every day. A future date is refused. Clearing the date, or moving it earlier, needs a reason. When the workspace has more than one owner or admin, the other person confirms it. This lock is operational. It is not a statutory close.</p>
+    <label htmlFor="finance-lock-reason" className="block text-sm font-medium"><span aria-hidden="true">เหตุผลที่เปิดงวด / </span>Reason for reopening</label>
+    <Textarea id="finance-lock-reason" value={reason} maxLength={200} disabled={pending} onChange={event => setReason(event.target.value)} />
     <Button type="submit" disabled={pending}><span aria-hidden="true">บันทึกล็อกงวด / </span>Save finance lock</Button>
     <div className="space-y-3 border-t pt-4">
       <h2 className="text-sm font-medium">ปิดเดือนที่จบแล้ว / Close a completed month</h2>

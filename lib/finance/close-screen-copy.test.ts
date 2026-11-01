@@ -9,6 +9,7 @@ const screens = [
   "app/(app)/reports/statements/page.tsx",
   "app/(app)/reports/accountant-pack/page.tsx",
   "app/(app)/settings/finance/page.tsx",
+  "app/(app)/audit/close/page.tsx",
   "ee/accounting/settings-page.tsx",
 ] as const
 
@@ -37,6 +38,11 @@ describe("close screens stay support data", () => {
     const settings = readFileSync("app/(app)/settings/finance/page.tsx", "utf8")
     expect(settings).toContain("ตั้งค่างวดบัญชี / Finance settings")
     expect(settings).toContain("ไม่ใช่การยื่นภาษี")
+    expect(settings).toContain("/audit/close")
+
+    const closeActivity = readFileSync("app/(app)/audit/close/page.tsx", "utf8")
+    expect(closeActivity).toContain("กิจกรรมปิดงวด / Close activity")
+    expect(closeActivity).toContain("Not a Revenue Department filing")
 
     const flowaccount = readFileSync("ee/accounting/settings-page.tsx", "utf8")
     expect(flowaccount).toContain("ส่งออก FlowAccount ไม่ใช่บัญชีแยกประเภท / FlowAccount export — not a general ledger")

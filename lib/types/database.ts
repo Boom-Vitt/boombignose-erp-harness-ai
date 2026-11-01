@@ -1516,6 +1516,11 @@ isOneToOne: false
             update_finance_lock_date: { Args: { p_org_id: string; p_lock_date: string | null }; Returns: undefined }
             close_completed_month: { Args: { p_org_id: string; p_month: string }; Returns: string }
             record_support_export: { Args: { p_org_id: string; p_kind: string; p_period: string; p_sha256: string; p_bytes: number }; Returns: undefined }
+            propose_finance_lock: { Args: { p_org_id: string; p_lock_date: string | null; p_reason: string | null }; Returns: Json }
+            confirm_finance_lock_reopen: { Args: { p_org_id: string; p_request_id: string }; Returns: Json }
+            cancel_finance_lock_reopen: { Args: { p_org_id: string; p_request_id: string }; Returns: undefined }
+            list_finance_lock_reopen_requests: { Args: { p_org_id: string }; Returns: Json }
+            find_support_export: { Args: { p_org_id: string; p_sha256: string }; Returns: Json }
             install_thai_sme_chart: { Args: { p_org_id: string }; Returns: undefined }
             add_bank_line: { Args: { p_org_id: string; p_booked_on: string; p_amount_satang: number; p_reference: string }; Returns: string }
             match_bank_line: { Args: { p_org_id: string; p_line_id: string; p_payment_id: string }; Returns: undefined }
