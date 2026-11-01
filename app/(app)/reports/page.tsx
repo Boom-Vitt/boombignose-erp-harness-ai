@@ -8,6 +8,7 @@ import { TrendingUp, Timer, Printer, BarChart3, Clock, Package } from "lucide-re
 import { requireOrgContext } from "@/lib/auth"
 import { canDownloadAccountantPack } from "@/lib/finance/accountant-pack"
 import { formatTHB } from "@/lib/money"
+import { canReviewFinanceClose } from "@/lib/finance/close-access"
 import { getReportData } from "./_data"
 
 import { PageHeader } from "@/components/page-header"
@@ -33,8 +34,8 @@ function fmtHours(hours: number): string {
 
 export default async function ReportsPage({ searchParams }: { searchParams: Promise<SearchParams> } = { searchParams: Promise.resolve({}) }) {
   const params = await searchParams
-  const view = params.view === "line" || params.view === "pivot" ? params.view : "bar"
   const ctx = await requireOrgContext()
+  const view = params.view === "line" || params.view === "pivot" ? params.view : "bar"
   const [{ months, rangeLabel, revenue, hours, totalRevenueSatang, cogsByMonth, totalCogsSatang, purchaseVatByMonth }, close] =
     await Promise.all([getReportData(), loadMonthEndCloseChecklist()])
 
@@ -53,6 +54,8 @@ export default async function ReportsPage({ searchParams }: { searchParams: Prom
         >
           <Printer /> Print / PDF
         </Button>
+        {canReviewFinanceClose(ctx.role) ? <Button variant="outline" render={<Link href="/finance/cash" />}>เงินสดตอนปิดงวด / Cash at close</Button> : null}
+        {canReviewFinanceClose(ctx.role) ? <Button variant="outline" render={<Link href="/finance/outstanding/export" />}>ไฟล์ลูกหนี้เจ้าหนี้ / Outstanding pack</Button> : null}
       </PageHeader>
 
       {close ? <MonthEndCloseSection checklist={close} /> : null}
