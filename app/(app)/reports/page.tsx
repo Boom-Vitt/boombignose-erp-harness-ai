@@ -39,6 +39,7 @@ export default async function ReportsPage({ searchParams }: { searchParams: Prom
         title="Reports"
         description={`Operational reports · ${rangeLabel}`}
       >
+        <Button variant="outline" render={<Link href="/reports/statements" />}>Statements</Button>
         <Button
           variant="outline"
           render={
