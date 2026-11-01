@@ -2,16 +2,15 @@ import Link from "next/link"
 
 import { Badge } from "@/components/ui/badge"
 import { Card, CardAction, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { BAHT_CAPTION_EN, BAHT_CAPTION_TH, CLOSE_STATE_LABEL, closeDateLabel, closeMonthLabel } from "@/lib/finance/close-copy"
 import type { CloseChecklist } from "@/lib/finance/close-checklist"
 import { formatTHB } from "@/lib/money"
 import { FilingResponsibility } from "@/components/finance/filing-responsibility"
 
-const STATE_LABEL = { clear: "Clear", review: "Review", info: "Note" } as const
-
 function badgeLabel(checklist: CloseChecklist): string {
-  if (checklist.alreadyClosed) return checklist.ready ? "Closed" : `${checklist.reviewCount} still open`
-  if (!checklist.closable) return "Month still open"
-  return checklist.ready ? "Ready to close" : `${checklist.reviewCount} to review`
+  if (checklist.alreadyClosed) return checklist.ready ? "ปิดแล้ว / Closed" : `${checklist.reviewCount} รายการยังเปิด / ${checklist.reviewCount} still open`
+  if (!checklist.closable) return "เดือนนี้ยังเปิด / Month still open"
+  return checklist.ready ? "พร้อมปิด / Ready to close" : `${checklist.reviewCount} รายการต้องตรวจ / ${checklist.reviewCount} to review`
 }
 
 /** Reports section. Counts and links come from the pure checklist. */
@@ -20,7 +19,7 @@ export function MonthEndCloseSection({ checklist }: { checklist: CloseChecklist 
     <Card id="month-end-close" className="scroll-mt-20">
       <CardHeader>
         <CardTitle><h2 id="month-end-close-title">ปิดงบเดือน / Month-end close</h2></CardTitle>
-        <CardDescription>เดือน {checklist.month} · สิ้นงวด {checklist.periodEnd}</CardDescription>
+        <CardDescription>เดือน {closeMonthLabel(checklist.month)} · สิ้นงวด {closeDateLabel(checklist.periodEnd)} · {BAHT_CAPTION_TH} / {BAHT_CAPTION_EN}</CardDescription>
         <CardAction>
           <Badge variant={!checklist.ready && (checklist.closable || checklist.alreadyClosed) ? "destructive" : "secondary"}>
             {badgeLabel(checklist)}
@@ -38,19 +37,19 @@ export function MonthEndCloseSection({ checklist }: { checklist: CloseChecklist 
                   <span className="font-medium">{item.title}</span>
                   <span className="mt-1 block text-muted-foreground">{item.detail}</span>
                   {item.outputVatSatang !== null && item.inputVatSatang !== null ? (
-                    <span className="mt-1 block tabular-nums">Output {formatTHB(item.outputVatSatang)} · Input {formatTHB(item.inputVatSatang)}</span>
+                    <span className="mt-1 block tabular-nums">ภาษีขาย / Output VAT {formatTHB(item.outputVatSatang)} · ภาษีซื้อ / Input VAT {formatTHB(item.inputVatSatang)}</span>
                   ) : item.state === "review" && item.amountSatang !== null ? (
                     <span className="mt-1 block tabular-nums">{formatTHB(item.amountSatang)}</span>
                   ) : null}
                 </span>
                 <Badge variant={item.state === "review" ? "destructive" : "secondary"} className="shrink-0">
-                  {item.state === "review" ? item.count : STATE_LABEL[item.state]}
+                  {item.state === "review" ? item.count : CLOSE_STATE_LABEL[item.state]}
                 </Badge>
               </Link>
             </li>
           ))}
         </ul>
-        <Link href="/settings/finance" className="text-sm underline">Finance settings, where an owner or admin locks the month</Link>
+        <Link href="/settings/finance" className="text-sm underline">การตั้งค่างวดบัญชี ที่เจ้าของหรือผู้ดูแลล็อกเดือน / Finance settings, where an owner or admin locks the month</Link>
       </CardContent>
     </Card>
   )

@@ -11,6 +11,7 @@
  * (tests). The access token is read from the server environment and is never
  * stored on `accounting_connections`.
  */
+import { isCalendarDate } from "@/lib/finance/close-window"
 import { satangToBaht } from "@/lib/money"
 import type { ExternalInvoicePayload } from "@/ee/accounting/provider"
 
@@ -96,7 +97,7 @@ function preferPositive(primary: number, fallback: number): number {
 
 /** Whole days from issue to due. A missing or earlier due date is 0. */
 export function creditDays(issueDate: string | null, dueDate: string | null): number {
-  if (!issueDate || !dueDate) return 0
+  if (!issueDate || !dueDate || !isCalendarDate(issueDate) || !isCalendarDate(dueDate)) return 0
   const issue = Date.parse(`${issueDate}T00:00:00Z`)
   const due = Date.parse(`${dueDate}T00:00:00Z`)
   if (!Number.isFinite(issue) || !Number.isFinite(due) || due < issue) return 0

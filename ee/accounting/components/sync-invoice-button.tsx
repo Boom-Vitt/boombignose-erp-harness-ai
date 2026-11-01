@@ -28,15 +28,15 @@ export function SyncInvoiceButton({ invoiceId }: { invoiceId: string }) {
           }
           toast.success(
             res.externalId
-              ? `Exported (${res.externalId})`
-              : "Exported"
+              ? `ส่งออกแล้ว / Exported (${res.externalId})`
+              : "ส่งออกแล้ว / Exported"
           )
           router.refresh()
         })
       }
     >
       <RefreshCw className={pending ? "animate-spin" : undefined} />
-      {pending ? "Exporting…" : "Export to FlowAccount"}
+      {pending ? "กำลังส่งออก… / Exporting…" : "ส่งออกไป FlowAccount / Export to FlowAccount"}
     </Button>
   )
 }

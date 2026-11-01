@@ -93,6 +93,9 @@ describe("FlowAccount document", () => {
     expect(creditDays("2026-06-01", "2026-06-01")).toBe(0)
     expect(creditDays("2026-06-30", "2026-06-01")).toBe(0)
     expect(creditDays(null, "2026-06-01")).toBe(0)
+    expect(creditDays("2026-02-28", "2026-03-10")).toBe(10)
+    expect(creditDays("2026-02-31", "2026-03-10")).toBe(0)
+    expect(creditDays("2026-06-31", "2026-07-15")).toBe(0)
   })
 })
 
@@ -174,6 +177,40 @@ describe("FlowAccount push", () => {
       token: "sandbox-token",
       fetchImpl: fetchImpl as typeof fetch,
     })).rejects.toThrow(/redirected/)
+  })
+
+  it("refuses a password, a non-https host, and a missing issue date", async () => {
+    let thrown = ""
+    try {
+      flowAccountPushUrl("https://user:sandbox-token@openapi.flowaccount.com")
+    } catch (error) {
+      thrown = String(error)
+    }
+    expect(thrown).toMatch(/password/)
+    expect(thrown).not.toContain("sandbox-token")
+    expect(() => flowAccountPushUrl("http://openapi.flowaccount.com/sandbox")).toThrow(/https:\/\/openapi\.flowaccount\.com/)
+    expect(() => flowAccountPushUrl("ftp://127.0.0.1/sandbox")).toThrow(/http or https/)
+    expect(connectionTransport(null)).toBe("fixture")
+    expect(connectionTransport([])).toBe("fixture")
+    expect(connectionTransport({ transport: "peak" })).toBe("fixture")
+    expect(() => toFlowAccountDocument({
+      ...invoice,
+      payload: { ...invoice.payload, issueDate: null, dueDate: null },
+    })).toThrow(/issue date/)
+    const fetchImpl = vi.fn(async () => { throw new Error("ECONNREFUSED 10.1.2.3") })
+    await expect(pushFlowAccountInvoice(toFlowAccountDocument(invoice), {
+      transport: "sandbox",
+      token: "   ",
+      fetchImpl: fetchImpl as typeof fetch,
+    })).rejects.toThrow(/FLOWACCOUNT_ACCESS_TOKEN/)
+    await expect(pushFlowAccountInvoice(toFlowAccountDocument(invoice), {
+      transport: "sandbox",
+      token: "sandbox-token",
+      fetchImpl: fetchImpl as typeof fetch,
+    })).rejects.toThrow("FlowAccount could not be reached.")
+    expect(parseFlowAccountPushResponse({ status: true, data: { recordId: "15" } })).toEqual({ externalId: "15" })
+    expect(() => parseFlowAccountPushResponse({ status: true, data: {} })).toThrow(/no document number/)
+    expect(fetchImpl).toHaveBeenCalledOnce()
   })
 
   it("refuses PEAK and Xero in this build", async () => {

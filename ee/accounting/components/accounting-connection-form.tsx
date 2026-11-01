@@ -31,7 +31,7 @@ export function AccountingConnectionForm({
     return (
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <p className="text-muted-foreground text-sm">
-          Disconnecting stops new exports. Existing document numbers are kept.
+          การยกเลิกการเชื่อมต่อหยุดการส่งออกใหม่ เลขเอกสารเดิมยังอยู่ เชื่อมต่ออีกครั้งเพื่อเปลี่ยนโหมดตัวอย่างหรือ sandbox / Disconnecting stops new exports. Existing document numbers are kept.
           Connect again to change fixture or sandbox.
         </p>
         <Button
@@ -49,7 +49,7 @@ export function AccountingConnectionForm({
             })
           }
         >
-          <Unplug /> {pending ? "Disconnecting…" : "Disconnect"}
+          <Unplug /> {pending ? "กำลังยกเลิก… / Disconnecting…" : "ยกเลิกการเชื่อมต่อ / Disconnect"}
         </Button>
       </div>
     )
@@ -61,9 +61,9 @@ export function AccountingConnectionForm({
         <div className="flex items-start gap-2">
           <RadioGroupItem id="transport-fixture" value="fixture" />
           <Label htmlFor="transport-fixture" className="grid gap-1 font-normal">
-            <span className="font-medium">Fixture demo</span>
+            <span className="font-medium">ตัวอย่างบนเครื่องนี้ / Fixture demo</span>
             <span className="text-muted-foreground text-sm">
-              Builds the FlowAccount document on this machine and stores a demo number. No network call.
+              สร้างเอกสาร FlowAccount บนเครื่องนี้และเก็บเลขตัวอย่าง ไม่มีการเรียกเครือข่าย / Builds the FlowAccount document on this machine and stores a demo number. No network call.
             </span>
           </Label>
         </div>
@@ -72,7 +72,7 @@ export function AccountingConnectionForm({
           <Label htmlFor="transport-sandbox" className="grid gap-1 font-normal">
             <span className="font-medium">FlowAccount sandbox</span>
             <span className="text-muted-foreground text-sm">
-              Posts the same document to FlowAccount. Set FLOWACCOUNT_ACCESS_TOKEN on the server. It is not saved in this workspace.
+              ส่งเอกสารเดียวกันไป FlowAccount ตั้ง FLOWACCOUNT_ACCESS_TOKEN ที่เซิร์ฟเวอร์ ไม่ได้บันทึกในเวิร์กสเปซนี้ / Posts the same document to FlowAccount. Set FLOWACCOUNT_ACCESS_TOKEN on the server. It is not saved in this workspace.
             </span>
           </Label>
         </div>
@@ -91,7 +91,7 @@ export function AccountingConnectionForm({
           })
         }
       >
-        <Plug /> {pending ? "Connecting…" : "Connect FlowAccount"}
+        <Plug /> {pending ? "กำลังเชื่อมต่อ… / Connecting…" : <><span aria-hidden="true">เชื่อมต่อ FlowAccount / </span>Connect</>}
       </Button>
     </div>
   )

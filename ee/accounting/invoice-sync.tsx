@@ -26,7 +26,7 @@ export async function getInvoiceAccounting(orgId: string, invoiceId: string) {
 export function InvoiceAccountingControls({ invoiceId, connected }: { invoiceId: string; connected: boolean }) {
   return connected ? <SyncInvoiceButton invoiceId={invoiceId} /> : (
     <Button variant="outline" size="sm" render={<Link href="/settings/accounting" />}>
-      <PlugZap /> Connect accounting
+      <PlugZap /> เชื่อมต่อการส่งออก / Connect accounting
     </Button>
   )
 }
@@ -36,12 +36,12 @@ export function InvoiceAccountingStatus({ sync }: { sync: Awaited<ReturnType<typ
     <span className="space-y-0.5">
       <span className="block font-medium">{ACCOUNTING_PROVIDER_LABEL[sync.provider]} · {sync.external_id}</span>
       {sync.last_synced_at ? (
-        <span className="text-muted-foreground block text-xs">Exported {sync.last_synced_at.slice(0, 10)}</span>
+        <span className="text-muted-foreground block text-xs">ส่งออกแล้ว / Exported {sync.last_synced_at.slice(0, 10)}</span>
       ) : null}
       {sync.status === "error" && sync.last_error ? (
         <span className="text-destructive block text-xs">{sync.last_error}</span>
       ) : null}
     </span>
-  ) : <span className="text-muted-foreground">Not synced</span>
-  return <div className="space-y-1"><dt className="text-muted-foreground text-xs font-medium">Accounting sync</dt><dd className="text-sm">{value}</dd></div>
+  ) : <span className="text-muted-foreground">ยังไม่ส่งออก / Not synced</span>
+  return <div className="space-y-1"><dt className="text-muted-foreground text-xs font-medium">การส่งออกบัญชี / Accounting sync</dt><dd className="text-sm">{value}</dd></div>
 }

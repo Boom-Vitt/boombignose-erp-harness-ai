@@ -1,20 +1,18 @@
-import Link from "next/link"
 import { requireOrgContext } from "@/lib/auth"
 import { can } from "@/lib/permissions"
 import { createClient } from "@/lib/supabase/server"
 import { readAll } from "@/lib/supabase/read-all"
-import { formatTHB } from "@/lib/money"
 import { currentMonthKey } from "@/lib/dates"
 import { aging, balanceSupport, monthBounds, profitAndLoss, vatSupport, type StatementCost, type StatementInvoice } from "@/lib/reports/statements"
 import { PageHeader } from "@/components/page-header"
-import { FilingResponsibility } from "@/components/finance/filing-responsibility"
-import { Card, CardContent } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { SupportFigures } from "./support-figures"
 
 export const dynamic = "force-dynamic"
 
 export default async function StatementsPage({ searchParams }: { searchParams: Promise<{ month?: string }> }) {
   const ctx = await requireOrgContext()
-  if (!can(ctx.role, "profit:view")) return <p>You do not have access to these reports.</p>
+  if (!can(ctx.role, "profit:view")) return <p>คุณไม่มีสิทธิ์ดูรายงานนี้ / You do not have access to these reports.</p>
   const requested = (await searchParams).month
   const month = monthBounds(requested ?? "") ? requested! : currentMonthKey()
   const bounds = monthBounds(month)!
@@ -52,55 +50,11 @@ export default async function StatementsPage({ searchParams }: { searchParams: P
   const payableAging = aging(bounds.to, statementCosts.filter((row) => row.incurredOn <= bounds.to).map((row) => ({ dueDate: row.dueDate, amountSatang: row.payableSatang })))
 
   return <div className="space-y-6">
-    <PageHeader title="งบการเงินประกอบ / Support reports" description="Operational figures for one month. Not a TAS statement, a closed ledger, or a Revenue Department filing." breadcrumbs={[{ label: "Reports", href: "/reports" }]} />
+    <PageHeader title="งบการเงินประกอบ / Support reports" description="ตัวเลขปฏิบัติการของหนึ่งเดือน ไม่ใช่งบการเงินตามมาตรฐานการบัญชี ไม่ใช่งบที่ปิดแล้ว และไม่ใช่การยื่นต่อกรมสรรพากร / Operational figures for one month. Not a TAS statement, a closed ledger, or a Revenue Department filing." breadcrumbs={[{ label: "Reports", href: "/reports" }]} />
     <form className="flex items-end gap-3">
-      <label className="text-sm">Month <input className="mt-1 block h-9 rounded-md border bg-background px-2" type="month" name="month" defaultValue={month} /></label>
-      <button className="h-9 rounded-md border px-3 text-sm" type="submit">Show</button>
+      <label className="text-sm">เดือน / Month <input className="mt-1 block h-9 rounded-md border bg-background px-2" type="month" name="month" defaultValue={month} /></label>
+      <Button type="submit" variant="outline">แสดง / Show</Button>
     </form>
-    <section className="space-y-2">
-      <h2 className="font-semibold">กำไรขาดทุน / Profit and loss</h2>
-      <Card><CardContent className="grid gap-2 py-4 text-sm sm:grid-cols-2">
-        <p>Revenue before VAT {formatTHB(profit.revenueSatang)}</p>
-        <p>Cost of goods sold {formatTHB(profit.cogsSatang)}</p>
-        <p>Other costs before VAT {formatTHB(profit.expenseSatang)}</p>
-        <p>Profit {formatTHB(profit.profitSatang)}</p>
-      </CardContent></Card>
-    </section>
-    <section className="space-y-2">
-      <h2 className="font-semibold">ฐานะการเงินเบื้องต้น / Balance support</h2>
-      <p className="text-sm text-muted-foreground">Cash is the figure saved in settings. Receivables are unpaid issued invoices. Payables are unpaid costs. These amounts do not balance.</p>
-      <Card><CardContent className="grid gap-2 py-4 text-sm sm:grid-cols-3">
-        <p>Cash {formatTHB(balance.cashSatang)}</p>
-        <p>Receivables {formatTHB(balance.receivablesSatang)}</p>
-        <p>Payables {formatTHB(balance.payablesSatang)}</p>
-      </CardContent></Card>
-    </section>
-    <section className="space-y-2">
-      <h2 className="font-semibold">ข้อมูลประกอบ ภ.พ.30 / VAT support</h2>
-      <p className="text-sm text-muted-foreground">Output VAT is from issued invoices. Input VAT is from recorded costs. This is not a ภ.พ.30 filing.</p>
-      <FilingResponsibility />
-      <Card><CardContent className="grid gap-2 py-4 text-sm sm:grid-cols-3">
-        <p>Output VAT {formatTHB(vat.outputVatSatang)}</p>
-        <p>Input VAT {formatTHB(vat.inputVatSatang)}</p>
-        <p>Output minus input {formatTHB(vat.netVatSatang)}</p>
-      </CardContent></Card>
-    </section>
-    <section className="space-y-2">
-      <h2 className="font-semibold">อายุลูกหนี้และเจ้าหนี้ / AR and AP aging</h2>
-      <AgingTable title="Receivables" buckets={receivableAging} />
-      <AgingTable title="Payables" buckets={payableAging} />
-    </section>
-    <Link className="text-sm underline" href="/reports">Back to reports</Link>
+    <SupportFigures month={month} asOf={bounds.to} profit={profit} balance={balance} vat={vat} receivableAging={receivableAging} payableAging={payableAging} />
   </div>
-}
-
-function AgingTable({ title, buckets }: { title: string; buckets: { current: number; days1to30: number; days31to60: number; days61to90: number; days91plus: number } }) {
-  return <Card><CardContent className="space-y-2 py-4 text-sm">
-    <h3 className="font-medium">{title}</h3>
-    <p>Not yet due {formatTHB(buckets.current)}</p>
-    <p>1–30 days {formatTHB(buckets.days1to30)}</p>
-    <p>31–60 days {formatTHB(buckets.days31to60)}</p>
-    <p>61–90 days {formatTHB(buckets.days61to90)}</p>
-    <p>91 days or more {formatTHB(buckets.days91plus)}</p>
-  </CardContent></Card>
 }

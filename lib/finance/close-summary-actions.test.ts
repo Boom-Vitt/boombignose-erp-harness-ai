@@ -86,3 +86,15 @@ it("returns the counts when Ollama is down and does not call another model", asy
   expect(refused).toMatchObject({ notConfigured: true })
   expect(generateText).not.toHaveBeenCalled()
 })
+
+it("keeps this workspace's counts when Ollama returns no note", async () => {
+  generateText.mockRejectedValue(new Error("boom"))
+  const result = await summarizeMonthEnd()
+  expect(result).toMatchObject({ counts: { overdueReceivableCount: 1, unmatchedBankCount: 1 } })
+  expect(result).not.toHaveProperty("content")
+  expect(result).not.toHaveProperty("notConfigured")
+  if (!("error" in result) || !("counts" in result)) throw new Error("expected counts and an error")
+  expect(result.error).toContain("Ollama ไม่ได้ส่งบันทึกกลับมา")
+  expect(result.error).toContain("Ollama returned no note")
+  expect(result.error).not.toMatch(/ภ\.พ\.30|e-Tax/)
+})

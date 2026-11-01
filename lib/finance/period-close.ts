@@ -39,8 +39,12 @@ export function financeLockChange(lockDate: string, today: string): FinanceLockC
 
 export function closeAccountingPeriod(month: string, today: string, currentLock: string | null): PeriodClose {
   const lockDate = lastDay(month)
-  if (!lockDate || !/^\d{4}-\d{2}-\d{2}$/.test(today)) return { ok: false, error: "Enter a month as YYYY-MM." }
+  if (!lockDate) return { ok: false, error: "Enter a month as YYYY-MM." }
+  if (!isCalendarDate(today)) return { ok: false, error: "Enter today as YYYY-MM-DD." }
   if (lockDate >= today) return { ok: false, error: "Close a completed month. The current month stays open." }
-  if (currentLock && currentLock >= lockDate) return { ok: false, error: "That month is already closed." }
+  if (currentLock) {
+    if (!isCalendarDate(currentLock)) return { ok: false, error: "The current lock date is not a calendar day." }
+    if (currentLock >= lockDate) return { ok: false, error: "That month is already closed." }
+  }
   return { ok: true, lockDate }
 }

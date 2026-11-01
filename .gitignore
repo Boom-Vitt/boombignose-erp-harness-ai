@@ -42,6 +42,10 @@ yarn-error.log*
 # graft's local graph cache — regenerable, not committed (run `graft build`).
 /graft/
 
+# Local Moli dumps for the desktop agent. Do not commit fetched pages.
+/artifacts/moli/**
+!/artifacts/moli/.gitkeep
+
 # Local assistant context stays out of the public repository.
 /.project-memory/
 /AGENTS.md

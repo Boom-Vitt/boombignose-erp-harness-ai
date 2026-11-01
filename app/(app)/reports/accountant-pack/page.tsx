@@ -2,7 +2,8 @@ import Link from "next/link"
 
 import { requireOrgContext } from "@/lib/auth"
 import { todayISO } from "@/lib/dates"
-import { ACCOUNTANT_PACK_DISCLAIMER_EN, ACCOUNTANT_PACK_DISCLAIMER_TH, VENDOR_WHT_NOTE, accountantPackMonth, canDownloadAccountantPack, previousCalendarMonth, type VatSupportLine } from "@/lib/finance/accountant-pack"
+import { ACCOUNTANT_PACK_DISCLAIMER_EN, ACCOUNTANT_PACK_DISCLAIMER_TH, PACK_LINE_HEADERS, PACK_WHT_HEADERS, VENDOR_WHT_NOTE, accountantPackMonth, canDownloadAccountantPack, packDateLabel, previousCalendarMonth, vatSupportKindLabel, type VatSupportLine } from "@/lib/finance/accountant-pack"
+import { BAHT_CAPTION_EN, BAHT_CAPTION_TH, VAT_SUPPORT_EN, VAT_SUPPORT_TH } from "@/lib/finance/close-copy"
 import { loadAccountantPack } from "@/lib/finance/accountant-pack-load"
 import { formatTHB } from "@/lib/money"
 import { PageHeader } from "@/components/page-header"
@@ -45,9 +46,9 @@ export default async function AccountantPackPage({ searchParams }: { searchParam
           เดือน / Month
           <Input className="mt-1 w-44" type="month" name="month" defaultValue={parsed ? month : ""} />
         </label>
-        <Button type="submit" variant="outline">Show</Button>
+        <Button type="submit" variant="outline">แสดง / Show</Button>
       </form>
-      {parsed ? <PackResult month={parsed.month} /> : <p>Choose a month as YYYY-MM.</p>}
+      {parsed ? <PackResult month={parsed.month} /> : <p>เลือกเดือนเป็น YYYY-MM / Choose a month as YYYY-MM.</p>}
     </div>
   )
 }
@@ -61,48 +62,47 @@ async function PackResult({ month }: { month: string }) {
       <div className="rounded-lg border p-4 text-sm">
         <p>{ACCOUNTANT_PACK_DISCLAIMER_TH}</p>
         <p className="mt-2 text-muted-foreground">{ACCOUNTANT_PACK_DISCLAIMER_EN}</p>
+        <p className="mt-2">{VAT_SUPPORT_TH}</p>
+        <p className="mt-2 text-muted-foreground">{VAT_SUPPORT_EN}</p>
+        <p className="mt-2 text-muted-foreground">{BAHT_CAPTION_TH} / {BAHT_CAPTION_EN}</p>
       </div>
       <div className="flex flex-wrap gap-2">
-        <Button variant="outline" render={<Link href={`/reports/accountant-pack/export?month=${month}`} />}>Download CSV</Button>
-        <Button variant="outline" render={<a href={`/reports/accountant-pack/print?month=${month}`} target="_blank" rel="noopener" />}>Print / PDF</Button>
+        <Button variant="outline" render={<Link href={`/reports/accountant-pack/export?month=${month}`} />}>ดาวน์โหลด CSV / Download CSV</Button>
+        <Button variant="outline" render={<a href={`/reports/accountant-pack/print?month=${month}`} target="_blank" rel="noopener" />}>พิมพ์ / Print / PDF</Button>
       </div>
-      <p className="text-sm text-muted-foreground">{pack.orgName} · {pack.month} ({pack.buddhistMonth}). Purchase VAT by month stays on <Link className="underline" href="/reports#purchase-vat">Reports</Link>.</p>
+      <p className="text-sm text-muted-foreground">{pack.orgName} · {pack.month} ({pack.buddhistMonth}). ภาษีซื้อรายเดือนอยู่ที่ <Link className="underline" href="/reports#purchase-vat">รายงาน / Reports</Link>.</p>
       <Card>
         <CardHeader><CardTitle>ภาษีขาย / Output VAT</CardTitle></CardHeader>
         <CardContent className="space-y-3">
-          <p className="text-sm text-muted-foreground">Issued invoices minus credit notes in this month. One row per document, using the VAT stored on that document.</p>
-          <p className="text-sm">Base {formatTHB(pack.outputBaseSatang)} · VAT {formatTHB(pack.outputVatSatang)}</p>
-          <LineTable rows={pack.outputLines} empty="No issued invoices or credit notes in this month." />
+          <p className="text-sm text-muted-foreground">ใบแจ้งหนี้ที่ออกแล้วหักใบลดหนี้ในเดือนนี้ หนึ่งแถวต่อหนึ่งเอกสาร ภาษีมูลค่าเพิ่มคือยอดที่บันทึกในเอกสาร / Issued invoices minus credit notes in this month. One row per document, using the VAT stored on that document.</p>
+          <p className="text-sm">ฐานภาษี / Base {formatTHB(pack.outputBaseSatang)} · ภาษีมูลค่าเพิ่ม / VAT {formatTHB(pack.outputVatSatang)}</p>
+          <LineTable rows={pack.outputLines} empty="ไม่มีใบแจ้งหนี้ที่ออกหรือใบลดหนี้ในเดือนนี้ / No issued invoices or credit notes in this month." />
         </CardContent>
       </Card>
       <Card>
         <CardHeader><CardTitle>ภาษีซื้อ / Input VAT</CardTitle></CardHeader>
         <CardContent className="space-y-3">
-          <p className="text-sm text-muted-foreground">Matched vendor bills already on the purchase VAT table. Linked credit notes reduce the total. Unmatched costs are left out.</p>
-          <p className="text-sm">Base {formatTHB(pack.inputBaseSatang)} · VAT {formatTHB(pack.inputVatSatang)}</p>
-          <LineTable rows={pack.inputLines} empty="No matched vendor bills in this month." />
+          <p className="text-sm text-muted-foreground">บิลผู้ขายที่จับคู่แล้วในตารางภาษีซื้อ ใบลดหนี้ที่เชื่อมกันลดยอด ต้นทุนที่ยังไม่จับคู่ไม่ถูกรวม / Matched vendor bills already on the purchase VAT table. Linked credit notes reduce the total. Unmatched costs are left out.</p>
+          <p className="text-sm">ฐานภาษี / Base {formatTHB(pack.inputBaseSatang)} · ภาษีมูลค่าเพิ่ม / VAT {formatTHB(pack.inputVatSatang)}</p>
+          <LineTable rows={pack.inputLines} empty="ไม่มีบิลผู้ขายที่จับคู่ในเดือนนี้ / No matched vendor bills in this month." />
         </CardContent>
       </Card>
       <Card>
         <CardHeader><CardTitle>ผลต่าง / Output minus input</CardTitle></CardHeader>
         <CardContent className="space-y-2">
           <p>{formatTHB(pack.outputMinusInputVatSatang)}</p>
-          <p className="text-sm text-muted-foreground">Support difference only. Not tax payable and not a ภ.พ.30 filing.</p>
+          <p className="text-sm text-muted-foreground">ผลต่างนี้เป็นข้อมูลประกอบ ไม่ใช่ภาษีที่ต้องชำระ และไม่ใช่การยื่นแบบ ภ.พ.30 / Support difference only. Not tax payable and not a ภ.พ.30 filing.</p>
         </CardContent>
       </Card>
       <Card>
         <CardHeader><CardTitle>หัก ณ ที่จ่าย / Stored withholding</CardTitle></CardHeader>
         <CardContent className="space-y-3">
           <p className="text-sm text-muted-foreground">{VENDOR_WHT_NOTE}</p>
-          {pack.whtParties.length === 0 ? <p className="text-sm text-muted-foreground">No stored withholding in this month.</p> : (
+          {pack.whtParties.length === 0 ? <p className="text-sm text-muted-foreground">ไม่มีหัก ณ ที่จ่ายที่บันทึกไว้ในเดือนนี้ / No stored withholding in this month.</p> : (
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Customer</TableHead>
-                  <TableHead>Tax ID</TableHead>
-                  <TableHead className="text-right">Base</TableHead>
-                  <TableHead className="text-right">WHT</TableHead>
-                  <TableHead className="text-right">Documents</TableHead>
+                  {PACK_WHT_HEADERS.map((header, index) => <TableHead key={header} className={index >= 2 ? "text-right" : undefined}>{header}</TableHead>)}
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -116,7 +116,7 @@ async function PackResult({ month }: { month: string }) {
                   </TableRow>
                 ))}
                 <TableRow>
-                  <TableCell className="font-semibold">Total</TableCell>
+                  <TableCell className="font-semibold">รวม / Total</TableCell>
                   <TableCell />
                   <TableCell />
                   <TableCell className="text-right font-semibold tabular-nums">{formatTHB(pack.whtSatang)}</TableCell>
@@ -137,21 +137,14 @@ function LineTable({ rows, empty }: { rows: readonly VatSupportLine[]; empty: st
     <Table>
       <TableHeader>
         <TableRow>
-          <TableHead>Date</TableHead>
-          <TableHead>Document</TableHead>
-          <TableHead>Number</TableHead>
-          <TableHead>Party</TableHead>
-          <TableHead>Tax ID</TableHead>
-          <TableHead className="text-right">Base</TableHead>
-          <TableHead className="text-right">VAT</TableHead>
-          <TableHead className="text-right">WHT</TableHead>
+          {PACK_LINE_HEADERS.map((header, index) => <TableHead key={header} className={index >= 5 ? "text-right" : undefined}>{header}</TableHead>)}
         </TableRow>
       </TableHeader>
       <TableBody>
         {rows.map((row) => (
           <TableRow key={row.id}>
-            <TableCell>{row.date}</TableCell>
-            <TableCell>{row.kind}</TableCell>
+            <TableCell>{packDateLabel(row.date)}</TableCell>
+            <TableCell>{vatSupportKindLabel(row.kind)}</TableCell>
             <TableCell>{row.number}</TableCell>
             <TableCell>{row.partyName}</TableCell>
             <TableCell>{row.taxId ?? ""}</TableCell>

@@ -81,6 +81,6 @@ export async function summarizeMonthEnd(): Promise<CloseSummaryResult> {
     return { counts, content }
   } catch (error) {
     if (error instanceof AINotConfiguredError) return { counts, notConfigured: true }
-    return { counts, error: "Ollama returned no note. The counts above are still from this workspace." }
+    return { counts, error: "Ollama ไม่ได้ส่งบันทึกกลับมา ตัวเลขด้านบนยังมาจากเวิร์กสเปซนี้ / Ollama returned no note. The counts above are still from this workspace." }
   }
 }

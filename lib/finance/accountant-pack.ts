@@ -2,6 +2,7 @@ import { buddhistEraLabel } from "@/lib/dates"
 import { FILING_LEAD_EN, FILING_LEAD_TH, FILING_LIMIT_EN, FILING_LIMIT_TH, FILING_PARTIES } from "@/lib/finance/filing-responsibility"
 import { toCsv } from "@/lib/export/csv"
 import { escapeHtml } from "@/lib/documents/printable"
+import { BAHT_CAPTION_EN, BAHT_CAPTION_TH, closeDateLabel, VAT_SUPPORT_EN, VAT_SUPPORT_TH, WHT_SUPPORT_EN, WHT_SUPPORT_TH } from "@/lib/finance/close-copy"
 import { formatTHB, satangToBahtString, sumSatang, type Satang } from "@/lib/money"
 
 /**
@@ -17,7 +18,43 @@ export const ACCOUNTANT_PACK_DISCLAIMER_TH =
   "ข้อมูลประกอบสำหรับนักบัญชีภายนอกเท่านั้น ชุดนี้ไม่ยื่นแบบ ภ.พ.30 ไม่ติดต่อกรมสรรพากร และไม่ใช่งบการเงินตามกฎหมาย"
 
 export const VENDOR_WHT_NOTE =
-  "Vendor bills do not store withholding. Totals are only withholding already stored on issued invoices and credit notes, grouped by customer."
+  `Vendor bills do not store withholding. Totals are only withholding already stored on issued invoices and credit notes, grouped by customer. ${WHT_SUPPORT_EN} ${WHT_SUPPORT_TH}`
+
+export const PACK_LINE_HEADERS = [
+  "วันที่ / Date",
+  "เอกสาร / Document",
+  "เลขที่ / Number",
+  "คู่ค้า / Party",
+  "เลขผู้เสียภาษี / Tax ID",
+  "ฐานภาษี / Base",
+  "ภาษีมูลค่าเพิ่ม / VAT",
+  "หัก ณ ที่จ่าย / WHT",
+] as const
+
+export const PACK_WHT_HEADERS = [
+  "ลูกค้า / Customer",
+  "เลขผู้เสียภาษี / Tax ID",
+  "ฐานภาษี / Base",
+  "หัก ณ ที่จ่าย / WHT",
+  "จำนวนเอกสาร / Documents",
+] as const
+
+const KIND_LABEL: Record<VatSupportLine["kind"], string> = {
+  invoice: "ใบแจ้งหนี้ / Invoice",
+  credit_note: "ใบลดหนี้ / Credit note",
+  vendor_bill: "บิลผู้ขาย / Vendor bill",
+  vendor_credit: "ใบลดหนี้ผู้ขาย / Vendor credit",
+  return_adjustment: "ปรับคืนสินค้า / Return adjustment",
+  matched_cost: "ต้นทุนที่จับคู่แล้ว / Matched cost",
+}
+
+export function vatSupportKindLabel(kind: VatSupportLine["kind"]): string {
+  return KIND_LABEL[kind]
+}
+
+export function packDateLabel(isoDate: string): string {
+  return closeDateLabel(isoDate)
+}
 
 function isIssued(status: string): boolean {
   return status !== "draft" && status !== "cancelled"
@@ -277,15 +314,15 @@ export function accountantPackCsv(pack: AccountantPack): string {
 }
 
 export function renderAccountantPackHtml(pack: AccountantPack, generatedOn: string): string {
-  const output = linesTable(pack.outputLines, "No issued invoices or credit notes in this month.")
-  const input = linesTable(pack.inputLines, "No matched vendor bills in this month.")
+  const output = linesTable(pack.outputLines, "ไม่มีใบแจ้งหนี้ที่ออกหรือใบลดหนี้ในเดือนนี้ / No issued invoices or credit notes in this month.")
+  const input = linesTable(pack.inputLines, "ไม่มีบิลผู้ขายที่จับคู่ในเดือนนี้ / No matched vendor bills in this month.")
   const wht = pack.whtParties.length === 0
-    ? `<p class="muted">No stored withholding in this month.</p>`
+    ? `<p class="muted">ไม่มีหัก ณ ที่จ่ายที่บันทึกไว้ในเดือนนี้ / No stored withholding in this month.</p>`
     : `<table>
-      <thead><tr><th>Customer</th><th>Tax ID</th><th class="num">Base</th><th class="num">WHT</th><th class="num">Documents</th></tr></thead>
+      <thead><tr>${PACK_WHT_HEADERS.map((header, index) => `<th${index >= 2 ? ` class="num"` : ""}>${escapeHtml(header)}</th>`).join("")}</tr></thead>
       <tbody>
         ${pack.whtParties.map((row) => `<tr><td>${escapeHtml(row.partyName)}</td><td>${escapeHtml(row.taxId ?? "")}</td><td class="num">${money(row.baseSatang)}</td><td class="num">${money(row.whtSatang)}</td><td class="num">${row.documentCount}</td></tr>`).join("")}
-        <tr class="totals-row"><td class="strong">Total</td><td></td><td></td><td class="num strong">${money(pack.whtSatang)}</td><td></td></tr>
+        <tr class="totals-row"><td class="strong">รวม / Total</td><td></td><td></td><td class="num strong">${money(pack.whtSatang)}</td><td></td></tr>
       </tbody>
     </table>`
   return `<!DOCTYPE html>
@@ -311,28 +348,31 @@ export function renderAccountantPackHtml(pack: AccountantPack, generatedOn: stri
 </head>
 <body>
   <h1>ชุดข้อมูลนักบัญชี / Accountant pack</h1>
-  <p>${escapeHtml(pack.orgName)} · ${escapeHtml(pack.month)} (${escapeHtml(pack.buddhistMonth)}) · ${escapeHtml(generatedOn)}</p>
+  <p>${escapeHtml(pack.orgName)} · ${escapeHtml(pack.month)} (${escapeHtml(pack.buddhistMonth)}) · ${escapeHtml(closeDateLabel(generatedOn))}</p>
+  <p class="muted">${escapeHtml(BAHT_CAPTION_TH)} / ${escapeHtml(BAHT_CAPTION_EN)} วันที่แสดงทั้ง ค.ศ. และ พ.ศ. / Dates show the Gregorian day and the Buddhist-era day.</p>
   <div class="disclaimer">
     <p>${escapeHtml(ACCOUNTANT_PACK_DISCLAIMER_TH)}</p>
     <p>${escapeHtml(ACCOUNTANT_PACK_DISCLAIMER_EN)}</p>
+    <p>${escapeHtml(VAT_SUPPORT_TH)}</p>
+    <p>${escapeHtml(VAT_SUPPORT_EN)}</p>
     <p>${escapeHtml(FILING_LEAD_TH)}</p>
     <p>${escapeHtml(FILING_LEAD_EN)}</p>
     <ul>${FILING_PARTIES.map((party) => `<li>${escapeHtml(party.th)} / ${escapeHtml(party.en)}</li>`).join("")}</ul>
     <p>${escapeHtml(FILING_LIMIT_TH)}</p>
     <p>${escapeHtml(FILING_LIMIT_EN)}</p>
   </div>
-  <button type="button" onclick="window.print()">Print / PDF</button>
+  <button type="button" onclick="window.print()">พิมพ์ / Print / PDF</button>
   <h2>ภาษีขาย / Output VAT</h2>
-  <p class="muted">Issued invoices minus credit notes dated in this month. One row per document. VAT is the amount stored on the document.</p>
-  <p>Base ${money(pack.outputBaseSatang)} · VAT ${money(pack.outputVatSatang)}</p>
+  <p class="muted">ใบแจ้งหนี้ที่ออกแล้วหักใบลดหนี้ในเดือนนี้ หนึ่งแถวต่อหนึ่งเอกสาร ภาษีมูลค่าเพิ่มคือยอดที่บันทึกในเอกสาร / Issued invoices minus credit notes dated in this month. One row per document. VAT is the amount stored on the document.</p>
+  <p>ฐานภาษี / Base ${money(pack.outputBaseSatang)} · ภาษีมูลค่าเพิ่ม / VAT ${money(pack.outputVatSatang)}</p>
   ${output}
   <h2>ภาษีซื้อ / Input VAT</h2>
-  <p class="muted">Matched vendor bills already on the purchase VAT table. Linked credit notes reduce the total. Unmatched costs are left out.</p>
-  <p>Base ${money(pack.inputBaseSatang)} · VAT ${money(pack.inputVatSatang)}</p>
+  <p class="muted">บิลผู้ขายที่จับคู่แล้วในตารางภาษีซื้อ ใบลดหนี้ที่เชื่อมกันลดยอด ต้นทุนที่ยังไม่จับคู่ไม่ถูกรวม / Matched vendor bills already on the purchase VAT table. Linked credit notes reduce the total. Unmatched costs are left out.</p>
+  <p>ฐานภาษี / Base ${money(pack.inputBaseSatang)} · ภาษีมูลค่าเพิ่ม / VAT ${money(pack.inputVatSatang)}</p>
   ${input}
   <h2>ผลต่างภาษีขายกับภาษีซื้อ / Output minus input</h2>
   <p>${money(pack.outputMinusInputVatSatang)}</p>
-  <p class="muted">Support difference only. Not tax payable and not a ภ.พ.30 filing.</p>
+  <p class="muted">ผลต่างนี้เป็นข้อมูลประกอบ ไม่ใช่ภาษีที่ต้องชำระ และไม่ใช่การยื่นแบบ ภ.พ.30 / Support difference only. Not tax payable and not a ภ.พ.30 filing.</p>
   <h2>หัก ณ ที่จ่าย / Stored withholding</h2>
   <p class="muted">${escapeHtml(VENDOR_WHT_NOTE)}</p>
   ${wht}
@@ -433,9 +473,10 @@ function detail(section: string, row: VatSupportLine) {
 
 function linesTable(rows: readonly VatSupportLine[], empty: string): string {
   if (rows.length === 0) return `<p class="muted">${escapeHtml(empty)}</p>`
+  const head = PACK_LINE_HEADERS.map((header, index) => `<th${index >= 5 ? ` class="num"` : ""}>${escapeHtml(header)}</th>`).join("")
   return `<table>
-    <thead><tr><th>Date</th><th>Document</th><th>Number</th><th>Party</th><th>Tax ID</th><th class="num">Base</th><th class="num">VAT</th><th class="num">WHT</th></tr></thead>
-    <tbody>${rows.map((row) => `<tr><td>${escapeHtml(row.date)}</td><td>${escapeHtml(row.kind)}</td><td>${escapeHtml(row.number)}</td><td>${escapeHtml(row.partyName)}</td><td>${escapeHtml(row.taxId ?? "")}</td><td class="num">${money(row.baseSatang)}</td><td class="num">${money(row.vatSatang)}</td><td class="num">${money(row.whtSatang)}</td></tr>`).join("")}</tbody>
+    <thead><tr>${head}</tr></thead>
+    <tbody>${rows.map((row) => `<tr><td>${escapeHtml(packDateLabel(row.date))}</td><td>${escapeHtml(vatSupportKindLabel(row.kind))}</td><td>${escapeHtml(row.number)}</td><td>${escapeHtml(row.partyName)}</td><td>${escapeHtml(row.taxId ?? "")}</td><td class="num">${money(row.baseSatang)}</td><td class="num">${money(row.vatSatang)}</td><td class="num">${money(row.whtSatang)}</td></tr>`).join("")}</tbody>
   </table>`
 }
 
