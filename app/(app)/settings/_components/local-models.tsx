@@ -307,7 +307,7 @@ export function LocalModelsCard({ initial, canInstall, asr = { offered: false, i
             <p className="text-muted-foreground text-xs">{row.id} · {row.license} · {row.sizeNote}{row.installedBytes ? ` · ${formatBytes(row.installedBytes)}` : ""}</p>
             <p className="text-sm">{row.detailTh} {row.detailEn}</p>
             {canInstall ? (
-              <Button type="button" variant="outline" disabled={pending !== "" || !snapshot.daemonUp} onClick={() => (row.installed ? remove(row.id) : install(row.id))}>
+              <Button type="button" variant={row.installed ? "outline" : "default"} disabled={pending !== "" || !snapshot.daemonUp} onClick={() => (row.installed ? remove(row.id) : install(row.id))}>
                 {pending === row.id ? "กำลังทำงาน…" : row.installed ? "เอาออก / Remove" : "ติดตั้ง / Install"}
               </Button>
             ) : null}
@@ -356,7 +356,7 @@ export function LocalModelsCard({ initial, canInstall, asr = { offered: false, i
           <p className="text-muted-foreground text-xs">whisper.cpp {`b5454`} · MIT · ggml-tiny about 74 MB</p>
           <p className="text-sm">ถอดเสียงบนเครื่องนี้ แอปดาวน์โหลด whisper.cpp ให้เอง ไม่ต้องติดตั้ง Whisper Desktop โมเดล tiny ฟังภาษาไทยและภาษาอื่นได้ในระดับหนึ่ง ข้อความอยู่แค่บนหน้านี้ ไม่ได้ถูกบันทึกเป็นรายการบัญชีและไม่ได้ยื่น ภ.พ.30 Speech to text stays on this computer. This app downloads whisper.cpp. You do not install Whisper Desktop. The tiny model can transcribe Thai and other languages, with the limits of a small model. The text stays on this page. It is not saved as an accounting entry and it does not file VAT.</p>
           {canInstall ? (
-            <Button type="button" variant="outline" disabled={pending !== ""} onClick={() => void (asrInstalled ? removeAsr() : installAsr())}>
+            <Button type="button" variant={asrInstalled ? "outline" : "default"} disabled={pending !== ""} onClick={() => void (asrInstalled ? removeAsr() : installAsr())}>
               {pending === "asr" ? "กำลังทำงาน…" : asrInstalled ? "เอาออก / Remove" : "ติดตั้ง / Install"}
             </Button>
           ) : null}

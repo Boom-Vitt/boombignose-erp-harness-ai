@@ -101,7 +101,7 @@ begin
      or doc->>'number' is distinct from inv.number
      or doc->>'issueDate' is distinct from inv.issue_date::text
      or doc->'vatByRate' is distinct from inv.tax_breakdown
-     or coalesce(doc->>'pricesIncludeVat', '') is distinct from case when inv.prices_include_vat then 'true' else 'false' end
+     or coalesce(doc->>'pricesIncludeVat', '') is distinct from (case when inv.prices_include_vat then 'true' else 'false' end)
      or coalesce(doc->>'subtotalSatang', '') is distinct from inv.subtotal_satang::text
      or coalesce(doc->>'discountSatang', '') is distinct from inv.discount_satang::text
      or coalesce(doc->>'vatSatang', '') is distinct from inv.vat_satang::text

@@ -90,7 +90,7 @@ begin
      or doc->>'number' is distinct from p_invoice.number
      or doc->>'issueDate' is distinct from p_invoice.issue_date::text
      or doc->'vatByRate' is distinct from p_invoice.tax_breakdown
-     or coalesce(doc->>'pricesIncludeVat', '') is distinct from case when p_invoice.prices_include_vat then 'true' else 'false' end
+     or coalesce(doc->>'pricesIncludeVat', '') is distinct from (case when p_invoice.prices_include_vat then 'true' else 'false' end)
      or coalesce(doc->>'subtotalSatang', '') is distinct from p_invoice.subtotal_satang::text
      or coalesce(doc->>'discountSatang', '') is distinct from p_invoice.discount_satang::text
      or coalesce(doc->>'vatSatang', '') is distinct from p_invoice.vat_satang::text
@@ -129,7 +129,7 @@ begin
   if vat_sum is distinct from p_invoice.vat_satang
      or base_sum + vat_sum is distinct from p_invoice.total_satang
      or p_invoice.amount_satang is distinct from p_invoice.total_satang
-     or p_invoice.subtotal_satang - p_invoice.discount_satang is distinct from case when p_invoice.prices_include_vat then p_invoice.total_satang else base_sum end
+     or p_invoice.subtotal_satang - p_invoice.discount_satang is distinct from (case when p_invoice.prices_include_vat then p_invoice.total_satang else base_sum end)
      or p_invoice.total_satang <= 0 then
     raise exception 'The stored totals do not match the VAT treatment.';
   end if;
