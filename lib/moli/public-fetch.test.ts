@@ -30,6 +30,10 @@ describe("public Moli fetch policy", () => {
     expect(allowed(DEFAULT_SAMPLE_URL).layout).toBe(false)
     expect(allowed(REVENUE_DEPARTMENT_SAMPLE_URL).url.hostname).toBe("www.rd.go.th")
     expect(decidePublicFetch({ url: "http://127.0.0.1:3100/" }).ok).toBe(false)
+    expect(decidePublicFetch({ url: "http://127.0.0.1:3100/finance" }).ok).toBe(false)
+    expect(decidePublicFetch({ url: "http://127.0.0.1:3100/finance/bank" }).ok).toBe(false)
+    expect(decidePublicFetch({ url: "http://127.0.0.1:3100/finance/cash" }).ok).toBe(false)
+    expect(decidePublicFetch({ url: "http://127.0.0.1:3100/reports/accountant-pack" }).ok).toBe(false)
     expect(decidePublicFetch({ url: "http://localhost:3100/login" }).ok).toBe(false)
   })
 
