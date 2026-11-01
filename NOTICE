@@ -25,15 +25,7 @@ Package-manager dependencies retain their respective licenses. This NOTICE
 lists bundled third-party license files; it is not a dependency license audit.
 
 Optional typed public document references:
-- The workflow in lib/documents/public-reference.ts follows the public idea
-  proposed by PerchAnton in GitHub issue #34 and implemented by RefMint
-  (https://github.com/PerchAnton/refmint). RefMint's original code is
-  MIT OR Apache-2.0. This repository does not depend on the RefMint package.
-  The cited release, v0.1.0-alpha.1, is a GitHub package archive, and RefMint
-  documents that the alpha format may change. Later prereleases remain alpha.
 - The checksum is the standard Bech32m construction from BIP-350
   (https://github.com/bitcoin/bips/blob/master/bip-0350.mediawiki), implemented
-  here independently. RefMint source is not copied. The checksum detects typos.
+  here independently. The checksum detects typos.
   It is not authorization, a tax ID, or an accounting sequence.
-- Contributor credit for the proposal is in CONTRIBUTORS.md. That file is not
-  a CLA acceptance.

@@ -2,19 +2,11 @@
  * Optional typed public references for quotes, purchase orders, goods receipts,
  * deliveries, and invoices.
  *
- * This is a thin wrapper around the public idea proposed by @PerchAnton in
- * GitHub issue #34 and implemented by RefMint
- * (https://github.com/PerchAnton/refmint, MIT OR Apache-2.0). The cited
- * release, v0.1.0-alpha.1, is a GitHub package archive rather than a registry
- * release, and RefMint documents that the alpha format may change. This
- * repository therefore does not depend on that package. The checksum is the
- * standard Bech32m construction from BIP-350, written here independently.
- * RefMint source is not copied. See NOTICE and CONTRIBUTORS.md.
- *
  * A reference is `prefix + "1" + payload + 6 checksum characters`. The prefix
  * names the document type so a purchase-order code is not a customer quote or
- * a delivery. The checksum detects typos. It is not an access secret, a tax
- * ID, or an accounting sequence.
+ * a delivery. The checksum is the standard Bech32m construction from BIP-350,
+ * written here independently. It detects typos. It is not an access secret, a
+ * tax ID, or an accounting sequence. See NOTICE.
  *
  * Payload length is frozen at 14 characters (70 bits). That is the shortest
  * length whose pairwise union bound for 1,000,000 codes in one namespace is
