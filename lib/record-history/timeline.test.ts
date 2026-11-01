@@ -6,7 +6,7 @@ const base = { org_id: "org", record_type: "quote" as const, record_id: "record"
 const note: Tables<"record_notes"> = { ...base, id: "same", author: "author", body: "Internal note" }
 const attachment: Tables<"record_attachments"> = { ...base, id: "same", path: "private/path", filename: "scope.pdf", size: 20, content_type: "application/pdf", uploaded_by: "author", created_at: "2026-10-22T09:00:00Z" }
 const activity: Tables<"activities"> = { ...base, id: "same", owner: "assignee", type: "call", body: "Discuss scope", due_date: "2026-10-22", done: true, client_id: null, deal_id: null, updated_at: "2026-10-23T15:00:00Z", completed_at: "2026-10-22T10:00:00Z", completed_by: "completer" }
-const audit: Tables<"audit_log"> = { org_id: "org", id: "same", created_at: "2026-10-22T11:00:00Z", actor_id: "author", actor_email: null, entity: "quote", entity_id: "record", action: "status_changed", summary: "Status changed", meta: { from: "sent", to: "accepted" } }
+const audit: Tables<"audit_log"> = { org_id: "org", id: "same", created_at: "2026-10-22T11:00:00Z", actor_id: "author", actor_email: null, entity: "quote", entity_id: "record", action: "status_changed", summary: "Status changed", meta: { from: "sent", to: "accepted" }, close_chain_prev: null, close_chain_seq: null, close_chain_sha256: null }
 
 describe("record timeline", () => {
   it("attributes completion to the completing actor rather than the assignee", () => {
