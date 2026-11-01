@@ -32,7 +32,7 @@ function setMode(mode: Mode) {
 export function ModeSwitch() {
   const mode = useMode()
   return (
-    <div role="radiogroup" aria-label="โหมดการใช้งาน / Operator mode" className="bbn-sketch flex items-center gap-1">
+    <div role="radiogroup" aria-label="โหมดการใช้งาน / Operator mode" className="bbn-sketch flex min-w-0 shrink items-center gap-0.5 sm:gap-1">
       {MODES.map((m) => (
         <button
           key={m}
