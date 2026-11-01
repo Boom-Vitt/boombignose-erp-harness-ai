@@ -16,6 +16,7 @@ import { QUOTE_FLOW } from "@/lib/record/status"
 import type { Enums } from "@/lib/types/database"
 
 import { PageHeader } from "@/components/page-header"
+import { PublicReferenceSlot } from "@/components/documents/public-reference-slot"
 import { QuoteStatusBadge } from "@/components/status-badge"
 import { StatusBar } from "@/components/record/status-bar"
 import { SmartButtons, recordHref } from "@/components/record/smart-buttons"
@@ -162,6 +163,7 @@ export default async function QuoteDetailPage({
         </Button>
         <EmailQuoteButton quoteId={quote.id} />
       </PageHeader>
+      <PublicReferenceSlot kind="quote" recordId={quote.id} />
 
       <SmartButtons
         buttons={[

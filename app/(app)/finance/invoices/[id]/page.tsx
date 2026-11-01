@@ -24,6 +24,7 @@ import { DeliveryForm, CustomerReturnForm } from "@/app/(app)/inventory/_compone
 import { INVOICE_FLOW } from "@/lib/record/status"
 
 import { PageHeader } from "@/components/page-header"
+import { PublicReferenceSlot } from "@/components/documents/public-reference-slot"
 import { EmptyState } from "@/components/empty-state"
 import { InvoiceStatusBadge } from "@/components/status-badge"
 import { StatusBar } from "@/components/record/status-bar"
@@ -206,6 +207,7 @@ export default async function InvoiceDetailPage({
         </Button>
         <EmailInvoiceButton invoiceId={invoice.id} />
       </PageHeader>
+      <PublicReferenceSlot kind="invoice" recordId={invoice.id} />
 
       <Link className="underline" href={`/inventory/documents?sourceId=${id}`}>Delivery documents</Link>
       <SmartButtons

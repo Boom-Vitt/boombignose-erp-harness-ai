@@ -4,6 +4,7 @@ import { z } from "zod"
 import { createClient } from "@/lib/supabase/server"
 import { requireOrgContext } from "@/lib/auth"
 import { invoiceSnapshotDocument } from "@/lib/documents/invoice-snapshot"
+import { publicReferenceForDocument } from "@/lib/documents/public-reference-query"
 import { sumSatang } from "@/lib/money"
 import { deriveInvoiceStatus, outstandingSatang } from "@/lib/metrics/invoice-status"
 import { todayISO } from "@/lib/dates"
@@ -111,7 +112,9 @@ export async function GET(
     catch { return new Response("Issued document snapshot could not be validated", { status: 503 }) }
   }
   // Sections freeze with the issued lines, so they place among the snapshot's lines too.
-  return new Response(renderDocumentHtml({ ...doc, sections }), {
+  // The public reference is not part of the issued tax snapshot.
+  const publicReference = (await publicReferenceForDocument(supabase, ctx.orgId, "invoice", id)).display
+  return new Response(renderDocumentHtml({ ...doc, sections, publicReference }), {
     headers: { "Content-Type": "text/html; charset=utf-8" },
   })
 }

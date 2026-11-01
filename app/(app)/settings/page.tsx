@@ -18,6 +18,7 @@ import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { SettingsForm } from "./_components/settings-form"
+import { PublicReferenceSetting } from "./_components/public-reference-setting"
 import { InvitationsCard } from "./_components/invitations-card"
 import { AccountingIntegrationCard } from "@edition"
 import { StartLogViewer, UpdateCheckButton } from "./_components/local-install"
@@ -41,7 +42,7 @@ export default async function SettingsPage() {
   // org_settings is a single row per org (org_id unique). May not exist yet.
   const { data: settings } = await supabase
     .from("org_settings")
-    .select("cash_balance_satang, monthly_burn_satang")
+    .select("cash_balance_satang, monthly_burn_satang, public_document_refs_enabled")
     .eq("org_id", ctx.orgId)
     .maybeSingle()
 
@@ -209,6 +210,8 @@ export default async function SettingsPage() {
           </CardContent>
         </Card>
       </div>
+
+      <PublicReferenceSetting enabled={settings?.public_document_refs_enabled ?? false} canEdit={canEdit} />
 
       <InvitationsCard />
 

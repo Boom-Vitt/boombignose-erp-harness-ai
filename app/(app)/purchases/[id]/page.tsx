@@ -9,6 +9,7 @@ import { billAmount, hasUnbilledQuantities, purchaseTotal, receiptLimit } from "
 import { formatTHB } from "@/lib/money"
 import { PURCHASE_FLOW } from "@/lib/record/status"
 import { PageHeader } from "@/components/page-header"
+import { PublicReferenceSlot } from "@/components/documents/public-reference-slot"
 import { StatusBar } from "@/components/record/status-bar"
 import { SmartButtons } from "@/components/record/smart-buttons"
 import { RecordHistory } from "@/components/record/record-history"
@@ -46,6 +47,7 @@ export default async function PurchasePage({ params }: { params: Promise<{ id: s
       <Button variant="outline" render={<Link href={`/inventory/documents?sourceId=${id}`} />}>Receipt documents</Button>
       <Button variant="outline" render={<Link href={`/purchases/${id}/pdf`} target="_blank" />}>Print RFQ / PDF</Button>
     </PageHeader>
+    <PublicReferenceSlot kind="purchase_order" recordId={id} />
     <StatusBar label="Purchase status" flow={flow} status={order.status} transition={manage ? transitionPurchase.bind(null, id) : undefined} commands={manage ? {
       send_rfq: ({ label, variant }) => <PurchaseAction action={sendPurchaseRFQ.bind(null, id)} label={label} variant={variant} />,
       receive: "#receive",
