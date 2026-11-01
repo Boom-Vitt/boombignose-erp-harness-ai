@@ -29,4 +29,19 @@ Sign-in stays the ERP's Supabase email and password session, stored in cookies f
 
 ## Pages
 
-The site at `site/` is a static brochure. It is not the app and it does not call a model.
+The desktop window is the product surface. After sign-in on `http://127.0.0.1:3100`, month-end work stays in that webview:
+
+| Screen | Path |
+| --- | --- |
+| Finance, including the Ollama month-end note | `/finance` |
+| Bank lines | `/finance/bank` |
+| Cash at close | `/finance/cash` |
+| Month-end close checklist | `/reports#month-end-close` |
+| Operational profit, VAT, and aging | `/reports/statements` |
+| Accountant pack (output VAT, purchase VAT, withholding) | `/reports/accountant-pack` |
+| Customer, product, and opening-stock import | `/import` |
+| Local database backup | `/settings` |
+
+`boombignose/internal/shell.FinanceScreens` lists those paths and refuses to place them on any host other than the loopback ERP. FlowAccount export is a Pro control inside the same window (`/settings/accounting` when `BBN_EDITION=pro`). It is an export from an issued invoice, not a page on the brochure.
+
+The site at `site/` is a static brochure and the installer download. It is not the app and it does not call a model.

@@ -13,6 +13,7 @@ vi.mock("@/lib/supabase/server", () => ({ createClient: async () => ({ from: (ta
 vi.mock("@/app/(app)/purchases/_components/action-button", () => ({ PurchaseAction: ({ label }: { label: string }) => createElement("button", {}, label) }))
 vi.mock("@/components/search/search-facets", () => ({ SearchFacets: () => null }))
 vi.mock("@/app/(app)/finance/_components/delete-cost-button", () => ({ DeleteCostButton: () => null }))
+vi.mock("@/app/(app)/finance/_components/close-summary", () => ({ CloseSummary: () => null }))
 
 import { VendorBills } from "@/app/(app)/purchases/_components/bills"
 import FinancePage from "@/app/(app)/finance/page"

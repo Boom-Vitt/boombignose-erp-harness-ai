@@ -23,8 +23,15 @@ export type NavItem = {
   title: string
   href: string
   icon: LucideIcon
-  /** Hide from members in the sidebar (page is also role-gated server-side). */
+  /** Hide from staff members. Accountants still see the audit log. */
   ownerAdminOnly?: boolean
+}
+
+/** Sidebar and command palette share this. Staff members do not see owner/admin items. */
+export function showNavItem(role: string, item: NavItem): boolean {
+  if (!item.ownerAdminOnly) return true
+  if (role === "owner" || role === "admin") return true
+  return item.href === "/audit" && role === "accountant"
 }
 
 /**

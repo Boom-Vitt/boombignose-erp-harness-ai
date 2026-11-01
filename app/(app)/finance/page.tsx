@@ -2,6 +2,7 @@ import { invoiceBalances, creditNoteRevenue } from "@/lib/payments/balances"
 import { invoiceDisplayNumber } from "@/lib/documents/numbering"
 import { readAll } from "@/lib/supabase/read-all"
 import { can } from "@/lib/permissions"
+import { canReviewFinanceClose } from "@/lib/finance/close-access"
 import { markBillPaid } from "@/app/(app)/purchases/actions"
 import { PurchaseAction } from "@/app/(app)/purchases/_components/action-button"
 import { SearchFacets } from "@/components/search/search-facets"
@@ -23,8 +24,10 @@ import {
 
 import { createClient } from "@/lib/supabase/server"
 import { requireOrgContext } from "@/lib/auth"
+import { canDownloadAccountantPack } from "@/lib/finance/accountant-pack"
 import { currentMonthKey, todayISO } from "@/lib/dates"
 import { formatTHB, sumSatang } from "@/lib/money"
+import { canReviewMonthEndClose } from "@/lib/finance/close-checklist"
 import {
   revenueForMonth,
   costsForMonth,
@@ -54,6 +57,7 @@ import {
 } from "@/components/ui/table"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 
+import { CloseSummary } from "./_components/close-summary"
 import { DeleteCostButton } from "./_components/delete-cost-button"
 
 export const dynamic = "force-dynamic"
@@ -154,12 +158,14 @@ export default async function FinancePage({
         title="Finance"
         description="การเงิน / Verified receipts, receivables, and recorded operating costs."
       >
+        {canReviewMonthEndClose(ctx.role) ? <Button variant="outline" render={<Link href="/reports#month-end-close" />}>Month-end close</Button> : null}
         <Button variant="outline" render={<Link href="/finance/receipts" />}>Customer receipts</Button>
         <Button variant="outline" render={<Link href="/finance/business-profile" />}>Business profile</Button>
         <Button variant="outline" render={<Link href="/finance/subscriptions" />}>
           <Repeat /> Subscriptions
         </Button>
         <Button variant="outline" render={<Link href="/finance/payments/export" />}>Receipt evidence CSV</Button>
+        {canDownloadAccountantPack(ctx.role) ? <Button variant="outline" render={<Link href="/reports/accountant-pack" />}>Accountant pack</Button> : null}
         <Button variant="outline" render={<Link href="/finance/costs/new" />}>
           <Coins /> New cost
         </Button>
@@ -167,6 +173,11 @@ export default async function FinancePage({
           <FilePlus2 /> New invoice
         </Button>
       </PageHeader>
+      {canReviewFinanceClose(ctx.role) ? <p className="flex flex-wrap gap-4 text-sm">
+        <Link className="underline" href="/finance/bank">รายการธนาคาร / Bank lines</Link>
+        <Link className="underline" href="/finance/cash">เงินสดตอนปิดงวด / Cash at close</Link>
+        <Link className="underline" href="/finance/outstanding/export">ไฟล์ลูกหนี้เจ้าหนี้ / Outstanding pack CSV</Link>
+      </p> : null}
 
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <StatCard
@@ -204,11 +215,14 @@ export default async function FinancePage({
         />
       </div>
 
+      <CloseSummary />
+
       <SearchFacets list="finance" config={config} savedViews={savedViews} />
       <div className="flex flex-wrap gap-2">
         <Button variant="outline" size="sm" render={<Link href={config.status ? `/finance/invoices/export?status=${config.status}` : "/finance/invoices/export"} />}>Export invoices CSV</Button>
         <Button variant="outline" size="sm" render={<Link href="/finance/costs/export" />}>Export costs CSV</Button>
-        <span className="text-xs text-muted-foreground self-center">Invoice export uses the status filter.</span>
+        {canReviewFinanceClose(ctx.role) ? <Button variant="outline" size="sm" render={<Link href="/finance/outstanding/export" />}>Outstanding pack CSV</Button> : null}
+        <span className="text-xs text-muted-foreground self-center">Invoice export uses the status filter. The outstanding pack is open invoices and unpaid vendor bills, with the same aging cuts as Support reports.</span>
       </div>
 
       <Tabs defaultValue={params.tab === "costs" ? "costs" : "invoices"} className="gap-4">

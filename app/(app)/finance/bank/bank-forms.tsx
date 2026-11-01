@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { addBankLine, matchBankLine } from "./actions"
+import { addBankLine, matchBankLine, noteBankLine } from "./actions"
 
 export function AddBankLineForm({ today }: { today: string }) {
   const [bookedOn, setBookedOn] = useState(today)
@@ -38,4 +38,28 @@ export function MatchBankLineButton({ lineId, paymentId }: { lineId: string; pay
     toast.success("Bank line matched to that receipt. The receipt itself was not changed.")
     router.refresh()
   })}>{pending ? "Matching…" : "Match this receipt"}</Button>
+}
+
+export function ExplainBankLineForm({ lineId, note }: { lineId: string; note: string | null }) {
+  const [value, setValue] = useState(note ?? "")
+  const [pending, start] = useTransition()
+  const router = useRouter()
+  function save(next: string) {
+    start(async () => {
+      const result = await noteBankLine({ lineId, note: next })
+      if (result.error) { toast.error(result.error); return }
+      toast.success(next.trim() ? "Note saved. This line is still not a receipt, and nothing was posted." : "Note cleared. The line is open again.")
+      if (!next.trim()) setValue("")
+      router.refresh()
+    })
+  }
+  return <form className="space-y-2" onSubmit={event => { event.preventDefault(); save(value) }}>
+    <label className="block text-sm">บันทึกเหตุผล / Note for close
+      <Input maxLength={200} value={value} disabled={pending} onChange={event => setValue(event.target.value)} placeholder="Bank fee, transfer, or vendor payment" />
+    </label>
+    <div className="flex flex-wrap gap-2">
+      <Button type="submit" variant="outline" disabled={pending || value.trim().length === 0}>{pending ? "Saving…" : note ? "Update note" : "Save note"}</Button>
+      {note ? <Button type="button" variant="ghost" disabled={pending} onClick={() => save("")}>Clear note</Button> : null}
+    </div>
+  </form>
 }

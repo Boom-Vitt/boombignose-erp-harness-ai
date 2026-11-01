@@ -1,5 +1,6 @@
 import Link from "next/link"
 import { requireOrgContext } from "@/lib/auth"
+import { can } from "@/lib/permissions"
 import { createClient } from "@/lib/supabase/server"
 import { PageHeader } from "@/components/page-header"
 import { Button } from "@/components/ui/button"
@@ -10,7 +11,7 @@ import { readTaxInvoiceTemplate, taxInvoiceChecklist } from "@/lib/tax/invoice-c
 export const dynamic = "force-dynamic"
 export default async function BusinessProfilePage() {
   const ctx = await requireOrgContext()
-  if (ctx.role === "member") return <p>Only owners and admins can manage the business profile.</p>
+  if (!can(ctx.role, "settings:manage")) return <p>Only owners and admins can manage the business profile.</p>
   const supabase = await createClient()
   const { data, error } = await supabase.from("org_settings").select("legal_name, business_address, tax_id, tax_status, vat_registered, vat_rate_bps, prices_include_vat, branch_label, tax_invoice_template").eq("org_id", ctx.orgId).maybeSingle()
   if (error) throw new Error("Business profile unavailable")

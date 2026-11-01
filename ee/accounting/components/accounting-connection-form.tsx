@@ -6,52 +6,33 @@ import { Plug, Unplug } from "lucide-react"
 import { toast } from "sonner"
 
 import { Button } from "@/components/ui/button"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
+import { Label } from "@/components/ui/label"
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 
-import {
-  connectAccounting,
-  disconnectAccounting,
-  type ConnectAccountingInput,
-} from "@/ee/accounting/actions"
-
-type ProviderKey = ConnectAccountingInput["provider"]
-
-const PROVIDER_OPTIONS: { value: ProviderKey; label: string }[] = [
-  { value: "flowaccount", label: "FlowAccount" },
-  { value: "peak", label: "PEAK" },
-  { value: "xero", label: "Xero" },
-]
+import { connectAccounting, disconnectAccounting } from "@/ee/accounting/actions"
+import type { AccountingTransport } from "@/ee/accounting/flowaccount"
 
 /**
- * Owner/admin controls for the org's accounting connection. When connected,
- * shows a Disconnect button; otherwise a provider picker + Connect. There is no
- * OAuth handshake in this MVP — connecting just records intent so invoices can
- * be scaffold-synced.
+ * Owner/admin controls for the FlowAccount export. Fixture stays on this
+ * machine. Sandbox uses the server token and does not store it here.
  */
 export function AccountingConnectionForm({
-  connectedProvider,
+  connected,
+  transport,
 }: {
-  connectedProvider: ProviderKey | null
+  connected: boolean
+  transport: AccountingTransport
 }) {
   const router = useRouter()
   const [pending, startTransition] = useTransition()
-  const [provider, setProvider] = useState<ProviderKey>(
-    connectedProvider ?? "flowaccount"
-  )
+  const [choice, setChoice] = useState<AccountingTransport>(transport)
 
-  const isConnected = connectedProvider !== null
-
-  if (isConnected) {
+  if (connected) {
     return (
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <p className="text-muted-foreground text-sm">
-          Disconnecting stops new invoice syncs. Existing sync records are kept.
+          Disconnecting stops new exports. Existing document numbers are kept.
+          Connect again to change fixture or sandbox.
         </p>
         <Button
           variant="outline"
@@ -63,7 +44,7 @@ export function AccountingConnectionForm({
                 toast.error(res.error)
                 return
               }
-              toast.success("Accounting provider disconnected")
+              toast.success("FlowAccount disconnected")
               router.refresh()
             })
           }
@@ -75,44 +56,42 @@ export function AccountingConnectionForm({
   }
 
   return (
-    <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
-      <div className="space-y-1.5">
-        <label className="text-sm font-medium" htmlFor="provider">
-          Provider
-        </label>
-        <Select
-          value={provider}
-          onValueChange={(v: string | null) =>
-            setProvider((v as ProviderKey) ?? "flowaccount")
-          }
-        >
-          <SelectTrigger id="provider" className="w-full sm:w-56">
-            <SelectValue placeholder="Select a provider" />
-          </SelectTrigger>
-          <SelectContent>
-            {PROVIDER_OPTIONS.map((o) => (
-              <SelectItem key={o.value} value={o.value}>
-                {o.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
+    <div className="space-y-4">
+      <RadioGroup value={choice} onValueChange={(value) => setChoice(value === "sandbox" ? "sandbox" : "fixture")}>
+        <div className="flex items-start gap-2">
+          <RadioGroupItem id="transport-fixture" value="fixture" />
+          <Label htmlFor="transport-fixture" className="grid gap-1 font-normal">
+            <span className="font-medium">Fixture demo</span>
+            <span className="text-muted-foreground text-sm">
+              Builds the FlowAccount document on this machine and stores a demo number. No network call.
+            </span>
+          </Label>
+        </div>
+        <div className="flex items-start gap-2">
+          <RadioGroupItem id="transport-sandbox" value="sandbox" />
+          <Label htmlFor="transport-sandbox" className="grid gap-1 font-normal">
+            <span className="font-medium">FlowAccount sandbox</span>
+            <span className="text-muted-foreground text-sm">
+              Posts the same document to FlowAccount. Set FLOWACCOUNT_ACCESS_TOKEN on the server. It is not saved in this workspace.
+            </span>
+          </Label>
+        </div>
+      </RadioGroup>
       <Button
         disabled={pending}
         onClick={() =>
           startTransition(async () => {
-            const res = await connectAccounting({ provider })
+            const res = await connectAccounting({ transport: choice })
             if (res?.error) {
               toast.error(res.error)
               return
             }
-            toast.success("Accounting provider connected")
+            toast.success(choice === "sandbox" ? "FlowAccount sandbox connected" : "FlowAccount fixture connected")
             router.refresh()
           })
         }
       >
-        <Plug /> {pending ? "Connecting…" : "Connect"}
+        <Plug /> {pending ? "Connecting…" : "Connect FlowAccount"}
       </Button>
     </div>
   )

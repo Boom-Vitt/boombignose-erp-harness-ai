@@ -18,9 +18,11 @@ import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { SettingsForm } from "./_components/settings-form"
+import { PublicReferenceSetting } from "./_components/public-reference-setting"
 import { InvitationsCard } from "./_components/invitations-card"
 import { AccountingIntegrationCard } from "@edition"
 import { StartLogViewer, UpdateCheckButton } from "./_components/local-install"
+import { LocalBackupCard } from "./_components/local-backup"
 import { updateOrgSettings } from "./actions"
 
 export const dynamic = "force-dynamic"
@@ -41,7 +43,7 @@ export default async function SettingsPage() {
   // org_settings is a single row per org (org_id unique). May not exist yet.
   const { data: settings } = await supabase
     .from("org_settings")
-    .select("cash_balance_satang, monthly_burn_satang")
+    .select("cash_balance_satang, monthly_burn_satang, public_document_refs_enabled")
     .eq("org_id", ctx.orgId)
     .maybeSingle()
 
@@ -210,9 +212,19 @@ export default async function SettingsPage() {
         </Card>
       </div>
 
+      <PublicReferenceSetting enabled={settings?.public_document_refs_enabled ?? false} canEdit={canEdit} />
+
       <InvitationsCard />
 
       <AccountingIntegrationCard />
+
+      {canEdit ? <Card>
+        <CardHeader>
+          <CardTitle className="text-base">Local backup</CardTitle>
+          <CardDescription>One folder on this computer. The checksum is checked before a restore.</CardDescription>
+        </CardHeader>
+        <CardContent><LocalBackupCard /></CardContent>
+      </Card> : null}
 
       <div className="grid gap-6 lg:grid-cols-2">
         <Card>

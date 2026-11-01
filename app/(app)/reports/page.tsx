@@ -1,9 +1,14 @@
 import { ReportChart } from "./_components/report-chart"
+import { MonthEndCloseSection } from "./_components/month-end-close"
+import { loadMonthEndCloseChecklist } from "@/lib/finance/close-checklist-load"
 import type { SearchParams } from "@/lib/search-facets"
 import Link from "next/link"
 import { TrendingUp, Timer, Printer, BarChart3, Clock, Package } from "lucide-react"
 
+import { requireOrgContext } from "@/lib/auth"
+import { canDownloadAccountantPack } from "@/lib/finance/accountant-pack"
 import { formatTHB } from "@/lib/money"
+import { canReviewFinanceClose } from "@/lib/finance/close-access"
 import { getReportData } from "./_data"
 
 import { PageHeader } from "@/components/page-header"
@@ -29,9 +34,10 @@ function fmtHours(hours: number): string {
 
 export default async function ReportsPage({ searchParams }: { searchParams: Promise<SearchParams> } = { searchParams: Promise.resolve({}) }) {
   const params = await searchParams
+  const ctx = await requireOrgContext()
   const view = params.view === "line" || params.view === "pivot" ? params.view : "bar"
-  const { months, rangeLabel, revenue, hours, totalRevenueSatang, cogsByMonth, totalCogsSatang, purchaseVatByMonth } =
-    await getReportData()
+  const [{ months, rangeLabel, revenue, hours, totalRevenueSatang, cogsByMonth, totalCogsSatang, purchaseVatByMonth }, close] =
+    await Promise.all([getReportData(), loadMonthEndCloseChecklist()])
 
   return (
     <div className="space-y-6">
@@ -39,6 +45,7 @@ export default async function ReportsPage({ searchParams }: { searchParams: Prom
         title="Reports"
         description={`Operational reports · ${rangeLabel}`}
       >
+        <Button variant="outline" render={<Link href="/reports/statements" />}>Statements</Button>
         <Button
           variant="outline"
           render={
@@ -47,7 +54,11 @@ export default async function ReportsPage({ searchParams }: { searchParams: Prom
         >
           <Printer /> Print / PDF
         </Button>
+        {canReviewFinanceClose(ctx.role) ? <Button variant="outline" render={<Link href="/finance/cash" />}>เงินสดตอนปิดงวด / Cash at close</Button> : null}
+        {canReviewFinanceClose(ctx.role) ? <Button variant="outline" render={<Link href="/finance/outstanding/export" />}>ไฟล์ลูกหนี้เจ้าหนี้ / Outstanding pack</Button> : null}
       </PageHeader>
+
+      {close ? <MonthEndCloseSection checklist={close} /> : null}
 
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <StatCard
@@ -100,12 +111,17 @@ export default async function ReportsPage({ searchParams }: { searchParams: Prom
         </CardContent>
       </Card>
 
-      <Card><CardHeader><CardTitle><h2>Purchase VAT by month</h2></CardTitle></CardHeader><CardContent>
+      <Card id="purchase-vat" className="scroll-mt-20"><CardHeader><CardTitle><h2>Purchase VAT by month</h2></CardTitle></CardHeader><CardContent>
         <p className="mb-3 text-sm text-muted-foreground">Matched vendor invoices and linked credit notes by bill month, including inventory purchases. Credit notes reduce the totals. Operational report only.</p>
         <Table><TableHeader><TableRow><TableHead>Month</TableHead><TableHead>Purchase base</TableHead><TableHead>Input VAT</TableHead><TableHead>Vendor total</TableHead></TableRow></TableHeader>
           <TableBody>{purchaseVatByMonth.map(row => <TableRow key={row.month}><TableCell>{row.month}</TableCell><TableCell>{formatTHB(row.base_satang)}</TableCell><TableCell>{formatTHB(row.input_vat_satang)}</TableCell><TableCell>{formatTHB(row.total_satang)}</TableCell></TableRow>)}</TableBody>
         </Table>
       </CardContent></Card>
+
+      {canDownloadAccountantPack(ctx.role) ? <p className="text-sm text-muted-foreground">
+        <Link className="underline" href="/reports/accountant-pack">ชุดข้อมูลนักบัญชี / Accountant pack</Link>
+        {" "}exports one month of output VAT, matched purchase VAT, and stored withholding for an external accountant. It does not file ภ.พ.30.
+      </p> : null}
 
       {view !== "pivot" ? <div className="space-y-6">
         <Card><CardHeader><CardTitle>Revenue by month</CardTitle></CardHeader><CardContent>

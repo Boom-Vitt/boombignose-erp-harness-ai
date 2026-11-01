@@ -22,6 +22,8 @@ export type PrintableDocument = {
   /** "Invoice" or "Quotation" — the document heading. */
   kind: string
   number: string
+  /** Optional typed public reference. Omitted when none is issued. Never replaces number or tax IDs. */
+  publicReference?: string | null
   originalNumber?: string
   status: string
   orgName: string
@@ -160,6 +162,7 @@ export function renderDocumentHtml(doc: PrintableDocument): string {
       ${metaRow("Seller branch", doc.sellerBranch)}
       ${metaRow("Buyer branch", doc.buyerBranch)}
       ${metaRow("เลขที่ / Number", doc.number)}
+      ${metaRow("รหัสอ้างอิงสาธารณะ / Public reference", doc.publicReference)}
       ${metaRow("Original invoice", doc.originalNumber)}
       ${metaRow("ลูกค้า / Bill to", doc.clientName)}
       ${metaRow("ที่อยู่ลูกค้า / Buyer address", doc.buyerAddress)}

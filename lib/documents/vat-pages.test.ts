@@ -18,6 +18,7 @@ vi.mock("@edition", () => ({
   getInvoiceAccounting: async () => ({ connected: false, sync: null }),
   InvoiceAccountingControls: () => null, InvoiceAccountingStatus: () => null,
 }))
+vi.mock("@/app/(app)/finance/_components/close-summary", () => ({ CloseSummary: () => null }))
 import InvoicePage from "@/app/(app)/finance/invoices/[id]/page"
 import QuotePage from "@/app/(app)/quotes/[id]/page"
 import FinancePage from "@/app/(app)/finance/page"

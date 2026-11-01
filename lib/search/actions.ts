@@ -124,9 +124,9 @@ async function recordContext(ctx: OrgContext, { type, id }: StatusRecordRef): Pr
       const href = recordHref("invoice", id)
       const payable = outstandingSatang(data.amount_satang, paid, credited) > 0 && !["draft", "cancelled"].includes(data.status)
       const commands =
-        ctx.role === "member"
-          ? {}
-          : { issue: `${href}#issue-invoice`, ...(payable ? { pay: `${href}#payment-claims` } : {}) }
+        can(ctx.role, "payment:verify")
+          ? { issue: `${href}#issue-invoice`, ...(payable ? { pay: `${href}#payment-claims` } : {}) }
+          : {}
       return { actions: paletteActions(INVOICE_FLOW, deriveInvoiceStatus({ ...data, credited_satang: credited }, paid, todayISO()), false, commands) }
     }
   }

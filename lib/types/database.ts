@@ -36,6 +36,12 @@ export type Database = {
         Update: never
         Relationships: []
       }
+      document_public_refs: {
+        Row: { org_id: string; reference: string; kind: "quote" | "purchase_order" | "receipt" | "delivery" | "invoice"; record_id: string; created_at: string; created_by: string | null }
+        Insert: { org_id: string; reference: string; kind: "quote" | "purchase_order" | "receipt" | "delivery" | "invoice"; record_id: string; created_at?: string; created_by?: string | null }
+        Update: never
+        Relationships: []
+      }
       document_sections: {
         Row: { id: string; org_id: string; quote_id: string | null; invoice_id: string | null; purchase_order_id: string | null; kind: "section" | "note"; description: string; lines_before: number; position: number; created_at: string; updated_at: string }
         Insert: { id?: string; org_id: string; quote_id?: string | null; invoice_id?: string | null; purchase_order_id?: string | null; kind: "section" | "note"; description: string; lines_before: number; position: number; created_at?: string; updated_at?: string }
@@ -76,9 +82,9 @@ export type Database = {
         Relationships: []
       }
       bank_lines: {
-        Row: { id: string; org_id: string; booked_on: string; amount_satang: number; reference: string; matched_payment_id: string | null; created_at: string }
-        Insert: { id?: string; org_id: string; booked_on: string; amount_satang: number; reference: string; matched_payment_id?: string | null; created_at?: string }
-        Update: { matched_payment_id?: string | null }
+        Row: { id: string; org_id: string; booked_on: string; amount_satang: number; reference: string; matched_payment_id: string | null; close_note: string | null; created_at: string }
+        Insert: { id?: string; org_id: string; booked_on: string; amount_satang: number; reference: string; matched_payment_id?: string | null; close_note?: string | null; created_at?: string }
+        Update: { matched_payment_id?: string | null; close_note?: string | null }
         Relationships: []
       }
       product_vendor_lead_times: {
@@ -698,7 +704,7 @@ isOneToOne: false
                   ]
                 },"org_settings": {
                   Row: { require_different_payment_reviewer: boolean;
-bill_variance_tolerance_bps: number, "scheduled_replenishment_enabled": boolean,"purchase_approval_threshold_satang": number | null,"over_receipt_tolerance_percent": number,
+bill_variance_tolerance_bps: number, "scheduled_replenishment_enabled": boolean,"public_document_refs_enabled": boolean,"purchase_approval_threshold_satang": number | null,"over_receipt_tolerance_percent": number,
 "wht_rate_bps": number,
 
 "lock_date": string | null,"vat_registered": boolean,"vat_rate_bps": number,"prices_include_vat": boolean,"branch_label": string | null,"tax_invoice_template": Json,
@@ -706,14 +712,14 @@ bill_variance_tolerance_bps: number, "scheduled_replenishment_enabled": boolean,
                   }
                   ComputedFields: never
                   Insert: { require_different_payment_reviewer?: boolean;
-bill_variance_tolerance_bps?: number, "scheduled_replenishment_enabled"?: boolean,"purchase_approval_threshold_satang"?: number | null,"over_receipt_tolerance_percent"?: number,
+bill_variance_tolerance_bps?: number, "scheduled_replenishment_enabled"?: boolean,"public_document_refs_enabled"?: boolean,"purchase_approval_threshold_satang"?: number | null,"over_receipt_tolerance_percent"?: number,
 "wht_rate_bps"?: number,
 
 "lock_date"?: string | null,"vat_registered"?: never,"vat_rate_bps"?: number,"prices_include_vat"?: boolean,"branch_label"?: string | null,"tax_invoice_template"?: Json,
                     "allow_negative_stock"?: boolean,"business_address"?: string | null,"cash_balance_satang"?: number,"created_at"?: string,"id"?: string,"legal_name"?: string | null,"monthly_burn_satang"?: number | null,"org_id": string,"tax_id"?: string | null,"tax_status"?: string,"updated_at"?: string
                   }
                   Update: { require_different_payment_reviewer?: boolean;
-bill_variance_tolerance_bps?: number, "scheduled_replenishment_enabled"?: boolean,"purchase_approval_threshold_satang"?: number | null,"over_receipt_tolerance_percent"?: number,
+bill_variance_tolerance_bps?: number, "scheduled_replenishment_enabled"?: boolean,"public_document_refs_enabled"?: boolean,"purchase_approval_threshold_satang"?: number | null,"over_receipt_tolerance_percent"?: number,
 "wht_rate_bps"?: number,
 
 "lock_date"?: string | null,"vat_registered"?: never,"vat_rate_bps"?: number,"prices_include_vat"?: boolean,"branch_label"?: string | null,"tax_invoice_template"?: Json,
@@ -1511,6 +1517,7 @@ isOneToOne: false
             install_thai_sme_chart: { Args: { p_org_id: string }; Returns: undefined }
             add_bank_line: { Args: { p_org_id: string; p_booked_on: string; p_amount_satang: number; p_reference: string }; Returns: string }
             match_bank_line: { Args: { p_org_id: string; p_line_id: string; p_payment_id: string }; Returns: undefined }
+            note_bank_line: { Args: { p_org_id: string; p_line_id: string; p_note: string }; Returns: undefined }
             submit_customer_payment_claim: { Args: { p_org_id: string; p_client_id: string; p_amount_satang: number; p_allocations: Json; p_reference: string; p_key: string }; Returns: string }
             apply_customer_credit: { Args: { p_org_id: string; p_client_id: string; p_allocations: Json; p_key: string }; Returns: string }
             refund_customer_credit: { Args: { p_org_id: string; p_payment_id: string; p_amount_satang: number; p_reference: string; p_paid_on: string; p_method: Database["public"]["Enums"]["payment_method"]; p_key: string }; Returns: string }
@@ -1532,7 +1539,7 @@ isOneToOne: false
             take_search_slot: { Args: Record<PropertyKey, never>; Returns: boolean }
           }
           Enums: {
-            "accounting_conn_status": "disconnected"|"connected"|"error","accounting_provider": "flowaccount"|"peak"|"xero","accounting_sync_status": "pending"|"synced"|"error","activity_type": "note"|"call"|"email"|"meeting"|"follow_up","ai_output_kind": "deal_summary"|"followup_draft"|"meeting_intake","cost_category": "software"|"contractor"|"infra"|"marketing"|"salary"|"other"|"inventory","deal_stage": "lead"|"contacted"|"discovery"|"proposal"|"negotiation"|"won"|"lost","invitation_status": "pending"|"accepted"|"revoked"|"expired","invoice_status": "draft"|"sent"|"partially_paid"|"paid"|"overdue"|"cancelled","outbound_status": "queued"|"delivered"|"failed","payment_method": "transfer"|"cash"|"card"|"promptpay"|"cheque"|"other","project_status": "not_started"|"in_progress"|"review"|"delivered"|"support"|"paused"|"cancelled","quote_status": "draft"|"sent"|"accepted"|"declined"|"expired"|"converted","recurring_interval": "weekly"|"monthly"|"quarterly"|"yearly","reminder_channel": "line"|"email"|"inapp","reminder_status": "pending"|"sent"|"cancelled","role_enum": "owner"|"admin"|"member","subscription_status": "active"|"paused"|"cancelled","task_status": "todo"|"in_progress"|"done"
+            "accounting_conn_status": "disconnected"|"connected"|"error","accounting_provider": "flowaccount"|"peak"|"xero","accounting_sync_status": "pending"|"synced"|"error","activity_type": "note"|"call"|"email"|"meeting"|"follow_up","ai_output_kind": "deal_summary"|"followup_draft"|"meeting_intake","cost_category": "software"|"contractor"|"infra"|"marketing"|"salary"|"other"|"inventory","deal_stage": "lead"|"contacted"|"discovery"|"proposal"|"negotiation"|"won"|"lost","invitation_status": "pending"|"accepted"|"revoked"|"expired","invoice_status": "draft"|"sent"|"partially_paid"|"paid"|"overdue"|"cancelled","outbound_status": "queued"|"delivered"|"failed","payment_method": "transfer"|"cash"|"card"|"promptpay"|"cheque"|"other","project_status": "not_started"|"in_progress"|"review"|"delivered"|"support"|"paused"|"cancelled","quote_status": "draft"|"sent"|"accepted"|"declined"|"expired"|"converted","recurring_interval": "weekly"|"monthly"|"quarterly"|"yearly","reminder_channel": "line"|"email"|"inapp","reminder_status": "pending"|"sent"|"cancelled","role_enum": "owner"|"admin"|"accountant"|"member","subscription_status": "active"|"paused"|"cancelled","task_status": "todo"|"in_progress"|"done"
       stock_move_kind: "receipt" | "delivery" | "adjustment_in" | "adjustment_out" | "transfer_in" | "transfer_out" | "vendor_return" | "customer_return"
       purchase_status: "draft" | "sent" | "confirmed" | "received" | "billed" | "cancelled" | "closed"
       expense_status: "draft" | "submitted" | "approved" | "rejected" | "paid"
@@ -1656,7 +1663,7 @@ export const Constants = {
           }
         },"public": {
           Enums: {
-            "accounting_conn_status": ["disconnected", "connected", "error"],"accounting_provider": ["flowaccount", "peak", "xero"],"accounting_sync_status": ["pending", "synced", "error"],"activity_type": ["note", "call", "email", "meeting", "follow_up"],"ai_output_kind": ["deal_summary", "followup_draft", "meeting_intake"],"cost_category": ["software", "contractor", "infra", "marketing", "salary", "other", "inventory"],"deal_stage": ["lead", "contacted", "discovery", "proposal", "negotiation", "won", "lost"],"invitation_status": ["pending", "accepted", "revoked", "expired"],"invoice_status": ["draft", "sent", "partially_paid", "paid", "overdue", "cancelled"],"outbound_status": ["queued", "delivered", "failed"],"payment_method": ["transfer", "cash", "card", "promptpay", "cheque", "other"],"project_status": ["not_started", "in_progress", "review", "delivered", "support", "paused", "cancelled"],"quote_status": ["draft", "sent", "accepted", "declined", "expired", "converted"],"recurring_interval": ["weekly", "monthly", "quarterly", "yearly"],"reminder_channel": ["line", "email", "inapp"],"reminder_status": ["pending", "sent", "cancelled"],"role_enum": ["owner", "admin", "member"],"subscription_status": ["active", "paused", "cancelled"],"task_status": ["todo", "in_progress", "done"],
+            "accounting_conn_status": ["disconnected", "connected", "error"],"accounting_provider": ["flowaccount", "peak", "xero"],"accounting_sync_status": ["pending", "synced", "error"],"activity_type": ["note", "call", "email", "meeting", "follow_up"],"ai_output_kind": ["deal_summary", "followup_draft", "meeting_intake"],"cost_category": ["software", "contractor", "infra", "marketing", "salary", "other", "inventory"],"deal_stage": ["lead", "contacted", "discovery", "proposal", "negotiation", "won", "lost"],"invitation_status": ["pending", "accepted", "revoked", "expired"],"invoice_status": ["draft", "sent", "partially_paid", "paid", "overdue", "cancelled"],"outbound_status": ["queued", "delivered", "failed"],"payment_method": ["transfer", "cash", "card", "promptpay", "cheque", "other"],"project_status": ["not_started", "in_progress", "review", "delivered", "support", "paused", "cancelled"],"quote_status": ["draft", "sent", "accepted", "declined", "expired", "converted"],"recurring_interval": ["weekly", "monthly", "quarterly", "yearly"],"reminder_channel": ["line", "email", "inapp"],"reminder_status": ["pending", "sent", "cancelled"],"role_enum": ["owner", "admin", "accountant", "member"],"subscription_status": ["active", "paused", "cancelled"],"task_status": ["todo", "in_progress", "done"],
             stock_move_kind: ["receipt", "delivery", "adjustment_in", "adjustment_out", "transfer_in", "transfer_out", "vendor_return", "customer_return"],
             purchase_status: ["draft", "sent", "confirmed", "received", "billed", "cancelled", "closed"],
             expense_status: ["draft", "submitted", "approved", "rejected", "paid"],

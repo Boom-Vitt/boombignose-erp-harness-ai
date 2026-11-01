@@ -58,6 +58,7 @@ export default async function ClientsPage({
         title="Clients"
         description="Everyone you work with, and who to talk to."
       >
+        <Button variant="outline" render={<Link href="/import" />}>Import</Button>
         <Button render={<Link href="/clients/new" />}>
           <Plus />
           New client

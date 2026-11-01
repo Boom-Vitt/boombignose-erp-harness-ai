@@ -1,5 +1,6 @@
 import { requireOrgContext } from "@/lib/auth"
 import { renderDocumentHtml } from "@/lib/documents/printable"
+import { publicReferenceForDocument } from "@/lib/documents/public-reference-query"
 import { purchaseDetail } from "@/lib/purchasing/queries"
 import { purchaseTotal } from "@/lib/purchasing/quantities"
 import { serviceLineAmount } from "@/lib/workflows/service"
@@ -9,7 +10,12 @@ import { documentSections } from "@/lib/line-grid/queries"
 export async function GET(_request: Request, { params }: { params: Promise<{ id: string }> }) {
   const ctx = await requireOrgContext()
   const { id } = await params
-  const [{ order, lines }, sections] = await Promise.all([purchaseDetail(id), createClient().then(db => documentSections(db, ctx.orgId, "purchase_order", id))])
+  const db = await createClient()
+  const [{ order, lines }, sections, reference] = await Promise.all([
+    purchaseDetail(id),
+    documentSections(db, ctx.orgId, "purchase_order", id),
+    publicReferenceForDocument(db, ctx.orgId, "purchase_order", id),
+  ])
   const total = purchaseTotal(lines)
   return new Response(renderDocumentHtml({
     kind: ["draft", "sent"].includes(order.status) ? "Request for quotation" : "Purchase order",
@@ -17,5 +23,6 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
     buyerAddress: order.vendors?.address, buyerTaxId: order.vendors?.tax_id, issueDate: order.order_date,
     notes: order.notes, subtotalSatang: total, totalSatang: total, sections,
     items: lines.map(line => ({ description: `${line.description} (${line.unit})`, quantity: line.quantity, unit_price_satang: line.unit_cost_satang, amount_satang: serviceLineAmount(line.quantity, line.unit_cost_satang) })),
+    publicReference: reference.display,
   }), { headers: { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "private, no-store" } })
 }

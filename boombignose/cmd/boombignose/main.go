@@ -1,6 +1,7 @@
 // Command boombignose is the local harness for BoomBigNose.
 // It prints no secrets. check and `cutover` with no subcommand do not open a socket.
 // cutover dry-run, apply, and rollback talk only to loopback Postgres.
+// backup export and restore talk only to loopback Postgres.
 // serve binds the bundled ERP on loopback and does not call a cloud service.
 package main
 
@@ -20,7 +21,7 @@ import (
 	"github.com/Boom-Vitt/boombignose-erp-harness-ai/boombignose/internal/shell"
 )
 
-const usage = "usage: boombignose check | boombignose cutover [plan|dry-run|apply|rollback] | boombignose serve | boombignose stop | boombignose pull-model"
+const usage = "usage: boombignose check | boombignose cutover [plan|dry-run|apply|rollback] | boombignose backup [export|restore] | boombignose serve | boombignose stop | boombignose pull-model"
 
 func main() {
 	if err := run(os.Args[1:]); err != nil {
@@ -35,6 +36,9 @@ func run(args []string) error {
 	}
 	if args[0] == "cutover" {
 		return runCutover(args[1:])
+	}
+	if args[0] == "backup" {
+		return runBackup(args[1:])
 	}
 	if len(args) != 1 {
 		return fmt.Errorf("%s", usage)
@@ -66,6 +70,13 @@ func runCutover(args []string) error {
 		return err
 	}
 	return cutover.Execute(context.Background(), args, os.Stdout)
+}
+
+func runBackup(args []string) error {
+	if err := policy.CheckEnv(os.Getenv); err != nil {
+		return err
+	}
+	return cutover.Backup(context.Background(), args, os.Stdout)
 }
 
 func pullModel() error {

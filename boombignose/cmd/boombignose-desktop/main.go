@@ -46,6 +46,10 @@ func run() error {
 	if err := policy.CheckEnv(os.Getenv); err != nil {
 		return err
 	}
+	// The window loads the local Next server. Finance, bank lines, cash at
+	// close, the month-end checklist, statements, and the accountant pack
+	// are routes on that server (shell.FinanceScreens). The brochure in
+	// site/ is not this window's target.
 	target, err := shell.ERPURL(os.Getenv("BOOMBIGNOSE_ERP_URL"))
 	if err != nil {
 		return fmt.Errorf("BOOMBIGNOSE_ERP_URL: %w", err)

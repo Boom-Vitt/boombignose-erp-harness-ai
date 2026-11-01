@@ -45,8 +45,9 @@ function escapeField(value: string | number | null | undefined): string {
 
   // Neutralize formula-injection: force text with a leading apostrophe. Quoting
   // alone is NOT enough — Excel strips the quotes and still evaluates a `=`.
+  // A plain negative number such as -7.01 is money, not a formula.
   let s = value
-  if (s.length > 0 && FORMULA_TRIGGERS.has(s[0]!)) {
+  if (s.length > 0 && FORMULA_TRIGGERS.has(s[0]!) && !/^-?(?:0|[1-9]\d*)(?:\.\d+)?$/.test(s)) {
     s = `'${s}`
   }
 

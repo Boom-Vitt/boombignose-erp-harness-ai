@@ -11,7 +11,7 @@ import {
 
 const mockState = vi.hoisted(() => ({
   orgId: "org-1",
-  role: "owner" as "owner" | "admin" | "member",
+  role: "owner" as "owner" | "admin" | "accountant" | "member",
   counts: {} as Record<string, number>,
   failTable: null as string | null,
   queriedTables: [] as string[],
