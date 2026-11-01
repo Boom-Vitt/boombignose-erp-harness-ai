@@ -1538,6 +1538,8 @@ isOneToOne: false
             install_thai_sme_chart: { Args: { p_org_id: string }; Returns: undefined }
             post_draft_journal: { Args: { p_org_id: string; p_entry_date: string; p_memo: string; p_lines: Json }; Returns: string }
             post_issued_sales_invoice: { Args: { p_org_id: string; p_invoice_id: string }; Returns: string }
+            post_deposit_invoice: { Args: { p_org_id: string; p_invoice_id: string }; Returns: string }
+            post_final_with_deposit: { Args: { p_org_id: string; p_invoice_id: string }; Returns: string }
             post_issued_credit_note: { Args: { p_org_id: string; p_credit_note_id: string }; Returns: string }
             post_cash_receipt: { Args: { p_org_id: string; p_payment_id: string }; Returns: string }
             add_bank_line: { Args: { p_org_id: string; p_booked_on: string; p_amount_satang: number; p_reference: string }; Returns: string }

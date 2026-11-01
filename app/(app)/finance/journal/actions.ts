@@ -5,6 +5,7 @@ import { requireCapability, requireOrgContext } from "@/lib/auth"
 import { draftJournalLines, journalDateInClosedPeriod, journalMemo, type DraftJournalLine } from "@/lib/finance/draft-journal"
 import { bangkokCalendarDate } from "@/lib/finance/close-window"
 import { cashReceiptJournal, creditNoteJournal } from "@/lib/finance/follow-on-journal"
+import { depositInvoiceJournal, finalInvoiceWithDepositJournal } from "@/lib/finance/deposit-journal"
 import { salesInvoiceJournal, salesSnapshotAgrees, type StoredSalesInvoice } from "@/lib/finance/sales-invoice-journal"
 import { createClient } from "@/lib/supabase/server"
 
@@ -46,7 +47,7 @@ export async function postIssuedSalesInvoice(invoiceId: string): Promise<{ error
   catch { return { error: "Only owners, admins, and accountants can post a draft journal." } }
   const supabase = await createClient()
   const [{ data: invoice, error: invoiceError }, { data: settings, error: settingsError }, { data: accounts, error: accountsError }] = await Promise.all([
-    supabase.from("invoices").select("status, quote_invoice_kind, quote_deposit_satang, quote_deposit_deduction_satang, issue_date, number, prices_include_vat, subtotal_satang, discount_satang, vat_satang, total_satang, wht_satang, wht_rate_bps, amount_satang, tax_breakdown, issued_snapshot_id").eq("org_id", ctx.orgId).eq("id", invoiceId).maybeSingle(),
+    supabase.from("invoices").select("status, quote_invoice_kind, quote_deposit_satang, quote_deposit_deduction_satang, quote_discount_satang, source_quote_id, issue_date, number, prices_include_vat, subtotal_satang, discount_satang, vat_satang, total_satang, wht_satang, wht_rate_bps, amount_satang, tax_breakdown, issued_snapshot_id").eq("org_id", ctx.orgId).eq("id", invoiceId).maybeSingle(),
     supabase.from("org_settings").select("lock_date").eq("org_id", ctx.orgId).maybeSingle(),
     supabase.from("gl_accounts").select("code").eq("org_id", ctx.orgId),
   ])
@@ -85,17 +86,49 @@ export async function postIssuedSalesInvoice(invoiceId: string): Promise<{ error
       snapshotAgrees = salesSnapshotAgrees(body, stored)
     }
   }
-  const check = salesInvoiceJournal({
+  const accountsOnChart = (accounts ?? []).map(account => account.code)
+  const shared = {
     ...stored,
     snapshotKind,
     snapshotIssueDate,
     snapshotNumber,
     snapshotAgrees,
+    sourceQuoteId: invoice.source_quote_id,
     lockDate: settings?.lock_date ?? null,
-    accounts: (accounts ?? []).map(account => account.code),
-  })
+    accounts: accountsOnChart,
+  }
+  let rpc: "post_deposit_invoice" | "post_final_with_deposit" | "post_issued_sales_invoice" = "post_issued_sales_invoice"
+  let check: { ok: true } | { ok: false; error: string }
+  if (invoice.quote_invoice_kind === "deposit") {
+    rpc = "post_deposit_invoice"
+    check = depositInvoiceJournal(shared)
+  } else if (invoice.quote_deposit_deduction_satang > 0) {
+    rpc = "post_final_with_deposit"
+    const deposits = invoice.source_quote_id
+      ? await supabase.from("invoices").select("id").eq("org_id", ctx.orgId).eq("source_quote_id", invoice.source_quote_id).eq("quote_invoice_kind", "deposit").neq("status", "cancelled")
+      : { data: [], error: null }
+    if (deposits.error) return { error: "This final invoice does not apply the whole posted deposit." }
+    const depositIds = (deposits.data ?? []).map(row => row.id)
+    const posted = depositIds.length === 0 ? { data: [] as { id: string; source_invoice_id: string | null }[], error: null } : await supabase.from("journal_entries").select("id, source_invoice_id").eq("org_id", ctx.orgId).in("source_invoice_id", depositIds)
+    if (posted.error) return { error: "This final invoice does not apply the whole posted deposit." }
+    const postedIds = new Set((posted.data ?? []).map(row => row.source_invoice_id))
+    const entryIds = (posted.data ?? []).map(row => row.id)
+    const held = entryIds.length === 0 ? { data: [] as { credit_satang: number }[], error: null } : await supabase.from("journal_lines").select("credit_satang").eq("org_id", ctx.orgId).eq("account_code", "2120").in("entry_id", entryIds)
+    if (held.error) return { error: "This final invoice does not apply the whole posted deposit." }
+    const notes = depositIds.length === 0 ? { count: 0, error: null } : await supabase.from("credit_notes").select("id", { count: "exact", head: true }).eq("org_id", ctx.orgId).in("invoice_id", depositIds)
+    if (notes.error) return { error: "A credit note on a deposit invoice is not applied." }
+    check = finalInvoiceWithDepositJournal({
+      ...shared,
+      quoteDiscountSatang: invoice.quote_discount_satang,
+      postedDepositBaseSatang: (held.data ?? []).reduce((sum, row) => sum + row.credit_satang, 0),
+      unpostedDeposit: depositIds.some(id => !postedIds.has(id)),
+      depositHasCreditNote: (notes.count ?? 0) > 0,
+    })
+  } else {
+    check = salesInvoiceJournal(shared)
+  }
   if (!check.ok) return { error: check.error }
-  const { error } = await supabase.rpc("post_issued_sales_invoice", { p_org_id: ctx.orgId, p_invoice_id: invoiceId })
+  const { error } = await supabase.rpc(rpc, { p_org_id: ctx.orgId, p_invoice_id: invoiceId })
   if (error) return { error: error.message }
   revalidatePath(`/finance/invoices/${invoiceId}`)
   revalidatePath("/finance/journal")

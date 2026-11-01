@@ -122,7 +122,7 @@ export default async function InvoiceDetailPage({
     supabase
       .from("invoices")
       .select(
-        "id, number, amount_satang, status, issue_date, due_date, is_recurring, recurring_interval, notes, client_id, project_id, discount_satang, subtotal_satang, vat_satang, total_satang, wht_satang, wht_rate_bps, tax_breakdown, prices_include_vat, source_quote_id, source_milestone_id, version, issued_snapshot_id, clients(name), projects(name)"
+        "id, number, amount_satang, status, issue_date, due_date, is_recurring, recurring_interval, notes, client_id, project_id, discount_satang, subtotal_satang, vat_satang, total_satang, wht_satang, wht_rate_bps, tax_breakdown, prices_include_vat, source_quote_id, source_milestone_id, quote_invoice_kind, quote_deposit_deduction_satang, version, issued_snapshot_id, clients(name), projects(name)"
       ).eq("org_id", ctx.orgId)
       .eq("id", id)
       .maybeSingle(),
@@ -263,7 +263,7 @@ export default async function InvoiceDetailPage({
       {invoice.issued_snapshot_id && invoice.wht_satang > 0 ? <p className="text-sm"><Link className="underline" href={`/finance/invoices/${invoice.id}/wht`}>ร่าง 50 ทวิ / Draft withholding certificate</Link>. The payer issues the statutory certificate. This draft is not a Revenue Department form.</p> : null}
       {invoice.status === "draft" && canFinance ? <Card id="issue-invoice"><CardHeader><CardTitle className="text-base">ออกใบแจ้งหนี้ / Issue invoice</CardTitle></CardHeader><CardContent><RequireSaved message="Save your invoice changes below before issuing it."><IssueInvoiceForm orgId={ctx.orgId} invoiceId={invoice.id} version={invoice.version} /></RequireSaved><CancelDraftButton invoiceId={invoice.id} /></CardContent></Card> : null}
       {invoice.issued_snapshot_id ? <p className="text-sm">Issued snapshot retained. Corrections must preserve the original document.</p> : invoice.status !== "draft" ? <div className="space-y-3"><p role="alert" className="text-sm">This legacy record has no issued snapshot. Review it before treating the printable record as an issued document.</p>{can(ctx.role, "payment:verify") && ["sent", "partially_paid", "paid", "overdue"].includes(invoice.status) ? <AdoptLegacyInvoiceForm orgId={ctx.orgId} invoiceId={invoice.id} version={invoice.version} /> : null}</div> : null}
-      {canPostJournal && invoice.issued_snapshot_id ? <Card className="max-w-3xl"><CardHeader><CardTitle className="text-base">บันทึกรายวันฉบับร่าง / Draft journal</CardTitle></CardHeader><CardContent><PostSalesInvoiceButton invoiceId={invoice.id} posted={Boolean(postedJournal?.data)} /></CardContent></Card> : null}
+      {canPostJournal && invoice.issued_snapshot_id ? <Card className="max-w-3xl"><CardHeader><CardTitle className="text-base">บันทึกรายวันฉบับร่าง / Draft journal</CardTitle></CardHeader><CardContent><PostSalesInvoiceButton invoiceId={invoice.id} posted={Boolean(postedJournal?.data)} deposit={invoice.quote_invoice_kind === "deposit" || invoice.quote_deposit_deduction_satang > 0} /></CardContent></Card> : null}
       <div className="grid min-w-0 grid-cols-[minmax(0,1fr)] gap-6 lg:grid-cols-3">
         <div className="min-w-0 space-y-6 lg:col-span-2">
           <Card>

@@ -15,7 +15,10 @@ describe("THAI_SME_CHART", () => {
   })
 
   it("is the chart the migration inserts, without deleting custom codes", () => {
-    const sql = readFileSync("supabase/migrations/20261028120100_thai_sme_chart.sql", "utf8")
+    const sql = [
+      readFileSync("supabase/migrations/20261028120100_thai_sme_chart.sql", "utf8"),
+      readFileSync("supabase/migrations/20261101220000_customer_deposit_account.sql", "utf8"),
+    ].join("\n")
     expect(sql).toContain("where not exists")
     expect(sql).not.toMatch(/delete\s+from\s+public\.gl_accounts/i)
     for (const account of THAI_SME_CHART) {

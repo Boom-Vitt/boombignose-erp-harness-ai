@@ -23,6 +23,12 @@ pnpm exec supabase test db --workdir .local-stack supabase/tests/follow_on_journ
 
 `follow_on_journal.sql` posts a partial credit note, a verified cash receipt, and a bank transfer after the sale. The transfer debits bank account 1120. It refuses a credit note before the sale, an unclassified receipt method, a second credit note, and a member.
 
+```sh
+pnpm exec supabase test db --workdir .local-stack supabase/tests/customer_deposit_journal.sql
+```
+
+`customer_deposit_journal.sql` posts a 2,500 satang deposit to liability 2120, then applies that whole base on the final invoice. It refuses the final invoice before the deposit is posted.
+
 `draft_journal.sql` checks a balanced post into a locked period, and it checks that an unbalanced journal, an unknown account, an open period, a member, and a forged audit row are refused.
 
 That command needs Postgres, pgTAP, and the migrations applied. A machine without that stack cannot execute it. The Vitest file is the check that runs without Postgres.
