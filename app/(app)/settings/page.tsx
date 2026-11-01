@@ -21,6 +21,7 @@ import { SettingsForm } from "./_components/settings-form"
 import { InvitationsCard } from "./_components/invitations-card"
 import { AccountingIntegrationCard } from "@edition"
 import { StartLogViewer, UpdateCheckButton } from "./_components/local-install"
+import { LocalBackupCard } from "./_components/local-backup"
 import { updateOrgSettings } from "./actions"
 
 export const dynamic = "force-dynamic"
@@ -213,6 +214,14 @@ export default async function SettingsPage() {
       <InvitationsCard />
 
       <AccountingIntegrationCard />
+
+      {canEdit ? <Card>
+        <CardHeader>
+          <CardTitle className="text-base">Local backup</CardTitle>
+          <CardDescription>One folder on this computer. The checksum is checked before a restore.</CardDescription>
+        </CardHeader>
+        <CardContent><LocalBackupCard /></CardContent>
+      </Card> : null}
 
       <div className="grid gap-6 lg:grid-cols-2">
         <Card>
