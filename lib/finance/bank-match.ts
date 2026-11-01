@@ -18,12 +18,20 @@ export type BankCandidate = {
 }
 
 /**
+ * Verified receipts with the same amount and the same reference that are not
+ * already taken by another statement line. Reversals are not candidates.
+ */
+export function matchingReceipts(line: { amountSatang: number; reference: string }, payments: readonly BankCandidate[], taken: ReadonlySet<string>): BankCandidate[] {
+  const reference = line.reference.trim()
+  if (!reference || !Number.isSafeInteger(line.amountSatang) || line.amountSatang === 0) return []
+  return payments.filter(payment => payment.verified && !payment.reversal && !taken.has(payment.id) && payment.amountSatang === line.amountSatang && (payment.reference ?? "").trim() === reference)
+}
+
+/**
  * One verified receipt with the same amount and the same reference.
  * Two matches are left unmatched rather than guessed.
  */
 export function suggestBankMatch(line: { amountSatang: number; reference: string }, payments: readonly BankCandidate[], taken: ReadonlySet<string>): string | null {
-  const reference = line.reference.trim()
-  if (!reference || !Number.isSafeInteger(line.amountSatang) || line.amountSatang === 0) return null
-  const hits = payments.filter(payment => payment.verified && !payment.reversal && !taken.has(payment.id) && payment.amountSatang === line.amountSatang && (payment.reference ?? "").trim() === reference)
+  const hits = matchingReceipts(line, payments, taken)
   return hits.length === 1 ? hits[0]!.id : null
 }

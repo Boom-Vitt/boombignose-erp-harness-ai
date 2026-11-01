@@ -25,6 +25,7 @@ export async function addBankLine(input: z.input<typeof AddLine>): Promise<{ err
   const { error } = await supabase.rpc("add_bank_line", { p_org_id: ctx.orgId, p_booked_on: parsed.data.bookedOn, p_amount_satang: amount, p_reference: parsed.data.reference })
   if (error) return { error: error.message }
   revalidatePath("/finance/bank")
+  revalidatePath("/finance/cash")
   return {}
 }
 
@@ -40,5 +41,25 @@ export async function matchBankLine(input: z.input<typeof MatchLine>): Promise<{
   const { error } = await supabase.rpc("match_bank_line", { p_org_id: ctx.orgId, p_line_id: parsed.data.lineId, p_payment_id: parsed.data.paymentId })
   if (error) return { error: error.message }
   revalidatePath("/finance/bank")
+  revalidatePath("/finance/cash")
+  return {}
+}
+
+const NoteLine = z.object({
+  lineId: z.guid(),
+  note: z.string().trim().max(200),
+})
+
+export async function noteBankLine(input: z.input<typeof NoteLine>): Promise<{ error?: string }> {
+  const ctx = await requireOrgContext()
+  try { requireCapability(ctx, "payment:verify") }
+  catch { return { error: "Only owners, admins, and accountants can note a bank line." } }
+  const parsed = NoteLine.safeParse(input)
+  if (!parsed.success) return { error: "Choose a bank line. Keep the note to 200 characters." }
+  const supabase = await createClient()
+  const { error } = await supabase.rpc("note_bank_line", { p_org_id: ctx.orgId, p_line_id: parsed.data.lineId, p_note: parsed.data.note })
+  if (error) return { error: error.message }
+  revalidatePath("/finance/bank")
+  revalidatePath("/finance/cash")
   return {}
 }

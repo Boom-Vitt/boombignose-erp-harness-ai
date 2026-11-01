@@ -4,6 +4,8 @@ import Link from "next/link"
 import { TrendingUp, Timer, Printer, BarChart3, Clock, Package } from "lucide-react"
 
 import { formatTHB } from "@/lib/money"
+import { requireOrgContext } from "@/lib/auth"
+import { canReviewFinanceClose } from "@/lib/finance/close-access"
 import { getReportData } from "./_data"
 
 import { PageHeader } from "@/components/page-header"
@@ -29,6 +31,7 @@ function fmtHours(hours: number): string {
 
 export default async function ReportsPage({ searchParams }: { searchParams: Promise<SearchParams> } = { searchParams: Promise.resolve({}) }) {
   const params = await searchParams
+  const ctx = await requireOrgContext()
   const view = params.view === "line" || params.view === "pivot" ? params.view : "bar"
   const { months, rangeLabel, revenue, hours, totalRevenueSatang, cogsByMonth, totalCogsSatang, purchaseVatByMonth } =
     await getReportData()
@@ -47,6 +50,8 @@ export default async function ReportsPage({ searchParams }: { searchParams: Prom
         >
           <Printer /> Print / PDF
         </Button>
+        {canReviewFinanceClose(ctx.role) ? <Button variant="outline" render={<Link href="/finance/cash" />}>เงินสดตอนปิดงวด / Cash at close</Button> : null}
+        {canReviewFinanceClose(ctx.role) ? <Button variant="outline" render={<Link href="/finance/outstanding/export" />}>ไฟล์ลูกหนี้เจ้าหนี้ / Outstanding pack</Button> : null}
       </PageHeader>
 
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">

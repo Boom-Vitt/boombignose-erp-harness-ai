@@ -76,9 +76,9 @@ export type Database = {
         Relationships: []
       }
       bank_lines: {
-        Row: { id: string; org_id: string; booked_on: string; amount_satang: number; reference: string; matched_payment_id: string | null; created_at: string }
-        Insert: { id?: string; org_id: string; booked_on: string; amount_satang: number; reference: string; matched_payment_id?: string | null; created_at?: string }
-        Update: { matched_payment_id?: string | null }
+        Row: { id: string; org_id: string; booked_on: string; amount_satang: number; reference: string; matched_payment_id: string | null; close_note: string | null; created_at: string }
+        Insert: { id?: string; org_id: string; booked_on: string; amount_satang: number; reference: string; matched_payment_id?: string | null; close_note?: string | null; created_at?: string }
+        Update: { matched_payment_id?: string | null; close_note?: string | null }
         Relationships: []
       }
       product_vendor_lead_times: {
@@ -1511,6 +1511,7 @@ isOneToOne: false
             install_thai_sme_chart: { Args: { p_org_id: string }; Returns: undefined }
             add_bank_line: { Args: { p_org_id: string; p_booked_on: string; p_amount_satang: number; p_reference: string }; Returns: string }
             match_bank_line: { Args: { p_org_id: string; p_line_id: string; p_payment_id: string }; Returns: undefined }
+            note_bank_line: { Args: { p_org_id: string; p_line_id: string; p_note: string }; Returns: undefined }
             submit_customer_payment_claim: { Args: { p_org_id: string; p_client_id: string; p_amount_satang: number; p_allocations: Json; p_reference: string; p_key: string }; Returns: string }
             apply_customer_credit: { Args: { p_org_id: string; p_client_id: string; p_allocations: Json; p_key: string }; Returns: string }
             refund_customer_credit: { Args: { p_org_id: string; p_payment_id: string; p_amount_satang: number; p_reference: string; p_paid_on: string; p_method: Database["public"]["Enums"]["payment_method"]; p_key: string }; Returns: string }
