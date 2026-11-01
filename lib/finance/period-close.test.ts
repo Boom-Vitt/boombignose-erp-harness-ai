@@ -30,4 +30,10 @@ describe("closeAccountingPeriod", () => {
     expect(closeAccountingPeriod("2024-02", "2024-02-29", null)).toEqual({ ok: false, error: "Close a completed month. The current month stays open." })
     expect(closeAccountingPeriod("2026-01", "2026-04-01", "2026-01-30")).toEqual({ ok: true, lockDate: "2026-01-31" })
   })
+
+  it("does not treat an impossible lock date as a completed close", () => {
+    expect(closeAccountingPeriod("2026-03", "2026-04-01", "not-a-date")).toEqual({ ok: false, error: "The current lock date is not a calendar day." })
+    expect(closeAccountingPeriod("2026-01", "2026-04-01", "2026-02-31")).toEqual({ ok: false, error: "The current lock date is not a calendar day." })
+    expect(closeAccountingPeriod("2026-02", "2026-03-01", "")).toEqual({ ok: true, lockDate: "2026-02-28" })
+  })
 })
