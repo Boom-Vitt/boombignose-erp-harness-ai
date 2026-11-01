@@ -111,7 +111,9 @@ A credit note posts only after that sale is in the journal. It debits sales and 
 
 Account 2120, เงินรับล่วงหน้า / Customer deposits, is a liability. A deposit invoice debits accounts receivable, credits that liability for the pretax base, and credits output VAT for the stored VAT. The final invoice posts the remainder as a sale and moves the whole posted deposit into sales. The deduction must already be inside the invoice discount, and it must equal the posted deposit base. A smaller deduction, a discount that does not contain the deposit, a credit note on the deposit, or an unposted deposit is refused.
 
-The screen keeps saying these lines are not statutory financial statements until an accountant accepts them.
+An owner, admin, or accountant can accept the draft trial balance for a date inside the finance lock. The acceptance stores the debit total, the credit total, the line count, and a hash of those figures, and it joins the close chain. When the workspace has more than one owner, admin, or accountant, a different one of them confirms. The same figures are not accepted twice. If the draft journal changes, the old acceptance stays on the chain and the screen says the figures changed. The acceptance says it is a step toward a legal close. It is not a statutory sign-off and not a ภ.พ.30 filing. Purchases and expenses that are not in the draft journal are not in the accepted figures.
+
+The screen keeps saying these lines are not statutory financial statements until an accountant accepts a real statutory close. This acceptance is not that close.
 
 ### End goal
 

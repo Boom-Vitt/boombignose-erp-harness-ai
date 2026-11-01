@@ -29,6 +29,9 @@ export const CLOSE_AUDIT_ACTIONS = [
   "support_exported",
   "support_pack_reviewed",
   "journal_draft_posted",
+  "draft_close_acceptance_requested",
+  "draft_close_accepted",
+  "draft_close_acceptance_cancelled",
 ] as const
 
 export type CloseAuditAction = (typeof CLOSE_AUDIT_ACTIONS)[number]
@@ -42,6 +45,9 @@ const ACTION_LABELS: Record<CloseAuditAction, string> = {
   support_exported: "ส่งไฟล์ประกอบ / Support file exported",
   support_pack_reviewed: "ตรวจไฟล์ประกอบแล้ว / Support file reviewed",
   journal_draft_posted: "บันทึกรายวันฉบับร่าง / Draft journal posted",
+  draft_close_acceptance_requested: "ขอรับงบทดลองฉบับร่าง / Draft trial balance acceptance requested",
+  draft_close_accepted: "รับงบทดลองฉบับร่างแล้ว / Draft trial balance accepted",
+  draft_close_acceptance_cancelled: "ยกเลิกคำขอรับงบทดลอง / Draft acceptance cancelled",
 }
 
 export type CloseActivityView = {
@@ -137,7 +143,7 @@ export function closeActivityView(action: string, meta: unknown): CloseActivityV
     sha256: text(record, "sha256"),
     period: text(record, "period"),
     bytes: whole(record, "bytes"),
-    kind: text(record, "kind") === "operational_lock" || text(record, "kind") === "operational_close" || text(record, "kind") === "operational_journal" ? null : text(record, "kind"),
+    kind: text(record, "kind") === "operational_lock" || text(record, "kind") === "operational_close" || text(record, "kind") === "operational_journal" || text(record, "kind") === "draft_gl_acceptance" ? null : text(record, "kind"),
   }
 }
 

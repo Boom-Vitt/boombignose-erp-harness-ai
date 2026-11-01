@@ -15,6 +15,7 @@ const screens = [
   "app/(app)/finance/journal/journal-form.tsx",
   "app/(app)/finance/journal/trial-balance/page.tsx",
   "app/(app)/finance/journal/trial-balance-view.tsx",
+  "app/(app)/finance/journal/draft-close-acceptance.tsx",
   "app/(app)/finance/invoices/[id]/post-journal-button.tsx",
   "app/(app)/finance/invoices/[id]/post-follow-on-button.tsx",
   "app/(app)/settings/chart/page.tsx",
@@ -84,6 +85,12 @@ describe("close screens stay support data", () => {
     expect(followOn).toContain("not signed statutory books")
     expect(followOn).toContain("no card-clearing account and no undeposited-cheque account")
     expect(followOn).not.toMatch(/ยื่นแบบสำเร็จ|e-Tax Invoice/)
+
+    const acceptance = readFileSync("lib/finance/draft-close-acceptance.ts", "utf8")
+    expect(acceptance).toContain("ไม่ใช่การยื่นแบบ ภ.พ.30")
+    expect(acceptance).toContain("not a statutory sign-off")
+    expect(acceptance).toContain("Purchases and expenses")
+    expect(acceptance).not.toMatch(/ยื่นแบบสำเร็จ|e-Tax Invoice/)
 
     const chart = readFileSync("app/(app)/settings/chart/page.tsx", "utf8")
     expect(chart).toContain("/finance/journal")

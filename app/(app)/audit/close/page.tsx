@@ -48,7 +48,7 @@ export default async function CloseActivityPage() {
   return <div className="space-y-6">
     <PageHeader
       title="กิจกรรมปิดงวด / Close activity"
-      description="เฉพาะการล็อก การเปิดงวด การปิดเดือนที่จบแล้ว ไฟล์ประกอบ และบันทึกรายวันฉบับร่าง ไม่ใช่การยื่นต่อกรมสรรพากร และไม่ใช่ตราเวลาจากภายนอก / Lock changes, reopens, completed-month closes, support files, and draft journals. Not a Revenue Department filing and not an external timestamp."
+      description="เฉพาะการล็อก การเปิดงวด การปิดเดือนที่จบแล้ว ไฟล์ประกอบ บันทึกรายวันฉบับร่าง และการรับงบทดลองฉบับร่าง ไม่ใช่การยื่นต่อกรมสรรพากร และไม่ใช่ตราเวลาจากภายนอก / Lock changes, reopens, completed-month closes, support files, draft journals, and draft trial balance acceptance. Not a Revenue Department filing and not an external timestamp."
       breadcrumbs={[{ label: "Activity", href: "/audit" }]}
     />
     <p className="text-sm"><Link className="underline" href="/audit">บันทึกกิจกรรมทั้งหมด / All activity</Link></p>
