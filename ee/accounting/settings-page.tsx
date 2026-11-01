@@ -18,6 +18,7 @@ import {
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 
 import { AccountingConnectionForm } from "@/ee/accounting/components/accounting-connection-form"
+import { connectionTransport } from "@/ee/accounting/flowaccount"
 
 
 const PROVIDER_LABEL: Record<Enums<"accounting_provider">, string> = {
@@ -43,19 +44,21 @@ export default async function AccountingSettingsPage() {
   // Single row per org (org_id unique). May not exist yet.
   const { data: conn } = await supabase
     .from("accounting_connections")
-    .select("provider, status, updated_at")
+    .select("provider, status, config, updated_at")
     .eq("org_id", ctx.orgId)
     .maybeSingle()
 
   const status = conn?.status ?? "disconnected"
   const isConnected = status === "connected"
   const statusMeta = STATUS_META[status]
+  const transport = connectionTransport(conn?.config)
+  const sandboxTokenSet = Boolean(process.env.FLOWACCOUNT_ACCESS_TOKEN?.trim())
 
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Accounting sync"
-        description="Connect your book-of-record to scaffold invoice syncing."
+        title="Accounting export"
+        description="ส่งใบแจ้งหนี้ที่ออกแล้วไป FlowAccount / Export issued invoices to FlowAccount."
       >
         <Button variant="outline" render={<Link href="/settings" />}>
           <ArrowLeft /> Settings
@@ -64,11 +67,13 @@ export default async function AccountingSettingsPage() {
 
       <Alert>
         <PlugZap className="size-4" />
-        <AlertTitle>Sync scaffold — not an accounting engine</AlertTitle>
+        <AlertTitle>FlowAccount export — not a general ledger</AlertTitle>
         <AlertDescription>
-          This maps invoices to your provider (FlowAccount, PEAK or Xero) and
-          records the mapping. It does not create tax invoices or compute VAT,
-          and the live push is stubbed in this build.
+          An issued invoice is mapped to FlowAccount&apos;s inline document and
+          the returned document number is stored here. Fixture mode does not
+          leave this machine. Sandbox mode posts only when the server has
+          FLOWACCOUNT_ACCESS_TOKEN. This does not file e-Tax, and PEAK and Xero
+          are not connected in this build.
         </AlertDescription>
       </Alert>
 
@@ -78,8 +83,12 @@ export default async function AccountingSettingsPage() {
             <CardTitle className="text-base">Connection</CardTitle>
             <CardDescription>
               {isConnected && conn
-                ? `Syncing to ${PROVIDER_LABEL[conn.provider]}.`
-                : "No accounting provider connected yet."}
+                ? conn.provider === "flowaccount"
+                  ? transport === "sandbox"
+                    ? "FlowAccount sandbox. Issued invoices are posted when you export them."
+                    : "FlowAccount fixture. Issued invoices get a demo document number on this machine."
+                  : `${PROVIDER_LABEL[conn.provider]} is connected, but this build exports to FlowAccount only. Disconnect, then connect FlowAccount.`
+                : "FlowAccount is not connected yet."}
             </CardDescription>
           </div>
           <Badge variant={statusMeta.variant} className="shrink-0">
@@ -99,13 +108,23 @@ export default async function AccountingSettingsPage() {
                 <dt className="text-muted-foreground">Status</dt>
                 <dd className="font-medium">{statusMeta.label}</dd>
               </div>
+              {conn.provider === "flowaccount" ? (
+                <div className="flex items-center justify-between py-2.5">
+                  <dt className="text-muted-foreground">Transport</dt>
+                  <dd className="font-medium">{transport === "sandbox" ? "Sandbox" : "Fixture demo"}</dd>
+                </div>
+              ) : null}
+              {conn.provider === "flowaccount" && transport === "sandbox" ? (
+                <div className="flex items-center justify-between py-2.5">
+                  <dt className="text-muted-foreground">Server token</dt>
+                  <dd className="font-medium">{sandboxTokenSet ? "Set" : "Missing"}</dd>
+                </div>
+              ) : null}
             </dl>
           ) : null}
 
           {canEdit ? (
-            <AccountingConnectionForm
-              connectedProvider={isConnected && conn ? conn.provider : null}
-            />
+            <AccountingConnectionForm connected={isConnected} transport={transport} />
           ) : (
             <Alert>
               <Lock className="size-4" />

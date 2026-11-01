@@ -6,15 +6,27 @@ import { createClient } from "@/lib/supabase/server"
 import { requireOrgContext, requireCapability } from "@/lib/auth"
 import { writeAudit } from "@/lib/audit"
 import { invoiceToExternalPayload } from "@/ee/accounting/mapping"
-import { getProvider } from "@/ee/accounting/provider"
+import { connectionTransport, type ExportInvoice, type ExportLine } from "@/ee/accounting/flowaccount"
+import { getProvider, type ProviderKey } from "@/ee/accounting/provider"
+
+const EXPORTABLE = new Set(["sent", "paid", "partially_paid", "overdue"])
+
+function contactOf(value: unknown): { name: string | null; tax_id: string | null; billing_address: string | null; email: string | null } | null {
+  const row = Array.isArray(value) ? value[0] : value
+  if (!row || typeof row !== "object") return null
+  const record = row as Record<string, string | null>
+  return {
+    name: typeof record.name === "string" ? record.name : null,
+    tax_id: typeof record.tax_id === "string" ? record.tax_id : null,
+    billing_address: typeof record.billing_address === "string" ? record.billing_address : null,
+    email: typeof record.email === "string" ? record.email : null,
+  }
+}
 
 /**
- * Scaffold-sync a single invoice to the org's connected accounting provider.
- *
- * SCOPE: maps our invoice to a provider-neutral payload and records the mapping
- * in `accounting_sync_map`. The provider's `pushInvoice` is a STUB (no live HTTP
- * — see ee/accounting/provider.ts). Re-syncing is idempotent: we upsert on the
- * (org, provider, entity, id) key.
+ * Export one issued invoice through the connected adapter and record the
+ * external document number. Fixture mode stays on this machine. Sandbox mode
+ * posts to FlowAccount. Re-export updates the same sync row.
  */
 export async function syncInvoiceToAccounting(
   invoiceId: string
@@ -31,11 +43,9 @@ export async function syncInvoiceToAccounting(
 
   const supabase = await createClient()
 
-  // The org's accounting connection. A row may exist but be disconnected/error;
-  // only a 'connected' one is usable. Belt-and-braces org scope on top of RLS.
   const { data: conn } = await supabase
     .from("accounting_connections")
-    .select("provider, status")
+    .select("provider, status, config")
     .eq("org_id", ctx.orgId)
     .maybeSingle()
 
@@ -43,24 +53,78 @@ export async function syncInvoiceToAccounting(
     return { error: "Connect an accounting provider first." }
   }
 
-  // Load the invoice (+ client name) — org-scoped in code, not RLS alone.
   const { data: invoice, error: invErr } = await supabase
     .from("invoices")
-    .select("id, number, amount_satang, total_satang, status, issue_date, due_date, clients(name)")
+    .select("id, number, amount_satang, subtotal_satang, discount_satang, vat_satang, wht_satang, wht_rate_bps, total_satang, prices_include_vat, status, issue_date, due_date, notes, clients(name, tax_id, billing_address, email)")
     .eq("id", invoiceId)
     .eq("org_id", ctx.orgId)
     .maybeSingle()
 
   if (invErr) return { error: invErr.message }
   if (!invoice) return { error: "Invoice not found." }
+  if (!EXPORTABLE.has(invoice.status)) {
+    return { error: "Issue the invoice before exporting it. Drafts and cancelled invoices are not sent." }
+  }
 
-  // Map -> neutral payload -> provider (STUB returns a deterministic fake id).
-  const payload = invoiceToExternalPayload(invoice, invoice.clients)
-  const provider = getProvider(conn.provider)
-  const { externalId } = await provider.pushInvoice(payload)
+  const { data: lineRows, error: lineErr } = await supabase
+    .from("invoice_items")
+    .select("description, quantity, unit, unit_price_satang, amount_satang, position")
+    .eq("org_id", ctx.orgId)
+    .eq("invoice_id", invoice.id)
+    .order("position")
 
-  // Record the mapping. Upsert on the composite unique key so re-sync updates
-  // in place (idempotent). Clear any prior error on success.
+  if (lineErr) return { error: lineErr.message }
+
+  const contact = contactOf(invoice.clients)
+  const lines: ExportLine[] = (lineRows ?? []).map((line) => ({
+    description: line.description,
+    quantity: line.quantity,
+    unit: line.unit,
+    unitPriceSatang: line.unit_price_satang,
+    amountSatang: line.amount_satang,
+  }))
+  const exportInvoice: ExportInvoice = {
+    payload: invoiceToExternalPayload(invoice, contact),
+    subtotalSatang: invoice.subtotal_satang,
+    discountSatang: invoice.discount_satang,
+    vatSatang: invoice.vat_satang,
+    whtSatang: invoice.wht_satang,
+    whtRateBps: invoice.wht_rate_bps,
+    totalSatang: invoice.total_satang,
+    amountSatang: invoice.amount_satang,
+    pricesIncludeVat: invoice.prices_include_vat,
+    notes: invoice.notes,
+    contactTaxId: contact?.tax_id ?? null,
+    contactAddress: contact?.billing_address ?? null,
+    contactEmail: contact?.email ?? null,
+    lines,
+  }
+
+  const provider = getProvider(conn.provider as ProviderKey)
+  let externalId: string
+  try {
+    const pushed = await provider.pushInvoice(exportInvoice, {
+      transport: connectionTransport(conn.config),
+      token: process.env.FLOWACCOUNT_ACCESS_TOKEN,
+      baseUrl: process.env.FLOWACCOUNT_BASE_URL,
+    })
+    externalId = pushed.externalId
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Export failed."
+    await supabase.from("accounting_sync_map").upsert(
+      {
+        org_id: ctx.orgId,
+        provider: conn.provider,
+        local_entity: "invoice",
+        local_id: invoice.id,
+        status: "error",
+        last_error: message,
+      },
+      { onConflict: "org_id,provider,local_entity,local_id" }
+    )
+    return { error: message }
+  }
+
   const { error: mapErr } = await supabase.from("accounting_sync_map").upsert(
     {
       org_id: ctx.orgId,
@@ -80,8 +144,8 @@ export async function syncInvoiceToAccounting(
     entity: "invoice",
     entityId: invoice.id,
     action: "updated",
-    summary: `Synced invoice ${invoice.number} to ${conn.provider} (${externalId})`,
-    meta: { provider: conn.provider, externalId },
+    summary: `Exported invoice ${invoice.number} to ${conn.provider} (${externalId})`,
+    meta: { provider: conn.provider, externalId, transport: connectionTransport(conn.config) },
   })
 
   revalidatePath(`/finance/invoices/${invoice.id}`)

@@ -16,7 +16,7 @@ export async function getInvoiceAccounting(orgId: string, invoiceId: string) {
   const [connection, mappings] = await Promise.all([
     supabase.from("accounting_connections").select("provider, status").eq("org_id", orgId).maybeSingle(),
     // Provider switches retain earlier mappings; display the latest one.
-    supabase.from("accounting_sync_map").select("external_id, provider, status, last_synced_at")
+    supabase.from("accounting_sync_map").select("external_id, provider, status, last_synced_at, last_error")
       .eq("org_id", orgId).eq("local_entity", "invoice").eq("local_id", invoiceId)
       .order("last_synced_at", { ascending: false, nullsFirst: false }).limit(1),
   ])
@@ -36,7 +36,10 @@ export function InvoiceAccountingStatus({ sync }: { sync: Awaited<ReturnType<typ
     <span className="space-y-0.5">
       <span className="block font-medium">{ACCOUNTING_PROVIDER_LABEL[sync.provider]} · {sync.external_id}</span>
       {sync.last_synced_at ? (
-        <span className="text-muted-foreground block text-xs">Synced {sync.last_synced_at.slice(0, 10)}</span>
+        <span className="text-muted-foreground block text-xs">Exported {sync.last_synced_at.slice(0, 10)}</span>
+      ) : null}
+      {sync.status === "error" && sync.last_error ? (
+        <span className="text-destructive block text-xs">{sync.last_error}</span>
       ) : null}
     </span>
   ) : <span className="text-muted-foreground">Not synced</span>

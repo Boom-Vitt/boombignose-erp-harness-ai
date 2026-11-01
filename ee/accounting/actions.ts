@@ -7,19 +7,16 @@ import { createClient } from "@/lib/supabase/server"
 import { requireOrgContext, requireCapability } from "@/lib/auth"
 import { writeAudit } from "@/lib/audit"
 
-const PROVIDERS = ["flowaccount", "peak", "xero"] as const
-
 const ConnectAccounting = z.object({
-  provider: z.enum(PROVIDERS),
+  transport: z.enum(["fixture", "sandbox"]),
 })
 
 export type ConnectAccountingInput = z.infer<typeof ConnectAccounting>
 
 /**
- * Connect (or switch) the org's accounting provider. Upserts the single
- * `accounting_connections` row (org_id is UNIQUE) and marks it connected.
- * This does NOT perform any OAuth/handshake — it records intent so invoices can
- * be scaffold-synced (the live push is a documented stub).
+ * Connect FlowAccount for this workspace. The row stores the transport only.
+ * A sandbox token stays in FLOWACCOUNT_ACCESS_TOKEN and is never written here.
+ * PEAK and Xero are not connected by this action.
  */
 export async function connectAccounting(
   input: ConnectAccountingInput
@@ -41,8 +38,9 @@ export async function connectAccounting(
   const { error } = await supabase.from("accounting_connections").upsert(
     {
       org_id: ctx.orgId,
-      provider: parsed.data.provider,
+      provider: "flowaccount",
       status: "connected",
+      config: { transport: parsed.data.transport },
     },
     { onConflict: "org_id" }
   )
@@ -52,8 +50,8 @@ export async function connectAccounting(
     entity: "settings",
     entityId: ctx.orgId,
     action: "updated",
-    summary: `Connected accounting provider: ${parsed.data.provider}`,
-    meta: { provider: parsed.data.provider },
+    summary: `Connected FlowAccount (${parsed.data.transport})`,
+    meta: { provider: "flowaccount", transport: parsed.data.transport },
   })
 
   revalidatePath("/settings/accounting")

@@ -3,6 +3,8 @@
  * NO I/O, NO server-only imports, NO SDK — safe to unit-test in node with no
  * API key and no network. The model id lives in `lib/ai/client.ts`, never here.
  */
+import type { CloseOpenItems } from "@/lib/finance/close-summary"
+import { formatTHB } from "@/lib/money"
 
 export type PromptParts = { system: string; prompt: string }
 
@@ -133,5 +135,25 @@ export function meetingIntakePrompt(rawNotes: string): PromptParts {
     notes === "" ? "(no notes provided)" : notes,
   ].join("\n")
 
+  return { system, prompt }
+}
+
+/** Month-end note from workspace counts. The model must not invent a filing. */
+export function closeSummaryPrompt(counts: CloseOpenItems): PromptParts {
+  const bank = counts.unmatchedBankCount === null
+    ? "Unmatched bank lines: not available"
+    : `Unmatched bank lines: ${counts.unmatchedBankCount}`
+  const system =
+    "You are a bookkeeping assistant for a Thai SME. Write a short month-end note " +
+    "from the counts you are given. Start in polite Thai, then one English sentence. " +
+    "Use only those figures. Do not invent invoices, journals, VAT filings, or e-Tax " +
+    "steps. Keep it under 120 words. This is operational finance, not a statutory close."
+  const prompt = [
+    `As of ${counts.asOf}.`,
+    `Overdue receivables: ${counts.overdueReceivableCount} (${formatTHB(counts.overdueReceivableSatang)}).`,
+    `Unpaid vendor bills: ${counts.unpaidBillCount} (${formatTHB(counts.unpaidBillSatang)}).`,
+    `${bank}.`,
+    "Tell the owner what to clear before they treat the month as ready. Do not tell them to file a tax return.",
+  ].join("\n")
   return { system, prompt }
 }

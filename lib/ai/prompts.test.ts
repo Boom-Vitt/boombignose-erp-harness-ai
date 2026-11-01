@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest"
 
 import {
+  closeSummaryPrompt,
   dealSummaryPrompt,
   followupDraftPrompt,
   meetingIntakePrompt,
@@ -93,5 +94,24 @@ describe("meetingIntakePrompt", () => {
   it("handles empty notes", () => {
     const { prompt } = meetingIntakePrompt("   ")
     expect(prompt).toContain("(no notes provided)")
+  })
+})
+
+describe("closeSummaryPrompt", () => {
+  it("puts the open-item counts in the prompt and refuses a tax filing", () => {
+    const { system, prompt } = closeSummaryPrompt({
+      asOf: "2026-11-01",
+      overdueReceivableCount: 2,
+      overdueReceivableSatang: 150000,
+      unpaidBillCount: 1,
+      unpaidBillSatang: 4000,
+      unmatchedBankCount: 3,
+    })
+    expect(prompt).toContain("2026-11-01")
+    expect(prompt).toContain("Overdue receivables: 2")
+    expect(prompt).toContain("1,500.00")
+    expect(prompt).toContain("Unmatched bank lines: 3")
+    expect(system).toMatch(/e-Tax/)
+    expect(prompt).toMatch(/tax return/i)
   })
 })

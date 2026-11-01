@@ -57,6 +57,7 @@ import {
 } from "@/components/ui/table"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 
+import { CloseSummary } from "./_components/close-summary"
 import { DeleteCostButton } from "./_components/delete-cost-button"
 
 export const dynamic = "force-dynamic"
@@ -213,6 +214,8 @@ export default async function FinancePage({
           hint="Recurring revenue / month"
         />
       </div>
+
+      <CloseSummary />
 
       <SearchFacets list="finance" config={config} savedViews={savedViews} />
       <div className="flex flex-wrap gap-2">

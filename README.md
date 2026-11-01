@@ -81,7 +81,7 @@ BoomBigNose ERP is not a general ledger. Statutory accounting, tax filing, payro
 | Sign-up, first workspace, team invitations, owner/admin/member roles | Yes | Yes |
 | AI assistant, automation and scheduled jobs | Yes | Yes |
 | Client portal: customers view documents, accept quotes and report payments | | Yes |
-| Accounting connection settings for FlowAccount, PEAK and Xero (preview, no data is sent yet) | | Yes |
+| FlowAccount invoice export (fixture demo on this machine, or sandbox when a server token is set). PEAK and Xero are not connected in this build | | Yes |
 | Multiple workspaces with a workspace switcher | | Yes |
 | Hosted workspace provisioning | | Yes |
 
