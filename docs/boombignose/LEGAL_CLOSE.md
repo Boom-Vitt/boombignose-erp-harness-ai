@@ -66,15 +66,16 @@ SME controls that fit the current database and the four roles.
 - **Those actions cannot be typed in by a signed-in session.** `finance_lock_updated`, `finance_lock_reopened`, `period_closed`, and `support_exported` are reserved. The trigger is not security definer, so the command that owns the row can insert it and an `authenticated` or `service_role` session cannot.
 - **Support downloads carry a checksum.** The accountant-pack CSV, the printable HTML, and the outstanding-pack CSV call `record_support_export` with the SHA-256 and byte length of the exact body. The response header is `X-Content-SHA256`. The download is refused when that row cannot be written. The activity summary includes the hash and says it is not a filing. An owner, admin, or accountant can record one. A member cannot. This is the checksum of the bytes that were sent. It is not a signature, and a finance user who calls the command directly can store a hash of bytes this screen did not produce.
 
-### R1 — next
+### R1 — shipped for the screen
 
-Still not a statutory close. These make the R0 record easier to rely on.
+Still not a statutory close.
 
-- A close activity view that lists only lock, reopen, month-close, and export rows, with the previous date and the hash visible as fields rather than only inside the sentence.
-- A reason, required, before an owner or admin reopens a lock. The reopen stays possible. It should say why.
-- A second person for a reopen on workspaces that have more than one owner or admin. A one-person SME can still reopen; the row names them.
-- Let the operator paste a downloaded file back and compare it with the stored SHA-256.
-- Export the activity log itself, with the same checksum rule.
+- `/audit/close` lists lock, reopen, reopen request, completed-month, and support-export rows. The previous date, the reason, and the SHA-256 are fields on the row.
+- `propose_finance_lock` is what the finance-settings screen calls. A reopen needs a reason of 1–200 characters. When the workspace has one owner or admin, that person reopens and the activity row names them. When it has more than one, the lock does not move until a different owner or admin confirms. The requester cannot confirm their own request. A member cannot confirm.
+- The close activity page can hash a saved CSV or HTML file in the browser and ask whether that checksum is in the log. The file is not uploaded. A match is not a signature.
+- The older `update_finance_lock_date(org, date)` command still applies a reopen immediately, including with no reason. Existing database checks use it to unlock a period. The screen does not call it.
+
+Still next: export the activity log itself, with the same checksum rule.
 
 ### R2 — enterprise
 

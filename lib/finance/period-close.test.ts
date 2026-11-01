@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { closeAccountingPeriod, financeLockChange } from "@/lib/finance/period-close"
+import { closeAccountingPeriod, financeLockChange, lockChangeIsReopen, reopenReason } from "@/lib/finance/period-close"
 
 describe("closeAccountingPeriod", () => {
   it("locks through the last day of a completed month", () => {
@@ -38,6 +38,17 @@ describe("closeAccountingPeriod", () => {
     expect(closeAccountingPeriod("2026-01", "2026-02-31", null)).toEqual({ ok: false, error: "Enter today as YYYY-MM-DD." })
     expect(closeAccountingPeriod("2024-02", "2024-02-29", null)).toEqual({ ok: false, error: "Close a completed month. The current month stays open." })
     expect(closeAccountingPeriod("2026-01", "2026-04-01", "2026-01-30")).toEqual({ ok: true, lockDate: "2026-01-31" })
+  })
+
+  it("requires a reason only when the lock moves earlier or is cleared", () => {
+    expect(lockChangeIsReopen("2026-03-31", "")).toBe(true)
+    expect(lockChangeIsReopen("2026-03-31", "2026-01-31")).toBe(true)
+    expect(lockChangeIsReopen("2026-01-31", "2026-03-31")).toBe(false)
+    expect(lockChangeIsReopen("", "2026-01-31")).toBe(false)
+    expect(lockChangeIsReopen("2026-01-31", "2026-01-31")).toBe(false)
+    expect(reopenReason("  Bank statement arrived late  ")).toEqual({ ok: true, reason: "Bank statement arrived late" })
+    expect(reopenReason("   ").ok).toBe(false)
+    expect(reopenReason("x".repeat(201)).ok).toBe(false)
   })
 
   it("does not treat an impossible lock date as a completed close", () => {

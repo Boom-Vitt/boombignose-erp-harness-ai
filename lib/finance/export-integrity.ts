@@ -37,6 +37,37 @@ export function supportExportCall(orgId: string, kind: SupportExportKind, period
   }
 }
 
+export function normalizeSha256(value: string): string | null {
+  const hex = value.trim().toLowerCase()
+  return /^[a-f0-9]{64}$/.test(hex) ? hex : null
+}
+
+export async function sha256HexBytes(bytes: Uint8Array): Promise<string> {
+  const copy = new Uint8Array(bytes.byteLength)
+  copy.set(bytes)
+  const digest = await crypto.subtle.digest("SHA-256", copy)
+  return [...new Uint8Array(digest)].map((byte) => byte.toString(16).padStart(2, "0")).join("")
+}
+
+export type StoredExport = {
+  sha256: string
+  kind: string
+  period: string
+  bytes: number
+}
+
+export type ChecksumVerdict =
+  | { match: true; kind: string; period: string }
+  | { match: false; message: string }
+
+/** Compare a saved file with one stored support-export checksum. Not a filing seal. */
+export function checksumVerdict(file: { sha256: string; bytes: number }, record: StoredExport | null): ChecksumVerdict {
+  if (!record) return { match: false, message: "No stored support export has this checksum." }
+  if (file.sha256 !== record.sha256) return { match: false, message: "This file does not match the stored checksum." }
+  if (file.bytes !== record.bytes) return { match: false, message: "The checksum matches but the file size does not." }
+  return { match: true, kind: record.kind, period: record.period }
+}
+
 export function supportExportHeaders(
   filename: string,
   contentType: string,

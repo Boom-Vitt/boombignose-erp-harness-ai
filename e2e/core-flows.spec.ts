@@ -141,6 +141,7 @@ test("sign up, then record stock, a VAT invoice, a purchase, a transfer, a recei
 
   await gotoApp(page, "/settings/finance")
   await page.getByLabel("Lock transactions through", { exact: true }).fill("")
+  await page.getByLabel("Reason for reopening", { exact: true }).fill("Unlock the draft so it can be issued")
   await page.getByRole("button", { name: "Save finance lock", exact: true }).click()
   await expect(page.getByText("Finance lock date saved", { exact: true })).toBeVisible()
   await gotoApp(page, invoiceUrl)
