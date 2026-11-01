@@ -19,7 +19,8 @@
     "local:status": "node scripts/local/stack.mjs status",
     "local:migrate": "node scripts/local/stack.mjs migrate",
     "local:stop": "node scripts/local/stack.mjs stop",
-    "local:serve": "node scripts/local/stack.mjs serve"
+    "local:serve": "node scripts/local/stack.mjs serve",
+    "moli:fetch": "node scripts/moli-fetch.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.6.0",
