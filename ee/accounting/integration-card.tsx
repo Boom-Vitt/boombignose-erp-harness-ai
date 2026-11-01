@@ -20,9 +20,9 @@ export function AccountingIntegrationCard() {
             <PlugZap className="size-4" />
           </div>
           <div className="min-w-0 flex-1">
-            <p className="text-sm font-medium">FlowAccount export</p>
+            <p className="text-sm font-medium">ส่งออก FlowAccount / FlowAccount export</p>
             <p className="text-muted-foreground truncate text-xs">
-              Fixture demo or sandbox. PEAK and Xero are not in this build.
+              โหมดตัวอย่างหรือ sandbox ไม่ยื่นภาษี / Fixture demo or sandbox. This does not file tax. PEAK and Xero are not in this build.
             </p>
           </div>
           <ChevronRight className="text-muted-foreground size-4 shrink-0" />

@@ -5,7 +5,8 @@ import { readAllOrThrow } from "@/lib/supabase/read-all"
 import { todayISO } from "@/lib/dates"
 import { formatTHB } from "@/lib/money"
 import { canReviewFinanceClose } from "@/lib/finance/close-access"
-import { BANK_LINE_STATUS_LABEL, bankLineInQueue, classifyBankLines, parseBankQueue, summarizeBankClose, type BankQueue } from "@/lib/finance/bank-review"
+import { closeDateLabel } from "@/lib/finance/close-copy"
+import { BANK_LINE_STATUS_LABEL, bankLineInQueue, bankLineStatusHelp, bankQueueSummaryText, bankWindowLabel, classifyBankLines, parseBankQueue, summarizeBankClose, type BankQueue } from "@/lib/finance/bank-review"
 import { resolveCloseThrough } from "@/lib/finance/close-window"
 import { PageHeader } from "@/components/page-header"
 import { StatCard } from "@/components/stat-card"
@@ -59,20 +60,20 @@ export default async function BankPage({ searchParams }: { searchParams: Promise
   })), candidates, through.periodEnd)
   const summary = summarizeBankClose(classified, through.periodEnd)
   const visible = classified.filter(line => bankLineInQueue(line, queue, through.periodEnd))
-  const windowLabel = through.scope === "all" ? "every date" : `through ${through.periodEnd}`
+  const windowLabel = bankWindowLabel(through.periodEnd)
 
   return <div className="space-y-6">
-    <PageHeader title="รายการธนาคาร / Bank lines" description="Match a statement line to one verified receipt, or note why it is not a customer receipt. A match does not change the receipt. A note does not post a journal." breadcrumbs={[{ label: "Finance", href: "/finance" }]} />
+    <PageHeader title="รายการธนาคาร / Bank lines" description="จับคู่รายการเดินบัญชีกับใบเสร็จที่ยืนยันแล้วหนึ่งใบ หรือบันทึกว่าทำไมรายการนี้ไม่ใช่ใบเสร็จลูกค้า การจับคู่ไม่ได้แก้ใบเสร็จ การบันทึกไม่ได้ลงบัญชี / Match a statement line to one verified receipt, or note why it is not a customer receipt. A match does not change the receipt. A note does not post a journal." breadcrumbs={[{ label: "Finance", href: "/finance" }]} />
     <div className="flex flex-wrap items-end gap-3">
       <form method="get" className="flex flex-wrap items-end gap-3">
         <label className="text-sm">ถึงเดือน / Through month
           <input className="mt-1 block h-9 rounded-md border bg-background px-2" type="month" name="through" defaultValue={through.month ?? ""} />
         </label>
-        <Button type="submit" variant="outline">Show</Button>
+        <Button type="submit" variant="outline">แสดง / Show</Button>
       </form>
       <Button variant="ghost" render={<Link href="/finance/bank?through=all" />}>ทุกวัน / All dates</Button>
     </div>
-    <p className="text-sm text-muted-foreground">Showing lines {windowLabel}. Two receipts with the same amount and reference stay unmatched. Lines booked after this month stay with the next close.</p>
+    <p className="text-sm text-muted-foreground">{windowLabel} ใบเสร็จสองใบที่มียอดและเลขอ้างอิงเดียวกันจะยังไม่ถูกจับคู่ รายการที่บันทึกหลังเดือนนี้ไปกับงวดถัดไป / Two receipts with the same amount and reference stay unmatched. Lines booked after this month stay with the next close.</p>
     <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
       <StatCard label="ยังต้องจัดการ / Still open" value={String(summary.openCount)} tone={summary.openCount > 0 ? "warning" : "positive"} hint={formatTHB(summary.openNetSatang)} />
       <StatCard label="พร้อมจับคู่ / Ready to match" value={String(summary.readyCount)} />
@@ -80,8 +81,7 @@ export default async function BankPage({ searchParams }: { searchParams: Promise
       <StatCard label="จับคู่แล้ว / Matched" value={String(summary.matchedCount)} hint={formatTHB(summary.matchedNetSatang)} />
     </div>
     <p className="text-sm text-muted-foreground">
-      {summary.unmatchedCount} with no receipt · {summary.ambiguousCount} with more than one receipt · {summary.moneyOutCount} money out.
-      {summary.laterOpenCount > 0 ? ` ${summary.laterOpenCount} unmatched ${summary.laterOpenCount === 1 ? "line" : "lines"} booked after ${through.periodEnd} stay with the next close.` : ""}
+      {bankQueueSummaryText(summary)}
     </p>
     <nav aria-label="Bank line queue" className="flex flex-wrap gap-2">
       {QUEUES.map(item => <Button key={item.id} variant={queue === item.id ? "secondary" : "outline"} render={<Link href={bankHref(throughParam, item.id)} />} aria-current={queue === item.id ? "page" : undefined}>{item.label}</Button>)}
@@ -90,20 +90,20 @@ export default async function BankPage({ searchParams }: { searchParams: Promise
       <AddBankLineForm today={today} />
     </CardContent></Card>
     {visible.length === 0 ? <p className="text-sm text-muted-foreground">ไม่มีรายการในมุมนี้ / Nothing in this queue.</p> : null}
-    <ul className="max-w-3xl space-y-3">{visible.map(line => <li key={line.id} className="space-y-2 rounded-lg border p-3 text-sm">
-      <p>{line.bookedOn} · {formatTHB(line.amountSatang)} · {line.reference}</p>
-      <p className="font-medium">{BANK_LINE_STATUS_LABEL[line.status]}</p>
-      {line.status === "matched" ? <p>Matched to a verified receipt. The receipt was not changed.</p> : null}
-      {line.status === "ready" && line.suggestedPaymentId ? <MatchBankLineButton lineId={line.id} paymentId={line.suggestedPaymentId} /> : null}
-      {line.status === "ambiguous" ? <p className="text-muted-foreground">More than one verified receipt has this amount and reference, so this line stays unmatched.</p> : null}
-      {line.status === "unmatched" ? <p className="text-muted-foreground">No verified receipt has this amount and reference.</p> : null}
-      {line.status === "money_out" ? <p className="text-muted-foreground">Money out is not a customer receipt. Note a bank fee, a transfer, or a vendor payment, or leave it open.</p> : null}
-      {line.status === "explained" && line.closeNote ? <p>เหตุผล / Note: {line.closeNote}</p> : null}
-      {line.status !== "matched" ? <ExplainBankLineForm lineId={line.id} note={line.closeNote} /> : null}
-    </li>)}</ul>
+    <ul className="max-w-3xl space-y-3">{visible.map(line => {
+      const help = bankLineStatusHelp(line.status)
+      return <li key={line.id} className="space-y-2 rounded-lg border p-3 text-sm">
+        <p>{closeDateLabel(line.bookedOn)} · {formatTHB(line.amountSatang)} · {line.reference}</p>
+        <p className="font-medium">{BANK_LINE_STATUS_LABEL[line.status]}</p>
+        {help ? <p className="text-muted-foreground">{help}</p> : null}
+        {line.status === "ready" && line.suggestedPaymentId ? <MatchBankLineButton lineId={line.id} paymentId={line.suggestedPaymentId} /> : null}
+        {line.status === "explained" && line.closeNote ? <p>เหตุผล / Note: {line.closeNote}</p> : null}
+        {line.status !== "matched" ? <ExplainBankLineForm lineId={line.id} note={line.closeNote} /> : null}
+      </li>
+    })}</ul>
     <p className="flex flex-wrap gap-4 text-sm">
       <Link className="underline" href={through.scope === "month" ? `/finance/cash?month=${through.month}` : "/finance/cash"}>เงินสดตอนปิดงวด / Cash at close</Link>
-      <Link className="underline" href="/finance/receipts">Customer receipts</Link>
+      <Link className="underline" href="/finance/receipts">ใบเสร็จลูกค้า / Customer receipts</Link>
       <Link className="underline" href="/finance?status=overdue">ลูกหนี้เกินกำหนด / Overdue receivables</Link>
     </p>
   </div>

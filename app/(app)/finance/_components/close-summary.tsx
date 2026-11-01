@@ -6,6 +6,7 @@ import { Sparkles } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { formatTHB } from "@/lib/money"
+import { OLLAMA_CLOSE_NOTE_UNAVAILABLE, closeDateLabel } from "@/lib/finance/close-copy"
 import type { CloseOpenItems } from "@/lib/finance/close-summary"
 
 import { summarizeMonthEnd } from "../close-summary-actions"
@@ -32,7 +33,7 @@ export function CloseSummary() {
       <CardHeader>
         <CardTitle className="text-base">สรุปปิดเดือน / Month-end note</CardTitle>
         <CardDescription>
-          Ollama reads overdue receivables, unpaid vendor bills, and unmatched bank lines in this workspace, then writes a short note. It does not post a journal or file tax.
+          Ollama อ่านลูกหนี้เกินกำหนด บิลเจ้าหนี้ที่ยังไม่จ่าย และรายการธนาคารที่ยังไม่จับคู่ในเวิร์กสเปซนี้ แล้วเขียนบันทึกสั้น ๆ ไม่ลงบัญชีและไม่ยื่นภาษี / Ollama reads overdue receivables, unpaid vendor bills, and unmatched bank lines in this workspace, then writes a short note. It does not post a journal or file tax.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -51,7 +52,7 @@ export function CloseSummary() {
                 status: "ready",
                 counts: result.counts,
                 content: null,
-                notice: "Ollama is not running on this machine, so there is no written note. The counts above are from this workspace. Start it with ollama serve, then ollama pull qwen3:4b. Nothing was sent to a cloud model.",
+                notice: OLLAMA_CLOSE_NOTE_UNAVAILABLE,
               })
               return
             }
@@ -62,7 +63,7 @@ export function CloseSummary() {
             setState({ status: "ready", counts: result.counts, content: result.content, notice: null })
           })}
         >
-          <Sparkles /> {pending ? "Reading…" : "Write the note"}
+          <Sparkles /> {pending ? "กำลังอ่าน… / Reading…" : "เขียนบันทึก / Write the note"}
         </Button>
 
         {state.status === "ready" && state.counts.asOf ? (
@@ -73,7 +74,7 @@ export function CloseSummary() {
               label="ธนาคารที่ยังไม่จับคู่ / Unmatched bank lines"
               value={state.counts.unmatchedBankCount === null ? "ไม่พบข้อมูล / not available" : String(state.counts.unmatchedBankCount)}
             />
-            <p className="text-muted-foreground text-xs">As of {state.counts.asOf}</p>
+            <p className="text-muted-foreground text-xs">ณ วันที่ / As of {closeDateLabel(state.counts.asOf)} · จำนวนเงินเป็นบาท / Amounts are baht</p>
           </div>
         ) : null}
 

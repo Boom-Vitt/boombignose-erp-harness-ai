@@ -57,7 +57,7 @@ export default async function AccountingSettingsPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Accounting export"
+        title="การส่งออกบัญชี / Accounting export"
         description="ส่งใบแจ้งหนี้ที่ออกแล้วไป FlowAccount / Export issued invoices to FlowAccount."
       >
         <Button variant="outline" render={<Link href="/settings" />}>
@@ -67,13 +67,14 @@ export default async function AccountingSettingsPage() {
 
       <Alert>
         <PlugZap className="size-4" />
-        <AlertTitle>FlowAccount export — not a general ledger</AlertTitle>
+        <AlertTitle>ส่งออก FlowAccount ไม่ใช่บัญชีแยกประเภท / FlowAccount export — not a general ledger</AlertTitle>
         <AlertDescription>
+          ส่งใบแจ้งหนี้ที่ออกแล้วออกไป ไม่ยื่นแบบ ภ.พ.30 และไม่แทนนักบัญชี
           An issued invoice is mapped to FlowAccount&apos;s inline document and
           the returned document number is stored here. Fixture mode does not
           leave this machine. Sandbox mode posts only when the server has
-          FLOWACCOUNT_ACCESS_TOKEN. This does not file e-Tax, and PEAK and Xero
-          are not connected in this build.
+          FLOWACCOUNT_ACCESS_TOKEN. This does not file e-Tax, does not file ภ.พ.30,
+          and does not replace an accountant. PEAK and Xero are not connected in this build.
         </AlertDescription>
       </Alert>
 

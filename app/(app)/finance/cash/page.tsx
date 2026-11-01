@@ -6,6 +6,7 @@ import { todayISO } from "@/lib/dates"
 import { formatTHB } from "@/lib/money"
 import { canReviewFinanceClose } from "@/lib/finance/close-access"
 import { cashTruth } from "@/lib/finance/cash-truth"
+import { BAHT_CAPTION_EN, BAHT_CAPTION_TH, closeDateLabel, closeMonthLabel } from "@/lib/finance/close-copy"
 import { bangkokCalendarDate, resolveCloseMonth } from "@/lib/finance/close-window"
 import { PageHeader } from "@/components/page-header"
 import { StatCard } from "@/components/stat-card"
@@ -55,26 +56,27 @@ export default async function CashClosePage({ searchParams }: { searchParams: Pr
   return <div className="space-y-6">
     <PageHeader
       title="เงินสดตอนปิดงวด / Cash at close"
-      description={`เทียบยอดที่บันทึกไว้กับเงินสดในระบบ ถึง ${cash.asOf} / Recorded balance beside cash in the system through ${cash.asOf}. Not a bank balance and not a ledger.`}
+      description={`เทียบยอดที่บันทึกไว้กับเงินสดในระบบ ถึง ${closeDateLabel(cash.asOf)} / Recorded balance beside cash in the system through ${closeDateLabel(cash.asOf)}. Not a bank balance and not a ledger. ${BAHT_CAPTION_TH} / ${BAHT_CAPTION_EN}`}
       breadcrumbs={[{ label: "Finance", href: "/finance" }, { label: "Bank lines", href: "/finance/bank" }]}
     />
     <form method="get" className="flex flex-wrap items-end gap-3">
       <label className="text-sm">เดือน / Month
         <input className="mt-1 block h-9 rounded-md border bg-background px-2" type="month" name="month" defaultValue={window.month} />
       </label>
-      <Button type="submit" variant="outline">Show</Button>
+      <Button type="submit" variant="outline">แสดง / Show</Button>
     </form>
+    <p className="text-sm text-muted-foreground">งวด {closeMonthLabel(window.month)} · ถึง {closeDateLabel(cash.asOf)}</p>
     <Card><CardContent className="space-y-2 py-4 text-sm text-muted-foreground">
       <p>ยอดที่บันทึกไว้คือตัวเลขเงินสดใน Settings ที่แดชบอร์ดใช้ เงินสดในระบบคือใบเสร็จที่ยืนยันแล้วถึงวันสิ้นเดือนนี้ ลบต้นทุนที่ทำเครื่องหมายว่าจ่ายแล้วถึงวันเดียวกัน ไม่ใช่ยอดตามสมุดบัญชีธนาคาร</p>
       <p>The recorded balance is the cash figure saved in Settings. Cash in the system is verified receipts through this date minus costs marked paid through this date. The difference is those two figures. It does not post a journal. The outstanding pack lists open invoices and unpaid vendor bills with the same aging cuts as Support reports. Balances are as they stand now, for documents dated on or before the close date.</p>
     </CardContent></Card>
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-      <StatCard label="ยอดที่บันทึกไว้ / Recorded balance" value={formatTHB(cash.recordedBalanceSatang)} hint="Settings · dashboard cash" />
-      <StatCard label="เงินสดในระบบ / Cash in the system" value={formatTHB(cash.cashInSystemSatang)} hint={`${formatTHB(cash.verifiedReceiptsSatang)} receipts − ${formatTHB(cash.paidCostsSatang)} paid costs`} />
-      <StatCard label="ผลต่าง / Recorded minus system" value={formatTHB(cash.differenceSatang)} tone={cash.differenceSatang === 0 ? "positive" : "warning"} hint="Positive means Settings is higher" />
+      <StatCard label="ยอดที่บันทึกไว้ / Recorded balance" value={formatTHB(cash.recordedBalanceSatang)} hint="ตั้งค่า · เงินสดบนแดชบอร์ด / Settings · dashboard cash" />
+      <StatCard label="เงินสดในระบบ / Cash in the system" value={formatTHB(cash.cashInSystemSatang)} hint={`${formatTHB(cash.verifiedReceiptsSatang)} ใบเสร็จ / receipts − ${formatTHB(cash.paidCostsSatang)} ต้นทุนที่จ่ายแล้ว / paid costs`} />
+      <StatCard label="ผลต่าง / Recorded minus system" value={formatTHB(cash.differenceSatang)} tone={cash.differenceSatang === 0 ? "positive" : "warning"} hint="บวก หมายถึงยอดใน Settings สูงกว่า / Positive means Settings is higher" />
     </div>
     <section className="space-y-3">
-      <h2 className="font-semibold">รายการธนาคารถึงวันนี้ / Statement lines through {cash.asOf}</h2>
+      <h2 className="font-semibold">รายการธนาคารถึงวันนี้ / Statement lines through {closeDateLabel(cash.asOf)}</h2>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard label="ยอดสุทธิที่กรอก / Statement net" value={formatTHB(cash.statementNetSatang)} />
         <StatCard label="จับคู่ใบเสร็จแล้ว / Matched" value={formatTHB(cash.matchedStatementSatang)} />

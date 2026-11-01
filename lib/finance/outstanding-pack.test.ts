@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { agingBucket, daysPastDue, outstandingPack, outstandingPackCsv } from "@/lib/finance/outstanding-pack"
+import { AGING_BUCKET_DISPLAY, AGING_BUCKET_LABEL, agingBucket, daysPastDue, outstandingPack, outstandingPackCsv } from "@/lib/finance/outstanding-pack"
 import type { OutstandingBill, OutstandingInvoice } from "@/lib/finance/outstanding-pack"
 
 const asOf = "2026-10-31"
@@ -34,6 +34,13 @@ describe("aging buckets", () => {
     expect(agingBucket("2026-08-31", asOf)).toBe("days61to90")
     expect(agingBucket("2026-08-02", asOf)).toBe("days61to90")
     expect(agingBucket("2026-08-01", asOf)).toBe("days91plus")
+  })
+
+  it("shows Thai aging labels on screen and keeps the English name in the CSV", () => {
+    for (const bucket of Object.keys(AGING_BUCKET_LABEL) as (keyof typeof AGING_BUCKET_LABEL)[]) {
+      expect(AGING_BUCKET_DISPLAY[bucket]).toContain(AGING_BUCKET_LABEL[bucket])
+      expect(AGING_BUCKET_DISPLAY[bucket]).toMatch(/[\u0E00-\u0E7F]/)
+    }
   })
 })
 

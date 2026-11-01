@@ -3,6 +3,7 @@
  * NO I/O, NO server-only imports, NO SDK — safe to unit-test in node with no
  * API key and no network. The model id lives in `lib/ai/client.ts`, never here.
  */
+import { closeDateLabel } from "@/lib/finance/close-copy"
 import type { CloseOpenItems } from "@/lib/finance/close-summary"
 import { formatTHB } from "@/lib/money"
 
@@ -149,11 +150,11 @@ export function closeSummaryPrompt(counts: CloseOpenItems): PromptParts {
     "Use only those figures. Do not invent invoices, journals, VAT filings, or e-Tax " +
     "steps. Keep it under 120 words. This is operational finance, not a statutory close."
   const prompt = [
-    `As of ${counts.asOf}.`,
+    `As of ${closeDateLabel(counts.asOf)}. Amounts are Thai baht (THB).`,
     `Overdue receivables: ${counts.overdueReceivableCount} (${formatTHB(counts.overdueReceivableSatang)}).`,
     `Unpaid vendor bills: ${counts.unpaidBillCount} (${formatTHB(counts.unpaidBillSatang)}).`,
     `${bank}.`,
-    "Tell the owner what to clear before they treat the month as ready. Do not tell them to file a tax return.",
+    "Tell the owner what to clear before they treat the month as ready. Do not tell them to file a tax return. Do not call these figures a ภ.พ.30 filing.",
   ].join("\n")
   return { system, prompt }
 }
