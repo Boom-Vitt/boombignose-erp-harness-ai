@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { closeAccountingPeriod } from "@/lib/finance/period-close"
+import { closeAccountingPeriod, financeLockChange } from "@/lib/finance/period-close"
 
 describe("closeAccountingPeriod", () => {
   it("locks through the last day of a completed month", () => {
@@ -17,6 +17,15 @@ describe("closeAccountingPeriod", () => {
     expect(closeAccountingPeriod("2026-12", "2026-02-01", null)).toEqual({ ok: false, error: "Close a completed month. The current month stays open." })
     expect(closeAccountingPeriod("2026-01", "2026-04-01", "2026-01-31").ok).toBe(false)
     expect(closeAccountingPeriod("2026-01", "2026-04-01", "2026-03-31")).toEqual({ ok: false, error: "That month is already closed." })
+  })
+
+  it("refuses a future lock date and accepts a blank reopen", () => {
+    expect(financeLockChange("", "2026-11-01")).toEqual({ ok: true, lockDate: null })
+    expect(financeLockChange("2026-01-31", "2026-11-01")).toEqual({ ok: true, lockDate: "2026-01-31" })
+    expect(financeLockChange("2026-11-01", "2026-11-01")).toEqual({ ok: true, lockDate: "2026-11-01" })
+    expect(financeLockChange("2026-11-02", "2026-11-01")).toEqual({ ok: false, error: "Finance lock date cannot be in the future." })
+    expect(financeLockChange("2026-02-30", "2026-11-01").ok).toBe(false)
+    expect(financeLockChange("2026-01-31", "today").ok).toBe(false)
   })
 
   it("refuses a month that is not a calendar month", () => {

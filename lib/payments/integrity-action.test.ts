@@ -6,7 +6,7 @@ vi.mock("@/lib/supabase/server", () => ({ createClient: async () => ({ from, rpc
 vi.mock("@/lib/audit", () => ({ writeAudit: vi.fn() }))
 vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }))
 vi.mock("next/navigation", () => ({ redirect: vi.fn() }))
-import { createInvoice, updateInvoice, updateFinanceLockDate, cancelDraftInvoice } from "@/app/(app)/finance/actions"
+import { createInvoice, updateInvoice, updateFinanceLockDate, cancelDraftInvoice, closeCompletedMonth } from "@/app/(app)/finance/actions"
 
 const orgId = "00000000-0000-4000-8000-000000000003"
 const id = "00000000-0000-4000-8000-000000000001"
@@ -45,6 +45,18 @@ it("sets and clears the finance lock with an active workspace check", async () =
   expect(rpc).toHaveBeenCalledWith("update_finance_lock_date", { p_org_id: orgId, p_lock_date: "2026-01-31" })
   expect(await updateFinanceLockDate({ expectedOrgId: orgId, lockDate: "" })).toEqual({})
   expect(rpc).toHaveBeenLastCalledWith("update_finance_lock_date", { p_org_id: orgId, p_lock_date: null })
+})
+it("refuses a future lock date before the database call", async () => {
+  expect((await updateFinanceLockDate({ expectedOrgId: orgId, lockDate: "2099-01-31" })).error).toBe("Finance lock date cannot be in the future.")
+  expect(rpc).not.toHaveBeenCalled()
+})
+it("closes a completed month through the database command", async () => {
+  rpc.mockResolvedValueOnce({ data: "2020-01-31", error: null })
+  expect(await closeCompletedMonth({ expectedOrgId: orgId, month: "2020-01" })).toEqual({ lockDate: "2020-01-31" })
+  expect(rpc).toHaveBeenCalledWith("close_completed_month", { p_org_id: orgId, p_month: "2020-01" })
+  expect((await closeCompletedMonth({ expectedOrgId: orgId, month: "January" })).error).toBeTruthy()
+  expect((await closeCompletedMonth({ expectedOrgId: id, month: "2020-01" })).error).toBeTruthy()
+  expect(rpc).toHaveBeenCalledTimes(1)
 })
 it("refuses nonstaff, malformed dates and stale workspace forms before dispatch", async () => {
   expect((await updateFinanceLockDate({ expectedOrgId: orgId, lockDate: "2026-02-30" })).error).toBeTruthy()

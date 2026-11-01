@@ -1,4 +1,5 @@
 import { buddhistEraLabel } from "@/lib/dates"
+import { FILING_LEAD_EN, FILING_LEAD_TH, FILING_LIMIT_EN, FILING_LIMIT_TH, FILING_PARTIES } from "@/lib/finance/filing-responsibility"
 import { toCsv } from "@/lib/export/csv"
 import { escapeHtml } from "@/lib/documents/printable"
 import { BAHT_CAPTION_EN, BAHT_CAPTION_TH, closeDateLabel, VAT_SUPPORT_EN, VAT_SUPPORT_TH, WHT_SUPPORT_EN, WHT_SUPPORT_TH } from "@/lib/finance/close-copy"
@@ -283,6 +284,11 @@ export function accountantPackCsv(pack: AccountantPack): string {
   const rows: (string | number | null)[][] = [
     summary(pack, "disclaimer", "", "", "", ACCOUNTANT_PACK_DISCLAIMER_EN),
     summary(pack, "disclaimer_th", "", "", "", ACCOUNTANT_PACK_DISCLAIMER_TH),
+    summary(pack, "responsibility_th", "", "", "", FILING_LEAD_TH),
+    summary(pack, "responsibility_en", "", "", "", FILING_LEAD_EN),
+    ...FILING_PARTIES.map((party) => summary(pack, "responsibility", "", "", "", `${party.th} / ${party.en}`)),
+    summary(pack, "responsibility_limit_th", "", "", "", FILING_LIMIT_TH),
+    summary(pack, "responsibility_limit_en", "", "", "", FILING_LIMIT_EN),
     summary(pack, "output_vat", pack.outputBaseSatang, pack.outputVatSatang, pack.outputWhtSatang, "Issued invoices minus credit notes. Output VAT support, not a filing."),
     summary(pack, "input_vat", pack.inputBaseSatang, pack.inputVatSatang, "", "Matched vendor bills on the purchase VAT table, including linked credits. Input VAT support, not a filing."),
     summary(pack, "output_minus_input", "", pack.outputMinusInputVatSatang, "", "Support difference only. Not tax payable and not a ภ.พ.30 filing."),
@@ -349,6 +355,11 @@ export function renderAccountantPackHtml(pack: AccountantPack, generatedOn: stri
     <p>${escapeHtml(ACCOUNTANT_PACK_DISCLAIMER_EN)}</p>
     <p>${escapeHtml(VAT_SUPPORT_TH)}</p>
     <p>${escapeHtml(VAT_SUPPORT_EN)}</p>
+    <p>${escapeHtml(FILING_LEAD_TH)}</p>
+    <p>${escapeHtml(FILING_LEAD_EN)}</p>
+    <ul>${FILING_PARTIES.map((party) => `<li>${escapeHtml(party.th)} / ${escapeHtml(party.en)}</li>`).join("")}</ul>
+    <p>${escapeHtml(FILING_LIMIT_TH)}</p>
+    <p>${escapeHtml(FILING_LIMIT_EN)}</p>
   </div>
   <button type="button" onclick="window.print()">พิมพ์ / Print / PDF</button>
   <h2>ภาษีขาย / Output VAT</h2>

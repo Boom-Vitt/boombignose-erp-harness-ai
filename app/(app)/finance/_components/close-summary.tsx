@@ -33,7 +33,7 @@ export function CloseSummary() {
       <CardHeader>
         <CardTitle className="text-base">สรุปปิดเดือน / Month-end note</CardTitle>
         <CardDescription>
-          Ollama อ่านลูกหนี้เกินกำหนด บิลเจ้าหนี้ที่ยังไม่จ่าย และรายการธนาคารที่ยังไม่จับคู่ในเวิร์กสเปซนี้ แล้วเขียนบันทึกสั้น ๆ ไม่ลงบัญชีและไม่ยื่นภาษี / Ollama reads overdue receivables, unpaid vendor bills, and unmatched bank lines in this workspace, then writes a short note. It does not post a journal or file tax.
+          Ollama อ่านลูกหนี้เกินกำหนด บิลเจ้าหนี้ที่ยังไม่จ่าย และรายการธนาคารที่ยังไม่จับคู่ในเวิร์กสเปซนี้ แล้วเขียนบันทึกสั้น ๆ ไม่ลงบัญชีและไม่ยื่นภาษี นักบัญชีจัดทำงบตามกฎหมาย ผู้ประกอบการกับนักบัญชียื่นต่อกรมสรรพากร / Ollama reads overdue receivables, unpaid vendor bills, and unmatched bank lines in this workspace, then writes a short note. It does not post a journal or file tax. Your accountant prepares the statutory books. You and your accountant file with the Revenue Department.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">

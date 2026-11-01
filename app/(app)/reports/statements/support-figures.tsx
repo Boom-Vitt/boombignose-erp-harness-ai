@@ -1,5 +1,6 @@
 import Link from "next/link"
 
+import { FilingResponsibility } from "@/components/finance/filing-responsibility"
 import { BAHT_CAPTION_EN, BAHT_CAPTION_TH, VAT_SUPPORT_EN, VAT_SUPPORT_TH, closeDateLabel, closeMonthLabel } from "@/lib/finance/close-copy"
 import { AGING_BUCKET_DISPLAY } from "@/lib/finance/outstanding-pack"
 import { formatTHB } from "@/lib/money"
@@ -47,6 +48,7 @@ export function SupportFigures({
       <h2 className="font-semibold">ข้อมูลประกอบ ภ.พ.30 / VAT support</h2>
       <p className="text-sm text-muted-foreground">{VAT_SUPPORT_TH}</p>
       <p className="text-sm text-muted-foreground">{VAT_SUPPORT_EN}</p>
+      <FilingResponsibility />
       <Card><CardContent className="grid gap-2 py-4 text-sm sm:grid-cols-3">
         <p>ภาษีขาย / Output VAT {formatTHB(vat.outputVatSatang)}</p>
         <p>ภาษีซื้อ / Input VAT {formatTHB(vat.inputVatSatang)}</p>

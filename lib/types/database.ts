@@ -1514,6 +1514,8 @@ isOneToOne: false
                            }
             cancel_draft_invoice: { Args: { p_org_id: string; p_invoice_id: string }; Returns: undefined }
             update_finance_lock_date: { Args: { p_org_id: string; p_lock_date: string | null }; Returns: undefined }
+            close_completed_month: { Args: { p_org_id: string; p_month: string }; Returns: string }
+            record_support_export: { Args: { p_org_id: string; p_kind: string; p_period: string; p_sha256: string; p_bytes: number }; Returns: undefined }
             install_thai_sme_chart: { Args: { p_org_id: string }; Returns: undefined }
             add_bank_line: { Args: { p_org_id: string; p_booked_on: string; p_amount_satang: number; p_reference: string }; Returns: string }
             match_bank_line: { Args: { p_org_id: string; p_line_id: string; p_payment_id: string }; Returns: undefined }

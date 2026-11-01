@@ -5,6 +5,7 @@ import { Card, CardAction, CardContent, CardDescription, CardHeader, CardTitle }
 import { BAHT_CAPTION_EN, BAHT_CAPTION_TH, CLOSE_STATE_LABEL, closeDateLabel, closeMonthLabel } from "@/lib/finance/close-copy"
 import type { CloseChecklist } from "@/lib/finance/close-checklist"
 import { formatTHB } from "@/lib/money"
+import { FilingResponsibility } from "@/components/finance/filing-responsibility"
 
 function badgeLabel(checklist: CloseChecklist): string {
   if (checklist.alreadyClosed) return checklist.ready ? "ปิดแล้ว / Closed" : `${checklist.reviewCount} รายการยังเปิด / ${checklist.reviewCount} still open`
@@ -26,6 +27,7 @@ export function MonthEndCloseSection({ checklist }: { checklist: CloseChecklist 
         </CardAction>
       </CardHeader>
       <CardContent className="space-y-4">
+        <FilingResponsibility />
         <p className="text-sm">{checklist.summary}</p>
         <ul className="divide-y rounded-lg border">
           {checklist.items.map(item => (

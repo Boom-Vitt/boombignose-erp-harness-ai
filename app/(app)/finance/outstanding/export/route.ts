@@ -7,6 +7,8 @@ import { deriveInvoiceStatus } from "@/lib/metrics/invoice-status"
 import { canReviewFinanceClose } from "@/lib/finance/close-access"
 import { bangkokCalendarDate, isCalendarDate, resolveCloseMonth } from "@/lib/finance/close-window"
 import { outstandingPack, outstandingPackCsv, type OutstandingBill } from "@/lib/finance/outstanding-pack"
+import { supportExportHeaders } from "@/lib/finance/export-integrity"
+import { commitSupportExport } from "@/lib/finance/support-export"
 
 /**
  * Open invoices and unpaid vendor bills for an external accountant.
@@ -60,8 +62,9 @@ export async function GET(request: Request) {
     kind: cost.purchase_cost_kind,
   }))
   const csv = outstandingPackCsv(outstandingPack(asOf, invoices, bills))
-  return new Response(csv, { headers: {
-    "Content-Type": "text/csv; charset=utf-8",
-    "Content-Disposition": `attachment; filename="outstanding-pack-${asOf}.csv"`,
-  } })
+  const recorded = await commitSupportExport(ctx.orgId, "outstanding_pack_csv", asOf, csv)
+  if (!recorded.ok) return new Response(recorded.error, { status: 503 })
+  return new Response(csv, {
+    headers: supportExportHeaders(`outstanding-pack-${asOf}.csv`, "text/csv; charset=utf-8", recorded.sha256, "attachment"),
+  })
 }
