@@ -117,6 +117,7 @@ jobs:
 
   macos:
     needs: test
+    if: github.event_name != 'pull_request'
     runs-on: macos-14
     steps:
       - uses: actions/checkout@v5
