@@ -45,6 +45,10 @@ insert into public.payments(id, org_id, client_id, invoice_id, amount_satang, pa
   values (pg_temp.follow_id(51), pg_temp.follow_id(10), pg_temp.follow_id(20), pg_temp.follow_id(30), 1000, now(), 'transfer', 'verified', 'โอนธนาคาร');
 insert into public.payment_allocations(org_id, payment_id, invoice_id, amount_satang)
   values (pg_temp.follow_id(10), pg_temp.follow_id(51), pg_temp.follow_id(30), 1000);
+insert into public.payments(id, org_id, client_id, invoice_id, amount_satang, paid_at, method, verification_state, notes)
+  values (pg_temp.follow_id(52), pg_temp.follow_id(10), pg_temp.follow_id(20), pg_temp.follow_id(30), 1000, now(), 'other', 'verified', 'วิธีอื่น');
+insert into public.payment_allocations(org_id, payment_id, invoice_id, amount_satang)
+  values (pg_temp.follow_id(10), pg_temp.follow_id(52), pg_temp.follow_id(30), 1000);
 select set_config('request.jwt.claims', jsonb_build_object('role', 'authenticated', 'sub', pg_temp.follow_id(1))::text, true);
 set local role authenticated;
 
@@ -84,11 +88,17 @@ select is(
   5000::bigint,
   'the receipt credits the receivable'
 );
+select lives_ok($$select public.post_cash_receipt(pg_temp.follow_id(10), pg_temp.follow_id(51))$$, 'a bank transfer posts to the bank account');
+select is(
+  (select debit_satang from public.journal_lines where account_code = '1120' and entry_id = (select id from public.journal_entries where source_payment_id = pg_temp.follow_id(51))),
+  1000::bigint,
+  'the transfer debits bank'
+);
 select throws_ok(
-  $$select public.post_cash_receipt(pg_temp.follow_id(10), pg_temp.follow_id(51))$$,
+  $$select public.post_cash_receipt(pg_temp.follow_id(10), pg_temp.follow_id(52))$$,
   'P0001',
-  'Only a cash receipt is posted. Bank, card, and cheque receipts are not posted yet.',
-  'a bank transfer is refused'
+  'This receipt method is not posted.',
+  'an unclassified receipt method is refused'
 );
 select throws_ok(
   $$select public.post_issued_credit_note(pg_temp.follow_id(10), (select id from public.credit_notes where invoice_id = pg_temp.follow_id(30)))$$,

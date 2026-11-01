@@ -82,7 +82,7 @@ describe("close screens stay support data", () => {
     const followOn = readFileSync("lib/finance/follow-on-journal.ts", "utf8")
     expect(followOn).toContain("ไม่ใช่การยื่นแบบ ภ.พ.30")
     expect(followOn).toContain("not signed statutory books")
-    expect(followOn).toContain("Bank, card, cheque, withholding, and an unallocated remainder are refused.")
+    expect(followOn).toContain("no card-clearing account and no undeposited-cheque account")
     expect(followOn).not.toMatch(/ยื่นแบบสำเร็จ|e-Tax Invoice/)
 
     const chart = readFileSync("app/(app)/settings/chart/page.tsx", "utf8")

@@ -174,23 +174,23 @@ export async function postCashReceipt(paymentId: string): Promise<{ error?: stri
   catch { return { error: "Only owners, admins, and accountants can post a draft journal." } }
   const supabase = await createClient()
   const paymentRes = await supabase.from("payments").select("id, amount_satang, paid_at, method, verification_state, reversal_of, refund_of, notes, verification_reference").eq("org_id", ctx.orgId).eq("id", paymentId).maybeSingle()
-  if (paymentRes.error || !paymentRes.data) return { error: "Only a verified cash receipt can post." }
+  if (paymentRes.error || !paymentRes.data) return { error: "Only a verified receipt can post." }
   const payment = paymentRes.data
   const [settingsRes, accountsRes, allocationsRes] = await Promise.all([
     supabase.from("org_settings").select("lock_date").eq("org_id", ctx.orgId).maybeSingle(),
     supabase.from("gl_accounts").select("code").eq("org_id", ctx.orgId),
     supabase.from("payment_allocations").select("invoice_id, amount_satang").eq("org_id", ctx.orgId).eq("payment_id", paymentId),
   ])
-  if (settingsRes.error || accountsRes.error || allocationsRes.error) return { error: "Only a verified cash receipt can post." }
+  if (settingsRes.error || accountsRes.error || allocationsRes.error) return { error: "Only a verified receipt can post." }
   const invoiceIds = [...new Set((allocationsRes.data ?? []).map(row => row.invoice_id))]
   const invoicesRes = invoiceIds.length === 0 ? { data: [] as { id: string; wht_satang: number; total_satang: number }[], error: null } : await supabase.from("invoices").select("id, wht_satang, total_satang").eq("org_id", ctx.orgId).in("id", invoiceIds)
-  if (invoicesRes.error) return { error: "Only a verified cash receipt can post." }
+  if (invoicesRes.error) return { error: "Only a verified receipt can post." }
   const postedInvoices = invoiceIds.length === 0 ? { data: [] as { source_invoice_id: string | null }[], error: null } : await supabase.from("journal_entries").select("source_invoice_id").eq("org_id", ctx.orgId).in("source_invoice_id", invoiceIds)
-  if (postedInvoices.error) return { error: "Only a verified cash receipt can post." }
+  if (postedInvoices.error) return { error: "Only a verified receipt can post." }
   const postedInvoiceIds = new Set((postedInvoices.data ?? []).map(row => row.source_invoice_id))
   const relatedAllocationsRes = invoiceIds.length === 0 ? { data: [] as { invoice_id: string; payment_id: string; amount_satang: number }[], error: null } : await supabase.from("payment_allocations").select("invoice_id, payment_id, amount_satang").eq("org_id", ctx.orgId).in("invoice_id", invoiceIds)
   const relatedNotesRes = invoiceIds.length === 0 ? { data: [] as { id: string; invoice_id: string; snapshot: unknown }[], error: null } : await supabase.from("credit_notes").select("id, invoice_id, snapshot").eq("org_id", ctx.orgId).in("invoice_id", invoiceIds)
-  if (relatedAllocationsRes.error || relatedNotesRes.error) return { error: "Only a verified cash receipt can post." }
+  if (relatedAllocationsRes.error || relatedNotesRes.error) return { error: "Only a verified receipt can post." }
   const relatedAllocations = relatedAllocationsRes.data ?? []
   const relatedNotes = relatedNotesRes.data ?? []
   const relatedPaymentIds = [...new Set(relatedAllocations.map(row => row.payment_id))]
@@ -199,7 +199,7 @@ export async function postCashReceipt(paymentId: string): Promise<{ error?: stri
     relatedPaymentIds.length === 0 ? Promise.resolve({ data: [] as { source_payment_id: string | null }[], error: null }) : supabase.from("journal_entries").select("source_payment_id").eq("org_id", ctx.orgId).in("source_payment_id", relatedPaymentIds),
     relatedNoteIds.length === 0 ? Promise.resolve({ data: [] as { source_credit_note_id: string | null }[], error: null }) : supabase.from("journal_entries").select("source_credit_note_id").eq("org_id", ctx.orgId).in("source_credit_note_id", relatedNoteIds),
   ])
-  if (postedPayments.error || postedNotes.error) return { error: "Only a verified cash receipt can post." }
+  if (postedPayments.error || postedNotes.error) return { error: "Only a verified receipt can post." }
   const postedPaymentIds = new Set((postedPayments.data ?? []).map(row => row.source_payment_id))
   const postedNoteIds = new Set((postedNotes.data ?? []).map(row => row.source_credit_note_id))
   const check = cashReceiptJournal({

@@ -453,11 +453,12 @@ async function CashReceiptPosts({ orgId, invoiceId }: { orgId: string; invoiceId
   if (posted.error) throw new Error("Draft journal unavailable")
   const postedIds = new Set((posted.data ?? []).map(row => row.source_payment_id))
   const rows = payments.data ?? []
-  const cash = rows.filter(row => row.verification_state === "verified" && row.method === "cash" && !row.reversal_of && !row.refund_of)
-  const other = rows.some(row => row.verification_state === "verified" && row.method !== "cash" && !row.reversal_of && !row.refund_of)
-  if (cash.length === 0 && !other) return null
+  const postable = new Set(["cash", "transfer", "promptpay", "card", "cheque"])
+  const ready = rows.filter(row => row.verification_state === "verified" && postable.has(row.method) && !row.reversal_of && !row.refund_of)
+  const other = rows.some(row => row.verification_state === "verified" && !postable.has(row.method) && !row.reversal_of && !row.refund_of)
+  if (ready.length === 0 && !other) return null
   return <div className="space-y-2">
-    {other ? <p className="text-sm">Only a cash receipt is posted. Bank, card, and cheque receipts are not posted yet.</p> : null}
-    <ul className="space-y-2">{cash.map(row => <li key={row.id}><PostCashReceiptButton paymentId={row.id} posted={postedIds.has(row.id)} /></li>)}</ul>
+    {other ? <p className="text-sm">This receipt method is not posted.</p> : null}
+    <ul className="space-y-2">{ready.map(row => <li key={row.id}><PostCashReceiptButton paymentId={row.id} posted={postedIds.has(row.id)} method={row.method} /></li>)}</ul>
   </div>
 }

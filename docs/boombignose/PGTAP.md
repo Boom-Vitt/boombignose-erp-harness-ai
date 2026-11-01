@@ -21,7 +21,7 @@ pnpm exec supabase test db --workdir .local-stack supabase/tests/sales_invoice_j
 pnpm exec supabase test db --workdir .local-stack supabase/tests/follow_on_journal.sql
 ```
 
-`follow_on_journal.sql` posts a partial credit note and a verified cash receipt after the sale. It refuses a credit note before the sale, a bank transfer, a second credit note, and a member.
+`follow_on_journal.sql` posts a partial credit note, a verified cash receipt, and a bank transfer after the sale. The transfer debits bank account 1120. It refuses a credit note before the sale, an unclassified receipt method, a second credit note, and a member.
 
 `draft_journal.sql` checks a balanced post into a locked period, and it checks that an unbalanced journal, an unknown account, an open period, a member, and a forged audit row are refused.
 
