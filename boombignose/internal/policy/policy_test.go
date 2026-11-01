@@ -81,4 +81,21 @@ func TestCheckEnv(t *testing.T) {
 	if err == nil || strings.Contains(err.Error(), "ollama.example.com") {
 		t.Fatalf("remote ollama: %v", err)
 	}
+	if err := CheckEnv(func(k string) string {
+		if k == "BOOMBIGNOSE_UPDATE_URL" {
+			return "http://127.0.0.1:9"
+		}
+		return ""
+	}); err != nil {
+		t.Fatal(err)
+	}
+	err = CheckEnv(func(k string) string {
+		if k == "BOOMBIGNOSE_UPDATE_URL" {
+			return "https://updates.example/apply"
+		}
+		return ""
+	})
+	if err == nil || strings.Contains(err.Error(), "updates.example") {
+		t.Fatalf("remote update helper: %v", err)
+	}
 }

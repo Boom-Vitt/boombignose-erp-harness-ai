@@ -134,3 +134,48 @@
     @apply font-sans;
   }
 }
+
+/* Local AI and update surfaces. Sketch borders stay on these cards only. */
+.bbn-sketch-card {
+  border: 2px solid var(--foreground);
+  border-radius: 18px 14px 16px 12px;
+  background: var(--card);
+  box-shadow: 3px 3px 0 color-mix(in oklch, var(--foreground) 16%, transparent);
+}
+
+.bbn-step-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.5rem;
+  height: 1.5rem;
+  padding: 0 0.45rem;
+  border: 2px solid var(--foreground);
+  border-radius: 999px;
+  background: var(--background);
+  font-size: 0.75rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.bbn-sketch-steps {
+  display: grid;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.bbn-sketch-steps li {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+}
+
+.bbn-sticky {
+  border: 2px solid color-mix(in oklch, var(--bbn-accent) 75%, var(--foreground));
+  border-radius: 2px 14px 4px 12px;
+  background: color-mix(in oklch, var(--bbn-accent) 18%, var(--card));
+  padding: 0.75rem 0.9rem;
+  box-shadow: 4px 4px 0 color-mix(in oklch, var(--bbn-accent) 35%, transparent);
+}

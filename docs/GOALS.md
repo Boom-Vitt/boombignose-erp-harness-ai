@@ -22,7 +22,7 @@ Status: installers are published. Click-through on a physical machine is not don
 
 ## GOAL 3 — Remaining phases and rename
 
-Status: the published installer is `boombignose-v1.3.0`. The macOS bundle version, the Windows version resource, and `APP_VERSION` in this tree are `1.3.0`. https://github.com/Boom-Vitt/boombignose-erp-harness-ai/releases/latest redirects to that tag. The download page is updated when Pages deploys `site/`. Untested items below stay open.
+Status: the published installer is `boombignose-v1.3.0`. The macOS bundle version, the Windows version resource, and `APP_VERSION` in this tree are `1.4.0`. Tag `boombignose-v1.4.0` is not created here. The in-app update is documented in `docs/boombignose/UPDATE.md`. https://github.com/Boom-Vitt/boombignose-erp-harness-ai/releases/latest redirects to `boombignose-v1.3.0`. The download page is updated when Pages deploys `site/`. Untested items below stay open.
 
 - Phases 1–10 are recorded in `docs/boombignose/PHASES.md`. `boombignose cutover` with no subcommand prints a plan and does not connect. `cutover dry-run` lists base-table names on two loopback databases and writes nothing. `cutover apply` writes a custom-format backup of the target, then restores the source into the target. `cutover rollback` restores that backup. The harness test starts two throwaway clusters and checks one row. It does not read a hosted database. Domain rules are still Postgres functions. The ERP Vitest, SQL, and Playwright suites were not re-run for this command.
 - The GitHub repository is https://github.com/Boom-Vitt/boombignose-erp-harness-ai . The Go module path is `github.com/Boom-Vitt/boombignose-erp-harness-ai/boombignose`. The local Supabase `project_id` stays `boombignose-erp`.

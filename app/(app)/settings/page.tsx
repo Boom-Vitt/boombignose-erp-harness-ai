@@ -247,10 +247,10 @@ export default async function SettingsPage() {
       <div className="grid gap-6 lg:grid-cols-2">
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">Updates</CardTitle>
-            <CardDescription>Look up the public release when you ask. The check shows a link and does not download.</CardDescription>
+            <CardTitle className="text-base">อัปเดตแอป / App update</CardTitle>
+            <CardDescription>ตรวจรุ่นที่เผยแพร่เมื่อกด บน macOS Apple Silicon ติดตั้งจากในแอปได้ / Check the published release when you ask. macOS Apple Silicon can install it here.</CardDescription>
           </CardHeader>
-          <CardContent><UpdateCheckButton /></CardContent>
+          <CardContent><UpdateCheckButton canUpdate={canEdit} /></CardContent>
         </Card>
         <Card>
           <CardHeader>

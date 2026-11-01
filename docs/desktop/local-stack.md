@@ -52,6 +52,8 @@
 
 The desktop starts bundled Ollama on loopback and does not pull a model while it boots. The install screen is the ERP Settings page, `/settings#local-models`. It talks to `127.0.0.1:11434` and refuses any other host. An owner or admin can install or remove a model. The weights download only after that click, with progress and the daemon's error, and they are not stored in git.
 
+The page is the checklist from the Local AI teaching deck. Step 1 is the text model `qwen3:4b`. Step 2 is vision `qwen2.5vl:3b`. Step 3 is the image model, which installs on macOS. A model that is already on this computer is marked ติดตั้งแล้ว / Installed. The note on the page says these models do not post a journal and do not file VAT. In-app app updates are a separate card on the same Settings page. See `docs/boombignose/UPDATE.md`.
+
 | Modality | Where it runs in Ollama 0.40.11 | What the screen does |
 |---|---|---|
 | Text | Linux, Windows, macOS | Install `qwen3:4b`. Deal summaries, follow-up drafts, meeting notes, and the month-end note call it. |

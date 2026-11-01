@@ -178,6 +178,30 @@ func TestChildEnvCopiesTotpFlagOnlyWhenEnabled(t *testing.T) {
 	}
 }
 
+func TestChildEnvKeepsTheLoopbackUpdateHelper(t *testing.T) {
+	token := strings.Repeat("ab", 32)
+	data := t.TempDir()
+	env, err := ChildEnv([]string{
+		"BOOMBIGNOSE_UPDATE_URL=http://127.0.0.1:43123",
+		"BOOMBIGNOSE_UPDATE_TOKEN=" + token,
+		"BOOMBIGNOSE_DATA=" + data,
+		"BOOMBIGNOSE_UPDATE_TOKEN=not-a-token",
+	}, "3100")
+	if err != nil {
+		t.Fatal(err)
+	}
+	text := strings.Join(env, "\n")
+	if !strings.Contains(text, "BOOMBIGNOSE_UPDATE_URL=http://127.0.0.1:43123") || !strings.Contains(text, "BOOMBIGNOSE_UPDATE_TOKEN="+token) {
+		t.Fatalf("helper env: %s", text)
+	}
+	if !strings.Contains(text, "BOOMBIGNOSE_DATA="+data) || strings.Contains(text, "not-a-token") {
+		t.Fatalf("data dir: %s", text)
+	}
+	if _, err := ChildEnv([]string{"BOOMBIGNOSE_UPDATE_URL=https://updates.example"}, "3100"); err == nil || strings.Contains(err.Error(), "updates.example") {
+		t.Fatalf("remote helper: %v", err)
+	}
+}
+
 func TestOllamaServeRefusesRemoteHost(t *testing.T) {
 	_, err := OllamaServe("/tmp/ollama", "https://ollama.example")
 	if err == nil {

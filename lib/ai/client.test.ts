@@ -38,6 +38,7 @@ describe("lib/ai/client", () => {
     expect(JSON.parse(init.body)).toEqual({
       model: "qwen3:4b",
       stream: false,
+      think: false,
       messages: [
         { role: "system", content: "sys" },
         { role: "user", content: "usr" },
@@ -110,6 +111,17 @@ describe("lib/ai/client", () => {
     await expect(generateText({ system: "s", prompt: "p" })).rejects.toThrow(
       "Ollama returned no text",
     )
+  })
+
+  it("returns thinking text when qwen3 left the answer empty", async () => {
+    fake.mockResolvedValue(
+      new Response(JSON.stringify({ message: { role: "assistant", content: "", thinking: "  Follow up tomorrow.  " } }), {
+        status: 200,
+      }),
+    )
+    const { generateText } = await load()
+    expect(await generateText({ system: "s", prompt: "p" })).toBe("Follow up tomorrow.")
+    expect(JSON.parse(fake.mock.calls[0][1].body).think).toBe(false)
   })
 
   it("a 200 carrying an error degrades as not configured", async () => {

@@ -94,6 +94,26 @@ func Discover(root string) (Layout, error) {
 	return layout, nil
 }
 
+func updateToken(value string) bool {
+	if len(value) != 64 {
+		return false
+	}
+	for _, r := range value {
+		if (r < '0' || r > '9') && (r < 'a' || r > 'f') {
+			return false
+		}
+	}
+	return true
+}
+
+func absDataDir(value string) bool {
+	value = strings.TrimSpace(value)
+	if value == "" || strings.ContainsAny(value, "\r\n\x00") {
+		return false
+	}
+	return filepath.IsAbs(value)
+}
+
 func exeName(base string) string {
 	if runtime.GOOS == "windows" {
 		return base + ".exe"
@@ -187,6 +207,24 @@ func ChildEnv(parent []string, port string) ([]string, error) {
 			}
 		case "OLLAMA_MODEL":
 			if strings.TrimSpace(value) != "" {
+				vals[key] = strings.TrimSpace(value)
+			}
+		case "BOOMBIGNOSE_UPDATE_URL":
+			if strings.Contains(value, "@") || strings.ContainsAny(value, "\r\n") {
+				return nil, fmt.Errorf("%s: %w", key, policy.ErrNotLocal)
+			}
+			if err := policy.AllowEndpoint(value); err != nil {
+				return nil, fmt.Errorf("%s: %w", key, policy.ErrNotLocal)
+			}
+			if strings.TrimSpace(value) != "" {
+				vals[key] = strings.TrimSpace(value)
+			}
+		case "BOOMBIGNOSE_UPDATE_TOKEN":
+			if updateToken(value) {
+				vals[key] = value
+			}
+		case "BOOMBIGNOSE_DATA":
+			if absDataDir(value) {
 				vals[key] = strings.TrimSpace(value)
 			}
 		case "LOCAL_TOTP_ENROLL":

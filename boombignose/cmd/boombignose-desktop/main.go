@@ -17,6 +17,7 @@ import (
 	"github.com/Boom-Vitt/boombignose-erp-harness-ai/boombignose/internal/launch"
 	"github.com/Boom-Vitt/boombignose-erp-harness-ai/boombignose/internal/policy"
 	"github.com/Boom-Vitt/boombignose-erp-harness-ai/boombignose/internal/shell"
+	"github.com/Boom-Vitt/boombignose-erp-harness-ai/boombignose/internal/update"
 	"github.com/Boom-Vitt/boombignose-erp-harness-ai/boombignose/nav"
 	"github.com/wailsapp/wails/v2"
 	"github.com/wailsapp/wails/v2/pkg/options"
@@ -46,6 +47,16 @@ func run() error {
 	if err := policy.CheckEnv(os.Getenv); err != nil {
 		return err
 	}
+	app := &App{}
+	if dir, err := update.Dir(); err == nil {
+		if helper, err := update.Start(dir); err == nil {
+			app.helper = helper
+			_ = os.Setenv("BOOMBIGNOSE_UPDATE_URL", helper.BaseURL)
+			_ = os.Setenv("BOOMBIGNOSE_UPDATE_TOKEN", helper.Token)
+		} else {
+			fmt.Fprintf(os.Stderr, "boombignose: update helper did not start\n")
+		}
+	}
 	// The window loads the local Next server. Finance, bank lines, cash at
 	// close, the month-end checklist, statements, and the accountant pack
 	// are routes on that server (shell.FinanceScreens). The brochure in
@@ -67,8 +78,9 @@ func run() error {
 			Assets: assets,
 		},
 		Bind: []interface{}{
-			&App{},
+			app,
 		},
+		OnStartup: app.startup,
 		OnDomReady: func(ctx context.Context) {
 			go func() {
 				wait, cancel := context.WithTimeout(context.Background(), 3*time.Minute)
@@ -96,7 +108,16 @@ func run() error {
 }
 
 // App exposes the explicit model download. Startup does not call it.
-type App struct{}
+type App struct {
+	helper *update.Helper
+}
+
+func (a *App) startup(ctx context.Context) {
+	if a.helper == nil {
+		return
+	}
+	a.helper.SetQuit(func() { runtime.Quit(ctx) })
+}
 
 // PullLocalModel runs `ollama pull qwen3:4b` on loopback. The splash button
 // is the only caller. A cloud host is refused and is not included in the error.

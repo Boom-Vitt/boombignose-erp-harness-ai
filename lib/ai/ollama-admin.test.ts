@@ -113,7 +113,14 @@ describe("ollama model admin", () => {
     expect(body.model).toBe("qwen2.5vl:3b")
     expect(body.messages[0].images).toEqual(["a".repeat(32)])
     expect(body.messages[0].content).toMatch(/do not file tax/i)
+    expect(body.think).toBe(false)
     expect(fake.mock.calls[1][0]).toBe("http://127.0.0.1:11434/api/chat")
+
+    fake.mockReset()
+    fake.mockResolvedValueOnce(json({ models: [{ name: "qwen2.5vl:3b", size: 3 }] }))
+    fake.mockResolvedValueOnce(json({ message: { content: "", thinking: "  a slip  " } }))
+    const thought = await describeLocalImage({ mediaType: "image/png", imageBase64: "a".repeat(32) }, linux, fake)
+    expect(thought).toEqual({ text: "a slip" })
   })
 
   it("speaks English on Apple Silicon and refuses the same call on Linux", async () => {
