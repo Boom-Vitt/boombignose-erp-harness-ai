@@ -9,10 +9,7 @@ import { Button } from "@/components/ui/button"
 
 import { syncInvoiceToAccounting } from "@/ee/accounting/invoice-actions"
 
-/**
- * "Sync to accounting" — pushes the invoice to the connected provider (a stub
- * in this MVP) and records the mapping. Re-clicking re-syncs idempotently.
- */
+/** Export this issued invoice through the connected FlowAccount adapter. */
 export function SyncInvoiceButton({ invoiceId }: { invoiceId: string }) {
   const router = useRouter()
   const [pending, startTransition] = useTransition()
@@ -31,15 +28,15 @@ export function SyncInvoiceButton({ invoiceId }: { invoiceId: string }) {
           }
           toast.success(
             res.externalId
-              ? `Synced to accounting (${res.externalId})`
-              : "Synced to accounting"
+              ? `Exported (${res.externalId})`
+              : "Exported"
           )
           router.refresh()
         })
       }
     >
       <RefreshCw className={pending ? "animate-spin" : undefined} />
-      {pending ? "Syncing…" : "Sync to accounting"}
+      {pending ? "Exporting…" : "Export to FlowAccount"}
     </Button>
   )
 }

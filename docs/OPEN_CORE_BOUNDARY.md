@@ -5,7 +5,7 @@ Inventory verified on 2026-10-22 against `docs/OPEN_CORE_STRATEGY.md` and source
 | Area | Implementation | Reason |
 | --- | --- | --- |
 | Client portal | `ee/portal/` | Pro table: tokenized client-facing access, quote acceptance, payment reports, and staff share-link management |
-| Accounting | `ee/accounting/` | Pro table: FlowAccount/PEAK/Xero adapters, invoice payload mapping, connection settings, invoice push and sync-map reads/UI |
+| Accounting | `ee/accounting/` | Pro table: FlowAccount export (fixture or sandbox), PEAK/Xero adapter slots, invoice payload mapping, connection settings, invoice push and sync-map reads/UI |
 | Workspaces | `ee/workspaces/` | Pro table: real multi-org list/switcher and hosted or additional-org provisioning |
 | BoomBigNose | `bignose/` | Separate proprietary product, including its agent runtime, desktop application and bundled skills; see `bignose/LICENSE` |
 
@@ -114,7 +114,10 @@ ee/LICENSE
 ee/accounting/actions.ts
 ee/accounting/components/accounting-connection-form.tsx
 ee/accounting/components/sync-invoice-button.tsx
+ee/accounting/flowaccount.test.ts
+ee/accounting/flowaccount.ts
 ee/accounting/integration-card.tsx
+ee/accounting/invoice-actions.test.ts
 ee/accounting/invoice-actions.ts
 ee/accounting/invoice-sync.test.ts
 ee/accounting/invoice-sync.tsx
