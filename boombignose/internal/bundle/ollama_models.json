@@ -61,8 +61,8 @@
     },
     {
       "modality": "asr",
-      "reasonTh": "ยังไม่มีในรุ่นนี้ Ollama 0.40.11 ยังไม่รับไฟล์เสียงเข้า และแอปนี้ไม่ได้ติดตั้ง Whisper แยก",
-      "reasonEn": "Not available in this build. Ollama 0.40.11 does not accept audio input, and this app does not bundle Whisper."
+      "reasonTh": "บน macOS ยังไม่มีในรุ่นนี้ whisper.cpp รุ่น b5454 มีโปรแกรมสำหรับ Linux และ Windows แต่ยังไม่มี whisper-cli สำหรับ macOS ขั้นตอนถัดไปคือปักเวอร์ชันไฟล์นั้นเมื่อ ggml-org เผยแพร่ แอปนี้ไม่ได้ให้ไปติดตั้ง Whisper Desktop",
+      "reasonEn": "Not available on macOS in this build. whisper.cpp release b5454 publishes Linux and Windows command-line archives, not a macOS whisper-cli. The next step is to pin that archive when ggml-org publishes it. This app does not send you to Whisper Desktop."
     },
     {
       "modality": "voice-clone",

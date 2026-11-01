@@ -5,12 +5,15 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { formatBytes, sanitizePullLine, type ModelSnapshot } from "@/lib/ai/model-catalog"
 
+export type AsrCardState = { offered: boolean; installed: boolean }
+
 type Props = {
   initial: ModelSnapshot
   canInstall: boolean
+  asr?: AsrCardState
 }
 
-export function LocalModelsCard({ initial, canInstall }: Props) {
+export function LocalModelsCard({ initial, canInstall, asr = { offered: false, installed: false } }: Props) {
   const [snapshot, setSnapshot] = useState(initial)
   const [pending, setPending] = useState("")
   const [progress, setProgress] = useState("")
@@ -18,6 +21,9 @@ export function LocalModelsCard({ initial, canInstall }: Props) {
   const [visionText, setVisionText] = useState("")
   const [audioUrl, setAudioUrl] = useState<string | null>(null)
   const [picture, setPicture] = useState<{ mediaType: string; image: string } | null>(null)
+  const [asrInstalled, setAsrInstalled] = useState(asr.installed)
+  const [transcript, setTranscript] = useState("")
+  const blocked = snapshot.blocked.filter((item) => !(item.modality === "asr" && asr.offered))
 
   async function refresh() {
     const response = await fetch("/api/local-models", { cache: "no-store" })
@@ -156,6 +162,82 @@ export function LocalModelsCard({ initial, canInstall }: Props) {
     }
   }
 
+  async function installAsr() {
+    setPending("asr")
+    setError("")
+    try {
+      const response = await fetch("/api/local-asr/install", { method: "POST" })
+      const data = (await response.json().catch(() => null)) as { error?: string } | null
+      if (!response.ok) {
+        setError(data?.error || "ดาวน์โหลดไม่สำเร็จ / The download failed.")
+        return
+      }
+      setAsrInstalled(true)
+    } catch {
+      setError("ดาวน์โหลดไม่สำเร็จ / The download failed.")
+    } finally {
+      setPending("")
+    }
+  }
+
+  async function removeAsr() {
+    if (!window.confirm("เอาโปรแกรมถอดเสียงออกจากเครื่องนี้? / Remove speech to text from this computer?")) return
+    setPending("asr")
+    setError("")
+    try {
+      const response = await fetch("/api/local-asr/install", { method: "DELETE" })
+      const data = (await response.json().catch(() => null)) as { error?: string } | null
+      if (!response.ok) {
+        setError(data?.error || "เอาออกไม่สำเร็จ / Could not remove speech to text.")
+        return
+      }
+      setAsrInstalled(false)
+      setTranscript("")
+    } catch {
+      setError("เอาออกไม่สำเร็จ / Could not remove speech to text.")
+    } finally {
+      setPending("")
+    }
+  }
+
+  async function transcribe(file: File) {
+    if (file.size > 4_000_000) {
+      setError("ไฟล์เสียงใหญ่เกินกว่าหน้าที่นี้รับได้ / That recording is too large for this page.")
+      return
+    }
+    const encoded = await new Promise<string>((resolve, reject) => {
+      const reader = new FileReader()
+      reader.onerror = () => reject(new Error("read"))
+      reader.onload = () => resolve(String(reader.result ?? ""))
+      reader.readAsDataURL(file)
+    }).catch(() => "")
+    const match = encoded.match(/^data:[^;]+;base64,([A-Za-z0-9+/=\s]+)$/)
+    if (!match?.[1]) {
+      setError("ใช้ไฟล์ WAV, MP3, FLAC หรือ Ogg / Use a WAV, MP3, FLAC, or Ogg file.")
+      return
+    }
+    setPending("asr-try")
+    setError("")
+    setTranscript("")
+    try {
+      const response = await fetch("/api/local-asr/transcribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ audioBase64: match[1] }),
+      })
+      const data = (await response.json().catch(() => null)) as { error?: string; text?: string } | null
+      if (!response.ok || !data?.text) {
+        setError(data?.error || "ถอดเสียงไม่สำเร็จ / Speech to text failed.")
+        return
+      }
+      setTranscript(data.text)
+    } catch {
+      setError("ถอดเสียงไม่สำเร็จ / Speech to text failed.")
+    } finally {
+      setPending("")
+    }
+  }
+
   async function draw(form: FormData) {
     setPending("image")
     setError("")
@@ -241,8 +323,34 @@ export function LocalModelsCard({ initial, canInstall }: Props) {
           </li>
         ))}
       </ul>
+      {asr.offered ? (
+        <section data-modality="asr" className="space-y-2 rounded-md border p-3">
+          <div className="flex flex-wrap items-baseline justify-between gap-2">
+            <h3 className="text-sm font-medium">ถอดเสียง / Speech to text</h3>
+            <span className="text-muted-foreground text-xs">{asrInstalled ? "ติดตั้งแล้ว / Installed" : "ยังไม่ได้ติดตั้ง / Not installed"}</span>
+          </div>
+          <p className="text-muted-foreground text-xs">whisper.cpp {`b5454`} · MIT · ggml-tiny about 74 MB</p>
+          <p className="text-sm">ถอดเสียงบนเครื่องนี้ แอปดาวน์โหลด whisper.cpp ให้เอง ไม่ต้องติดตั้ง Whisper Desktop โมเดล tiny ฟังภาษาไทยและภาษาอื่นได้ในระดับหนึ่ง ข้อความอยู่แค่บนหน้านี้ ไม่ได้ถูกบันทึกเป็นรายการบัญชีและไม่ได้ยื่น ภ.พ.30 Speech to text stays on this computer. This app downloads whisper.cpp. You do not install Whisper Desktop. The tiny model can transcribe Thai and other languages, with the limits of a small model. The text stays on this page. It is not saved as an accounting entry and it does not file VAT.</p>
+          {canInstall ? (
+            <Button type="button" variant="outline" disabled={pending !== ""} onClick={() => void (asrInstalled ? removeAsr() : installAsr())}>
+              {pending === "asr" ? "กำลังทำงาน…" : asrInstalled ? "เอาออก / Remove" : "ติดตั้ง / Install"}
+            </Button>
+          ) : null}
+          {asrInstalled ? (
+            <label className="block text-sm">
+              ลองถอดเสียง / Try a recording
+              <input className="mt-1 block text-sm" type="file" accept="audio/wav,audio/mpeg,audio/flac,audio/ogg,.wav,.mp3,.flac,.ogg" disabled={pending !== ""} onChange={(event) => {
+                const file = event.target.files?.[0]
+                event.target.value = ""
+                if (file) void transcribe(file)
+              }} />
+            </label>
+          ) : null}
+          {transcript ? <p className="text-sm whitespace-pre-wrap">{transcript}</p> : null}
+        </section>
+      ) : null}
       <ul className="space-y-3">
-        {snapshot.blocked.map((item) => (
+        {blocked.map((item) => (
           <li key={item.modality} data-modality={item.modality} className="rounded-md border border-dashed p-3 text-sm">
             <p className="font-medium">{blockedTitle(item.modality)}</p>
             <p className="text-muted-foreground mt-1">{item.reasonTh}</p>

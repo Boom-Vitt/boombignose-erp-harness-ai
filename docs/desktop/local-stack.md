@@ -57,8 +57,9 @@ The desktop starts bundled Ollama on loopback and does not pull a model while it
 | Text | Linux, Windows, macOS | Install `qwen3:4b`. Deal summaries, follow-up drafts, meeting notes, and the month-end note call it. |
 | Vision | Linux, Windows, macOS | Install `qwen2.5vl:3b`, then read one JPEG, PNG, or WebP on this page. The text is not saved as an accounting entry. |
 | Image generation | macOS only | Install `x/flux2-klein:4b` and draw from a short prompt. Other operating systems show “not available in this build” and do not download the weights. |
-| Speech | Apple Silicon only | Install `phonon` and speak one short English sentence in the built-in voice. It is not Thai and it is not a clone of the operator's voice. |
-| Video, speech-to-text, voice clone | Not in this Ollama build | The screen says not available. There is no ComfyUI, Whisper, or sample-upload control. |
+| Speech | Apple Silicon only | Install `phonon` and speak one short English sentence in the built-in voice. It is not Thai and it is not a clone of the operator's voice. A Thai Piper voice exists upstream, and espeak-ng's Thai voice drops tones, so neither is called from this screen. |
+| Speech to text | Linux x64, Linux arm64, and Windows x64 | Install downloads whisper.cpp release `b5454` and `ggml-tiny.bin` (SHA-256 pinned, about 74 MB) into the local data directory, then transcribes a short WAV, MP3, FLAC, or Ogg file on this computer. macOS has no official `whisper-cli` archive in that release, so the screen says not available there. |
+| Video, voice clone | Not in this build | The screen says not available. There is no ComfyUI and no sample-upload voice clone. |
 
 `boombignose models`, `boombignose pull-model [name]`, and `boombignose remove-model <name>` use the same allowlist. Startup still cannot run `ollama pull`.
 

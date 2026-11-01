@@ -25,6 +25,7 @@ import { StartLogViewer, UpdateCheckButton } from "./_components/local-install"
 import { LocalBackupCard } from "./_components/local-backup"
 import { LocalModelsCard } from "./_components/local-models"
 import { currentModelHost } from "@/lib/ai/local-model-access"
+import { asrCard } from "@/lib/ai/asr-install"
 import { loadModelSettings } from "@/lib/ai/ollama-admin"
 import { updateOrgSettings } from "./actions"
 
@@ -74,6 +75,7 @@ export default async function SettingsPage() {
   )
 
   const localModels = await loadModelSettings(currentModelHost())
+  const asr = await asrCard(process.platform, process.arch)
 
   const team = (members ?? []).map((m) => ({
     userId: m.user_id,
@@ -224,7 +226,7 @@ export default async function SettingsPage() {
           <CardDescription>ดาวน์โหลดในแอปนี้ ไม่ต้องเปิดโปรแกรม AI อื่น / Download inside this app. No separate AI program.</CardDescription>
         </CardHeader>
         <CardContent>
-          <LocalModelsCard initial={localModels} canInstall={canEdit} />
+          <LocalModelsCard initial={localModels} canInstall={canEdit} asr={asr} />
         </CardContent>
       </Card>
 
