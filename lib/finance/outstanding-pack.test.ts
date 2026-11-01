@@ -82,6 +82,9 @@ describe("outstandingPack", () => {
     expect(csv).toContain("230.00")
     expect(csv).toContain("'=1+1")
     expect(csv).toContain("\"ลูกค้า, \"\"เอ\"\"\"")
+    expect(csv).toContain("2026-09-01")
+    expect(csv).not.toContain("2569")
+    expect(csv).not.toContain("ยังไม่ถึงกำหนด")
   })
 
   it("refuses a close date that is not a calendar date", () => {

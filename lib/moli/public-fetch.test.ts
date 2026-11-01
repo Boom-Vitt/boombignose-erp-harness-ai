@@ -7,6 +7,7 @@ import {
   REVENUE_DEPARTMENT_SAMPLE_URL,
   artifactMetaPath,
   artifactRelativePath,
+  assertPublicFetchArgs,
   buildArtifactMeta,
   decidePublicFetch,
   moliFetchArgs,
@@ -159,11 +160,38 @@ describe("public Moli fetch policy", () => {
     expect(meta.note).toMatch(/No cookies or credentials/)
   })
 
+  it("refuses dump modes, timeouts, internal hosts, and credential parameters", () => {
+    expect(decidePublicFetch({ url: DEFAULT_SAMPLE_URL, dump: "html" })).toMatchObject({ ok: false })
+    expect(decidePublicFetch({ url: DEFAULT_SAMPLE_URL, timeoutMs: 999 }).ok).toBe(false)
+    expect(decidePublicFetch({ url: DEFAULT_SAMPLE_URL, timeoutMs: 120_001 }).ok).toBe(false)
+    expect(decidePublicFetch({ url: `https://example.com/${"a".repeat(2100)}` }).ok).toBe(false)
+    expect(decidePublicFetch({ url: "https://files.example.internal/docs" }).ok).toBe(false)
+    expect(decidePublicFetch({ url: "https://signin.example.com/start" }).ok).toBe(false)
+    expect(decidePublicFetch({ url: "https://kasikornbank.com/" }).ok).toBe(false)
+    expect(decidePublicFetch({ url: "https://[2001:db8::1]/meta" }).ok).toBe(false)
+    expect(decidePublicFetch({ url: "https://example.com/verify-otp" }).ok).toBe(false)
+    expect(decidePublicFetch({ url: "https://example.com/app/internet-banking" }).ok).toBe(false)
+    const password = decidePublicFetch({ url: "https://example.com/docs?password=hunter2" })
+    expect(password.ok).toBe(false)
+    if (!password.ok) expect(password.reason).not.toContain("hunter2")
+    expect(decidePublicFetch({ url: "https://example.com/docs?access_token=abc" }).ok).toBe(false)
+    expect(decidePublicFetch({ url: "https://example.com/docs?pin=1234" }).ok).toBe(false)
+    expect(() => assertPublicFetchArgs(["fetch", "--eval=alert(1)"])).toThrow(/forbidden Moli option/)
+  })
+
+  it("rejects wrapper values that are missing or not integers", () => {
+    expect(parseFetchArgs(["--timeout"])).toMatchObject({ error: "--timeout needs a value." })
+    expect(parseFetchArgs(["--timeout", "30s"]).error).toMatch(/integer/)
+    expect(parseFetchArgs(["--cookie"]).error).toMatch(/does not forward/)
+  })
+
   it("checks text emptiness and the PNG signature", () => {
     expect(validateFetchBody("markdown", Buffer.from("กรมสรรพากร")).ok).toBe(true)
     expect(validateFetchBody("markdown", Buffer.alloc(0)).ok).toBe(false)
     const png = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0x00])
     expect(validateFetchBody("screenshot", png).ok).toBe(true)
     expect(validateFetchBody("screenshot", Buffer.from("not a png")).ok).toBe(false)
+    expect(validateFetchBody("markdown", Buffer.alloc(5_000_001)).ok).toBe(false)
+    expect(validateFetchBody("screenshot", Buffer.alloc(0)).reason).toMatch(/empty/)
   })
 })
