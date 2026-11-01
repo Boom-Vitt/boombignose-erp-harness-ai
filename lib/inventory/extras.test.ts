@@ -16,4 +16,8 @@ it("prints the retained stock number, date and quantity while escaping user text
   expect(html).toContain("1.5")
   expect(html).toContain("&lt;script&gt;")
   expect(html).not.toContain("<script>")
+  expect(html).not.toContain("Public reference")
+  const withReference = renderStockDocument("<Org>", { kind: "delivery", number: "DO-2026-000001", document_date: "2026-10-23" }, [{ description: "Box", quantity: 1, unit: "piece" }], "dlv1qqqq-qqqq-qqqq-qqqq-qqqq")
+  expect(withReference).toContain("DO-2026-000001")
+  expect(withReference).toContain("Public reference dlv1qqqq-qqqq-qqqq-qqqq-qqqq")
 })

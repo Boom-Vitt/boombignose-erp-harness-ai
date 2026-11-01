@@ -5,6 +5,7 @@ import { notFound } from "next/navigation"
 import { createClient } from "@/lib/supabase/server"
 import { requireOrgContext } from "@/lib/auth"
 import { renderDocumentHtml, type PrintableDocument } from "@/lib/documents/printable"
+import { publicReferenceForDocument } from "@/lib/documents/public-reference-query"
 import { documentSections } from "@/lib/line-grid/queries"
 
 /**
@@ -66,6 +67,7 @@ export async function GET(
     vatByRate: z.array(z.object({ rateBps: z.number(), vatSatang: z.number() })).parse(quote.tax_breakdown ?? []),
     pricesIncludeVat: quote.prices_include_vat,
     notes: quote.notes,
+    publicReference: (await publicReferenceForDocument(supabase, ctx.orgId, "quote", id)).display,
   }
 
   return new Response(renderDocumentHtml(doc), {

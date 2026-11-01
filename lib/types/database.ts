@@ -36,6 +36,12 @@ export type Database = {
         Update: never
         Relationships: []
       }
+      document_public_refs: {
+        Row: { org_id: string; reference: string; kind: "quote" | "purchase_order" | "receipt" | "delivery" | "invoice"; record_id: string; created_at: string; created_by: string | null }
+        Insert: { org_id: string; reference: string; kind: "quote" | "purchase_order" | "receipt" | "delivery" | "invoice"; record_id: string; created_at?: string; created_by?: string | null }
+        Update: never
+        Relationships: []
+      }
       document_sections: {
         Row: { id: string; org_id: string; quote_id: string | null; invoice_id: string | null; purchase_order_id: string | null; kind: "section" | "note"; description: string; lines_before: number; position: number; created_at: string; updated_at: string }
         Insert: { id?: string; org_id: string; quote_id?: string | null; invoice_id?: string | null; purchase_order_id?: string | null; kind: "section" | "note"; description: string; lines_before: number; position: number; created_at?: string; updated_at?: string }
@@ -698,7 +704,7 @@ isOneToOne: false
                   ]
                 },"org_settings": {
                   Row: { require_different_payment_reviewer: boolean;
-bill_variance_tolerance_bps: number, "scheduled_replenishment_enabled": boolean,"purchase_approval_threshold_satang": number | null,"over_receipt_tolerance_percent": number,
+bill_variance_tolerance_bps: number, "scheduled_replenishment_enabled": boolean,"public_document_refs_enabled": boolean,"purchase_approval_threshold_satang": number | null,"over_receipt_tolerance_percent": number,
 "wht_rate_bps": number,
 
 "lock_date": string | null,"vat_registered": boolean,"vat_rate_bps": number,"prices_include_vat": boolean,"branch_label": string | null,"tax_invoice_template": Json,
@@ -706,14 +712,14 @@ bill_variance_tolerance_bps: number, "scheduled_replenishment_enabled": boolean,
                   }
                   ComputedFields: never
                   Insert: { require_different_payment_reviewer?: boolean;
-bill_variance_tolerance_bps?: number, "scheduled_replenishment_enabled"?: boolean,"purchase_approval_threshold_satang"?: number | null,"over_receipt_tolerance_percent"?: number,
+bill_variance_tolerance_bps?: number, "scheduled_replenishment_enabled"?: boolean,"public_document_refs_enabled"?: boolean,"purchase_approval_threshold_satang"?: number | null,"over_receipt_tolerance_percent"?: number,
 "wht_rate_bps"?: number,
 
 "lock_date"?: string | null,"vat_registered"?: never,"vat_rate_bps"?: number,"prices_include_vat"?: boolean,"branch_label"?: string | null,"tax_invoice_template"?: Json,
                     "allow_negative_stock"?: boolean,"business_address"?: string | null,"cash_balance_satang"?: number,"created_at"?: string,"id"?: string,"legal_name"?: string | null,"monthly_burn_satang"?: number | null,"org_id": string,"tax_id"?: string | null,"tax_status"?: string,"updated_at"?: string
                   }
                   Update: { require_different_payment_reviewer?: boolean;
-bill_variance_tolerance_bps?: number, "scheduled_replenishment_enabled"?: boolean,"purchase_approval_threshold_satang"?: number | null,"over_receipt_tolerance_percent"?: number,
+bill_variance_tolerance_bps?: number, "scheduled_replenishment_enabled"?: boolean,"public_document_refs_enabled"?: boolean,"purchase_approval_threshold_satang"?: number | null,"over_receipt_tolerance_percent"?: number,
 "wht_rate_bps"?: number,
 
 "lock_date"?: string | null,"vat_registered"?: never,"vat_rate_bps"?: number,"prices_include_vat"?: boolean,"branch_label"?: string | null,"tax_invoice_template"?: Json,

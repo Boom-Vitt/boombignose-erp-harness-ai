@@ -33,6 +33,11 @@ The sidebar accepts a rendered workspace header, so it imports no Pro code.
   and tests remain in `lib/supabase/`.
 - CRM, deals, projects, tasks, milestones, quotes, operational invoices, receipt
   verification, reports/exports, subscriptions and recurring draft generation.
+- Optional typed public document references (`lib/documents/public-reference.ts`,
+  `document_public_refs`, and the Settings toggle). They are off by default and
+  do not replace tax IDs, accounting document numbers, or existing document
+  links. This is Community document identification, not a Pro portal, SSO, or
+  accounting integration.
 - Dashboard, calendar, template library, blueprint/showcase, and warehouse view.
 - Basic AI assists in `lib/ai/`: single-request deal summaries, follow-up drafts,
   and meeting intake. There is no ERP agent loop, tool-executing planner,

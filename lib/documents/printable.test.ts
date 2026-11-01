@@ -38,6 +38,7 @@ describe("renderDocumentHtml", () => {
     const html = renderDocumentHtml(doc)
     expect(html.startsWith("<!doctype html>")).toBe(true)
     expect(html).toContain("INV-2026-001")
+    expect(html).not.toContain("Public reference")
     expect(html).toContain("2026-07-01 (01/07/2569)")
     expect(html).toContain("2026-07-31 (31/07/2569)")
     expect(html).toContain("Acme Co")
@@ -53,6 +54,18 @@ describe("renderDocumentHtml", () => {
     })
     expect(html).not.toContain("<script>alert(1)</script>")
     expect(html).toContain("&lt;script&gt;")
+  })
+
+  it("prints an optional public reference beside the document number and tax ID", () => {
+    const html = renderDocumentHtml({
+      ...doc,
+      sellerTaxId: "1234567890123",
+      publicReference: "inv1qqqq-qqqq-qqqq-qqqq-qqqq",
+    })
+    expect(html).toContain("INV-2026-001")
+    expect(html).toContain("1234567890123")
+    expect(html).toContain("inv1qqqq-qqqq-qqqq-qqqq-qqqq")
+    expect(html.indexOf("INV-2026-001")).toBeLessThan(html.indexOf("inv1qqqq-qqqq-qqqq-qqqq-qqqq"))
   })
 
   it("shows a zero discount consistently with the totals block", () => {
