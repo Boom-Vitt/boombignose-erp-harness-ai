@@ -16,12 +16,15 @@ export default async function ChartPage() {
   if (error) throw new Error("Chart of accounts unavailable")
   const accounts = data ?? []
   return <div className="space-y-6">
-    <PageHeader title="ผังบัญชี / Chart of accounts" description="A reference list for a Thai SME. Nothing is posted to these accounts." breadcrumbs={[{ label: "Settings", href: "/settings" }]} />
+    <PageHeader title="ผังบัญชี / Chart of accounts" description="A reference list for a Thai SME. A draft journal can post balanced lines into a closed period." breadcrumbs={[{ label: "Settings", href: "/settings" }]} />
     <Card className="max-w-3xl"><CardContent className="space-y-4">
-      <p className="text-sm text-muted-foreground">Adding the list inserts codes that are missing. It does not rename or delete a code you already saved. This is not a TAS ledger, a journal, or a tax filing.</p>
+      <p className="text-sm text-muted-foreground">Adding the list inserts codes that are missing. It does not rename or delete a code you already saved. A balanced draft journal can use these codes. Those lines are not signed statutory books and not a tax filing.</p>
       {can(ctx.role, "settings:manage") ? <InstallChartButton /> : <p className="text-sm">Owners and admins can add the missing codes.</p>}
       {accounts.length === 0 ? <p className="text-sm">No accounts yet.</p> : <ul className="space-y-1 text-sm">{accounts.map(account => <li key={account.code}>{account.code} · {account.name_th} / {account.name_en} · {account.kind}</li>)}</ul>}
     </CardContent></Card>
-    <Link href="/settings/finance" className="text-sm underline">Finance settings</Link>
+    <p className="flex flex-wrap gap-4 text-sm">
+      <Link href="/finance/journal" className="underline">บันทึกรายวันฉบับร่าง / Draft journal</Link>
+      <Link href="/settings/finance" className="underline">Finance settings</Link>
+    </p>
   </div>
 }

@@ -33,5 +33,6 @@ export default async function FinanceSettingsPage() {
     <Card className="max-w-2xl"><CardContent><BillToleranceForm toleranceBps={data?.bill_variance_tolerance_bps ?? 100} /></CardContent></Card>
     <Link href="/finance/business-profile" className="text-sm underline">ข้อมูลกิจการและภาษีมูลค่าเพิ่ม / Business profile and VAT settings</Link>
     <Link href="/settings/chart" className="block text-sm underline">ผังบัญชี / Chart of accounts</Link>
+    <Link href="/finance/journal" className="block text-sm underline">บันทึกรายวันฉบับร่าง / Draft journal</Link>
   </div>
 }

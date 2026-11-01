@@ -1,4 +1,4 @@
-/** Reference accounts for a Thai SME. This is not a TAS ledger and nothing posts to it. */
+/** Reference accounts for a Thai SME. The list stores names and codes. A draft journal can post balanced lines that use these codes. Those lines are not signed statutory books. */
 export const THAI_SME_CHART = [
   { code: "1110", nameTh: "เงินสด", nameEn: "Cash", kind: "asset" },
   { code: "1120", nameTh: "เงินฝากธนาคาร", nameEn: "Bank", kind: "asset" },

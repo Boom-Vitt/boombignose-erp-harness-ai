@@ -40,6 +40,15 @@ describe("close activity hash chain", () => {
     ].join("\n"))
     expect(closeChainSha256(payload)).toBe("c4f7f4b763bc9aa183ad7f5b730f5b3e7fed442bcf56e0bf65f5985a18c0cd23")
     expect(closeChainMeta({ ...first.meta, note: "I looked" })).toBe("lockDate=2026-01-31;month=2026-01;kind=operational_close;note=I looked")
+    expect(closeChainMeta({
+      note: "I looked",
+      kind: "operational_journal",
+      entryId: "abc",
+      entryDate: "2026-01-15",
+      debitSatang: 10700,
+      lineCount: 2,
+      filing: false,
+    })).toBe("kind=operational_journal;filing=false;note=I looked;entryId=abc;entryDate=2026-01-15;debitSatang=10700;lineCount=2")
     const { links, head } = linkCloseChain([first, second])
     expect(links[0]?.previous).toBe("")
     expect(links[0]?.seq).toBe(1)

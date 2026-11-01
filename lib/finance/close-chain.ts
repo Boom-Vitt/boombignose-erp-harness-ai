@@ -21,6 +21,10 @@ export const CLOSE_CHAIN_META_KEYS = [
   "confirmedBy",
   "staffCount",
   "note",
+  "entryId",
+  "entryDate",
+  "debitSatang",
+  "lineCount",
 ] as const
 
 export type CloseChainInput = {

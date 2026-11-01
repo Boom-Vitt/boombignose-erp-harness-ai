@@ -26,7 +26,7 @@ Other facts that are already true, and are not a statutory close:
 - Roles are owner, admin, accountant, and member (`lib/permissions.ts`). An accountant can record invoices, receipts, and credit notes, read profit, and read the activity log. An accountant cannot change settings, the team, or the finance lock. Receipt reversal stays with owner and admin.
 - `org_settings.lock_date` blocks invoice issue, verified receipts, and corrections dated on or before that date. The command is `update_finance_lock_date`. Owner and admin only.
 - `audit_log` has no update or delete policy for signed-in users. Finance commands insert trusted rows from database functions. The activity page is `/audit`.
-- `gl_accounts` is a Thai SME chart of names and codes. `install_thai_sme_chart` inserts missing codes and does not delete custom ones. There is no journal table and no posting from a document into those accounts.
+- `gl_accounts` is a Thai SME chart of names and codes. `install_thai_sme_chart` inserts missing codes and does not delete custom ones. `post_draft_journal` stores a balanced draft dated on or before the finance lock, using those codes, and writes `journal_draft_posted` on the close-activity chain. Issued invoices, receipts, and bank lines still do not post themselves. The draft is not signed statutory books.
 - A draft 50 ทวิ page is HTML from an issued invoice with withholding greater than zero. The payer still issues the statutory certificate. The page says it is not a Revenue Department form.
 - `docs/thai/tax-invoice-gaps.md` lists what a statutory tax invoice still needs. Issued snapshots are operational invoices.
 - A local database dump can carry a SHA-256 sidecar (`lib/install/local-backup.ts`). That checksum is for the backup file. It is not a close seal.
@@ -37,11 +37,11 @@ These are missing. Shipping a screen that claims them would be false.
 
 - No ภ.พ.30 filing, and no other Revenue Department form filing (ภ.ง.ด. and the rest).
 - No e-Tax Invoice submission. The tax-invoice checklist marks that as a gap. Nothing is sent to the Revenue Department.
-- No statutory general ledger, trial balance, or financial statements an auditor can sign. The chart of accounts is a list of names.
+- No statutory general ledger, trial balance, or financial statements an auditor can sign. A draft journal can store balanced lines against the chart for a date the finance lock already covers. That journal is not a trial balance and not signed statutory books.
 - No accountant sign-off that creates a legal representation. The accountant role can read and prepare support data. It cannot certify the books.
 - FlowAccount export is a document push of an issued operational invoice. It is not the book of record inside this app.
 - The finance lock is a date block. An owner or admin can move it earlier or clear it. That reopen is now audited. It is still not a locked statutory period.
-- The activity log is append-only for signed-in users. The database owner on this desktop install can still change rows. There is no external timestamp and no hash chain from one row to the next.
+- The activity log is append-only for signed-in users. Close-activity rows, including a draft journal post, store a hash of the previous row. The database owner can still disable that trigger and rewrite the chain. There is no external timestamp.
 - The draft 50 ทวิ is not the form the payer files.
 - No bank feed and no bank login. Do not add one to "complete" the close.
 
@@ -84,8 +84,7 @@ Still not a statutory close.
 
 For a payer who needs a control report, not a filing product.
 
-- A hash chain over the activity log, so a missing row is visible. Today each row stands alone.
-- Retention: how long close and export rows are kept, and a written rule that a database restore can roll them back. This desktop install is one Postgres cluster on the machine. It is not a separate audit archive.
+- Retention: how long close and export rows are kept, and a written rule that a database restore can roll them back. This desktop install is one Postgres cluster on the machine. It is not a separate audit archive. The close-activity hash chain is already on main. It is not an external timestamp.
 - Custom roles and SSO. The four roles above are the whole matrix. There is no policy editor.
 - An external timestamp. Not claimed, and not implied by the SHA-256 header.
 - Pen test, dependency review, and a decision about who holds the database owner role on a hosted install. The local window's operator is the database owner.
@@ -100,9 +99,11 @@ Operational close, phases 1–5, plus the R0 controls above. Copy and the databa
 
 An owner, admin, or accountant can record that they looked at one stored support file. The row keeps their name, the time, and the checksum. It means "I looked at this file." It is not a legal opinion, not a sign-off letter, and not a filing receipt.
 
-### S2 — later
+### S2 — draft journal, not statutory books
 
-Postings from issued documents into the chart, with a trial balance. The screen keeps saying the chart is not a set of statutory financial statements until an accountant accepts them. Do not label it TFRS for NPAEs by default.
+A manual draft journal posts 2 to 20 lines that debit and credit the chart in equal satang. The date has to fall on or before the finance lock. The row is `journal_draft_posted` on the close-activity chain. The screen says it is not signed statutory books and not a ภ.พ.30 or e-Tax filing. Issued documents still do not post themselves. There is no trial balance and no set of statements. Do not label it TAS, TFRS, or TFRS for NPAEs.
+
+Still later: postings from issued documents into the chart, and a trial balance an accountant can work from. The screen keeps saying these lines are not statutory financial statements until an accountant accepts them.
 
 ### End goal
 
@@ -110,4 +111,4 @@ A month-end close that is legally valid under Thai rules (ปิดงบได�
 
 That means a general ledger an accountant will sign, the tax invoices and withholding certificates the law actually requires, and the filings the Revenue Department accepts (including ภ.พ.30 and e-Tax where the business is required to use them). BoomBigNose can prepare and lock the operational record, and it can hand a file to the accountant. The accountant and the business remain the people who file. This product does not become the Revenue Department, and a FlowAccount push does not become that filing.
 
-Until S2 exists and an accountant has accepted a real close, the product must not say the books are closed under Thai law.
+Until issued documents post into that journal, a trial balance exists, and an accountant has accepted a real close, the product must not say the books are closed under Thai law.

@@ -11,6 +11,9 @@ Run the SQL file when a local Supabase stack is already up:
 
 ```sh
 pnpm exec supabase test db --workdir .local-stack supabase/tests/close_chain.sql
+pnpm exec supabase test db --workdir .local-stack supabase/tests/draft_journal.sql
 ```
+
+`draft_journal.sql` checks a balanced post into a locked period, and it checks that an unbalanced journal, an unknown account, an open period, a member, and a forged audit row are refused.
 
 That command needs Postgres, pgTAP, and the migrations applied. A machine without that stack cannot execute it. The Vitest file is the check that runs without Postgres.

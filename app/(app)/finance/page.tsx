@@ -177,6 +177,7 @@ export default async function FinancePage({
         <Link className="underline" href="/finance/bank">รายการธนาคาร / Bank lines</Link>
         <Link className="underline" href="/finance/cash">เงินสดตอนปิดงวด / Cash at close</Link>
         <Link className="underline" href="/finance/outstanding/export">ไฟล์ลูกหนี้เจ้าหนี้ / Outstanding pack CSV</Link>
+        <Link className="underline" href="/finance/journal">บันทึกรายวันฉบับร่าง / Draft journal</Link>
       </p> : null}
 
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
