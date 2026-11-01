@@ -59,6 +59,7 @@ import { LineGrid } from "@/components/line-grid/line-grid"
 import { gridRows } from "@/lib/line-grid/queries"
 import { IssueInvoiceForm } from "../../_components/issue-invoice-form"
 import { PostSalesInvoiceButton } from "./post-journal-button"
+import { FollowOnJournalNote, PostCashReceiptButton, PostCreditNoteButton } from "./post-follow-on-button"
 import { AdoptLegacyInvoiceForm } from "../../_components/adopt-legacy-invoice-form"
 import { PaymentForm } from "../../_components/payment-form"
 import { ReviewClaimForm } from "../../_components/review-claim-form"
@@ -418,7 +419,9 @@ export default async function InvoiceDetailPage({
 
       {invoice.issued_snapshot_id ? <Card className="max-w-3xl"><CardHeader><CardTitle>Credit notes</CardTitle></CardHeader><CardContent className="space-y-4">
         <p>Credited {formatTHB(credited)}</p>
-        <CreditNotes orgId={ctx.orgId} invoiceId={id} />
+        <CreditNotes orgId={ctx.orgId} invoiceId={id} canPost={canPostJournal} />
+        {canPostJournal ? <FollowOnJournalNote /> : null}
+        {canPostJournal ? <CashReceiptPosts orgId={ctx.orgId} invoiceId={id} /> : null}
         {canFinance && outstanding + paid > 0 ? <CreditNoteForm orgId={ctx.orgId} invoiceId={id} lines={creditLines.length ? creditLines : [{ id, description: "Historical invoice amount", headerOnly: true }]} /> : null}
       </CardContent></Card> : null}
       <RecordHistory recordType="invoice" recordId={id} />
@@ -426,9 +429,35 @@ export default async function InvoiceDetailPage({
   )
 }
 
-async function CreditNotes({ orgId, invoiceId }: { orgId: string; invoiceId: string }) {
+async function CreditNotes({ orgId, invoiceId, canPost }: { orgId: string; invoiceId: string; canPost: boolean }) {
   const supabase = await createClient()
   const result = await readAll((from, to) => supabase.from("credit_notes").select("id, number, amount_satang, reason").eq("org_id", orgId).eq("invoice_id", invoiceId).order("created_at").order("id").range(from, to))
   if (result.error) throw new Error("Credit notes unavailable")
-  return <ul>{(result.data ?? []).map(note => <li key={note.id}><a className="underline" href={`/finance/credit-notes/${note.id}/pdf`} target="_blank" rel="noreferrer">{note.number}</a> · {formatTHB(note.amount_satang)} · {note.reason}</li>)}</ul>
+  const notes = result.data ?? []
+  const ids = notes.map(note => note.id)
+  const posted = !canPost || ids.length === 0 ? { data: [] as { source_credit_note_id: string | null }[], error: null } : await supabase.from("journal_entries").select("source_credit_note_id").eq("org_id", orgId).in("source_credit_note_id", ids)
+  if (posted.error) throw new Error("Draft journal unavailable")
+  const postedIds = new Set((posted.data ?? []).map(row => row.source_credit_note_id))
+  return <ul className="space-y-2">{notes.map(note => <li key={note.id} className="space-y-1"><a className="underline" href={`/finance/credit-notes/${note.id}/pdf`} target="_blank" rel="noreferrer">{note.number}</a> · {formatTHB(note.amount_satang)} · {note.reason}{canPost ? <PostCreditNoteButton creditNoteId={note.id} posted={postedIds.has(note.id)} /> : null}</li>)}</ul>
+}
+
+async function CashReceiptPosts({ orgId, invoiceId }: { orgId: string; invoiceId: string }) {
+  const supabase = await createClient()
+  const allocations = await supabase.from("payment_allocations").select("payment_id, amount_satang").eq("org_id", orgId).eq("invoice_id", invoiceId).gt("amount_satang", 0)
+  if (allocations.error) throw new Error("Draft journal unavailable")
+  const ids = [...new Set((allocations.data ?? []).map(row => row.payment_id))]
+  if (ids.length === 0) return null
+  const payments = await supabase.from("payments").select("id, method, verification_state, reversal_of, refund_of").eq("org_id", orgId).in("id", ids)
+  if (payments.error) throw new Error("Draft journal unavailable")
+  const posted = await supabase.from("journal_entries").select("source_payment_id").eq("org_id", orgId).in("source_payment_id", ids)
+  if (posted.error) throw new Error("Draft journal unavailable")
+  const postedIds = new Set((posted.data ?? []).map(row => row.source_payment_id))
+  const rows = payments.data ?? []
+  const cash = rows.filter(row => row.verification_state === "verified" && row.method === "cash" && !row.reversal_of && !row.refund_of)
+  const other = rows.some(row => row.verification_state === "verified" && row.method !== "cash" && !row.reversal_of && !row.refund_of)
+  if (cash.length === 0 && !other) return null
+  return <div className="space-y-2">
+    {other ? <p className="text-sm">Only a cash receipt is posted. Bank, card, and cheque receipts are not posted yet.</p> : null}
+    <ul className="space-y-2">{cash.map(row => <li key={row.id}><PostCashReceiptButton paymentId={row.id} posted={postedIds.has(row.id)} /></li>)}</ul>
+  </div>
 }

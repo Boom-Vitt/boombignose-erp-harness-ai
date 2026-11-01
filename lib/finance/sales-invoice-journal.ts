@@ -12,7 +12,8 @@ import { draftJournalLines, journalDateInClosedPeriod, type DraftJournalLine } f
  * VAT inclusive: sales is the base after VAT is taken out. Output VAT is the stored VAT.
  *   That VAT must equal half-up rounding of gross × rate / (10000 + rate).
  *
- * Withholding, deposits, credit notes, and a legacy adoption are refused.
+ * Withholding, deposits, and a legacy adoption are refused.
+ * A later credit note is a separate journal. It does not block this sale.
  * This is not signed statutory books and not a ภ.พ.30 or e-Tax filing.
  */
 
@@ -36,7 +37,6 @@ export type SalesInvoicePost = {
   quoteInvoiceKind: string
   quoteDepositSatang: number
   quoteDepositDeductionSatang: number
-  hasCreditNote: boolean
   issueDate: string
   snapshotIssueDate: string
   number: string
@@ -89,7 +89,6 @@ export function salesInvoiceJournal(input: SalesInvoicePost): SalesInvoiceJourna
   if (input.quoteInvoiceKind !== "lines" || input.quoteDepositSatang !== 0 || input.quoteDepositDeductionSatang !== 0) {
     return { ok: false, error: "A deposit invoice is not posted." }
   }
-  if (input.hasCreditNote) return { ok: false, error: "A credit note already changes this invoice. Credit notes are not posted yet." }
   if (input.whtRateBps !== 0 || input.whtSatang !== 0) return { ok: false, error: "Withholding is not posted from the invoice." }
   if (!isCalendarDate(input.issueDate) || input.issueDate !== input.snapshotIssueDate || input.number !== input.snapshotNumber) {
     return { ok: false, error: "The issued snapshot does not match the invoice." }

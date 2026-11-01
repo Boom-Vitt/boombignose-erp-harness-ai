@@ -26,7 +26,7 @@ Other facts that are already true, and are not a statutory close:
 - Roles are owner, admin, accountant, and member (`lib/permissions.ts`). An accountant can record invoices, receipts, and credit notes, read profit, and read the activity log. An accountant cannot change settings, the team, or the finance lock. Receipt reversal stays with owner and admin.
 - `org_settings.lock_date` blocks invoice issue, verified receipts, and corrections dated on or before that date. The command is `update_finance_lock_date`. Owner and admin only.
 - `audit_log` has no update or delete policy for signed-in users. Finance commands insert trusted rows from database functions. The activity page is `/audit`.
-- `gl_accounts` is a Thai SME chart of names and codes. `install_thai_sme_chart` inserts missing codes and does not delete custom ones. `post_draft_journal` stores a balanced draft dated on or before the finance lock, using those codes, and writes `journal_draft_posted` on the close-activity chain. `/finance/journal/trial-balance` adds those lines by account. `post_issued_sales_invoice` can post one plain issued sales invoice into that journal when the stored VAT split matches the stated rate. Withholding, deposits, credit notes, receipts, and legacy adoptions are not posted. The draft and the trial balance are not signed statutory books.
+- `gl_accounts` is a Thai SME chart of names and codes. `install_thai_sme_chart` inserts missing codes and does not delete custom ones. `post_draft_journal` stores a balanced draft dated on or before the finance lock, using those codes, and writes `journal_draft_posted` on the close-activity chain. `/finance/journal/trial-balance` adds those lines by account. `post_issued_sales_invoice` can post one plain issued sales invoice into that journal when the stored VAT split matches the stated rate. `post_issued_credit_note` reverses part of that posted sale. `post_cash_receipt` clears part of the posted receivable for a verified cash receipt that is fully allocated. Withholding, deposits, bank, card, cheque, and legacy adoptions are not posted. The draft and the trial balance are not signed statutory books.
 - A draft 50 ทวิ page is HTML from an issued invoice with withholding greater than zero. The payer still issues the statutory certificate. The page says it is not a Revenue Department form.
 - `docs/thai/tax-invoice-gaps.md` lists what a statutory tax invoice still needs. Issued snapshots are operational invoices.
 - A local database dump can carry a SHA-256 sidecar (`lib/install/local-backup.ts`). That checksum is for the backup file. It is not a close seal.
@@ -105,9 +105,11 @@ A manual draft journal posts 2 to 20 lines that debit and credit the chart in eq
 
 `/finance/journal/trial-balance` adds the stored lines by account through a date, or through every posted date. Each account shows its net debit or its net credit. The two totals match when the stored lines match. A broken set stays visible. This is not signed statutory books, not a ภ.พ.30 or e-Tax filing, and not TAS, TFRS, or TFRS for NPAEs.
 
-One issued sales invoice can be posted by hand. No VAT debits accounts receivable and credits sales for the total. VAT exclusive credits sales for the base and output VAT for the stored VAT. VAT inclusive does the same with the base after VAT is taken out. The stored VAT must match half-up rounding for the stated rate. Withholding, a deposit, a credit note, a receipt, and a legacy adoption are refused. The invoice does not post itself.
+One issued sales invoice can be posted by hand. No VAT debits accounts receivable and credits sales for the total. VAT exclusive credits sales for the base and output VAT for the stored VAT. VAT inclusive does the same with the base after VAT is taken out. The stored VAT must match half-up rounding for the stated rate. Withholding, a deposit, and a legacy adoption are refused. The invoice does not post itself.
 
-Still later: receipts, credit notes, and deposits. The screen keeps saying these lines are not statutory financial statements until an accountant accepts them.
+A credit note posts only after that sale is in the journal. It debits sales and output VAT and credits the receivable, using the stored split and the same rate check. It cannot exceed the sale or the receivable still posted. A verified cash receipt posts only when every satang is allocated to a posted invoice with no withholding, and only up to the receivable still open. It debits cash and credits the receivable. Bank, card, and cheque receipts are refused. Neither document posts itself.
+
+Still later: deposits, and receipts that are not cash. The screen keeps saying these lines are not statutory financial statements until an accountant accepts them.
 
 ### End goal
 
@@ -115,4 +117,4 @@ A month-end close that is legally valid under Thai rules (ปิดงบได�
 
 That means a general ledger an accountant will sign, the tax invoices and withholding certificates the law actually requires, and the filings the Revenue Department accepts (including ภ.พ.30 and e-Tax where the business is required to use them). BoomBigNose can prepare and lock the operational record, and it can hand a file to the accountant. The accountant and the business remain the people who file. This product does not become the Revenue Department, and a FlowAccount push does not become that filing.
 
-Until receipts, credit notes, and deposits post into that journal and an accountant has accepted a real close, the product must not say the books are closed under Thai law.
+Until deposits and non-cash receipts post into that journal and an accountant has accepted a real close, the product must not say the books are closed under Thai law.
