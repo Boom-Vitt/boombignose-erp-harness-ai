@@ -54,13 +54,13 @@ If `bundle/ollama/ollama` or `bundle/ollama/bin/ollama` is missing (`ollama.exe`
 
 When a binary exists and nothing is listening on `127.0.0.1:11434`, the window runs `ollama serve` with `OLLAMA_HOST=127.0.0.1:11434`. A remote host is refused. Startup does not download a model. `boombignose serve` does not start Ollama.
 
-The model download is a separate action. The splash has a button labeled “ดาวน์โหลดโมเดล qwen3:4b”. Nothing clicks it. The command is:
+The model download is a separate action. Weights are not in git and are not packed into the installer. After the window opens the ERP, Settings at `/settings#local-models` lists, downloads, and removes allowlisted models through the local Ollama HTTP API. The operator does not install Ollama Desktop, ComfyUI, Whisper, or a separate voice app for a modality this build can run. Text (`qwen3:4b`) and vision (`qwen2.5vl:3b`) install on Linux, Windows, and macOS. Image generation (`x/flux2-klein:4b`) installs on macOS only. Speech (`phonon`, English, Apache-2.0, not a voice clone and not Thai) installs on Apple Silicon only. Video, speech-to-text, and voice cloning are shown as not available in this build. The splash still has a button labeled “ดาวน์โหลดโมเดล qwen3:4b” for the text model before the ERP page replaces it. Nothing clicks it. The command is:
 
 ```sh
 boombignose pull-model
 ```
 
-That runs `ollama pull qwen3:4b` with `OLLAMA_HOST=127.0.0.1:11434`. The child environment does not receive cloud keys. The pull contacts the Ollama model registry to fetch the weights. Chat still goes to loopback. The startup process list refuses `pull`. CI does not run the pull.
+That runs `ollama pull qwen3:4b` with `OLLAMA_HOST=127.0.0.1:11434`. `boombignose pull-model qwen2.5vl:3b` pulls another allowlisted name when this operating system can run it. `boombignose models` reads loopback `GET /api/tags`. `boombignose remove-model qwen3:4b` calls loopback `DELETE /api/delete`. A name outside `boombignose/internal/bundle/ollama_models.json` is refused before a process starts. The child environment does not receive cloud keys. The pull contacts the Ollama model registry to fetch the weights. Chat still goes to loopback. The startup process list refuses `pull`. CI does not run the pull.
 
 ## What is in which installer
 

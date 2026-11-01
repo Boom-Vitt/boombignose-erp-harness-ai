@@ -52,4 +52,4 @@ export const WHT_SUPPORT_EN =
   `Withholding is the amount already stored on issued invoices and credit notes. Rates in this app are ${whtRateList()}. This does not file a withholding return.`
 
 export const OLLAMA_CLOSE_NOTE_UNAVAILABLE =
-  "Ollama ยังไม่ทำงานบนเครื่องนี้ จึงไม่มีบันทึกที่เขียนให้ ตัวเลขด้านบนมาจากเวิร์กสเปซนี้ เริ่มด้วย ollama serve แล้ว ollama pull qwen3:4b ไม่มีข้อมูลถูกส่งไปโมเดลบนคลาวด์ / Ollama is not running on this machine, so there is no written note. The counts above are from this workspace. Start it with ollama serve, then ollama pull qwen3:4b. Nothing was sent to a cloud model."
+  "Ollama ยังไม่ทำงานบนเครื่องนี้ จึงไม่มีบันทึกที่เขียนให้ ตัวเลขด้านบนมาจากเวิร์กสเปซนี้ เปิดหน้าต่าง BoomBigNose แล้วติดตั้งโมเดลข้อความใน Settings ไม่ต้องลงแอป AI แยก ไม่มีข้อมูลถูกส่งไปโมเดลบนคลาวด์ / Ollama is not running on this machine, so there is no written note. The counts above are from this workspace. Open the BoomBigNose window, then install the text model in Settings. You do not need a separate AI app. Nothing was sent to a cloud model."

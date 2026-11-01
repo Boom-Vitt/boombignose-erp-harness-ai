@@ -13,13 +13,13 @@ export const DEFAULT_MODEL = process.env.OLLAMA_MODEL?.trim() || "qwen3:4b"
  * return `{ notConfigured: true }` instead of crashing.
  */
 export class AINotConfiguredError extends Error {
-  constructor(message = "AI is not configured. Start Ollama on this machine (ollama serve) and pull a model (ollama pull qwen3:4b).") {
+  constructor(message = "AI is not configured. Open Settings and install the local text model. Nothing is sent to a cloud model.") {
     super(message)
     this.name = "AINotConfiguredError"
   }
 }
 
-function ollamaOrigin(): string {
+export function localOllamaOrigin(): string {
   const raw = process.env.OLLAMA_HOST?.trim() || DEFAULT_HOST
   const withScheme = /^[a-z][a-z0-9+.-]*:\/\//i.test(raw) ? raw : `http://${raw}`
   let url: URL
@@ -41,7 +41,7 @@ function ollamaOrigin(): string {
 /** True when the configured model endpoint is loopback. It does not probe the port. */
 export function isAIConfigured(): boolean {
   try {
-    ollamaOrigin()
+    localOllamaOrigin()
     return true
   } catch {
     return false
@@ -62,7 +62,7 @@ export async function generateText({
   prompt: string
   maxTokens?: number
 }): Promise<string> {
-  const origin = ollamaOrigin()
+  const origin = localOllamaOrigin()
   const model = process.env.OLLAMA_MODEL?.trim() || DEFAULT_MODEL
 
   let res: Response
@@ -83,7 +83,7 @@ export async function generateText({
     })
   } catch {
     throw new AINotConfiguredError(
-      `AI is not configured. Start Ollama on this machine (ollama serve). Address: ${origin}.`,
+      `AI is not configured. Open the BoomBigNose window so it can start the local model service, then install the text model in Settings. Address: ${origin}.`,
     )
   }
 

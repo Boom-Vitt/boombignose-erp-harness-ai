@@ -23,6 +23,9 @@ import { InvitationsCard } from "./_components/invitations-card"
 import { AccountingIntegrationCard } from "@edition"
 import { StartLogViewer, UpdateCheckButton } from "./_components/local-install"
 import { LocalBackupCard } from "./_components/local-backup"
+import { LocalModelsCard } from "./_components/local-models"
+import { currentModelHost } from "@/lib/ai/local-model-access"
+import { loadModelSettings } from "@/lib/ai/ollama-admin"
 import { updateOrgSettings } from "./actions"
 
 export const dynamic = "force-dynamic"
@@ -70,6 +73,8 @@ export default async function SettingsPage() {
     (profiles ?? []).map((p) => [p.id, p.full_name] as const)
   )
 
+  const localModels = await loadModelSettings(currentModelHost())
+
   const team = (members ?? []).map((m) => ({
     userId: m.user_id,
     role: m.role,
@@ -89,7 +94,8 @@ export default async function SettingsPage() {
       <Link href="/settings/security" className="mr-4 text-sm underline">Authenticator</Link>
       {canEdit ? <Link href="/settings/purchasing" className="mr-4 text-sm underline">Purchasing</Link> : null}
       {canEdit ? <Link href="/settings/finance" className="mr-4 text-sm underline">Finance</Link> : null}
-      {canEdit ? <Link href="/settings/lead-forms" className="text-sm underline">Lead forms</Link> : null}
+      {canEdit ? <Link href="/settings/lead-forms" className="mr-4 text-sm underline">Lead forms</Link> : null}
+      <Link href="/settings#local-models" className="text-sm underline">โมเดล AI / Local models</Link>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <StatCard
@@ -211,6 +217,16 @@ export default async function SettingsPage() {
           </CardContent>
         </Card>
       </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">โมเดล AI บนเครื่องนี้ / Local AI models</CardTitle>
+          <CardDescription>ดาวน์โหลดในแอปนี้ ไม่ต้องเปิดโปรแกรม AI อื่น / Download inside this app. No separate AI program.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <LocalModelsCard initial={localModels} canInstall={canEdit} />
+        </CardContent>
+      </Card>
 
       <PublicReferenceSetting enabled={settings?.public_document_refs_enabled ?? false} canEdit={canEdit} />
 
