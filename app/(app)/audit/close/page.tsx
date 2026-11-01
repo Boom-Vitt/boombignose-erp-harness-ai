@@ -42,6 +42,10 @@ export default async function CloseActivityPage() {
       breadcrumbs={[{ label: "Activity", href: "/audit" }]}
     />
     <p className="text-sm"><Link className="underline" href="/audit">บันทึกกิจกรรมทั้งหมด / All activity</Link></p>
+    <div className="flex flex-wrap items-center gap-3">
+      <Button variant="outline" render={<Link href="/audit/close/export" />}>ดาวน์โหลด CSV / Download CSV</Button>
+      <p className="text-sm text-muted-foreground">ไฟล์คือรายการปิดงวดทั้งหมด ไม่ใช่แค่ 100 แถวล่าสุดบนหน้านี้ แถวเช็คซัมของไฟล์นี้ถูกเขียนหลังส่งออก / The file is every close-activity row, not only the latest 100 on this page. Its checksum row is written after the download.</p>
+    </div>
     <ChecksumCheck />
     {entries.length === 0 ? <p className="text-sm text-muted-foreground">ยังไม่มีการล็อกหรือการส่งไฟล์ประกอบ / No lock changes or support exports yet.</p> : (
       <Card>
@@ -57,6 +61,7 @@ export default async function CloseActivityPage() {
                 <Field label="ล็อกใหม่ / Lock date" value={view.lockDate} />
                 <Field label="เดือน / Month" value={view.month} />
                 <Field label="เหตุผล / Reason" value={view.reason} />
+                <Field label="การควบคุม / Control" value={view.control} />
                 <Field label="ชนิดไฟล์ / File" value={view.kind} />
                 <Field label="งวด / Period" value={view.period} />
                 <Field label="SHA-256" value={view.sha256} />

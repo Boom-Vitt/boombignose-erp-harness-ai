@@ -73,9 +73,10 @@ Still not a statutory close.
 - `/audit/close` lists lock, reopen, reopen request, completed-month, and support-export rows. The previous date, the reason, and the SHA-256 are fields on the row.
 - `propose_finance_lock` is what the finance-settings screen calls. A reopen needs a reason of 1–200 characters. When the workspace has one owner or admin, that person reopens and the activity row names them. When it has more than one, the lock does not move until a different owner or admin confirms. The requester cannot confirm their own request. A member cannot confirm.
 - The close activity page can hash a saved CSV or HTML file in the browser and ask whether that checksum is in the log. The file is not uploaded. A match is not a signature.
-- The older `update_finance_lock_date(org, date)` command still applies a reopen immediately, including with no reason. Existing database checks use it to unlock a period. The screen does not call it.
+- `/audit/close/export` downloads every close-activity row that exists at that moment. The checksum is stored with the same command as the other support files, after the file bytes are fixed, so the file does not include its own checksum row. The saved file can be checked on the close activity page. The screen still shows the latest 100 rows.
+- A reopen with no reason is labeled on the screen and in that file as the older lock command. `update_finance_lock_date(org, date)` still applies a reopen immediately, including with no reason, so existing database checks can unlock a period. The screen does not call it.
 
-Still next: export the activity log itself, with the same checksum rule.
+Still next: a hash chain over these rows, so a missing row is visible. That is not this file's checksum.
 
 ### R2 — enterprise
 
