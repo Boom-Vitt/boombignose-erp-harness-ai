@@ -45,6 +45,7 @@ export default async function ProductsPage({ searchParams }: {
   return (
     <div className="space-y-6">
       <PageHeader title="Products" description="Products and services with reusable prices and units.">
+        <Button variant="outline" render={<Link href="/import" />}>Import</Button>
         {can(ctx.role, "product:manage") && <Button render={<Link href="/products/new" />}><Plus /> New product</Button>}
       </PageHeader>
       <ProductsToolbar key={`${search}-${status}`} search={search} status={status} />
