@@ -34,5 +34,6 @@ export default async function FinanceSettingsPage() {
     <Link href="/finance/business-profile" className="text-sm underline">ข้อมูลกิจการและภาษีมูลค่าเพิ่ม / Business profile and VAT settings</Link>
     <Link href="/settings/chart" className="block text-sm underline">ผังบัญชี / Chart of accounts</Link>
     <Link href="/finance/journal" className="block text-sm underline">บันทึกรายวันฉบับร่าง / Draft journal</Link>
+    <Link href="/finance/journal/trial-balance" className="block text-sm underline">งบทดลองฉบับร่าง / Draft trial balance</Link>
   </div>
 }

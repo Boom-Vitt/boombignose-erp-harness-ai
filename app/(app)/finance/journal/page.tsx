@@ -34,7 +34,10 @@ export default async function DraftJournalPage() {
   const chart = (accounts ?? []).map(account => ({ code: account.code, nameTh: account.name_th, nameEn: account.name_en }))
   return <div className="space-y-6">
     <PageHeader title="บันทึกรายวันฉบับร่าง / Draft journal" description={`${DRAFT_JOURNAL_LIMIT_TH} ${DRAFT_JOURNAL_LIMIT_EN}`} breadcrumbs={[{ label: "Finance", href: "/finance" }]} />
-    <p className="text-sm"><Link className="underline" href="/settings/chart">ผังบัญชี / Chart of accounts</Link></p>
+    <p className="flex flex-wrap gap-4 text-sm">
+      <Link className="underline" href="/finance/journal/trial-balance">งบทดลองฉบับร่าง / Draft trial balance</Link>
+      <Link className="underline" href="/settings/chart">ผังบัญชี / Chart of accounts</Link>
+    </p>
     <Card className="max-w-4xl"><CardContent className="space-y-4">
       {chart.length === 0 ? <p className="text-sm">Add the chart of accounts before posting a journal.</p> : <JournalForm accounts={chart} lockDate={settings?.lock_date ?? null} />}
       {settings?.lock_date ? <p className="text-sm text-muted-foreground">Closed through {closeDateLabel(settings.lock_date)}. Issued invoices still do not post themselves.</p> : null}
