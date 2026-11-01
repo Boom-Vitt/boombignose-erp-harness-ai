@@ -72,7 +72,11 @@ describe("bank close copy", () => {
     expect(bankLineStatusHelp("matched")).toContain("ใบเสร็จไม่ได้ถูกแก้ไข")
     expect(bankLineStatusHelp("matched")).toContain("The receipt was not changed")
     expect(bankLineStatusHelp("money_out")).toContain("เงินออก")
+    expect(bankLineStatusHelp("money_out")).not.toContain("จับคู่กับใบเสร็จที่ยืนยันแล้ว")
+    expect(bankLineStatusHelp("ambiguous")).toContain("มากกว่าหนึ่งใบ")
+    expect(bankLineStatusHelp("unmatched")).toContain("ไม่มีใบเสร็จที่ยืนยันแล้ว")
     expect(bankLineStatusHelp("ready")).toBeNull()
+    expect(bankLineStatusHelp("explained")).toBeNull()
     expect(bankWindowLabel(null)).toContain("ทุกวัน")
     expect(bankWindowLabel("2026-01-31")).toContain("2026-01-31 (31/01/2569)")
     const summary = summarizeBankClose(classifyBankLines([
@@ -80,6 +84,12 @@ describe("bank close copy", () => {
     ], [], "2026-01-31"), "2026-01-31")
     expect(bankQueueSummaryText(summary)).toContain("1 unmatched line booked after 2026-01-31 stays")
     expect(bankQueueSummaryText(summary)).toContain("31/01/2569")
+    const later = summarizeBankClose(classifyBankLines([
+      line({ id: "a", amountSatang: 100, reference: "NONE", bookedOn: "2026-02-02" }),
+      line({ id: "b", amountSatang: -20, reference: "FEE", bookedOn: "2026-02-03" }),
+    ], [], "2026-01-31"), "2026-01-31")
+    expect(bankQueueSummaryText(later)).toContain("2 unmatched lines booked after 2026-01-31 stay")
+    expect(bankQueueSummaryText({ ...later, laterOpenCount: 0, periodEnd: null })).not.toContain("unmatched line")
   })
 })
 

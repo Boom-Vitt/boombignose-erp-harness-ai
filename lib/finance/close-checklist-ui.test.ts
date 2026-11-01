@@ -66,6 +66,26 @@ describe("MonthEndCloseSection", () => {
     expect(html).not.toContain("Ready to close")
   })
 
+  it("marks a quiet completed month ready and keeps the current month open", () => {
+    const quietTax = { legalName: "ร้าน", address: "กรุงเทพ", taxId: "1234567890123", branchLabel: "สำนักงานใหญ่", taxStatus: "registered" as const }
+    const ready = monthEndCloseChecklist({ ...input, invoices: [], bills: [], bankLines: [], claims: [], tax: quietTax })
+    if (!ready.ok) throw new Error(ready.error)
+    const readyHtml = renderToStaticMarkup(createElement(MonthEndCloseSection, { checklist: ready.checklist }))
+    expect(readyHtml).toContain("พร้อมปิด / Ready to close")
+    expect(readyHtml).toContain("ผ่าน / Clear")
+    expect(readyHtml).toContain("หมายเหตุ / Note")
+    expect(readyHtml).toContain("ไม่ใช่การยื่นแบบ ภ.พ.30")
+    expect(readyHtml).not.toMatch(/ยื่นแบบสำเร็จ|e-Tax Invoice/)
+
+    const current = monthEndCloseChecklist({ ...input, month: "2026-02", today: "2026-02-15", invoices: [], bills: [], bankLines: [], claims: [], tax: quietTax })
+    if (!current.ok) throw new Error(current.error)
+    const currentHtml = renderToStaticMarkup(createElement(MonthEndCloseSection, { checklist: current.checklist }))
+    expect(currentHtml).toContain("เดือนนี้ยังเปิด / Month still open")
+    expect(currentHtml).toContain("2026-02 (02/2569)")
+    expect(currentHtml).toContain("2026-02-28 (28/02/2569)")
+    expect(currentHtml).not.toContain("พร้อมปิด / Ready to close")
+  })
+
   it("keeps open items visible after the month is locked", () => {
     const result = monthEndCloseChecklist({ ...input, lockDate: "2026-01-31" })
     if (!result.ok) throw new Error(result.error)
