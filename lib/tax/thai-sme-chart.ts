@@ -6,6 +6,7 @@ export const THAI_SME_CHART = [
   { code: "1140", nameTh: "ภาษีซื้อ", nameEn: "VAT input", kind: "asset" },
   { code: "1150", nameTh: "ภาษีถูกหัก ณ ที่จ่าย", nameEn: "Withholding receivable", kind: "asset" },
   { code: "2110", nameTh: "เจ้าหนี้การค้า", nameEn: "Accounts payable", kind: "liability" },
+  { code: "2120", nameTh: "เงินรับล่วงหน้า", nameEn: "Customer deposits", kind: "liability" },
   { code: "2130", nameTh: "ภาษีขาย", nameEn: "VAT output", kind: "liability" },
   { code: "2140", nameTh: "ภาษีหัก ณ ที่จ่ายค้างจ่าย", nameEn: "Withholding payable", kind: "liability" },
   { code: "3100", nameTh: "ทุน", nameEn: "Owner equity", kind: "equity" },
