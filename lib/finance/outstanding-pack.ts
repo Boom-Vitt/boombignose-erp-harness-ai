@@ -22,6 +22,15 @@ export const AGING_BUCKET_LABEL: Record<AgingBucket, string> = {
   days91plus: "91 days or more",
 }
 
+/** Screen labels. The CSV keeps the English bucket name so a file stays stable. */
+export const AGING_BUCKET_DISPLAY: Record<AgingBucket, string> = {
+  current: "ยังไม่ถึงกำหนด / Not yet due",
+  days1to30: "เกิน 1–30 วัน / 1–30 days",
+  days31to60: "เกิน 31–60 วัน / 31–60 days",
+  days61to90: "เกิน 61–90 วัน / 61–90 days",
+  days91plus: "เกิน 91 วันขึ้นไป / 91 days or more",
+}
+
 const ISSUED = new Set(["sent", "partially_paid", "paid", "overdue"])
 
 /** Whole days after the due date. A missing or invalid due date counts as not yet due. */

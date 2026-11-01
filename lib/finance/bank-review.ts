@@ -1,4 +1,5 @@
 import { matchingReceipts, type BankCandidate } from "@/lib/finance/bank-match"
+import { closeDateLabel } from "@/lib/finance/close-copy"
 import { isCalendarDate } from "@/lib/finance/close-window"
 import { sumSatang } from "@/lib/money"
 
@@ -115,6 +116,34 @@ export type BankQueue = "open" | "explained" | "matched" | "all"
 export function parseBankQueue(value: string | undefined): BankQueue {
   if (value === "explained" || value === "matched" || value === "all") return value
   return "open"
+}
+
+export function bankLineStatusHelp(status: BankLineStatus): string | null {
+  switch (status) {
+    case "matched":
+      return "จับคู่กับใบเสร็จที่ยืนยันแล้ว ใบเสร็จไม่ได้ถูกแก้ไข / Matched to a verified receipt. The receipt was not changed."
+    case "ambiguous":
+      return "มีใบเสร็จที่ยืนยันแล้วมากกว่าหนึ่งใบที่มียอดและเลขอ้างอิงเดียวกัน รายการนี้จึงยังไม่จับคู่ / More than one verified receipt has this amount and reference, so this line stays unmatched."
+    case "unmatched":
+      return "ไม่มีใบเสร็จที่ยืนยันแล้วที่มียอดและเลขอ้างอิงนี้ / No verified receipt has this amount and reference."
+    case "money_out":
+      return "เงินออกไม่ใช่ใบเสร็จลูกค้า บันทึกค่าธรรมเนียมธนาคาร การโอน หรือการจ่ายผู้ขาย หรือปล่อยรายการนี้ไว้ / Money out is not a customer receipt. Note a bank fee, a transfer, or a vendor payment, or leave it open."
+    default:
+      return null
+  }
+}
+
+export function bankWindowLabel(periodEnd: string | null): string {
+  if (!periodEnd) return "แสดงรายการทุกวัน / Showing lines for every date."
+  return `แสดงรายการถึง ${closeDateLabel(periodEnd)} / Showing lines through ${periodEnd}.`
+}
+
+export function bankQueueSummaryText(summary: BankCloseSummary): string {
+  const head = `${summary.unmatchedCount} ยังไม่มีใบเสร็จ / with no receipt · ${summary.ambiguousCount} มีใบเสร็จซ้ำ / with more than one receipt · ${summary.moneyOutCount} เงินออก / money out.`
+  if (!summary.periodEnd || summary.laterOpenCount === 0) return head
+  const noun = summary.laterOpenCount === 1 ? "line" : "lines"
+  const stay = summary.laterOpenCount === 1 ? "stays" : "stay"
+  return `${head} ${summary.laterOpenCount} รายการที่ยังไม่จับคู่และบันทึกหลัง ${closeDateLabel(summary.periodEnd)} ไปกับงวดถัดไป / ${summary.laterOpenCount} unmatched ${noun} booked after ${summary.periodEnd} ${stay} with the next close.`
 }
 
 export function bankLineInQueue(line: ClassifiedBankLine, queue: BankQueue, periodEnd: string | null): boolean {

@@ -1,3 +1,4 @@
+import { closeDateLabel, closeMonthLabel, VAT_SUPPORT_EN, VAT_SUPPORT_TH } from "@/lib/finance/close-copy"
 import { deriveInvoiceStatus, outstandingSatang, type InvoiceStatus } from "@/lib/metrics/invoice-status"
 import { sumSatang } from "@/lib/money"
 
@@ -170,9 +171,18 @@ function noun(count: number, one: string, many: string): string {
   return `${count} ${count === 1 ? one : many}`
 }
 
+const TAX_GAP_TH: Record<string, string> = {
+  "seller name": "ชื่อผู้ขาย",
+  "seller address": "ที่อยู่ผู้ขาย",
+  "13-digit tax ID": "เลขประจำตัวผู้เสียภาษี 13 หลัก",
+  branch: "สาขา",
+  "VAT registration": "สถานะจดทะเบียนภาษีมูลค่าเพิ่ม",
+}
+
 function laterNote(count: number, periodEnd: string): string {
   if (count === 0) return ""
-  return ` ${noun(count, "unmatched line booked", "unmatched lines booked")} after ${periodEnd} ${count === 1 ? "stays" : "stay"} with the next close.`
+  const dated = closeDateLabel(periodEnd)
+  return ` รายการที่ยังไม่จับคู่ ${count} รายการที่บันทึกหลัง ${dated} ไปกับงวดถัดไป / ${noun(count, "unmatched line booked", "unmatched lines booked")} after ${dated} ${count === 1 ? "stays" : "stay"} with the next close.`
 }
 
 function unpaidVendorBill(bill: CloseVendorBill): boolean {
@@ -180,17 +190,20 @@ function unpaidVendorBill(bill: CloseVendorBill): boolean {
 }
 
 function closeSummary(month: string, periodEnd: string, lockDate: string | null, reviewCount: number, closable: boolean, alreadyClosed: boolean): string {
-  if (!closable && !alreadyClosed) return `งวด ${month} ยังไม่จบ / Close a completed month. The current month stays open. ${BOUNDARY}`
+  const monthLabel = closeMonthLabel(month)
+  const endLabel = closeDateLabel(periodEnd)
+  const lockLabel = lockDate ? closeDateLabel(lockDate) : ""
+  if (!closable && !alreadyClosed) return `งวด ${monthLabel} ยังไม่จบ / Close a completed month. The current month stays open. ${BOUNDARY}`
   if (alreadyClosed) {
     const open = reviewCount === 0
-      ? "Nothing on this list is still open."
-      : `${noun(reviewCount, "item", "items")} on this list stayed open. The lock does not clear them.`
-    return `งวด ${month} ล็อกแล้ว / This month is already locked through ${lockDate}. ${open} Edits on or before the lock date are blocked. ${BOUNDARY}`
+      ? "ไม่มีรายการในรายการนี้ที่ยังเปิดอยู่ / Nothing on this list is still open."
+      : `${noun(reviewCount, "item", "items")} on this list stayed open. ล็อกแล้วไม่ได้ล้างรายการนี้ / The lock does not clear them.`
+    return `งวด ${monthLabel} ล็อกแล้ว / This month is already locked through ${lockLabel}. ${open} การแก้ไขในวันล็อกหรือก่อนหน้านั้นถูกบล็อก / Edits on or before the lock date are blocked. ${BOUNDARY}`
   }
   if (reviewCount === 0) {
-    return `พร้อมปิดงวด ${month} / Nothing in this list still needs review. An owner or admin can close it in finance settings. The lock then blocks documents and receipts dated on or before ${periodEnd}. ${BOUNDARY}`
+    return `พร้อมปิดงวด ${monthLabel} / Nothing in this list still needs review. An owner or admin can close it in finance settings. The lock then blocks documents and receipts dated on or before ${endLabel}. ${BOUNDARY}`
   }
-  return `ตรวจก่อนปิดงวด ${month} / ${noun(reviewCount, "item still needs", "items still need")} review. An owner or admin can still set the lock. The lock blocks documents and receipts dated on or before ${periodEnd}. The lock does not clear this list. ${BOUNDARY}`
+  return `ตรวจก่อนปิดงวด ${monthLabel} / ${noun(reviewCount, "item still needs", "items still need")} review. An owner or admin can still set the lock. The lock blocks documents and receipts dated on or before ${endLabel}. The lock does not clear this list. ${BOUNDARY}`
 }
 
 export function monthEndCloseChecklist(input: CloseChecklistInput): CloseChecklistResult {
@@ -243,7 +256,9 @@ export function monthEndCloseChecklist(input: CloseChecklistInput): CloseCheckli
     {
       id: "overdue_ar",
       title: "ลูกหนี้เกินกำหนด / Overdue receivables",
-      detail: overdue.length === 0 ? "No issued invoice is past its due date." : `${noun(overdue.length, "issued invoice is", "issued invoices are")} past due and not fully paid.`,
+      detail: overdue.length === 0
+        ? "ไม่มีใบแจ้งหนี้ที่ออกแล้วเกินกำหนด / No issued invoice is past its due date."
+        : `ใบแจ้งหนี้ที่ออกแล้ว ${overdue.length} ใบเกินกำหนดและยังชำระไม่ครบ / ${noun(overdue.length, "issued invoice is", "issued invoices are")} past due and not fully paid.`,
       count: overdue.length,
       amountSatang: overdueAmount,
       href: "/finance?status=overdue",
@@ -253,7 +268,9 @@ export function monthEndCloseChecklist(input: CloseChecklistInput): CloseCheckli
     {
       id: "unpaid_ap",
       title: "บิลเจ้าหนี้ค้างจ่าย / Unpaid vendor bills",
-      detail: unpaid.length === 0 ? "No vendor bill is unpaid." : `${noun(unpaid.length, "vendor bill is", "vendor bills are")} unpaid. ${pastDueBills.length} past due as of ${input.today}.`,
+      detail: unpaid.length === 0
+        ? "ไม่มีบิลผู้ขายค้างจ่าย / No vendor bill is unpaid."
+        : `มีบิลผู้ขายค้างจ่าย และ ${pastDueBills.length} ใบเกินกำหนด ณ ${closeDateLabel(input.today)} / ${noun(unpaid.length, "vendor bill is", "vendor bills are")} unpaid. ${pastDueBills.length} past due as of ${closeDateLabel(input.today)}.`,
       count: unpaid.length,
       amountSatang: unpaidAmount,
       href: "/finance?tab=costs",
@@ -263,7 +280,7 @@ export function monthEndCloseChecklist(input: CloseChecklistInput): CloseCheckli
     {
       id: "unmatched_bank",
       title: "รายการธนาคารที่ยังไม่จับคู่ / Unmatched bank lines",
-      detail: `${unmatched.length === 0 ? `No bank line booked on or before ${periodEnd} is unmatched.` : `${noun(unmatched.length, "bank line", "bank lines")} booked on or before ${periodEnd} ${unmatched.length === 1 ? "is" : "are"} not matched to a verified receipt.`}${laterNote(laterBank, periodEnd)}`,
+      detail: `${unmatched.length === 0 ? `ไม่มีรายการธนาคารที่บันทึกในหรือก่อน ${closeDateLabel(periodEnd)} ที่ยังไม่จับคู่ / No bank line booked on or before ${closeDateLabel(periodEnd)} is unmatched.` : `มีรายการธนาคาร ${unmatched.length} รายการที่บันทึกในหรือก่อน ${closeDateLabel(periodEnd)} ยังไม่จับคู่กับใบเสร็จที่ยืนยันแล้ว / ${noun(unmatched.length, "bank line", "bank lines")} booked on or before ${closeDateLabel(periodEnd)} ${unmatched.length === 1 ? "is" : "are"} not matched to a verified receipt.`}${laterNote(laterBank, periodEnd)}`,
       count: unmatched.length,
       amountSatang: unmatchedAmount,
       href: "/finance/bank",
@@ -273,7 +290,7 @@ export function monthEndCloseChecklist(input: CloseChecklistInput): CloseCheckli
     {
       id: "draft_invoices",
       title: "ใบแจ้งหนี้ฉบับร่าง / Draft invoices",
-      detail: `${drafts.length === 0 ? `No draft invoice is dated on or before ${periodEnd}.` : `${noun(drafts.length, "draft invoice is", "draft invoices are")} dated on or before ${periodEnd}. Issuing ${drafts.length === 1 ? "it" : "them"} after the lock fails while the issue date stays in the locked period.`}${laterDrafts ? ` ${noun(laterDrafts, "draft invoice dated", "draft invoices dated")} after ${periodEnd} ${laterDrafts === 1 ? "stays" : "stay"} open.` : ""}`,
+      detail: `${drafts.length === 0 ? `ไม่มีใบแจ้งหนี้ฉบับร่างที่มีวันที่ในหรือก่อน ${closeDateLabel(periodEnd)} / No draft invoice is dated on or before ${closeDateLabel(periodEnd)}.` : `มีใบแจ้งหนี้ฉบับร่าง ${drafts.length} ใบที่มีวันที่ในหรือก่อน ${closeDateLabel(periodEnd)} หากออกหลังล็อกขณะที่วันออกยังอยู่ในงวดที่ล็อก การออกจะไม่ผ่าน / ${noun(drafts.length, "draft invoice is", "draft invoices are")} dated on or before ${closeDateLabel(periodEnd)}. Issuing ${drafts.length === 1 ? "it" : "them"} after the lock fails while the issue date stays in the locked period.`}${laterDrafts ? ` ใบร่าง ${laterDrafts} ใบที่ลงวันที่หลัง ${closeDateLabel(periodEnd)} ยังเปิดอยู่ / ${noun(laterDrafts, "draft invoice dated", "draft invoices dated")} after ${closeDateLabel(periodEnd)} ${laterDrafts === 1 ? "stays" : "stay"} open.` : ""}`,
       count: drafts.length,
       amountSatang: draftAmount,
       href: "/finance?status=draft",
@@ -284,8 +301,8 @@ export function monthEndCloseChecklist(input: CloseChecklistInput): CloseCheckli
       id: "expense_claims",
       title: "เคลมรออนุมัติ / Expense claims awaiting approval",
       detail: submitted.length === 0
-        ? "No submitted expense claim is waiting for approval."
-        : `${noun(submitted.length, "submitted expense claim is", "submitted expense claims are")} waiting for approval.${ownClaims === 0 ? "" : " You cannot approve your own claim."}`,
+        ? "ไม่มีเคลมที่ส่งแล้วรออนุมัติ / No submitted expense claim is waiting for approval."
+        : `มีเคลมที่ส่งแล้ว ${submitted.length} รายการรออนุมัติ${ownClaims === 0 ? "" : " คุณอนุมัติเคลมของตัวเองไม่ได้"} / ${noun(submitted.length, "submitted expense claim is", "submitted expense claims are")} waiting for approval.${ownClaims === 0 ? "" : " You cannot approve your own claim."}`,
       count: submitted.length,
       amountSatang: null,
       href: submitted.length > 0 && otherClaims === 0 ? "/expenses" : "/expenses?tab=approve",
@@ -296,8 +313,8 @@ export function monthEndCloseChecklist(input: CloseChecklistInput): CloseCheckli
       id: "tax_profile",
       title: "ข้อมูลผู้ขาย / Seller profile",
       detail: missingTax.length === 0
-        ? `Seller name, address, 13-digit tax ID, and branch are filled. VAT registration is recorded as ${input.tax.taxStatus === "registered" ? "registered" : "not registered"}. ${input.tax.taxStatus === "registered" ? "Saving the profile does not make a document a statutory tax invoice." : "These documents stay operational invoices."}`
-        : `Missing ${missingTax.join(", ")}.`,
+        ? `ชื่อผู้ขาย ที่อยู่ เลขผู้เสียภาษี 13 หลัก และสาขาครบแล้ว สถานะจด VAT บันทึกเป็น${input.tax.taxStatus === "registered" ? "จดทะเบียนแล้ว การบันทึกข้อมูลนี้ไม่ได้ทำให้เอกสารเป็นใบกำกับภาษีตามกฎหมาย" : "ยังไม่จดทะเบียน เอกสารเหล่านี้เป็นใบแจ้งหนี้สำหรับงานปฏิบัติการ"} / Seller name, address, 13-digit tax ID, and branch are filled. VAT registration is recorded as ${input.tax.taxStatus === "registered" ? "registered" : "not registered"}. ${input.tax.taxStatus === "registered" ? "Saving the profile does not make a document a statutory tax invoice." : "These documents stay operational invoices."}`
+        : `Missing ${missingTax.join(", ")}. ยังขาด ${missingTax.map((label) => TAX_GAP_TH[label] ?? label).join(", ")}.`,
       count: missingTax.length,
       amountSatang: null,
       href: "/finance/business-profile",
@@ -307,7 +324,7 @@ export function monthEndCloseChecklist(input: CloseChecklistInput): CloseCheckli
     {
       id: "vat_support",
       title: "ข้อมูล VAT / VAT support",
-      detail: `Output VAT is issued-invoice VAT in ${input.month} minus credit notes in that month. Input VAT is matched vendor bills in ${input.month}. Support data for your accountant. Not a ภ.พ.30 filing.`,
+      detail: `ภาษีขายคืองบใบแจ้งหนี้ที่ออกใน ${closeMonthLabel(input.month)} หักใบลดหนี้ในเดือนนั้น ภาษีซื้อคือบิลผู้ขายที่จับคู่ในเดือนนั้น / Output VAT is issued-invoice VAT in ${closeMonthLabel(input.month)} minus credit notes in that month. Input VAT is matched vendor bills in ${input.month}. ${VAT_SUPPORT_EN} ${VAT_SUPPORT_TH}`,
       count: 0,
       amountSatang: null,
       href: "/reports#purchase-vat",
@@ -319,10 +336,10 @@ export function monthEndCloseChecklist(input: CloseChecklistInput): CloseCheckli
       id: "finance_lock",
       title: "ล็อกงวด / Finance lock",
       detail: alreadyClosed
-        ? `Locked through ${lockDate}. Documents and receipts dated on or before that date stay blocked.`
+        ? `ล็อกถึง ${closeDateLabel(lockDate!)}. เอกสารและใบเสร็จในวันที่นั้นหรือก่อนหน้านั้นถูกบล็อก / Locked through ${closeDateLabel(lockDate!)}. Documents and receipts dated on or before that date stay blocked.`
         : lockDate
-          ? `Locked through ${lockDate}. Documents and receipts on or before that date are already blocked. Closing ${input.month} extends the block through ${periodEnd}.`
-          : `No lock date is set. Closing ${input.month} blocks invoice issues, receipts, and corrections dated on or before ${periodEnd}.`,
+          ? `ล็อกถึง ${closeDateLabel(lockDate)} แล้ว การปิด ${closeMonthLabel(input.month)} จะขยายการบล็อกถึง ${closeDateLabel(periodEnd)} / Locked through ${closeDateLabel(lockDate)}. Documents and receipts on or before that date are already blocked. Closing ${input.month} extends the block through ${closeDateLabel(periodEnd)}.`
+          : `ยังไม่กำหนดวันล็อก การปิด ${closeMonthLabel(input.month)} จะบล็อกการออกใบแจ้งหนี้ ใบเสร็จ และการแก้ไขที่มีวันที่ในหรือก่อน ${closeDateLabel(periodEnd)} / No lock date is set. Closing ${input.month} blocks invoice issues, receipts, and corrections dated on or before ${closeDateLabel(periodEnd)}.`,
       count: 0,
       amountSatang: null,
       href: "/settings/finance",

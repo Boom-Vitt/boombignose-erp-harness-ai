@@ -7,6 +7,7 @@ import { TrendingUp, Timer, Printer, BarChart3, Clock, Package } from "lucide-re
 
 import { requireOrgContext } from "@/lib/auth"
 import { canDownloadAccountantPack } from "@/lib/finance/accountant-pack"
+import { VAT_SUPPORT_EN, VAT_SUPPORT_TH } from "@/lib/finance/close-copy"
 import { formatTHB } from "@/lib/money"
 import { canReviewFinanceClose } from "@/lib/finance/close-access"
 import { getReportData } from "./_data"
@@ -45,7 +46,7 @@ export default async function ReportsPage({ searchParams }: { searchParams: Prom
         title="Reports"
         description={`Operational reports · ${rangeLabel}`}
       >
-        <Button variant="outline" render={<Link href="/reports/statements" />}>Statements</Button>
+        <Button variant="outline" render={<Link href="/reports/statements" />}>งบประกอบ / Statements</Button>
         <Button
           variant="outline"
           render={
@@ -111,16 +112,16 @@ export default async function ReportsPage({ searchParams }: { searchParams: Prom
         </CardContent>
       </Card>
 
-      <Card id="purchase-vat" className="scroll-mt-20"><CardHeader><CardTitle><h2>Purchase VAT by month</h2></CardTitle></CardHeader><CardContent>
-        <p className="mb-3 text-sm text-muted-foreground">Matched vendor invoices and linked credit notes by bill month, including inventory purchases. Credit notes reduce the totals. Operational report only.</p>
-        <Table><TableHeader><TableRow><TableHead>Month</TableHead><TableHead>Purchase base</TableHead><TableHead>Input VAT</TableHead><TableHead>Vendor total</TableHead></TableRow></TableHeader>
+      <Card id="purchase-vat" className="scroll-mt-20"><CardHeader><CardTitle><h2>ภาษีซื้อรายเดือน / Purchase VAT by month</h2></CardTitle></CardHeader><CardContent>
+        <p className="mb-3 text-sm text-muted-foreground">ภาษีซื้อจากบิลผู้ขายที่จับคู่แล้วและใบลดหนี้ที่เชื่อมกัน ตามเดือนของบิล รวมการซื้อเข้าคลัง ใบลดหนี้ลดยอด รวมนี้เป็นรายงานปฏิบัติการ / Matched vendor invoices and linked credit notes by bill month, including inventory purchases. Credit notes reduce the totals. Operational report only. {VAT_SUPPORT_TH} {VAT_SUPPORT_EN}</p>
+        <Table><TableHeader><TableRow><TableHead>เดือน / Month</TableHead><TableHead>ฐานภาษีซื้อ / Purchase base</TableHead><TableHead>ภาษีซื้อ / Input VAT</TableHead><TableHead>ยอดผู้ขาย / Vendor total</TableHead></TableRow></TableHeader>
           <TableBody>{purchaseVatByMonth.map(row => <TableRow key={row.month}><TableCell>{row.month}</TableCell><TableCell>{formatTHB(row.base_satang)}</TableCell><TableCell>{formatTHB(row.input_vat_satang)}</TableCell><TableCell>{formatTHB(row.total_satang)}</TableCell></TableRow>)}</TableBody>
         </Table>
       </CardContent></Card>
 
       {canDownloadAccountantPack(ctx.role) ? <p className="text-sm text-muted-foreground">
         <Link className="underline" href="/reports/accountant-pack">ชุดข้อมูลนักบัญชี / Accountant pack</Link>
-        {" "}exports one month of output VAT, matched purchase VAT, and stored withholding for an external accountant. It does not file ภ.พ.30.
+        {" "}ส่งออกภาษีขาย ภาษีซื้อที่จับคู่แล้ว และหัก ณ ที่จ่ายที่บันทึกไว้ของหนึ่งเดือนให้นักบัญชีภายนอก ไม่ยื่นแบบ ภ.พ.30 / exports one month of output VAT, matched purchase VAT, and stored withholding for an external accountant. It does not file ภ.พ.30.
       </p> : null}
 
       {view !== "pivot" ? <div className="space-y-6">

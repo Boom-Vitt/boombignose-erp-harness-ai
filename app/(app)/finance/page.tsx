@@ -158,14 +158,14 @@ export default async function FinancePage({
         title="Finance"
         description="การเงิน / Verified receipts, receivables, and recorded operating costs."
       >
-        {canReviewMonthEndClose(ctx.role) ? <Button variant="outline" render={<Link href="/reports#month-end-close" />}>Month-end close</Button> : null}
+        {canReviewMonthEndClose(ctx.role) ? <Button variant="outline" render={<Link href="/reports#month-end-close" />}>ปิดงบเดือน / Month-end close</Button> : null}
         <Button variant="outline" render={<Link href="/finance/receipts" />}>Customer receipts</Button>
         <Button variant="outline" render={<Link href="/finance/business-profile" />}>Business profile</Button>
         <Button variant="outline" render={<Link href="/finance/subscriptions" />}>
           <Repeat /> Subscriptions
         </Button>
         <Button variant="outline" render={<Link href="/finance/payments/export" />}>Receipt evidence CSV</Button>
-        {canDownloadAccountantPack(ctx.role) ? <Button variant="outline" render={<Link href="/reports/accountant-pack" />}>Accountant pack</Button> : null}
+        {canDownloadAccountantPack(ctx.role) ? <Button variant="outline" render={<Link href="/reports/accountant-pack" />}>ชุดข้อมูลนักบัญชี / Accountant pack</Button> : null}
         <Button variant="outline" render={<Link href="/finance/costs/new" />}>
           <Coins /> New cost
         </Button>

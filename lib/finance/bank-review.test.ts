@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs"
 import { describe, expect, it } from "vitest"
 import type { BankCandidate } from "@/lib/finance/bank-match"
-import { bankLineInQueue, bankLineStatus, classifyBankLines, parseBankQueue, summarizeBankClose, type BankLineInput } from "@/lib/finance/bank-review"
+import { bankLineInQueue, bankLineStatus, bankLineStatusHelp, bankQueueSummaryText, bankWindowLabel, classifyBankLines, parseBankQueue, summarizeBankClose, type BankLineInput } from "@/lib/finance/bank-review"
 
 const receipt = (id: string, amount: number, reference: string | null, extra: Partial<BankCandidate> = {}): BankCandidate => ({
   id, amountSatang: amount, reference, verified: true, reversal: false, ...extra,
@@ -64,6 +64,22 @@ describe("month-end bank queue", () => {
       line({ id: "second", amountSatang: 500, reference: "ONE" }),
     ], payments, "2026-10-31")
     expect(classified.find(row => row.id === "second")?.status).toBe("unmatched")
+  })
+})
+
+describe("bank close copy", () => {
+  it("explains a line in Thai and English without posting a journal", () => {
+    expect(bankLineStatusHelp("matched")).toContain("ใบเสร็จไม่ได้ถูกแก้ไข")
+    expect(bankLineStatusHelp("matched")).toContain("The receipt was not changed")
+    expect(bankLineStatusHelp("money_out")).toContain("เงินออก")
+    expect(bankLineStatusHelp("ready")).toBeNull()
+    expect(bankWindowLabel(null)).toContain("ทุกวัน")
+    expect(bankWindowLabel("2026-01-31")).toContain("2026-01-31 (31/01/2569)")
+    const summary = summarizeBankClose(classifyBankLines([
+      line({ id: "later", amountSatang: 100, reference: "NONE", bookedOn: "2026-02-02" }),
+    ], [], "2026-01-31"), "2026-01-31")
+    expect(bankQueueSummaryText(summary)).toContain("1 unmatched line booked after 2026-01-31 stays")
+    expect(bankQueueSummaryText(summary)).toContain("31/01/2569")
   })
 })
 
