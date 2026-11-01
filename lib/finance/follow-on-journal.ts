@@ -5,24 +5,31 @@ import { SALES_JOURNAL_ACCOUNTS, type SalesVatBucket, type SalesVatTreatment } f
 
 /**
  * A credit note reverses part of a sales invoice already in the draft journal.
- * A cash receipt clears part of that receivable.
+ * A verified receipt clears part of that receivable.
  *
- * Bank, card, cheque, withholding, and an unallocated remainder are refused.
+ * Cash posts to cash. A transfer, PromptPay, card, or cheque posts to the bank
+ * account. This chart has no card-clearing account and no undeposited-cheque
+ * account. Withholding, an unallocated remainder, method "other", and a
+ * deposit invoice are refused. A deposit is not a receipt: the chart has no
+ * customer-deposit account, and the final invoice already folds that amount
+ * into its discount.
  * This is not signed statutory books and not a ภ.พ.30 or e-Tax filing.
  */
 
 export const FOLLOW_ON_JOURNAL_LIMIT_TH =
-  "รายการนี้ลงบันทึกรายวันฉบับร่างจากใบลดหนี้หรือใบเสร็จเงินสด ไม่ใช่งบที่ลงนามตามกฎหมาย และไม่ใช่การยื่นแบบ ภ.พ.30 หรือ e-Tax"
+  "รายการนี้ลงบันทึกรายวันฉบับร่างจากใบลดหนี้หรือใบเสร็จ ไม่ใช่งบที่ลงนามตามกฎหมาย และไม่ใช่การยื่นแบบ ภ.พ.30 หรือ e-Tax"
 
 export const FOLLOW_ON_JOURNAL_LIMIT_EN =
-  "This posts a credit note or a cash receipt into the draft journal. It is not signed statutory books and not a ภ.พ.30 or e-Tax filing."
+  "This posts a credit note or a verified receipt into the draft journal. A transfer, PromptPay, card, or cheque is posted to the bank account. This chart has no card-clearing account and no undeposited-cheque account. It is not signed statutory books and not a ภ.พ.30 or e-Tax filing."
 
 export const CASH_ACCOUNT = "1110"
+export const BANK_ACCOUNT = "1120"
+export const BANK_RECEIPT_METHODS = ["transfer", "promptpay", "card", "cheque"] as const
 
 const MAX_SATANG = 9007199254740991
 
 export type FollowOnJournal =
-  | { ok: true; entryDate: string; memo: string; lines: DraftJournalLine[]; debitSatang: number; vatTreatment: SalesVatTreatment | "cash" }
+  | { ok: true; entryDate: string; memo: string; lines: DraftJournalLine[]; debitSatang: number; vatTreatment: SalesVatTreatment | "cash" | "bank" }
   | { ok: false; error: string }
 
 function halfUp(numerator: bigint, denominator: bigint): bigint {
@@ -163,12 +170,19 @@ export type CashReceiptJournalInput = {
   accounts: readonly string[]
 }
 
-/** Debit cash and credit accounts receivable. Only a fully allocated verified cash receipt. */
+function receiptAccount(method: string): { account: string; treatment: "cash" | "bank"; label: "Cash" | "Bank" } | null {
+  if (method === "cash") return { account: CASH_ACCOUNT, treatment: "cash", label: "Cash" }
+  if ((BANK_RECEIPT_METHODS as readonly string[]).includes(method)) return { account: BANK_ACCOUNT, treatment: "bank", label: "Bank" }
+  return null
+}
+
+/** Debit cash or bank and credit accounts receivable. The receipt must be verified and fully allocated. */
 export function cashReceiptJournal(input: CashReceiptJournalInput): FollowOnJournal {
   if (input.verificationState !== "verified" || input.reversal || input.refund || !safeMoney(input.amountSatang) || input.amountSatang <= 0) {
-    return { ok: false, error: "Only a verified cash receipt can post." }
+    return { ok: false, error: "Only a verified receipt can post." }
   }
-  if (input.method !== "cash") return { ok: false, error: "Only a cash receipt is posted. Bank, card, and cheque receipts are not posted yet." }
+  const account = receiptAccount(input.method)
+  if (!account) return { ok: false, error: "This receipt method is not posted." }
   const closed = journalDateInClosedPeriod(input.paidOn, input.lockDate)
   if (!closed.ok) return closed
   if (input.allocations.length === 0 || input.allocations.some(row => !row.invoiceId || !safeMoney(row.amountSatang) || row.amountSatang <= 0)) {
@@ -201,17 +215,17 @@ export function cashReceiptJournal(input: CashReceiptJournalInput): FollowOnJour
       return { ok: false, error: "This receipt is larger than the receivable still posted." }
     }
   }
-  if (!input.accounts.includes(CASH_ACCOUNT) || !input.accounts.includes(SALES_JOURNAL_ACCOUNTS.receivable)) {
+  if (!input.accounts.includes(account.account) || !input.accounts.includes(SALES_JOURNAL_ACCOUNTS.receivable)) {
     return { ok: false, error: "Journal line account is not on the chart." }
   }
   const reference = input.reference.trim()
-  const memo = reference ? `Cash receipt ${input.paidOn} ${reference}` : `Cash receipt ${input.paidOn}`
+  const memo = reference ? `${account.label} receipt ${input.paidOn} ${reference}` : `${account.label} receipt ${input.paidOn}`
   if (memo.length > 200) return { ok: false, error: "Enter a journal memo." }
   const lines: DraftJournalLine[] = [
-    { accountCode: CASH_ACCOUNT, debitSatang: input.amountSatang, creditSatang: 0 },
+    { accountCode: account.account, debitSatang: input.amountSatang, creditSatang: 0 },
     { accountCode: SALES_JOURNAL_ACCOUNTS.receivable, debitSatang: 0, creditSatang: input.amountSatang },
   ]
   const checked = draftJournalLines(lines, input.accounts)
   if (!checked.ok) return checked
-  return { ok: true, entryDate: input.paidOn, memo, lines, debitSatang: checked.debitSatang, vatTreatment: "cash" }
+  return { ok: true, entryDate: input.paidOn, memo, lines, debitSatang: checked.debitSatang, vatTreatment: account.treatment }
 }

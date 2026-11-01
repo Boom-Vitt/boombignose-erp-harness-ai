@@ -26,13 +26,14 @@ export function PostCreditNoteButton({ creditNoteId, posted }: { creditNoteId: s
   })} />
 }
 
-export function PostCashReceiptButton({ paymentId, posted }: { paymentId: string; posted: boolean }) {
+export function PostCashReceiptButton({ paymentId, posted, method }: { paymentId: string; posted: boolean; method: string }) {
   const router = useRouter()
   const [pending, start] = useTransition()
-  return <PostControl posted={posted} pending={pending} label="ลงใบเสร็จเงินสด / Post cash receipt" onSubmit={() => start(async () => {
+  const label = method === "cash" ? "ลงใบเสร็จเงินสด / Post cash receipt" : "ลงใบเสร็จเข้าธนาคาร / Post bank receipt"
+  return <PostControl posted={posted} pending={pending} label={label} onSubmit={() => start(async () => {
     const result = await postCashReceipt(paymentId)
     if (result.error) { toast.error(result.error); return }
-    toast.success("Cash receipt posted to the draft journal. It is not signed statutory books.")
+    toast.success(method === "cash" ? "Cash receipt posted to the draft journal. It is not signed statutory books." : "Bank receipt posted to the draft journal. It is not signed statutory books.")
     router.refresh()
   })} />
 }

@@ -48,7 +48,7 @@ export default async function DraftJournalPage() {
         <p className="font-medium">{closeDateLabel(entry.entry_date)} · {entry.memo}</p>
         {entry.source_invoice_id ? <p><Link className="underline" href={`/finance/invoices/${entry.source_invoice_id}`}>จากใบแจ้งหนี้ที่ออกแล้ว / From an issued invoice</Link></p> : null}
         {entry.source_credit_note_id ? <p>จากใบลดหนี้ที่ออกแล้ว / From an issued credit note</p> : null}
-        {entry.source_payment_id ? <p>จากใบเสร็จเงินสดที่ยืนยันแล้ว / From a verified cash receipt</p> : null}
+        {entry.source_payment_id ? <p>จากใบเสร็จที่ยืนยันแล้ว / From a verified receipt</p> : null}
         <ul>{entryLines.map(line => <li key={`${entry.id}-${line.line_no}`}>{line.account_code} {names.get(line.account_code) ?? ""} · debit {formatTHB(line.debit_satang)} · credit {formatTHB(line.credit_satang)}</li>)}</ul>
       </li>
     })}</ul>}

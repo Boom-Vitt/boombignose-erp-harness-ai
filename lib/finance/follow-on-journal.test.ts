@@ -2,7 +2,7 @@ import { readFileSync } from "node:fs"
 import { describe, expect, it } from "vitest"
 import { FOLLOW_ON_JOURNAL_LIMIT_EN, FOLLOW_ON_JOURNAL_LIMIT_TH, cashReceiptJournal, creditNoteJournal, type CashReceiptJournalInput, type CreditNoteJournalInput } from "@/lib/finance/follow-on-journal"
 
-const accounts = ["1110", "1130", "2130", "4100"]
+const accounts = ["1110", "1120", "1130", "2130", "4100"]
 
 function credit(overrides: Partial<CreditNoteJournalInput> = {}): CreditNoteJournalInput {
   return {
@@ -92,7 +92,14 @@ describe("credit note and cash receipt journals", () => {
     expect(creditNoteJournal(credit({ invoicePosted: false }))).toEqual({ ok: false, error: "Post the sales invoice before this credit note." })
     expect(creditNoteJournal(credit({ snapshot: { kind: "credit_note", document: { ...(credit().snapshot as { document: object }).document, whtSatang: 300, whtRateBps: 300, amountDueSatang: 10400 } }, rowAmountSatang: 10400 }))).toEqual({ ok: false, error: "Withholding is not posted from the credit note." })
     expect(creditNoteJournal(credit({ postedReceiptSatang: 100000 }))).toEqual({ ok: false, error: "This credit is larger than the receivable still posted." })
-    expect(cashReceiptJournal(receipt({ method: "transfer" }))).toEqual({ ok: false, error: "Only a cash receipt is posted. Bank, card, and cheque receipts are not posted yet." })
+    const transfer = cashReceiptJournal(receipt({ method: "transfer" }))
+    expect(transfer.ok && transfer.vatTreatment).toBe("bank")
+    for (const method of ["transfer", "promptpay", "card", "cheque"]) {
+      const posted = cashReceiptJournal(receipt({ method, reference: "" }))
+      expect(posted.ok && posted.lines[0]).toEqual({ accountCode: "1120", debitSatang: 5000, creditSatang: 0 })
+      expect(posted.ok && posted.memo).toBe("Bank receipt 2026-01-21")
+    }
+    expect(cashReceiptJournal(receipt({ method: "other" }))).toEqual({ ok: false, error: "This receipt method is not posted." })
     expect(cashReceiptJournal(receipt({ invoices: [{ invoiceId: "inv", posted: false, whtSatang: 0, totalSatang: 107000, postedCreditSatang: 0, postedReceiptSatang: 0 }] }))).toEqual({ ok: false, error: "Post the sales invoice before this receipt." })
     expect(cashReceiptJournal(receipt({ allocations: [{ invoiceId: "inv", amountSatang: 4000 }] }))).toEqual({ ok: false, error: "This receipt is not fully allocated to posted invoices." })
     expect(cashReceiptJournal(receipt({ amountSatang: 100000, allocations: [{ invoiceId: "inv", amountSatang: 100000 }] }))).toEqual({ ok: false, error: "This receipt is larger than the receivable still posted." })
@@ -108,11 +115,13 @@ describe("credit note and cash receipt journals", () => {
       "Post the sales invoice before this credit note.",
       "Withholding is not posted from the credit note.",
       "This credit is larger than the receivable still posted.",
-      "Only a cash receipt is posted.",
       "This receipt is not fully allocated to posted invoices.",
       "This receipt is larger than the receivable still posted.",
       "not signed statutory books",
     ]) expect(sql).toContain(message)
-    expect(sql).not.toContain("A credit note already changes this invoice")
+    const bank = readFileSync("supabase/migrations/20261101210000_bank_receipt_journal.sql", "utf8")
+    expect(bank).toContain("This receipt method is not posted.")
+    expect(bank).toContain("'1120'")
+    expect(bank).toContain("no card-clearing account")
   })
 })
