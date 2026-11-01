@@ -219,4 +219,4 @@ Rules for that command step:
 
 If `moli fetch --help` on the installed binary does not list `--block-private-networks`, upgrade Moli. Do not delete the flag from the wrapper.
 
-Bank-line matching, the month-end checklist, the accountant pack, and the FlowAccount export stay in their own pull requests. This change does not scrape a bank and does not post journal entries.
+Bank lines, cash at close, the month-end checklist, the accountant pack, and the FlowAccount export are in the desktop window on main. This fetch does not scrape a bank, does not open those routes, and does not post journal entries.
