@@ -25,6 +25,7 @@ import { createClient } from "@/lib/supabase/server"
 import { requireOrgContext } from "@/lib/auth"
 import { currentMonthKey, todayISO } from "@/lib/dates"
 import { formatTHB, sumSatang } from "@/lib/money"
+import { canReviewMonthEndClose } from "@/lib/finance/close-checklist"
 import {
   revenueForMonth,
   costsForMonth,
@@ -154,6 +155,7 @@ export default async function FinancePage({
         title="Finance"
         description="การเงิน / Verified receipts, receivables, and recorded operating costs."
       >
+        {canReviewMonthEndClose(ctx.role) ? <Button variant="outline" render={<Link href="/reports#month-end-close" />}>Month-end close</Button> : null}
         <Button variant="outline" render={<Link href="/finance/receipts" />}>Customer receipts</Button>
         <Button variant="outline" render={<Link href="/finance/business-profile" />}>Business profile</Button>
         <Button variant="outline" render={<Link href="/finance/subscriptions" />}>
