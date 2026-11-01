@@ -93,6 +93,9 @@ describe("FlowAccount document", () => {
     expect(creditDays("2026-06-01", "2026-06-01")).toBe(0)
     expect(creditDays("2026-06-30", "2026-06-01")).toBe(0)
     expect(creditDays(null, "2026-06-01")).toBe(0)
+    expect(creditDays("2026-02-28", "2026-03-10")).toBe(10)
+    expect(creditDays("2026-02-31", "2026-03-10")).toBe(0)
+    expect(creditDays("2026-06-31", "2026-07-15")).toBe(0)
   })
 })
 

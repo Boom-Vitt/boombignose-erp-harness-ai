@@ -72,8 +72,16 @@ describe("public Moli fetch policy", () => {
     expect(decidePublicFetch({ url: "https://example.com/docs#token=abc" }).ok).toBe(false)
   })
 
-  it("still allows a public page whose name mentions login guidance", () => {
+  it("allows public guidance pages and refuses login files, including encoded names", () => {
     expect(decidePublicFetch({ url: "https://example.com/docs/login-guide" }).ok).toBe(true)
+    expect(decidePublicFetch({ url: "https://example.com/docs/login-guide.html" }).ok).toBe(true)
+    expect(decidePublicFetch({ url: "https://www.rd.go.th/272.html" }).ok).toBe(true)
+    expect(decidePublicFetch({ url: "https://example.com/login.html" }).ok).toBe(false)
+    expect(decidePublicFetch({ url: "https://example.com/Login.PHP" }).ok).toBe(false)
+    expect(decidePublicFetch({ url: "https://example.com/app/authen.html" }).ok).toBe(false)
+    expect(decidePublicFetch({ url: "https://example.com/signin.aspx" }).ok).toBe(false)
+    expect(decidePublicFetch({ url: "https://example.com/%6cogin" }).ok).toBe(false)
+    expect(decidePublicFetch({ url: "https://example.com/%256cogin%252ehtml" }).ok).toBe(false)
   })
 
   it("turns layout on for screenshots and keeps text dumps structure-first", () => {
