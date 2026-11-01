@@ -16,3 +16,16 @@ export async function findSupportExport(sha256: string): Promise<{ record: Store
   if (error) return { record: null, error: error.message }
   return { record: readStoredSupportExport(data) }
 }
+
+/** The signed-in person looked at one stored support file. Not a statutory sign-off. */
+export async function reviewSupportPack(sha256: string): Promise<{ already?: boolean; error?: string }> {
+  const ctx = await requireOrgContext()
+  if (!can(ctx.role, "audit:view")) return { error: "Only owners, admins, and accountants can review a support file." }
+  const parsed = normalizeSha256(sha256)
+  if (!parsed) return { error: "Enter a SHA-256 checksum." }
+  const supabase = await createClient()
+  const { data, error } = await supabase.rpc("review_support_pack", { p_org_id: ctx.orgId, p_sha256: parsed })
+  if (error) return { error: error.message }
+  const already = !!data && typeof data === "object" && !Array.isArray(data) && data.already === true
+  return already ? { already: true } : {}
+}

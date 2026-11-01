@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { closeChainPayload, closeChainSha256, linkCloseChain, readChainStatus, verifyCloseChain, type CloseChainInput } from "@/lib/finance/close-chain"
+import { closeChainMeta, closeChainPayload, closeChainSha256, linkCloseChain, readChainStatus, verifyCloseChain, type CloseChainInput } from "@/lib/finance/close-chain"
 
 const orgId = "11111111-1111-4111-8111-111111111111"
 const firstId = "22222222-2222-4222-8222-222222222222"
@@ -39,6 +39,7 @@ describe("close activity hash chain", () => {
       "lockDate=2026-01-31;month=2026-01;kind=operational_close",
     ].join("\n"))
     expect(closeChainSha256(payload)).toBe("c4f7f4b763bc9aa183ad7f5b730f5b3e7fed442bcf56e0bf65f5985a18c0cd23")
+    expect(closeChainMeta({ ...first.meta, note: "I looked" })).toBe("lockDate=2026-01-31;month=2026-01;kind=operational_close;note=I looked")
     const { links, head } = linkCloseChain([first, second])
     expect(links[0]?.previous).toBe("")
     expect(links[0]?.seq).toBe(1)

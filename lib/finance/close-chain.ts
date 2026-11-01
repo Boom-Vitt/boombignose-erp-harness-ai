@@ -20,6 +20,7 @@ export const CLOSE_CHAIN_META_KEYS = [
   "requestedBy",
   "confirmedBy",
   "staffCount",
+  "note",
 ] as const
 
 export type CloseChainInput = {

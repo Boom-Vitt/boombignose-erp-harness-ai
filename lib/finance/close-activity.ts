@@ -27,6 +27,7 @@ export const CLOSE_AUDIT_ACTIONS = [
   "finance_lock_reopen_cancelled",
   "period_closed",
   "support_exported",
+  "support_pack_reviewed",
 ] as const
 
 export type CloseAuditAction = (typeof CLOSE_AUDIT_ACTIONS)[number]
@@ -38,6 +39,7 @@ const ACTION_LABELS: Record<CloseAuditAction, string> = {
   finance_lock_reopen_cancelled: "ยกเลิกคำขอเปิดงวด / Reopen request cancelled",
   period_closed: "ปิดเดือนที่จบแล้ว / Completed month closed",
   support_exported: "ส่งไฟล์ประกอบ / Support file exported",
+  support_pack_reviewed: "ตรวจไฟล์ประกอบแล้ว / Support file reviewed",
 }
 
 export type CloseActivityView = {

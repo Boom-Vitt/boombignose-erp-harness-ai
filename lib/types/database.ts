@@ -1522,6 +1522,7 @@ isOneToOne: false
             list_finance_lock_reopen_requests: { Args: { p_org_id: string }; Returns: Json }
             find_support_export: { Args: { p_org_id: string; p_sha256: string }; Returns: Json }
             verify_close_activity_chain: { Args: { p_org_id: string }; Returns: Json }
+            review_support_pack: { Args: { p_org_id: string; p_sha256: string }; Returns: Json }
             install_thai_sme_chart: { Args: { p_org_id: string }; Returns: undefined }
             add_bank_line: { Args: { p_org_id: string; p_booked_on: string; p_amount_satang: number; p_reference: string }; Returns: string }
             match_bank_line: { Args: { p_org_id: string; p_line_id: string; p_payment_id: string }; Returns: undefined }

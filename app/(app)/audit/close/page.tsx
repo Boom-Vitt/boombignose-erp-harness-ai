@@ -5,6 +5,8 @@ import { can } from "@/lib/permissions"
 import { createClient } from "@/lib/supabase/server"
 import { CLOSE_AUDIT_ACTIONS, closeActivityView } from "@/lib/finance/close-activity"
 import { readChainStatus } from "@/lib/finance/close-chain"
+import { SUPPORT_REVIEW_MARK_EN, SUPPORT_REVIEW_MARK_TH, reviewedChecksums } from "@/lib/finance/support-review"
+import { ReviewPackButton } from "./review-pack-button"
 import { relativeTime } from "@/lib/audit/format"
 import { PageHeader } from "@/components/page-header"
 import { Button } from "@/components/ui/button"
@@ -29,7 +31,7 @@ export default async function CloseActivityPage() {
   const supabase = await createClient()
   const { data: rows } = await supabase
     .from("audit_log")
-    .select("id, actor_email, action, summary, meta, created_at, close_chain_seq, close_chain_prev, close_chain_sha256")
+    .select("id, actor_id, actor_email, action, summary, meta, created_at, close_chain_seq, close_chain_prev, close_chain_sha256")
     .eq("org_id", ctx.orgId)
     .in("action", [...CLOSE_AUDIT_ACTIONS])
     .order("created_at", { ascending: false })
@@ -37,6 +39,11 @@ export default async function CloseActivityPage() {
   const chainResult = await supabase.rpc("verify_close_activity_chain", { p_org_id: ctx.orgId })
   const chain = chainResult.error ? null : readChainStatus(chainResult.data)
   const entries = rows ?? []
+  const reviewed = reviewedChecksums(entries.map(row => ({
+    action: row.action,
+    actorId: row.actor_id,
+    sha256: closeActivityView(row.action, row.meta).sha256,
+  })), ctx.userId)
   const now = new Date()
   return <div className="space-y-6">
     <PageHeader
@@ -54,6 +61,8 @@ export default async function CloseActivityPage() {
     ) : chain ? (
       <p className="text-sm">{chain.reason}{chain.brokenAt ? ` (${chain.brokenAt})` : ""}</p>
     ) : null}
+    <p className="text-sm">{SUPPORT_REVIEW_MARK_TH}</p>
+    <p className="text-sm text-muted-foreground">{SUPPORT_REVIEW_MARK_EN}</p>
     <ChecksumCheck />
     {entries.length === 0 ? <p className="text-sm text-muted-foreground">ยังไม่มีการล็อกหรือการส่งไฟล์ประกอบ / No lock changes or support exports yet.</p> : (
       <Card>
@@ -76,6 +85,7 @@ export default async function CloseActivityPage() {
                 <Field label="ไบต์ / Bytes" value={view.bytes} />
                 <Field label="ลำดับโซ่ / Chain" value={row.close_chain_seq} />
                 <Field label="SHA-256 ของโซ่ / Chain SHA-256" value={row.close_chain_sha256} />
+                {row.action === "support_exported" && view.sha256 ? <ReviewPackButton sha256={view.sha256} already={reviewed.has(view.sha256)} /> : null}
               </li>
             })}
           </ul>
