@@ -233,8 +233,7 @@ jobs:
 
   macos-bundle:
     needs: linux-bundle
-    if: github.event_name != 'pull_request'
-    runs-on: macos-14
+    runs-on: macos-15
     timeout-minutes: 90
     steps:
       - uses: actions/checkout@v5
@@ -277,9 +276,8 @@ jobs:
 
   macos:
     needs: [test, macos-bundle]
-    if: github.event_name != 'pull_request'
     timeout-minutes: 120
-    runs-on: macos-14
+    runs-on: macos-15
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-go@v5
