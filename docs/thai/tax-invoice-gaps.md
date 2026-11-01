@@ -1,6 +1,6 @@
 # Statutory tax invoice — what this app does not do
 
-Operational invoices can show a seller, a buyer, lines, VAT, and withholding. That is a working document. It is not a statutory tax invoice (ใบกำกับภาษี), a tax filing, or an e-Tax Invoice.
+Operational invoices can show a seller, a buyer, lines, VAT, and withholding. That is a working document. It is not a statutory tax invoice (ใบกำกับภาษี), a tax filing, or an e-Tax Invoice. The close roadmap, including who files, is `docs/boombignose/LEGAL_CLOSE.md`.
 
 ## Already stored when someone fills them
 

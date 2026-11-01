@@ -147,6 +147,8 @@ describe("accountant pack assembly", () => {
     expect(html).toContain("&lt;Acme&gt;")
     expect(html).not.toContain("<Acme>")
     expect(html).toContain("Not tax payable")
+    expect(csv).toContain("กรมสรรพากร")
+    expect(html).toContain("does not keep a statutory ledger")
     expect(html).not.toMatch(/ยื่นแบบสำเร็จ|filed successfully|e-Tax Invoice/i)
   })
 

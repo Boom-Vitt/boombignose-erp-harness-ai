@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge"
 import { Card, CardAction, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import type { CloseChecklist } from "@/lib/finance/close-checklist"
 import { formatTHB } from "@/lib/money"
+import { FilingResponsibility } from "@/components/finance/filing-responsibility"
 
 const STATE_LABEL = { clear: "Clear", review: "Review", info: "Note" } as const
 
@@ -27,6 +28,7 @@ export function MonthEndCloseSection({ checklist }: { checklist: CloseChecklist 
         </CardAction>
       </CardHeader>
       <CardContent className="space-y-4">
+        <FilingResponsibility />
         <p className="text-sm">{checklist.summary}</p>
         <ul className="divide-y rounded-lg border">
           {checklist.items.map(item => (

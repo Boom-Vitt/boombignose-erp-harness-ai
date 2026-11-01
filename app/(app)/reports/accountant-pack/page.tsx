@@ -6,6 +6,7 @@ import { ACCOUNTANT_PACK_DISCLAIMER_EN, ACCOUNTANT_PACK_DISCLAIMER_TH, VENDOR_WH
 import { loadAccountantPack } from "@/lib/finance/accountant-pack-load"
 import { formatTHB } from "@/lib/money"
 import { PageHeader } from "@/components/page-header"
+import { FilingResponsibility } from "@/components/finance/filing-responsibility"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -23,6 +24,7 @@ export default async function AccountantPackPage({ searchParams }: { searchParam
           description="Support data for an external accountant."
           breadcrumbs={[{ label: "Reports", href: "/reports" }]}
         />
+        <FilingResponsibility />
         <p>เจ้าของ ผู้ดูแล และนักบัญชีเท่านั้นที่ดาวน์โหลดชุดนี้ได้ / Only an owner, an admin, or an accountant can download this pack.</p>
       </div>
     )
@@ -37,6 +39,7 @@ export default async function AccountantPackPage({ searchParams }: { searchParam
         description="ข้อมูลประกอบสำหรับนักบัญชีภายนอก ไม่ใช่การยื่นแบบ ภ.พ.30 / Support data for your external accountant. This does not file ภ.พ.30."
         breadcrumbs={[{ label: "Reports", href: "/reports" }]}
       />
+      <FilingResponsibility />
       <form className="flex flex-wrap items-end gap-3" method="get">
         <label className="text-sm">
           เดือน / Month

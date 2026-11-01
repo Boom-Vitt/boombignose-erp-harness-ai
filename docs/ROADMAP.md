@@ -1,5 +1,7 @@
 # Roadmap
 
+The current close roadmap is `docs/boombignose/LEGAL_CLOSE.md`. Operational month-end close is on main. A close that is legally valid under Thai rules is the end goal and is not shipped. The V1–V3 list below is the earlier Company OS plan.
+
 From `docs/brainstorm/product-strategy.md`. Strategy: **dogfood an internal
 Company OS first**, keep the seams clean (`org_id` everywhere, clean module
 boundaries) so it can become an open-core Community + Pro product without a

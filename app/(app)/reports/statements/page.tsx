@@ -7,6 +7,7 @@ import { formatTHB } from "@/lib/money"
 import { currentMonthKey } from "@/lib/dates"
 import { aging, balanceSupport, monthBounds, profitAndLoss, vatSupport, type StatementCost, type StatementInvoice } from "@/lib/reports/statements"
 import { PageHeader } from "@/components/page-header"
+import { FilingResponsibility } from "@/components/finance/filing-responsibility"
 import { Card, CardContent } from "@/components/ui/card"
 
 export const dynamic = "force-dynamic"
@@ -77,6 +78,7 @@ export default async function StatementsPage({ searchParams }: { searchParams: P
     <section className="space-y-2">
       <h2 className="font-semibold">ข้อมูลประกอบ ภ.พ.30 / VAT support</h2>
       <p className="text-sm text-muted-foreground">Output VAT is from issued invoices. Input VAT is from recorded costs. This is not a ภ.พ.30 filing.</p>
+      <FilingResponsibility />
       <Card><CardContent className="grid gap-2 py-4 text-sm sm:grid-cols-3">
         <p>Output VAT {formatTHB(vat.outputVatSatang)}</p>
         <p>Input VAT {formatTHB(vat.inputVatSatang)}</p>

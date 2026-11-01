@@ -48,7 +48,7 @@ export default async function AuditPage() {
     <div className="space-y-6">
       <PageHeader
         title="Activity"
-        description="A running history of changes across your workspace."
+        description="A running history of changes across your workspace. Finance lock changes, completed-month closes, and support-file checksums are included. Signed-in users cannot edit or delete these rows. This log is not a Revenue Department filing and not a qualified timestamp."
       />
 
       {entries.length === 0 ? (

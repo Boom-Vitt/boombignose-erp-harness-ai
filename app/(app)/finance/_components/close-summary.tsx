@@ -32,7 +32,7 @@ export function CloseSummary() {
       <CardHeader>
         <CardTitle className="text-base">สรุปปิดเดือน / Month-end note</CardTitle>
         <CardDescription>
-          Ollama reads overdue receivables, unpaid vendor bills, and unmatched bank lines in this workspace, then writes a short note. It does not post a journal or file tax.
+          Ollama reads overdue receivables, unpaid vendor bills, and unmatched bank lines in this workspace, then writes a short note. It does not post a journal or file tax. Your accountant prepares the statutory books. You and your accountant file with the Revenue Department.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">

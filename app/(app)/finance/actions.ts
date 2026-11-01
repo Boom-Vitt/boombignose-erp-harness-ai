@@ -10,6 +10,7 @@ import { requireOrgContext, requireCapability } from "@/lib/auth"
 import { formatTHBWhole } from "@/lib/money"
 import { writeAudit } from "@/lib/audit"
 import { todayISO } from "@/lib/dates"
+import { financeLockChange } from "@/lib/finance/period-close"
 import { paymentAmount, moneyInput } from "@/lib/payments/input"
 import { isIssuedInvoiceNumber } from "@/lib/documents/numbering"
 
@@ -435,10 +436,36 @@ export async function updateFinanceLockDate(input: z.input<typeof FinanceLock>):
   const parsed = FinanceLock.safeParse(input)
   if (!parsed.success) return { error: "Enter a valid lock date or leave it blank." }
   if (parsed.data.expectedOrgId !== ctx.orgId) return { error: "Workspace changed. Reload before saving." }
+  const decision = financeLockChange(parsed.data.lockDate, todayISO())
+  if (!decision.ok) return { error: decision.error }
   const supabase = await createSupabaseClient()
-  const { error } = await supabase.rpc("update_finance_lock_date", { p_org_id: ctx.orgId, p_lock_date: parsed.data.lockDate || null })
+  const { error } = await supabase.rpc("update_finance_lock_date", { p_org_id: ctx.orgId, p_lock_date: decision.lockDate })
   if (error) return { error: error.message }
   revalidatePath("/settings")
   revalidatePath("/settings/finance")
+  revalidatePath("/audit")
   return {}
+}
+
+const CloseMonth = z.object({ expectedOrgId: z.guid(), month: z.string().regex(/^\d{4}-\d{2}$/) })
+
+/**
+ * Move the finance lock to the last day of a completed month.
+ * The database refuses the current month, a future month, and a month the lock already covers.
+ */
+export async function closeCompletedMonth(input: z.input<typeof CloseMonth>): Promise<{ error?: string; lockDate?: string }> {
+  const ctx = await requireOrgContext()
+  try { requireCapability(ctx, "settings:manage") }
+  catch { return { error: "Only owners and admins can change the finance lock date." } }
+  const parsed = CloseMonth.safeParse(input)
+  if (!parsed.success) return { error: "Enter a month as YYYY-MM." }
+  if (parsed.data.expectedOrgId !== ctx.orgId) return { error: "Workspace changed. Reload before saving." }
+  const supabase = await createSupabaseClient()
+  const { data, error } = await supabase.rpc("close_completed_month", { p_org_id: ctx.orgId, p_month: parsed.data.month })
+  if (error) return { error: error.message }
+  revalidatePath("/settings")
+  revalidatePath("/settings/finance")
+  revalidatePath("/reports")
+  revalidatePath("/audit")
+  return { lockDate: typeof data === "string" ? data : undefined }
 }
