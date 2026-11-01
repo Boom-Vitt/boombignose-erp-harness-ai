@@ -11,7 +11,7 @@ Canonical doc: [docs/moli/README.md](../../../docs/moli/README.md). Follow that 
 
 ## When to use it
 
-Use this when a local agent needs the current text of a public page that is not already a file in the checkout. The default is the Revenue Department public home page:
+Use this when a local agent needs the current text of a public page that is not already a file in the checkout. Month-end screens stay in the desktop window (`/finance`, `/finance/bank`, `/finance/cash`, `/reports#month-end-close`). Do not fetch them. The default public page is the Revenue Department main page:
 
 ```bash
 pnpm moli:fetch

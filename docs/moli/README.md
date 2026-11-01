@@ -29,7 +29,7 @@ pnpm moli:fetch
 
 Read checkout docs from disk (`docs/boombignose/`, `docs/desktop/`). Call Moli when the source is a public site that is not already in the checkout. The sample is the Revenue Department public main page, `https://www.rd.go.th/272.html`. The site root `https://www.rd.go.th/` is only a short splash. e-Filing links on that page, including any path segment `authen`, are refused. The sample is not a filing login and it is not the ERP.
 
-Do not point Moli at `http://127.0.0.1:3100`. That address is the desktop window's ERP. The wrapper refuses loopback, localhost, and IP literals, so it cannot open a second session on the app or reach cloud metadata.
+Do not point Moli at `http://127.0.0.1:3100`. That address is the desktop window's ERP. Month-end work stays in that webview: `/finance`, `/finance/bank`, `/finance/cash`, `/reports#month-end-close`, `/reports/statements`, `/reports/accountant-pack`, `/import`, and the local backup control in Settings. `boombignose/internal/shell` refuses to place those screens on any other host. The wrapper refuses loopback, localhost, and IP literals, so it cannot open a second session on the app, read bank lines, or reach cloud metadata.
 
 The packaged installer does not gain a Moli command in this phase. Run the wrapper from a checkout (`BOOMBIGNOSE_ERP_DIR` or the repo working directory), not from inside the webview.
 
