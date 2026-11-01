@@ -32,11 +32,13 @@ export type Capability =
   | "record:write"
 
 const ALL_STAFF: Role[] = ["owner", "admin"]
+const FINANCE: Role[] = ["owner", "admin", "accountant"]
 
 /**
- * Which roles hold each capability. Today owner+admin share the operational
- * capabilities and members hold none of them; splitting a capability to
- * owner-only (e.g. billing-critical actions) is now a one-line change here.
+ * Which roles hold each capability. Owner and admin share workspace management.
+ * An accountant records invoices, receipts, and credit notes and can read
+ * profit and the audit log. A member is staff who can write records and cannot
+ * change finance. Receipt reversal stays with owner and admin (`invoice:delete`).
  */
 export const CAPABILITY_ROLES: Record<Capability, Role[]> = {
   "settings:manage": ALL_STAFF,
@@ -50,15 +52,15 @@ export const CAPABILITY_ROLES: Record<Capability, Role[]> = {
   "invoice:delete": ALL_STAFF,
   "cost:delete": ALL_STAFF,
   "subscription:manage": ALL_STAFF,
-  "audit:view": ALL_STAFF,
-  "payment:verify": ALL_STAFF,
+  "audit:view": FINANCE,
+  "payment:verify": FINANCE,
   "inventory:manage": ALL_STAFF,
   "purchase:manage": ALL_STAFF,
   "purchase:approve": ALL_STAFF,
   "product:manage": ALL_STAFF,
   "expense:approve": ALL_STAFF,
-  "profit:view": ALL_STAFF,
-  "record:write": ["owner", "admin", "member"],
+  "profit:view": FINANCE,
+  "record:write": ["owner", "admin", "accountant", "member"],
 }
 
 /** True when `role` holds `capability`. */

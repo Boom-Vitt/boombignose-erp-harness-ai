@@ -64,7 +64,7 @@ export async function createInvoice(
 ): Promise<{ error?: string }> {
   const ctx = await requireOrgContext()
   try { requireCapability(ctx, "payment:verify") }
-  catch { return { error: "Only owners and admins can manage invoices." } }
+  catch { return { error: "Only owners, admins, and accountants can manage invoices." } }
   const parsed = CreateInvoice.safeParse(input)
   if (!parsed.success) return { error: "Invalid input" }
   const d = parsed.data
@@ -124,7 +124,7 @@ export async function updateInvoice(
 ): Promise<{ error?: string }> {
   const ctx = await requireOrgContext()
   try { requireCapability(ctx, "payment:verify") }
-  catch { return { error: "Only owners and admins can manage invoices." } }
+  catch { return { error: "Only owners, admins, and accountants can manage invoices." } }
   const parsed = UpdateInvoice.safeParse(input)
   if (!parsed.success) return { error: "Invalid input" }
   const d = parsed.data

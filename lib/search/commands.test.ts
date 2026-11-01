@@ -20,6 +20,17 @@ describe("palette command list", () => {
     expect(goTo).toEqual(NAV_ITEMS.filter((item) => !item.ownerAdminOnly).map((item) => item.title))
   })
 
+  it("shows the audit log to an accountant and hides workspace setup creates", () => {
+    expect(titles(paletteCommands("accountant").goTo)).toContain("Activity")
+    expect(titles(paletteCommands("accountant").create)).toEqual([
+      "New deal",
+      "New quote",
+      "New invoice",
+      "New client",
+      "New project",
+    ])
+  })
+
   it("filters create commands by what the role may create", () => {
     const all = ["New deal", "New quote", "New invoice", "New client", "New project", "New product", "New purchase order", "New vendor"]
     expect(titles(paletteCommands("owner").create)).toEqual(all)

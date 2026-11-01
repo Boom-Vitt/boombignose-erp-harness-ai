@@ -5,6 +5,7 @@ import { readAllOrThrow } from "@/lib/supabase/read-all"
 import { todayISO } from "@/lib/dates"
 import { formatTHB } from "@/lib/money"
 import { suggestBankMatch } from "@/lib/finance/bank-match"
+import { can } from "@/lib/permissions"
 import { PageHeader } from "@/components/page-header"
 import { Card, CardContent } from "@/components/ui/card"
 import { AddBankLineForm, MatchBankLineButton } from "./bank-forms"
@@ -13,7 +14,7 @@ export const dynamic = "force-dynamic"
 
 export default async function BankPage() {
   const ctx = await requireOrgContext()
-  if (ctx.role === "member") return <p>Only owners and admins can reconcile bank lines.</p>
+  if (!can(ctx.role, "payment:verify")) return <p>Only owners, admins, and accountants can reconcile bank lines.</p>
   const supabase = await createClient()
   const [lines, payments] = await Promise.all([
     readAllOrThrow((from, to) => supabase.from("bank_lines").select("id, booked_on, amount_satang, reference, matched_payment_id").eq("org_id", ctx.orgId).order("booked_on", { ascending: false }).order("id").range(from, to)),

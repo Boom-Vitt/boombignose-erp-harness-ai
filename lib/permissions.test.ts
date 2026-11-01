@@ -15,6 +15,18 @@ describe("can", () => {
     expect(can("admin", "team:manage")).toBe(true)
   })
 
+  it("lets an accountant record finance and not manage the workspace", () => {
+    expect(can("accountant", "payment:verify")).toBe(true)
+    expect(can("accountant", "profit:view")).toBe(true)
+    expect(can("accountant", "audit:view")).toBe(true)
+    expect(can("accountant", "record:write")).toBe(true)
+    expect(can("accountant", "settings:manage")).toBe(false)
+    expect(can("accountant", "team:manage")).toBe(false)
+    expect(can("accountant", "invoice:delete")).toBe(false)
+    expect(can("accountant", "purchase:approve")).toBe(false)
+    expect(can("accountant", "inventory:manage")).toBe(false)
+  })
+
   it("denies members staff capabilities", () => {
     for (const cap of Object.keys(CAPABILITY_ROLES) as Capability[]) {
       expect(can("member", cap)).toBe(cap === "record:write")

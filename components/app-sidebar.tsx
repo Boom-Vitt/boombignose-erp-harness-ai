@@ -4,7 +4,7 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { LogOut } from "lucide-react"
 
-import { NAV_ITEMS } from "@/components/nav"
+import { NAV_ITEMS, showNavItem } from "@/components/nav"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import {
@@ -41,10 +41,7 @@ export function AppSidebar({
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
-              {NAV_ITEMS.filter(
-                (item) =>
-                  !item.ownerAdminOnly || role === "owner" || role === "admin"
-              ).map((item) => {
+              {NAV_ITEMS.filter((item) => showNavItem(role, item)).map((item) => {
                 const active =
                   pathname === item.href || pathname.startsWith(`${item.href}/`)
                 const Icon = item.icon

@@ -25,7 +25,7 @@ export default async function AuditPage() {
       <div className="space-y-6">
         <PageHeader
           title="ไม่มีสิทธิ์เข้าถึง"
-          description="หน้านี้สำหรับเจ้าขององค์กรและผู้ดูแลระบบเท่านั้น"
+          description="หน้านี้สำหรับเจ้าขององค์กร ผู้ดูแลระบบ และนักบัญชี"
         >
           <Button render={<Link href="/dashboard" />}>กลับ Dashboard</Button>
         </PageHeader>

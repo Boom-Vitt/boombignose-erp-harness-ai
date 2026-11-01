@@ -37,7 +37,7 @@ export function TeamInvitations({
   appUrl: string
 }) {
   const [email, setEmail] = useState("")
-  const [role, setRole] = useState<"member" | "admin">("member")
+  const [role, setRole] = useState<"member" | "accountant" | "admin">("member")
   const [pending, startTransition] = useTransition()
 
   function inviteLink(token: string): string {
@@ -93,13 +93,14 @@ export function TeamInvitations({
         />
         <Select
           value={role}
-          onValueChange={(v) => setRole(v as "member" | "admin")}
+          onValueChange={(v) => setRole(v as "member" | "accountant" | "admin")}
         >
-          <SelectTrigger className="sm:w-32">
+          <SelectTrigger className="sm:w-40" aria-label="Role">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="member">Member</SelectItem>
+            <SelectItem value="member">Staff</SelectItem>
+            <SelectItem value="accountant">Accountant</SelectItem>
             <SelectItem value="admin">Admin</SelectItem>
           </SelectContent>
         </Select>
@@ -107,6 +108,9 @@ export function TeamInvitations({
           <UserPlus /> Invite
         </Button>
       </div>
+      <p className="text-muted-foreground text-xs">
+        Staff record customers and notes. Accountants also record invoices, receipts, and credit notes. Admins manage settings and the team. An owner is not offered here.
+      </p>
 
       {invites.length === 0 ? (
         <EmptyState
@@ -123,8 +127,8 @@ export function TeamInvitations({
                 <p className="truncate text-sm font-medium">{inv.email}</p>
                 <p className="text-muted-foreground text-xs">Pending</p>
               </div>
-              <Badge variant="outline" className="shrink-0 capitalize">
-                {inv.role}
+              <Badge variant="outline" className="shrink-0">
+                {inv.role === "member" ? "Staff" : inv.role === "accountant" ? "Accountant" : inv.role === "admin" ? "Admin" : inv.role}
               </Badge>
               <Button
                 variant="ghost"

@@ -13,7 +13,7 @@ const ONE_YEAR = 60 * 60 * 24 * 365
 // ── Invite a teammate ───────────────────────────────────────────────────────
 const InviteMember = z.object({
   email: z.string().trim().toLowerCase().email("Enter a valid email"),
-  role: z.enum(["admin", "member"]).default("member"),
+  role: z.enum(["admin", "accountant", "member"]).default("member"),
 })
 
 export async function inviteMember(

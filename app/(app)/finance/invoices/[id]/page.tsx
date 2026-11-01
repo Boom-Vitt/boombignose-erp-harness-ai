@@ -98,6 +98,8 @@ export default async function InvoiceDetailPage({
   const stockableCount = stock.lines.length
   const pendingDelivery = stock.lines.filter(line => line.delivered_quantity < line.quantity)
   const manageStock = can(ctx.role, "inventory:manage")
+  const canFinance = can(ctx.role, "payment:verify")
+  const canReverse = can(ctx.role, "invoice:delete")
 
   const [
     claimsRes,
@@ -231,7 +233,7 @@ export default async function InvoiceDetailPage({
         flow={INVOICE_FLOW}
         status={effectiveStatus}
         commands={
-          ctx.role === "member"
+          !canFinance
             ? {}
             : {
                 issue: "#issue-invoice",
@@ -250,7 +252,7 @@ export default async function InvoiceDetailPage({
       {manageStock && stock.moves.some(move => move.kind === "delivery") && <section className="space-y-3"><h2 className="font-semibold">Customer returns</h2>{stock.moves.filter(move => move.kind === "delivery").map(move => <CustomerReturnForm key={move.id} invoiceId={id} move={move} returnedQuantity={stock.moves.filter(row => row.return_of_move_id === move.id).reduce((sum, row) => sum + Math.round(row.quantity * 1000), 0) / 1000} description={stock.lines.find(line => line.id === move.source_line_id)?.description ?? inventory.products.find(product => product.id === move.product_id)?.name ?? "product"} warehouse={inventory.warehouses.find(warehouse => warehouse.id === move.warehouse_id)?.name ?? "Original warehouse"} />)}</section>}
       <p className="text-sm text-muted-foreground">เอกสารเพื่อการดำเนินงาน / Operational records. VAT and withholding are document calculations only, not a legal tax system, accounting ledger, filing service or e-Tax Invoice. <Link className="underline" href="/finance/business-profile">Business profile</Link></p>
       {invoice.issued_snapshot_id && invoice.wht_satang > 0 ? <p className="text-sm"><Link className="underline" href={`/finance/invoices/${invoice.id}/wht`}>ร่าง 50 ทวิ / Draft withholding certificate</Link>. The payer issues the statutory certificate. This draft is not a Revenue Department form.</p> : null}
-      {invoice.status === "draft" && ctx.role !== "member" ? <Card id="issue-invoice"><CardHeader><CardTitle className="text-base">ออกใบแจ้งหนี้ / Issue invoice</CardTitle></CardHeader><CardContent><RequireSaved message="Save your invoice changes below before issuing it."><IssueInvoiceForm orgId={ctx.orgId} invoiceId={invoice.id} version={invoice.version} /></RequireSaved><CancelDraftButton invoiceId={invoice.id} /></CardContent></Card> : null}
+      {invoice.status === "draft" && canFinance ? <Card id="issue-invoice"><CardHeader><CardTitle className="text-base">ออกใบแจ้งหนี้ / Issue invoice</CardTitle></CardHeader><CardContent><RequireSaved message="Save your invoice changes below before issuing it."><IssueInvoiceForm orgId={ctx.orgId} invoiceId={invoice.id} version={invoice.version} /></RequireSaved><CancelDraftButton invoiceId={invoice.id} /></CardContent></Card> : null}
       {invoice.issued_snapshot_id ? <p className="text-sm">Issued snapshot retained. Corrections must preserve the original document.</p> : invoice.status !== "draft" ? <div className="space-y-3"><p role="alert" className="text-sm">This legacy record has no issued snapshot. Review it before treating the printable record as an issued document.</p>{can(ctx.role, "payment:verify") && ["sent", "partially_paid", "paid", "overdue"].includes(invoice.status) ? <AdoptLegacyInvoiceForm orgId={ctx.orgId} invoiceId={invoice.id} version={invoice.version} /> : null}</div> : null}
       <div className="grid min-w-0 grid-cols-[minmax(0,1fr)] gap-6 lg:grid-cols-3">
         <div className="min-w-0 space-y-6 lg:col-span-2">
@@ -261,7 +263,7 @@ export default async function InvoiceDetailPage({
             </CardHeader>
             <CardContent>
               <DocumentTotals subtotal={invoice.subtotal_satang} discount={invoice.discount_satang} vat={invoice.vat_satang} total={invoice.total_satang} wht={invoice.wht_satang} whtRate={invoice.wht_rate_bps} amountDue={invoice.amount_satang} breakdown={invoice.tax_breakdown} inclusive={invoice.prices_include_vat} />
-              {ctx.role !== "member" && invoice.status === "draft" && !invoice.issued_snapshot_id && paid === 0 && !(claimsRes.data ?? []).some(claim => claim.status === "pending") ? <div className="my-4"><WithholdingForm invoiceId={invoice.id} rate={invoice.wht_rate_bps} /></div> : null}
+              {canFinance && invoice.status === "draft" && !invoice.issued_snapshot_id && paid === 0 && !(claimsRes.data ?? []).some(claim => claim.status === "pending") ? <div className="my-4"><WithholdingForm invoiceId={invoice.id} rate={invoice.wht_rate_bps} /></div> : null}
               <dl className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3">
                 <Field label="Amount" value={formatTHB(invoice.amount_satang)} />
                 <Field label="Verified receipts" value={formatTHB(paid)} />
@@ -358,7 +360,7 @@ export default async function InvoiceDetailPage({
                         <TableCell>{PAYMENT_METHOD_LABEL[p.method]}</TableCell>
                         <TableCell className="text-muted-foreground">
                           {p.notes ?? "—"}
-                          {ctx.role !== "member" && p.amount_satang > 0 ? <ReversePaymentForm orgId={ctx.orgId} invoiceId={id} paymentId={p.id} today={today} /> : null}
+                          {canReverse && p.amount_satang > 0 ? <ReversePaymentForm orgId={ctx.orgId} invoiceId={id} paymentId={p.id} today={today} /> : null}
                         </TableCell>
                         <TableCell className="text-right tabular-nums">
                           {formatTHB(p.amount_satang)}
@@ -381,16 +383,16 @@ export default async function InvoiceDetailPage({
               <p className="text-sm text-muted-foreground mb-4">Customer reports await verification. Only verified receipts reduce the open balance.</p>
               {claimsRes.error ? <p role="alert">Payment queue unavailable. Reload before approving.</p> : (claimsRes.data ?? []).map(claim => <div key={claim.id} className="space-y-2 border-b py-4">
                 <p>{formatTHB(claim.amount_satang)} · {claim.reference} · {claim.status}</p>
-                {claim.status === "pending" && ctx.role !== "member" ? <ReviewClaimForm today={today} orgId={ctx.orgId} claimId={claim.id} invoiceId={invoice.id} suggestedBaht={satangToBahtString(claim.amount_satang)} /> : null}
+                {claim.status === "pending" && canFinance ? <ReviewClaimForm today={today} orgId={ctx.orgId} claimId={claim.id} invoiceId={invoice.id} suggestedBaht={satangToBahtString(claim.amount_satang)} /> : null}
               </div>)}
-              {ctx.role !== "member" && outstanding > 0 && !["draft", "cancelled"].includes(invoice.status) && !(claimsRes.data ?? []).some(claim => claim.status === "pending") && !claimsRes.error ? <div className="border-t pt-4"><h3 className="mb-3 text-sm font-medium">แจ้งชำระโดยเจ้าหน้าที่ / Staff report</h3><PaymentForm today={today} orgId={ctx.orgId} invoiceId={invoice.id} suggestedBaht={satangToBahtString(outstanding)} /></div> : null}
-              {legacyRes.data?.length ? <div className="mt-6 space-y-4"><h3 className="text-sm font-medium">ตรวจสอบยอดเดิม / Legacy reconciliation</h3><p className="text-xs text-muted-foreground">Retained records are excluded from verified cash. Match each to bank evidence before creating a linked verified receipt.</p>{legacyRes.data.map(legacy => <div key={legacy.id} className="rounded border p-3 space-y-2"><p className="text-sm">{formatTHB(legacy.amount_satang)} · {todayISO(new Date(legacy.paid_at))} · {legacy.verification_state}</p><p className="text-xs text-muted-foreground">{legacy.notes ?? "No original reference"}</p>{legacy.reconciled_payment_id ? <p className="text-xs">Linked verified receipt: {legacy.reconciled_payment_id}</p> : null}{legacy.verification_state === "legacy_unverified" && ctx.role !== "member" && outstanding > 0 && !["draft", "cancelled"].includes(invoice.status) ? <PaymentForm today={today} orgId={ctx.orgId} invoiceId={invoice.id} legacyPaymentId={legacy.id} suggestedBaht={satangToBahtString(Math.min(legacy.amount_satang, outstanding))} /> : null}</div>)}</div> : null}
+              {canFinance && outstanding > 0 && !["draft", "cancelled"].includes(invoice.status) && !(claimsRes.data ?? []).some(claim => claim.status === "pending") && !claimsRes.error ? <div className="border-t pt-4"><h3 className="mb-3 text-sm font-medium">แจ้งชำระโดยเจ้าหน้าที่ / Staff report</h3><PaymentForm today={today} orgId={ctx.orgId} invoiceId={invoice.id} suggestedBaht={satangToBahtString(outstanding)} /></div> : null}
+              {legacyRes.data?.length ? <div className="mt-6 space-y-4"><h3 className="text-sm font-medium">ตรวจสอบยอดเดิม / Legacy reconciliation</h3><p className="text-xs text-muted-foreground">Retained records are excluded from verified cash. Match each to bank evidence before creating a linked verified receipt.</p>{legacyRes.data.map(legacy => <div key={legacy.id} className="rounded border p-3 space-y-2"><p className="text-sm">{formatTHB(legacy.amount_satang)} · {todayISO(new Date(legacy.paid_at))} · {legacy.verification_state}</p><p className="text-xs text-muted-foreground">{legacy.notes ?? "No original reference"}</p>{legacy.reconciled_payment_id ? <p className="text-xs">Linked verified receipt: {legacy.reconciled_payment_id}</p> : null}{legacy.verification_state === "legacy_unverified" && canFinance && outstanding > 0 && !["draft", "cancelled"].includes(invoice.status) ? <PaymentForm today={today} orgId={ctx.orgId} invoiceId={invoice.id} legacyPaymentId={legacy.id} suggestedBaht={satangToBahtString(Math.min(legacy.amount_satang, outstanding))} /> : null}</div>)}</div> : null}
             </CardContent>
           </Card>
         </div>
       </div>
 
-      {ctx.role !== "member" && invoice.status === "draft" && !invoice.source_quote_id && !invoice.issued_snapshot_id && paid === 0 && !(claimsRes.data ?? []).some(claim => claim.status === "pending") ? <Card className="max-w-3xl">
+      {canFinance && invoice.status === "draft" && !invoice.source_quote_id && !invoice.issued_snapshot_id && paid === 0 && !(claimsRes.data ?? []).some(claim => claim.status === "pending") ? <Card className="max-w-3xl">
         <CardHeader>
           <CardTitle className="text-base">Edit invoice</CardTitle>
         </CardHeader>
@@ -408,7 +410,7 @@ export default async function InvoiceDetailPage({
       {invoice.issued_snapshot_id ? <Card className="max-w-3xl"><CardHeader><CardTitle>Credit notes</CardTitle></CardHeader><CardContent className="space-y-4">
         <p>Credited {formatTHB(credited)}</p>
         <CreditNotes orgId={ctx.orgId} invoiceId={id} />
-        {ctx.role !== "member" && outstanding + paid > 0 ? <CreditNoteForm orgId={ctx.orgId} invoiceId={id} lines={creditLines.length ? creditLines : [{ id, description: "Historical invoice amount", headerOnly: true }]} /> : null}
+        {canFinance && outstanding + paid > 0 ? <CreditNoteForm orgId={ctx.orgId} invoiceId={id} lines={creditLines.length ? creditLines : [{ id, description: "Historical invoice amount", headerOnly: true }]} /> : null}
       </CardContent></Card> : null}
       <RecordHistory recordType="invoice" recordId={id} />
     </div>

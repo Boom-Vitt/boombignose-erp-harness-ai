@@ -23,7 +23,7 @@ export type TokenStepId =
   | "allocation"
 
 export interface BlueprintOrgSummary {
-  orgRole: "owner" | "admin" | "member"
+  orgRole: "owner" | "admin" | "accountant" | "member"
   clientsTotal: number
   dealsTotal: number
   dealsWon: number
@@ -90,7 +90,7 @@ export interface BlueprintSceneModel {
     projection: string
     totalSheets: number
   }
-  orgRole: "owner" | "admin" | "member"
+  orgRole: "owner" | "admin" | "accountant" | "member"
   assemblies: BlueprintAssemblySpec[]
   tokenPath: BlueprintTokenWaypoint[]
   sheets: BlueprintSheetSpec[]
