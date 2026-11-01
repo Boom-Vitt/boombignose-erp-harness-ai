@@ -41,11 +41,11 @@ export function FinanceLockForm({ orgId, lockDate, today }: { orgId: string; loc
     saveLock(value, "Finance lock date saved")
   }}>
     <label htmlFor="finance-lock-date" className="block text-sm font-medium"><span aria-hidden="true">ล็อกเอกสารถึงวันที่ / </span>Lock transactions through</label>
-    <Input id="finance-lock-date" type="date" value={value} disabled={pending} aria-describedby="finance-lock-help" onChange={event => setValue(event.target.value)} />
+    <Input id="finance-lock-date" type="date" aria-label="Lock transactions through" value={value} disabled={pending} aria-describedby="finance-lock-help" onChange={event => setValue(event.target.value)} />
     {/^\d{4}-\d{2}-\d{2}$/.test(value) ? <p className="text-sm text-muted-foreground">{closeDateLabel(value)}</p> : null}
     <p id="finance-lock-help" className="text-sm text-muted-foreground">การออกใบแจ้งหนี้ ใบเสร็จ และการแก้ไขที่มีวันที่ในวันนี้หรือก่อนหน้านั้นถูกบล็อก เว้นว่างไว้เพื่อเปิดทุกวัน วันที่ในอนาคตถูกปฏิเสธ การล้างวันที่หรือเลื่อนวันที่ให้เร็วขึ้นต้องมีเหตุผล ถ้ามีเจ้าของหรือผู้ดูแลมากกว่าหนึ่งคน อีกคนต้องยืนยัน ล็อกนี้เป็นการดำเนินงาน ไม่ใช่การปิดงบตามกฎหมาย / Invoice issues, receipts and corrections dated on or before this date are blocked. Leave blank to reopen every day. A future date is refused. Clearing the date, or moving it earlier, needs a reason. When the workspace has more than one owner or admin, the other person confirms it. This lock is operational. It is not a statutory close.</p>
     <label htmlFor="finance-lock-reason" className="block text-sm font-medium"><span aria-hidden="true">เหตุผลที่เปิดงวด / </span>Reason for reopening</label>
-    <Textarea id="finance-lock-reason" value={reason} maxLength={200} disabled={pending} onChange={event => setReason(event.target.value)} />
+    <Textarea id="finance-lock-reason" aria-label="Reason for reopening" value={reason} maxLength={200} disabled={pending} onChange={event => setReason(event.target.value)} />
     <Button type="submit" disabled={pending}><span aria-hidden="true">บันทึกล็อกงวด / </span>Save finance lock</Button>
     <div className="space-y-3 border-t pt-4">
       <h2 className="text-sm font-medium">ปิดเดือนที่จบแล้ว / Close a completed month</h2>
