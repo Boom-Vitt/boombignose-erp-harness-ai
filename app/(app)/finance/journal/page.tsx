@@ -20,7 +20,7 @@ export default async function DraftJournalPage() {
   const [{ data: accounts, error: accountsError }, { data: settings, error: settingsError }, { data: entries, error: entriesError }] = await Promise.all([
     supabase.from("gl_accounts").select("code, name_th, name_en").eq("org_id", ctx.orgId).order("code"),
     supabase.from("org_settings").select("lock_date").eq("org_id", ctx.orgId).maybeSingle(),
-    supabase.from("journal_entries").select("id, entry_date, memo, created_at, source_invoice_id").eq("org_id", ctx.orgId).order("created_at", { ascending: false }).limit(20),
+    supabase.from("journal_entries").select("id, entry_date, memo, created_at, source_invoice_id, source_credit_note_id, source_payment_id").eq("org_id", ctx.orgId).order("created_at", { ascending: false }).limit(20),
   ])
   if (accountsError || settingsError || entriesError) throw new Error("Draft journal unavailable")
   const rows = entries ?? []
@@ -47,6 +47,8 @@ export default async function DraftJournalPage() {
       return <li key={entry.id} className="space-y-1">
         <p className="font-medium">{closeDateLabel(entry.entry_date)} · {entry.memo}</p>
         {entry.source_invoice_id ? <p><Link className="underline" href={`/finance/invoices/${entry.source_invoice_id}`}>จากใบแจ้งหนี้ที่ออกแล้ว / From an issued invoice</Link></p> : null}
+        {entry.source_credit_note_id ? <p>จากใบลดหนี้ที่ออกแล้ว / From an issued credit note</p> : null}
+        {entry.source_payment_id ? <p>จากใบเสร็จเงินสดที่ยืนยันแล้ว / From a verified cash receipt</p> : null}
         <ul>{entryLines.map(line => <li key={`${entry.id}-${line.line_no}`}>{line.account_code} {names.get(line.account_code) ?? ""} · debit {formatTHB(line.debit_satang)} · credit {formatTHB(line.credit_satang)}</li>)}</ul>
       </li>
     })}</ul>}

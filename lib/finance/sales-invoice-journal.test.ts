@@ -11,7 +11,6 @@ function post(overrides: Partial<SalesInvoicePost> = {}): SalesInvoicePost {
     quoteInvoiceKind: "lines",
     quoteDepositSatang: 0,
     quoteDepositDeductionSatang: 0,
-    hasCreditNote: false,
     issueDate: "2026-01-15",
     snapshotIssueDate: "2026-01-15",
     number: "INV-2026-000001",
@@ -79,7 +78,6 @@ describe("issued sales invoice journal", () => {
   it("refuses withholding, a deposit, a credit note, a legacy adoption, and a rate that does not match", () => {
     expect(salesInvoiceJournal(post({ whtSatang: 3000, whtRateBps: 300, amountDueSatang: 104000 }))).toEqual({ ok: false, error: "Withholding is not posted from the invoice." })
     expect(salesInvoiceJournal(post({ quoteInvoiceKind: "deposit", quoteDepositSatang: 1000 }))).toEqual({ ok: false, error: "A deposit invoice is not posted." })
-    expect(salesInvoiceJournal(post({ hasCreditNote: true }))).toEqual({ ok: false, error: "A credit note already changes this invoice. Credit notes are not posted yet." })
     expect(salesInvoiceJournal(post({ snapshotKind: "legacy_operational_invoice" }))).toEqual({ ok: false, error: "Only an issued operational sales invoice can post." })
     expect(salesInvoiceJournal(post({ status: "draft" }))).toEqual({ ok: false, error: "Only an issued operational sales invoice can post." })
     expect(salesInvoiceJournal(post({ vatByRate: [{ rateBps: 700, baseSatang: 100000, vatSatang: 6999 }] }))).toEqual({ ok: false, error: "The stored VAT does not match the stated rate." })

@@ -16,6 +16,7 @@ const screens = [
   "app/(app)/finance/journal/trial-balance/page.tsx",
   "app/(app)/finance/journal/trial-balance-view.tsx",
   "app/(app)/finance/invoices/[id]/post-journal-button.tsx",
+  "app/(app)/finance/invoices/[id]/post-follow-on-button.tsx",
   "app/(app)/settings/chart/page.tsx",
   "ee/accounting/settings-page.tsx",
 ] as const
@@ -75,8 +76,14 @@ describe("close screens stay support data", () => {
     const salesJournal = readFileSync("lib/finance/sales-invoice-journal.ts", "utf8")
     expect(salesJournal).toContain("ไม่ใช่การยื่นแบบ ภ.พ.30")
     expect(salesJournal).toContain("not signed statutory books")
-    expect(salesJournal).toContain("Withholding, deposits, credit notes, and a legacy adoption are refused.")
+    expect(salesJournal).toContain("Withholding, deposits, and a legacy adoption are refused.")
     expect(salesJournal).not.toMatch(/ยื่นแบบสำเร็จ|e-Tax Invoice/)
+
+    const followOn = readFileSync("lib/finance/follow-on-journal.ts", "utf8")
+    expect(followOn).toContain("ไม่ใช่การยื่นแบบ ภ.พ.30")
+    expect(followOn).toContain("not signed statutory books")
+    expect(followOn).toContain("Bank, card, cheque, withholding, and an unallocated remainder are refused.")
+    expect(followOn).not.toMatch(/ยื่นแบบสำเร็จ|e-Tax Invoice/)
 
     const chart = readFileSync("app/(app)/settings/chart/page.tsx", "utf8")
     expect(chart).toContain("/finance/journal")

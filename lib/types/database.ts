@@ -82,7 +82,7 @@ export type Database = {
         Relationships: []
       }
       journal_entries: {
-        Row: { id: string; org_id: string; entry_date: string; memo: string; created_by: string | null; created_at: string; source_invoice_id: string | null }
+        Row: { id: string; org_id: string; entry_date: string; memo: string; created_by: string | null; created_at: string; source_invoice_id: string | null; source_credit_note_id: string | null; source_payment_id: string | null }
         Insert: never
         Update: never
         Relationships: []
@@ -1538,6 +1538,8 @@ isOneToOne: false
             install_thai_sme_chart: { Args: { p_org_id: string }; Returns: undefined }
             post_draft_journal: { Args: { p_org_id: string; p_entry_date: string; p_memo: string; p_lines: Json }; Returns: string }
             post_issued_sales_invoice: { Args: { p_org_id: string; p_invoice_id: string }; Returns: string }
+            post_issued_credit_note: { Args: { p_org_id: string; p_credit_note_id: string }; Returns: string }
+            post_cash_receipt: { Args: { p_org_id: string; p_payment_id: string }; Returns: string }
             add_bank_line: { Args: { p_org_id: string; p_booked_on: string; p_amount_satang: number; p_reference: string }; Returns: string }
             match_bank_line: { Args: { p_org_id: string; p_line_id: string; p_payment_id: string }; Returns: undefined }
             note_bank_line: { Args: { p_org_id: string; p_line_id: string; p_note: string }; Returns: undefined }
