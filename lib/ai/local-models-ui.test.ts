@@ -9,7 +9,7 @@ describe("local model settings", () => {
   it("tells a Linux operator which models install inside the ERP", () => {
     const snapshot = buildSnapshot(
       { platform: "linux", arch: "x64" },
-      [{ name: "qwen3:4b", size: 100 }],
+      [{ name: "qwen2.5:3b", size: 100 }],
       { up: true },
     )
     const html = renderToStaticMarkup(createElement(LocalModelsCard, { initial: snapshot, canInstall: true }))

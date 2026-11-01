@@ -5,6 +5,8 @@ import { usePathname } from "next/navigation"
 import { LogOut } from "lucide-react"
 
 import { NAV_ITEMS, showNavItem } from "@/components/nav"
+import { useMode } from "@/components/mode-switch"
+import { orderForMode } from "@/lib/mode"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import {
@@ -30,9 +32,10 @@ export function AppSidebar({
   workspaceHeader: React.ReactNode
 }) {
   const pathname = usePathname()
+  const mode = useMode()
 
   return (
-    <Sidebar collapsible="icon">
+    <Sidebar collapsible="icon" className="bbn-shell-sidebar">
       <SidebarHeader>
         {workspaceHeader}
       </SidebarHeader>
@@ -41,7 +44,7 @@ export function AppSidebar({
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
-              {NAV_ITEMS.filter((item) => showNavItem(role, item)).map((item) => {
+              {orderForMode(NAV_ITEMS.filter((item) => showNavItem(role, item)), mode).map((item) => {
                 const active =
                   pathname === item.href || pathname.startsWith(`${item.href}/`)
                 const Icon = item.icon

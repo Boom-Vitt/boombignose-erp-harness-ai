@@ -175,3 +175,51 @@
 .bbn-sticky a {
   color: var(--bbn-ink);
 }
+/* App shell in the deck language: stage behind, navy panel header, sketch borders. */
+.bbn-shell {
+  background-color: var(--bbn-paper-2);
+  background-image: radial-gradient(rgb(183 121 31 / 0.18) 1px, transparent 1px);
+  background-size: 22px 22px;
+}
+
+.dark .bbn-shell {
+  background-color: var(--bbn-stage);
+  background-image: radial-gradient(rgb(224 168 74 / 0.12) 1px, transparent 1px);
+}
+
+.bbn-shell-header {
+  font-family: var(--font-deck), var(--font-sans), sans-serif;
+  background: var(--bbn-navy) !important;
+  color: var(--bbn-paper-2);
+  border-bottom: 2.5px solid var(--bbn-gold);
+  border-radius: 0 0 18px 6px / 0 0 12px 6px;
+  box-shadow: 0 4px 0 #070b14;
+}
+
+.bbn-shell-sidebar [data-sidebar="sidebar"] {
+  border-right: 2.5px solid var(--bbn-gold);
+}
+
+.bbn-mode-pill {
+  padding: 0.2rem 0.6rem;
+  border: 2px solid var(--bbn-gold);
+  border-radius: 999px 999px 999px 12px;
+  background: transparent;
+  color: var(--bbn-paper-2);
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.3;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.bbn-mode-pill[aria-checked="true"] {
+  background: var(--bbn-accent);
+  color: var(--bbn-ink);
+  transform: rotate(-0.5deg);
+}
+
+.bbn-mode-pill:focus-visible {
+  outline: 2px solid var(--bbn-paper-2);
+  outline-offset: 2px;
+}

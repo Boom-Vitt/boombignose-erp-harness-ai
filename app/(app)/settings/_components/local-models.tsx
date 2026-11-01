@@ -261,11 +261,11 @@ export function LocalModelsCard({ initial, canInstall, asr = { offered: false, i
     }
   }
 
-  const text = snapshot.rows.find((row) => row.id === "qwen3:4b")
+  const text = snapshot.rows.find((row) => row.id === "qwen2.5:3b")
   const vision = snapshot.rows.find((row) => row.id === "qwen2.5vl:3b")
   const image = snapshot.rows.find((row) => row.id === "x/flux2-klein:4b")
   const deck = [
-    { n: "1", step: "text", title: "ข้อความ qwen3:4b / Text", row: text, missing: "ติดตั้งจากปุ่มด้านล่าง / Install with the button below" },
+    { n: "1", step: "text", title: "ข้อความ qwen2.5:3b / Text", row: text, missing: "ติดตั้งจากปุ่มด้านล่าง / Install with the button below" },
     { n: "2", step: "vision", title: "อ่านรูป qwen2.5vl:3b / Vision", row: vision, missing: "ติดตั้งจากปุ่มด้านล่าง / Install with the button below" },
     { n: "3", step: "image", title: image ? "สร้างภาพ x/flux2-klein:4b / Image" : "สร้างภาพ / Image", row: image, missing: "ยังไม่มีบนระบบนี้ / Not on this operating system" },
   ]

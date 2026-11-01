@@ -119,7 +119,7 @@ func (a *App) startup(ctx context.Context) {
 	a.helper.SetQuit(func() { runtime.Quit(ctx) })
 }
 
-// PullLocalModel runs `ollama pull qwen3:4b` on loopback. The splash button
+// PullLocalModel runs `ollama pull qwen2.5:3b` on loopback. The splash button
 // is the only caller. A cloud host is refused and is not included in the error.
 func (a *App) PullLocalModel() error {
 	if err := policy.CheckEnv(os.Getenv); err != nil {

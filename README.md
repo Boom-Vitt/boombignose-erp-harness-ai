@@ -76,14 +76,14 @@ The desktop window starts the bundled Ollama v0.40.11 on `127.0.0.1:11434`. It d
 
 | Modality | In this build | Model |
 |---|---|---|
-| Text (chat used by deals, meeting notes, and the month-end note) | Linux, Windows, and macOS | `qwen3:4b` |
+| Text (chat used by deals, meeting notes, and the month-end note) | Linux, Windows, and macOS | `qwen2.5:3b` |
 | Vision (read an image on this computer) | Linux, Windows, and macOS | `qwen2.5vl:3b` |
 | Image generation | macOS only | `x/flux2-klein:4b` (Apache-2.0) |
 | Speech synthesis | Apple Silicon only, English built-in voice | `phonon` (Apache-2.0). Thai speech is not in this build: espeak-ng's Thai voice drops tones, and a Piper binary that includes the Thai phonemizer is not pinned here. |
 | Speech to text | Linux and Windows. The app downloads whisper.cpp b5454 and `ggml-tiny.bin` when an owner asks. | Not on macOS until ggml-org publishes a `whisper-cli` archive. |
 | Video, voice clone | Not available in this build | none |
 
-A download starts only when an owner or admin presses Install. The screen shows progress and the daemon's error. Image generation and speech stay hidden, with the reason, on machines where Ollama 0.40.11 cannot run them. Phonon does not clone a voice and does not speak Thai. None of these models post a journal or file ภ.พ.30. `boombignose pull-model` still downloads `qwen3:4b`. An allowlisted name can be passed (`boombignose pull-model qwen2.5vl:3b`). Any other name is refused. See `docs/desktop/local-stack.md` and `docs/boombignose/BUNDLE.md`.
+A download starts only when an owner or admin presses Install. The screen shows progress and the daemon's error. Image generation and speech stay hidden, with the reason, on machines where Ollama 0.40.11 cannot run them. Phonon does not clone a voice and does not speak Thai. None of these models post a journal or file ภ.พ.30. `boombignose pull-model` still downloads `qwen2.5:3b`. An allowlisted name can be passed (`boombignose pull-model qwen2.5vl:3b`). Any other name is refused. See `docs/desktop/local-stack.md` and `docs/boombignose/BUNDLE.md`.
 
 ### Scope
 

@@ -25,7 +25,7 @@ const (
 	// DefaultOllamaListen is the loopback address used when OLLAMA_HOST is empty.
 	DefaultOllamaListen = "127.0.0.1:11434"
 	// LocalModel is the text model the ERP screens call. The window does not pull it at startup.
-	LocalModel = "qwen3:4b"
+	LocalModel = "qwen2.5:3b"
 )
 
 // ErrIncomplete means the bundle has no portable Node and ERP server.
@@ -294,7 +294,7 @@ func OllamaServe(binary, host string) (Command, error) {
 	}, nil
 }
 
-// PullCommand is `ollama pull qwen3:4b` on loopback. It is not a startup
+// PullCommand is `ollama pull qwen2.5:3b` on loopback. It is not a startup
 // command: allowedBundleCommand refuses it. The child env keeps path and
 // home values and drops cloud keys.
 func PullCommand(binary, host string, parent []string) (Command, error) {
@@ -423,7 +423,7 @@ func runPull(ctx context.Context, cmd Command) error {
 	return proc.Run()
 }
 
-// PullModel downloads qwen3:4b through the local ollama binary. Call it from
+// PullModel downloads qwen2.5:3b through the local ollama binary. Call it from
 // an explicit command or button. Do not call it from startup.
 func PullModel(ctx context.Context, layout Layout, host string, parent []string) error {
 	return PullNamedModel(ctx, layout, host, parent, LocalModel)

@@ -1,10 +1,10 @@
 {
   "models": [
     {
-      "id": "qwen3:4b",
+      "id": "qwen2.5:3b",
       "modality": "text",
-      "license": "Apache-2.0",
-      "sizeNote": "about 2.5 GB",
+      "license": "Qwen Research",
+      "sizeNote": "about 1.9 GB",
       "platforms": ["darwin", "linux", "windows"],
       "arches": ["any"],
       "try": "none",

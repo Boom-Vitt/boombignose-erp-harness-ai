@@ -36,7 +36,7 @@ describe("lib/ai/client", () => {
     expect(init.method).toBe("POST")
     expect(init.headers.Authorization).toBeUndefined()
     expect(JSON.parse(init.body)).toEqual({
-      model: "qwen3:4b",
+      model: "qwen2.5:3b",
       stream: false,
       think: false,
       messages: [
@@ -113,15 +113,24 @@ describe("lib/ai/client", () => {
     )
   })
 
-  it("returns thinking text when qwen3 left the answer empty", async () => {
+  it("strips leaked chain of thought and asks for no thinking", async () => {
     fake.mockResolvedValue(
-      new Response(JSON.stringify({ message: { role: "assistant", content: "", thinking: "  Follow up tomorrow.  " } }), {
-        status: 200,
-      }),
+      new Response(
+        JSON.stringify({ message: { role: "assistant", content: "Okay, let's see. The user wants a note.\n\nFollow up tomorrow.", thinking: "plan" } }),
+        { status: 200 },
+      ),
     )
     const { generateText } = await load()
     expect(await generateText({ system: "s", prompt: "p" })).toBe("Follow up tomorrow.")
     expect(JSON.parse(fake.mock.calls[0][1].body).think).toBe(false)
+  })
+
+  it("an answer channel holding only thinking is an error, not a reply", async () => {
+    fake.mockResolvedValue(
+      new Response(JSON.stringify({ message: { role: "assistant", content: "", thinking: "Follow up tomorrow." } }), { status: 200 }),
+    )
+    const { generateText } = await load()
+    await expect(generateText({ system: "s", prompt: "p" })).rejects.toThrow("Ollama returned no text")
   })
 
   it("a 200 carrying an error degrades as not configured", async () => {
