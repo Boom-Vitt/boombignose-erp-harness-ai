@@ -46,8 +46,8 @@ describe("close display copy", () => {
   })
 
   it("tells the owner the month-end note stays on this machine when Ollama is down", () => {
-    expect(OLLAMA_CLOSE_NOTE_UNAVAILABLE).toContain("ollama serve")
-    expect(OLLAMA_CLOSE_NOTE_UNAVAILABLE).toContain("ollama pull qwen3:4b")
+    expect(OLLAMA_CLOSE_NOTE_UNAVAILABLE).toContain("Settings")
+    expect(OLLAMA_CLOSE_NOTE_UNAVAILABLE).toContain("ไม่ต้องลงแอป AI แยก")
     expect(OLLAMA_CLOSE_NOTE_UNAVAILABLE).toContain("ไม่มีข้อมูลถูกส่งไปโมเดลบนคลาวด์")
     expect(OLLAMA_CLOSE_NOTE_UNAVAILABLE).toContain("Nothing was sent to a cloud model")
   })

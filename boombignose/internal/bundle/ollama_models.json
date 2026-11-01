@@ -1,0 +1,83 @@
+{
+  "models": [
+    {
+      "id": "qwen3:4b",
+      "modality": "text",
+      "license": "Apache-2.0",
+      "sizeNote": "about 2.5 GB",
+      "platforms": ["darwin", "linux", "windows"],
+      "arches": ["any"],
+      "try": "none",
+      "titleTh": "ข้อความ",
+      "titleEn": "Text",
+      "detailTh": "ใช้กับสรุปดีล ร่างข้อความติดตาม สรุปโน้ตประชุม และโน้ตปิดงบเดือน โมเดลนี้ไม่ได้ลงรายการบัญชีและไม่ได้ยื่น ภ.พ.30",
+      "detailEn": "Used for deal summaries, follow-up drafts, meeting notes, and the month-end note. It does not post a journal and it does not file VAT."
+    },
+    {
+      "id": "qwen2.5vl:3b",
+      "modality": "vision",
+      "license": "Apache-2.0",
+      "sizeNote": "about 3.2 GB",
+      "platforms": ["darwin", "linux", "windows"],
+      "arches": ["any"],
+      "try": "vision",
+      "titleTh": "อ่านรูป",
+      "titleEn": "Vision",
+      "detailTh": "อ่านรูปบนเครื่องนี้ เช่น เอกสารหรือสลิป ข้อความที่ได้อยู่แค่บนหน้านี้ ไม่ได้ถูกบันทึกเป็นรายการบัญชีและไม่ได้ยื่น ภ.พ.30",
+      "detailEn": "Reads an image on this computer, such as a document or a slip. The text stays on this page. It is not saved as an accounting entry and it does not file VAT."
+    },
+    {
+      "id": "x/flux2-klein:4b",
+      "modality": "image",
+      "license": "Apache-2.0",
+      "sizeNote": "about 5.7 GB",
+      "platforms": ["darwin"],
+      "arches": ["any"],
+      "try": "image",
+      "titleTh": "สร้างภาพ",
+      "titleEn": "Image",
+      "detailTh": "Ollama 0.40.11 รันโมเดลสร้างภาพบน macOS ภาพที่ลองสร้างไม่ถูกบันทึกในระบบ และไม่ได้ยื่นภาษี",
+      "detailEn": "Ollama 0.40.11 runs this image model on macOS. A trial picture is not saved in the ERP and it does not file tax."
+    },
+    {
+      "id": "phonon",
+      "modality": "tts",
+      "license": "Apache-2.0",
+      "sizeNote": "about 120 MB",
+      "platforms": ["darwin"],
+      "arches": ["arm64"],
+      "try": "speech",
+      "titleTh": "อ่านออกเสียง",
+      "titleEn": "Speech",
+      "detailTh": "เสียงสำเร็จรูปภาษาอังกฤษบน Apple Silicon ไม่ใช่ภาษาไทย และไม่ใช่การโคลนเสียงของคุณ",
+      "detailEn": "A built-in English voice on Apple Silicon. It is not Thai, and it is not a clone of your voice."
+    }
+  ],
+  "alwaysBlocked": [
+    {
+      "modality": "video",
+      "reasonTh": "ยังไม่มีในรุ่นนี้ ตัวติดตั้งไม่มีรันไทม์สร้างวิดีโอ และไม่ได้พ่วง ComfyUI",
+      "reasonEn": "Not available in this build. The installer has no video runtime and does not bundle ComfyUI."
+    },
+    {
+      "modality": "asr",
+      "reasonTh": "ยังไม่มีในรุ่นนี้ Ollama 0.40.11 ยังไม่รับไฟล์เสียงเข้า และแอปนี้ไม่ได้ติดตั้ง Whisper แยก",
+      "reasonEn": "Not available in this build. Ollama 0.40.11 does not accept audio input, and this app does not bundle Whisper."
+    },
+    {
+      "modality": "voice-clone",
+      "reasonTh": "ยังไม่มีในรุ่นนี้ ไม่มีช่องอัปโหลดเสียงตัวอย่าง เสียงของ Phonon เป็นเสียงสำเร็จรูปเท่านั้น",
+      "reasonEn": "Not available in this build. There is no sample-upload control. Phonon uses built-in voices only."
+    }
+  ],
+  "unavailableHere": {
+    "image": {
+      "reasonTh": "ยังไม่มีในรุ่นนี้บนระบบปฏิบัติการนี้ Ollama 0.40.11 รันโมเดลสร้างภาพบน macOS เท่านั้น แอปนี้จึงไม่ดาวน์โหลดน้ำหนักโมเดลนั้นที่นี่",
+      "reasonEn": "Not available in this build on this operating system. Ollama 0.40.11 runs image models on macOS only, so this app does not download those weights here."
+    },
+    "tts": {
+      "reasonTh": "ยังไม่มีในรุ่นนี้บนเครื่องนี้ Ollama 0.40.11 รัน Phonon บน Apple Silicon เท่านั้น เป็นภาษาอังกฤษ ไม่ใช่ภาษาไทย และไม่ใช่การโคลนเสียง",
+      "reasonEn": "Not available in this build on this computer. Ollama 0.40.11 runs Phonon on Apple Silicon only. It is English, not Thai, and it is not voice cloning."
+    }
+  }
+}

@@ -60,7 +60,7 @@ Most businesses start with a CRM, a project tool, a spreadsheet of invoices and 
 - **Expenses**: Expense claims that staff submit and a manager approves or rejects. Nobody can approve their own claim, and approved claims become costs in Finance.
 - **Projects and Timesheets**: Projects as a list or kanban board, with tasks, milestones and logged time. Billable time turns into a draft invoice in one step. Member cost rates and project profit are visible to owners and admins only.
 - **Reports and Calendar**: Revenue by month and by client, hours by project and cost of goods sold, shown as bar, line or pivot views. Operational profit, VAT, and aging statements. A month-end close checklist, cash at close, and an accountant pack of output VAT, purchase VAT, and withholding for the external accountant. Saved views, CSV export, and a calendar of follow-ups, meetings, due dates and deadlines.
-- **Automation and AI**: Reusable automation templates, scheduled follow-up reminders, an outbox that delivers events to n8n, and inbound n8n webhooks. AI deal summaries, follow-up drafts, meeting-note intake, and the Finance month-end note call Ollama on this machine (`127.0.0.1:11434` by default). If Ollama is not running, those screens say so and do not call a cloud model.
+- **Automation and AI**: Reusable automation templates, scheduled follow-up reminders, an outbox that delivers events to n8n, and inbound n8n webhooks. AI deal summaries, follow-up drafts, meeting-note intake, and the Finance month-end note call Ollama on this machine (`127.0.0.1:11434` by default). If Ollama is not running, those screens say so and do not call a cloud model. Settings → Local AI models downloads, lists, and removes models inside the ERP. You do not install Ollama Desktop, ComfyUI, Whisper, or a separate voice app for the modalities this build can run.
 - **Across the app**: A command palette on Ctrl/Cmd+K, a search and filter bar on list pages, a status header and a history of notes, attachments and activities on business records, and an audit log for owners and admins.
 - **Team**: Owner, admin, accountant, and member roles, and invitations shared by link. An accountant can record finance and review the close. A member cannot.
 
@@ -69,6 +69,20 @@ Most businesses start with a CRM, a project tool, a spreadsheet of invoices and 
 - [**Next.js 16**](https://nextjs.org) with the App Router, React 19 Server Components and Server Actions, written in TypeScript. Server Actions validate their form input with [Zod](https://zod.dev).
 - [**Supabase**](https://supabase.com) for Postgres and authentication. Every table carries an `org_id` with forced Row Level Security, so one organization can never read another's data. The service-role key never reaches the browser.
 - Money is stored as integer satang (`bigint`), never as floating point. Business rules live as pure functions in `lib/` with Vitest unit tests that need no database. Database rules have their own SQL tests, and Playwright covers the main flows end to end.
+
+### Local models
+
+The desktop window starts the bundled Ollama v0.40.11 on `127.0.0.1:11434`. It does not download a model at startup, and model weights are not in git or in the installer. Settings (`/settings#local-models`) is the install screen:
+
+| Modality | In this build | Model |
+|---|---|---|
+| Text (chat used by deals, meeting notes, and the month-end note) | Linux, Windows, and macOS | `qwen3:4b` |
+| Vision (read an image on this computer) | Linux, Windows, and macOS | `qwen2.5vl:3b` |
+| Image generation | macOS only | `x/flux2-klein:4b` (Apache-2.0) |
+| Speech synthesis | Apple Silicon only, English built-in voice | `phonon` (Apache-2.0) |
+| Video, speech-to-text, voice clone | Not available in this build | none |
+
+A download starts only when an owner or admin presses Install. The screen shows progress and the daemon's error. Image generation and speech stay hidden, with the reason, on machines where Ollama 0.40.11 cannot run them. Phonon does not clone a voice and does not speak Thai. None of these models post a journal or file ภ.พ.30. `boombignose pull-model` still downloads `qwen3:4b`. An allowlisted name can be passed (`boombignose pull-model qwen2.5vl:3b`). Any other name is refused. See `docs/desktop/local-stack.md` and `docs/boombignose/BUNDLE.md`.
 
 ### Scope
 

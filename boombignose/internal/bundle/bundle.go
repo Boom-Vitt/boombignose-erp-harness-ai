@@ -1,6 +1,6 @@
 // Package bundle starts a portable local stack from files beside the desktop
 // binary. It does not download Node, Postgres, or Ollama, and it does not call
-// Docker. PullModel downloads qwen3:4b only when a caller asks. A missing
+// Docker. PullModel downloads an allowlisted model only when a caller asks. A missing
 // optional file is skipped. A cloud credential is not passed to the child.
 package bundle
 
@@ -24,7 +24,7 @@ import (
 const (
 	// DefaultOllamaListen is the loopback address used when OLLAMA_HOST is empty.
 	DefaultOllamaListen = "127.0.0.1:11434"
-	// LocalModel is the documented pull. The window does not run the pull.
+	// LocalModel is the text model the ERP screens call. The window does not pull it at startup.
 	LocalModel = "qwen3:4b"
 )
 
@@ -215,7 +215,7 @@ func ChildEnv(parent []string, port string) ([]string, error) {
 	return env, nil
 }
 
-// PullArgs is the documented local model pull. Callers must not run it
+// PullArgs is the default local model pull. Callers must not run it
 // from the window start path.
 func PullArgs() []string {
 	return []string{"pull", LocalModel}
@@ -260,11 +260,24 @@ func OllamaServe(binary, host string) (Command, error) {
 // command: allowedBundleCommand refuses it. The child env keeps path and
 // home values and drops cloud keys.
 func PullCommand(binary, host string, parent []string) (Command, error) {
+	return PullCommandFor(binary, host, parent, LocalModel)
+}
+
+// PullCommandFor builds an allowlisted pull. A catalog model this OS cannot
+// run returns ErrModelUnavailable. Any other name returns ErrModelRefused.
+// Neither error includes a remote host.
+func PullCommandFor(binary, host string, parent []string, model string) (Command, error) {
 	if strings.TrimSpace(binary) == "" {
 		return Command{}, ErrNoOllama
 	}
 	if !filepath.IsAbs(binary) {
-		return Command{}, errors.New("refusing model pull")
+		return Command{}, ErrModelRefused
+	}
+	if !PullAllowed(model, runtime.GOOS, runtime.GOARCH) {
+		if KnownModel(model) {
+			return Command{}, ErrModelUnavailable
+		}
+		return Command{}, ErrModelRefused
 	}
 	listen, err := ollamaListen(host)
 	if err != nil {
@@ -272,7 +285,7 @@ func PullCommand(binary, host string, parent []string) (Command, error) {
 	}
 	return Command{
 		Name: binary,
-		Args: PullArgs(),
+		Args: []string{"pull", model},
 		Env:  pullEnv(parent, listen),
 	}, nil
 }
@@ -327,7 +340,7 @@ func allowPullCommand(cmd Command) error {
 	if base != "ollama" && base != "ollama.exe" {
 		return errors.New("refusing model pull")
 	}
-	if len(cmd.Args) != 2 || cmd.Args[0] != "pull" || cmd.Args[1] != LocalModel {
+	if len(cmd.Args) != 2 || cmd.Args[0] != "pull" || !PullAllowed(cmd.Args[1], runtime.GOOS, runtime.GOARCH) {
 		return errors.New("refusing model pull")
 	}
 	host := ""
@@ -364,7 +377,7 @@ func runPull(ctx context.Context, cmd Command) error {
 	if err := allowPullCommand(cmd); err != nil {
 		return err
 	}
-	// #nosec G204 -- allowPullCommand allows only the absolute ollama binary and pull qwen3:4b
+	// #nosec G204 -- allowPullCommand allows only the absolute ollama binary and an allowlisted pull name
 	proc := exec.CommandContext(ctx, cmd.Name, cmd.Args...)
 	proc.Env = cmd.Env
 	proc.Stdout = os.Stdout
@@ -375,6 +388,18 @@ func runPull(ctx context.Context, cmd Command) error {
 // PullModel downloads qwen3:4b through the local ollama binary. Call it from
 // an explicit command or button. Do not call it from startup.
 func PullModel(ctx context.Context, layout Layout, host string, parent []string) error {
+	return PullNamedModel(ctx, layout, host, parent, LocalModel)
+}
+
+// PullNamedModel downloads one allowlisted model. The name is checked before
+// the binary is looked up, so a refused name does not start a process.
+func PullNamedModel(ctx context.Context, layout Layout, host string, parent []string, model string) error {
+	if !PullAllowed(model, runtime.GOOS, runtime.GOARCH) {
+		if KnownModel(model) {
+			return ErrModelUnavailable
+		}
+		return ErrModelRefused
+	}
 	binary, err := OllamaBinary(layout, exec.LookPath)
 	if err != nil {
 		return err
@@ -386,7 +411,7 @@ func PullModel(ctx context.Context, layout Layout, host string, parent []string)
 		}
 		binary = abs
 	}
-	cmd, err := PullCommand(binary, host, parent)
+	cmd, err := PullCommandFor(binary, host, parent, model)
 	if err != nil {
 		return err
 	}

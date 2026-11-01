@@ -1,5 +1,6 @@
 "use client"
 
+import Link from "next/link"
 import { useState, useTransition } from "react"
 import { NotebookPen, ListChecks, Copy, Check } from "lucide-react"
 import { toast } from "sonner"
@@ -88,7 +89,7 @@ export default function IntakePage() {
 
             {state.status === "notConfigured" ? (
               <p className="text-muted-foreground rounded-lg border border-dashed p-3 text-sm">
-                AI is not configured. Start Ollama on this machine (ollama serve), then pull a model (ollama pull qwen3:4b).
+                AI is not configured. <Link href="/settings#local-models" className="underline">Install the text model in Settings</Link>. The BoomBigNose window starts the local service. You do not need a separate AI app, and nothing is sent to a cloud model.
               </p>
             ) : null}
           </CardContent>

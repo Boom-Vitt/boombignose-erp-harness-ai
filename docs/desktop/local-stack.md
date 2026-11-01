@@ -48,6 +48,20 @@
   - Quote and invoice email delivery via Resend is disabled.
   - Client portal links use `NEXT_PUBLIC_APP_URL` and therefore point at `http://127.0.0.1:<port>`.
 
+## Local AI models
+
+The desktop starts bundled Ollama on loopback and does not pull a model while it boots. The install screen is the ERP Settings page, `/settings#local-models`. It talks to `127.0.0.1:11434` and refuses any other host. An owner or admin can install or remove a model. The weights download only after that click, with progress and the daemon's error, and they are not stored in git.
+
+| Modality | Where it runs in Ollama 0.40.11 | What the screen does |
+|---|---|---|
+| Text | Linux, Windows, macOS | Install `qwen3:4b`. Deal summaries, follow-up drafts, meeting notes, and the month-end note call it. |
+| Vision | Linux, Windows, macOS | Install `qwen2.5vl:3b`, then read one JPEG, PNG, or WebP on this page. The text is not saved as an accounting entry. |
+| Image generation | macOS only | Install `x/flux2-klein:4b` and draw from a short prompt. Other operating systems show “not available in this build” and do not download the weights. |
+| Speech | Apple Silicon only | Install `phonon` and speak one short English sentence in the built-in voice. It is not Thai and it is not a clone of the operator's voice. |
+| Video, speech-to-text, voice clone | Not in this Ollama build | The screen says not available. There is no ComfyUI, Whisper, or sample-upload control. |
+
+`boombignose models`, `boombignose pull-model [name]`, and `boombignose remove-model <name>` use the same allowlist. Startup still cannot run `ollama pull`.
+
 ## LAN Exposure & Owner-Applied Mitigation
 
 By default, the Supabase CLI binds local container ports (`54421` API, `54422` Postgres DB) to `0.0.0.0` using the default Postgres password (`postgres`) and the CLI's well-known local JWT secret. On an untrusted LAN, another machine could reach those ports (`doctor` surfaces this as `"exposed": true`).

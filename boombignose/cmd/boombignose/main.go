@@ -21,7 +21,7 @@ import (
 	"github.com/Boom-Vitt/boombignose-erp-harness-ai/boombignose/internal/shell"
 )
 
-const usage = "usage: boombignose check | boombignose cutover [plan|dry-run|apply|rollback] | boombignose backup [export|restore] | boombignose serve | boombignose stop | boombignose pull-model"
+const usage = "usage: boombignose check | boombignose cutover [plan|dry-run|apply|rollback] | boombignose backup [export|restore] | boombignose serve | boombignose stop | boombignose models | boombignose pull-model [name] | boombignose remove-model <name>"
 
 func main() {
 	if err := run(os.Args[1:]); err != nil {
@@ -39,6 +39,12 @@ func run(args []string) error {
 	}
 	if args[0] == "backup" {
 		return runBackup(args[1:])
+	}
+	if args[0] == "pull-model" {
+		return runPullModel(args[1:])
+	}
+	if args[0] == "remove-model" {
+		return runRemoveModel(args[1:])
 	}
 	if len(args) != 1 {
 		return fmt.Errorf("%s", usage)
@@ -58,8 +64,8 @@ func run(args []string) error {
 		return serveBundle()
 	case "stop":
 		return stopBundle()
-	case "pull-model":
-		return pullModel()
+	case "models":
+		return listModels()
 	default:
 		return fmt.Errorf("%s", usage)
 	}
@@ -79,7 +85,50 @@ func runBackup(args []string) error {
 	return cutover.Backup(context.Background(), args, os.Stdout)
 }
 
-func pullModel() error {
+func runPullModel(args []string) error {
+	if len(args) > 1 {
+		return fmt.Errorf("%s", usage)
+	}
+	model := bundle.LocalModel
+	if len(args) == 1 {
+		model = args[0]
+	}
+	return pullNamed(model)
+}
+
+func runRemoveModel(args []string) error {
+	if len(args) != 1 {
+		return fmt.Errorf("%s", usage)
+	}
+	if err := policy.CheckEnv(os.Getenv); err != nil {
+		return err
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+	return bundle.DeleteLocalModel(ctx, os.Getenv("OLLAMA_HOST"), args[0])
+}
+
+func listModels() error {
+	if err := policy.CheckEnv(os.Getenv); err != nil {
+		return err
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+	models, err := bundle.ListLocalModels(ctx, os.Getenv("OLLAMA_HOST"))
+	if err != nil {
+		return err
+	}
+	if len(models) == 0 {
+		fmt.Println("no local models")
+		return nil
+	}
+	for _, model := range models {
+		fmt.Println(model.Name)
+	}
+	return nil
+}
+
+func pullNamed(model string) error {
 	if err := policy.CheckEnv(os.Getenv); err != nil {
 		return err
 	}
@@ -96,7 +145,7 @@ func pullModel() error {
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), 45*time.Minute)
 	defer cancel()
-	return bundle.PullModel(ctx, layout, os.Getenv("OLLAMA_HOST"), os.Environ())
+	return bundle.PullNamedModel(ctx, layout, os.Getenv("OLLAMA_HOST"), os.Environ(), model)
 }
 
 func serveBundle() error {
