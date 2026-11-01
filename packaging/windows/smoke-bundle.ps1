@@ -136,7 +136,7 @@ try {
   foreach ($log in @($stdout, $stderr)) {
     if (Test-Path -LiteralPath $log) { $serveText += Get-Content -LiteralPath $log -Raw -ErrorAction SilentlyContinue }
   }
-  if ($serveText -match "pull qwen3") { throw "serve pulled a model" }
+  if ($serveText -match "pull qwen2.5") { throw "serve pulled a model" }
   $anon = (Get-Content -LiteralPath (Join-Path $pgdata "anon.key") -Raw).Trim()
   $email = "smoke-$([DateTimeOffset]::UtcNow.ToUnixTimeSeconds())@example.com"
   $body = @{ email = $email; password = "SmokeTest1a" } | ConvertTo-Json

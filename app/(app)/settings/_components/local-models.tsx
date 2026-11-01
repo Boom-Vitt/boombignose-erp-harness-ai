@@ -261,8 +261,32 @@ export function LocalModelsCard({ initial, canInstall, asr = { offered: false, i
     }
   }
 
+  const text = snapshot.rows.find((row) => row.id === "qwen2.5:3b")
+  const vision = snapshot.rows.find((row) => row.id === "qwen2.5vl:3b")
+  const image = snapshot.rows.find((row) => row.id === "x/flux2-klein:4b")
+  const deck = [
+    { n: "1", step: "text", title: "ข้อความ qwen2.5:3b / Text", row: text, missing: "ติดตั้งจากปุ่มด้านล่าง / Install with the button below" },
+    { n: "2", step: "vision", title: "อ่านรูป qwen2.5vl:3b / Vision", row: vision, missing: "ติดตั้งจากปุ่มด้านล่าง / Install with the button below" },
+    { n: "3", step: "image", title: image ? "สร้างภาพ x/flux2-klein:4b / Image" : "สร้างภาพ / Image", row: image, missing: "ยังไม่มีบนระบบนี้ / Not on this operating system" },
+  ]
+
   return (
-    <div id="local-models" className="space-y-4 scroll-mt-20">
+    <div id="local-models" className="bbn-sketch space-y-4 scroll-mt-20">
+      <ol className="bbn-sketch-steps" aria-label="ขั้นตอนติดตั้งโมเดล / Model install steps">
+        {deck.map((item) => (
+          <li key={item.step} data-step={item.step}>
+            <span className="bbn-step-pill">{item.n}</span>
+            <span>
+              {item.title}
+              {" · "}
+              {item.row?.installed ? "ติดตั้งแล้ว / Installed" : item.row ? item.missing : "ยังไม่มีบนระบบนี้ / Not on this operating system"}
+            </span>
+          </li>
+        ))}
+      </ol>
+      <aside className="bbn-sticky">
+        <p className="text-sm">โมเดลเหล่านี้ไม่ได้ลงรายการบัญชี และไม่ได้ยื่น ภ.พ.30 These models do not post a journal and do not file VAT.</p>
+      </aside>
       <p className="text-sm text-muted-foreground">
         ติดตั้งโมเดลจากหน้านี้ได้เลย ไม่ต้องลง Ollama Desktop, ComfyUI, Whisper หรือแอปเสียงแยก น้ำหนักโมเดลไม่ได้อยู่ในไฟล์ติดตั้ง จะดาวน์โหลดเมื่อกดเท่านั้น และอยู่บนเครื่องนี้
         {" "}
@@ -275,15 +299,15 @@ export function LocalModelsCard({ initial, canInstall, asr = { offered: false, i
       {progress ? <p className="text-sm tabular-nums">{progress}</p> : null}
       <ul className="space-y-4">
         {snapshot.rows.map((row) => (
-          <li key={row.id} data-modality={row.modality} className="space-y-2 rounded-md border p-3">
+          <li key={row.id} data-modality={row.modality} className="bbn-sketch-card space-y-2 p-3">
             <div className="flex flex-wrap items-baseline justify-between gap-2">
-              <h3 className="text-sm font-medium">{row.titleTh} / {row.titleEn}</h3>
+              <h3 className="flex items-center gap-2 text-sm font-medium"><span className="bbn-step-pill">{stepNumber(row.modality)}</span>{row.titleTh} / {row.titleEn}</h3>
               <span className="text-muted-foreground text-xs">{row.installed ? "ติดตั้งแล้ว / Installed" : "ยังไม่ได้ติดตั้ง / Not installed"}</span>
             </div>
             <p className="text-muted-foreground text-xs">{row.id} · {row.license} · {row.sizeNote}{row.installedBytes ? ` · ${formatBytes(row.installedBytes)}` : ""}</p>
             <p className="text-sm">{row.detailTh} {row.detailEn}</p>
             {canInstall ? (
-              <Button type="button" variant="outline" disabled={pending !== "" || !snapshot.daemonUp} onClick={() => (row.installed ? remove(row.id) : install(row.id))}>
+              <Button type="button" variant={row.installed ? "outline" : "default"} disabled={pending !== "" || !snapshot.daemonUp} onClick={() => (row.installed ? remove(row.id) : install(row.id))}>
                 {pending === row.id ? "กำลังทำงาน…" : row.installed ? "เอาออก / Remove" : "ติดตั้ง / Install"}
               </Button>
             ) : null}
@@ -324,7 +348,7 @@ export function LocalModelsCard({ initial, canInstall, asr = { offered: false, i
         ))}
       </ul>
       {asr.offered ? (
-        <section data-modality="asr" className="space-y-2 rounded-md border p-3">
+        <section data-modality="asr" className="bbn-sketch-card space-y-2 p-3">
           <div className="flex flex-wrap items-baseline justify-between gap-2">
             <h3 className="text-sm font-medium">ถอดเสียง / Speech to text</h3>
             <span className="text-muted-foreground text-xs">{asrInstalled ? "ติดตั้งแล้ว / Installed" : "ยังไม่ได้ติดตั้ง / Not installed"}</span>
@@ -332,7 +356,7 @@ export function LocalModelsCard({ initial, canInstall, asr = { offered: false, i
           <p className="text-muted-foreground text-xs">whisper.cpp {`b5454`} · MIT · ggml-tiny about 74 MB</p>
           <p className="text-sm">ถอดเสียงบนเครื่องนี้ แอปดาวน์โหลด whisper.cpp ให้เอง ไม่ต้องติดตั้ง Whisper Desktop โมเดล tiny ฟังภาษาไทยและภาษาอื่นได้ในระดับหนึ่ง ข้อความอยู่แค่บนหน้านี้ ไม่ได้ถูกบันทึกเป็นรายการบัญชีและไม่ได้ยื่น ภ.พ.30 Speech to text stays on this computer. This app downloads whisper.cpp. You do not install Whisper Desktop. The tiny model can transcribe Thai and other languages, with the limits of a small model. The text stays on this page. It is not saved as an accounting entry and it does not file VAT.</p>
           {canInstall ? (
-            <Button type="button" variant="outline" disabled={pending !== ""} onClick={() => void (asrInstalled ? removeAsr() : installAsr())}>
+            <Button type="button" variant={asrInstalled ? "outline" : "default"} disabled={pending !== ""} onClick={() => void (asrInstalled ? removeAsr() : installAsr())}>
               {pending === "asr" ? "กำลังทำงาน…" : asrInstalled ? "เอาออก / Remove" : "ติดตั้ง / Install"}
             </Button>
           ) : null}
@@ -360,6 +384,21 @@ export function LocalModelsCard({ initial, canInstall, asr = { offered: false, i
       </ul>
     </div>
   )
+}
+
+function stepNumber(modality: string): string {
+  switch (modality) {
+    case "text":
+      return "1"
+    case "vision":
+      return "2"
+    case "image":
+      return "3"
+    case "tts":
+      return "4"
+    default:
+      return "•"
+  }
 }
 
 function blockedTitle(modality: string): string {

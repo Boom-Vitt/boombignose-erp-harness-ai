@@ -272,7 +272,7 @@
           <article class="card"><h3>BoomBigNose</h3><p>โปรแกรมที่เปิดชื่อ BoomBigNose และเป็นหน้าต่างที่ <code>127.0.0.1:3100</code> ไฟล์พก Node 22 กับ <code>server.js</code> ไว้ข้างใน เพื่อไม่ต้องลง Node แยก Node เป็นรันไทม์ในไฟล์ ไม่ใช่ชื่อแอป</p></article>
           <article class="card"><h3>Postgres</h3><p>Postgres 16.10.0 แบบพกพา ฟังที่ <code>127.0.0.1:54329</code> ผู้ใช้ <code>boombignose</code> แบบ trust โฟลเดอร์ข้อมูลที่มีช่องว่างจะถูกปฏิเสธ</p></article>
           <article class="card"><h3>Auth</h3><p>Auth v2.197.0 และ PostgREST v16.5 พร็อกซีที่ <code>127.0.0.1:54321</code> ส่ง <code>/auth/v1</code> ไปพอร์ต 54323 และ <code>/rest/v1</code> ไปพอร์ต 54324</p></article>
-          <article class="card"><h3>Ollama</h3><p>Ollama v0.40.11 ไม่รวมน้ำหนักโมเดล Linux กับ Windows ไม่รวมตัวรัน <code>cuda_v12</code> และ <code>cuda_v13</code> ปุ่มบนหน้าสแปลชหรือคำสั่ง <code>boombignose pull-model</code> เท่านั้นที่จะดึง <code>qwen3:4b</code> การเปิดโปรแกรมไม่ได้ดึงโมเดล</p></article>
+          <article class="card"><h3>Ollama</h3><p>Ollama v0.40.11 ไม่รวมน้ำหนักโมเดล Linux กับ Windows ไม่รวมตัวรัน <code>cuda_v12</code> และ <code>cuda_v13</code> ปุ่มบนหน้าสแปลชหรือคำสั่ง <code>boombignose pull-model</code> เท่านั้นที่จะดึง <code>qwen2.5:3b</code> การเปิดโปรแกรมไม่ได้ดึงโมเดล</p></article>
         </div>
       </div>
     </section>
@@ -285,7 +285,7 @@
             <li>เปิด BoomBigNose หลังติดตั้ง โปรแกรมสร้างคลัสเตอร์ถ้ายังไม่มี</li>
             <li>ข้อมูลอยู่ที่ <code>BOOMBIGNOSE_DATA</code> หรือ <code>~/.local/share/boombignose/pg</code> บน Windows คือ <code>%USERPROFILE%\.local\share\boombignose\pg</code> เส้นทางที่มีช่องว่างใช้ไม่ได้</li>
             <li>เบราว์เซอร์ในหน้าต่างเปิด ERP ที่ <code>http://127.0.0.1:3100</code> สมัครและเข้าสู่ระบบบนเครื่องนี้</li>
-            <li>ถ้าต้องการหน้า AI ให้กดปุ่ม “ดาวน์โหลดโมเดล qwen3:4b” บนสแปลช หรือรัน <code>boombignose pull-model</code> คำสั่งนี้ติดต่อคลังโมเดลของ Ollama แชทยังส่งไปที่ <code>127.0.0.1:11434</code></li>
+            <li>ถ้าต้องการหน้า AI ให้กดปุ่ม “ดาวน์โหลดโมเดล qwen2.5:3b” บนสแปลช หรือรัน <code>boombignose pull-model</code> คำสั่งนี้ติดต่อคลังโมเดลของ Ollama แชทยังส่งไปที่ <code>127.0.0.1:11434</code></li>
             <li>การสตาร์ทใน CI เป็นคำสั่ง health, สมัคร, และเข้าสู่ระบบ ไม่ใช่การคลิกบนเครื่องจริง และไม่ได้ดึงโมเดล</li>
           </ol>
         </div>
@@ -319,7 +319,7 @@
           <article class="card"><h3>SmartScreen หรือ Gatekeeper</h3><p>Windows ใช้ More info แล้ว Run anyway macOS ใช้ Open Anyway ใน System Settings &gt; Privacy &amp; Security Smart App Control อาจบล็อกต่อไป ไม่มีใบรับรองที่ซื้อมาให้ข้ามขั้นตอนนี้</p></article>
           <article class="card"><h3>สิทธิ์รันบน macOS หรือ Linux</h3><p>หลังคัดลอกจากแผ่นหรือหลังดาวน์โหลด ให้ <code>chmod +x</code> โปรแกรมหรือ AppImage ก่อนเปิด</p></article>
           <article class="card"><h3>พอร์ตถูกใช้แล้ว</h3><p>ERP ใช้ <code>127.0.0.1:3100</code> และ Postgres ใช้ <code>127.0.0.1:54329</code> ถ้าโปรแกรมอื่นจับพอร์ตอยู่ หน้าต่างจะค้างที่ข้อความเปิดไม่สำเร็จ และจะไม่เข้าไปใช้พอร์ตนั้น ปิดโปรแกรมนั้นก่อน หรือตั้ง <code>BOOMBIGNOSE_PG_PORT</code> ข้อมูลจาก v0.3 อยู่ในโฟลเดอร์เดิม บันทึกของ Postgres คือ <code>server.log</code> ในโฟลเดอร์นั้น การถอนการติดตั้งไม่ลบโฟลเดอร์ข้อมูล</p></article>
-          <article class="card"><h3>แชทไม่มีคำตอบ</h3><p>Ollama ต้องทำงานอยู่และต้องมีการดึง qwen3:4b แล้ว การเปิดโปรแกรมไม่ได้ดึงให้ โฮสต์อื่นที่ไม่ใช่ loopback ถูกปฏิเสธ</p></article>
+          <article class="card"><h3>แชทไม่มีคำตอบ</h3><p>Ollama ต้องทำงานอยู่และต้องมีการดึง qwen2.5:3b แล้ว การเปิดโปรแกรมไม่ได้ดึงให้ โฮสต์อื่นที่ไม่ใช่ loopback ถูกปฏิเสธ</p></article>
         </div>
       </div>
     </section>

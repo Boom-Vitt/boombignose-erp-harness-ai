@@ -1,5 +1,5 @@
 import type { Metadata } from "next"
-import { Geist, Geist_Mono } from "next/font/google"
+import { Geist, Geist_Mono, Mali } from "next/font/google"
 import { ThemeProvider } from "next-themes"
 import "./globals.css"
 
@@ -17,6 +17,12 @@ const fontMono = Geist_Mono({
   subsets: ["latin"],
 })
 
+const fontDeck = Mali({
+  variable: "--font-deck",
+  subsets: ["latin", "thai"],
+  weight: ["500", "600", "700"],
+})
+
 export const metadata: Metadata = {
   title: "BoomBigNose ERP",
   description:
@@ -30,7 +36,7 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${fontSans.variable} ${fontMono.variable} h-full antialiased`}
+      className={`${fontSans.variable} ${fontMono.variable} ${fontDeck.variable} h-full antialiased`}
     >
       <body className="bg-background text-foreground min-h-full">
         <PublicEnvScript />

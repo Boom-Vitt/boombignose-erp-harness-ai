@@ -15,6 +15,13 @@ export function localDataDir(): string | null {
   return path.join(home, ".local", "share", "boombignose", "pg")
 }
 
+/** Sibling of the Postgres data directory. The desktop helper reads the same folder. */
+export function localUpdatesDir(): string | null {
+  const data = localDataDir()
+  if (!data) return null
+  return path.resolve(data, "..", "updates")
+}
+
 export function redactLog(text: string): string {
   return text
     .replace(/postgres(?:ql)?:\/\/\S+/gi, "[redacted]")

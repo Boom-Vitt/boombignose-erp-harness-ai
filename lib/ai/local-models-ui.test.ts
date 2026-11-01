@@ -9,10 +9,15 @@ describe("local model settings", () => {
   it("tells a Linux operator which models install inside the ERP", () => {
     const snapshot = buildSnapshot(
       { platform: "linux", arch: "x64" },
-      [{ name: "qwen3:4b", size: 100 }],
+      [{ name: "qwen2.5:3b", size: 100 }],
       { up: true },
     )
     const html = renderToStaticMarkup(createElement(LocalModelsCard, { initial: snapshot, canInstall: true }))
+    expect(html).toContain("bbn-sketch")
+    expect(html).toContain("bbn-step-pill")
+    expect(html).toContain('data-step="text"')
+    expect(html).toContain('data-step="image"')
+    expect(html).toContain("ยังไม่มีบนระบบนี้ / Not on this operating system")
     expect(html).toContain("ตรวจอีกครั้ง / Check again")
     expect(html).toContain("ไม่ต้องลง Ollama Desktop")
     expect(html).toContain("You do not need Ollama Desktop, ComfyUI, a Whisper app")
@@ -40,6 +45,8 @@ describe("local model settings", () => {
   it("offers image and speech install buttons on Apple Silicon", () => {
     const snapshot = buildSnapshot({ platform: "darwin", arch: "arm64" }, [], { up: false })
     const html = renderToStaticMarkup(createElement(LocalModelsCard, { initial: snapshot, canInstall: true }))
+    expect(html).toContain('data-step="image"')
+    expect(html).toContain("ติดตั้งจากปุ่มด้านล่าง / Install with the button below")
     expect(html).toContain("data-modality=\"image\"")
     expect(html).toContain("data-modality=\"tts\"")
     expect(html).toContain("x/flux2-klein:4b")

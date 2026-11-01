@@ -3,10 +3,12 @@
 // this file, so they stay unit-testable with no network.
 import "server-only"
 
+import { ollamaReplyText } from "@/lib/ai/ollama-reply"
+
 const DEFAULT_HOST = "127.0.0.1:11434"
 
 /** Default local model. Override with OLLAMA_MODEL. The model must already be pulled. */
-export const DEFAULT_MODEL = process.env.OLLAMA_MODEL?.trim() || "qwen3:4b"
+export const DEFAULT_MODEL = process.env.OLLAMA_MODEL?.trim() || "qwen2.5:3b"
 
 /**
  * Thrown when Ollama is not usable on this machine. Callers catch this and
@@ -73,6 +75,8 @@ export async function generateText({
       body: JSON.stringify({
         model,
         stream: false,
+        // Belt and braces: thinking models (qwen3) otherwise spend the reply in message.thinking.
+        think: false,
         messages: [
           { role: "system", content: system },
           { role: "user", content: prompt },
@@ -89,7 +93,7 @@ export async function generateText({
 
   const data = (await res.json().catch(() => null)) as {
     error?: unknown
-    message?: { content?: unknown }
+    message?: { content?: unknown; thinking?: unknown }
   } | null
 
   const detail = () => {
@@ -114,9 +118,9 @@ export async function generateText({
     )
   }
 
-  const content = data?.message?.content
-  if (typeof content !== "string" || !content.trim()) {
+  const content = ollamaReplyText(data?.message)
+  if (!content) {
     throw new Error("Ollama returned no text")
   }
-  return content.trim()
+  return content
 }

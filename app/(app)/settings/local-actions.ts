@@ -3,11 +3,14 @@
 import { requireOrgContext } from "@/lib/auth"
 import { localDataDir, readStartLog } from "@/lib/install/logs"
 import { interpretRelease, type UpdateCheck } from "@/lib/release/update-check"
+import { helperConfigured, updateCapability, type UpdateCapability } from "@/lib/release/update-plan"
 
 const RELEASE_API = "https://api.github.com/repos/Boom-Vitt/boombignose-erp-harness-ai/releases/latest"
 
-/** User-clicked check. Reads the public release page and returns a link, never a download. */
-export async function checkForUpdate(): Promise<UpdateCheck> {
+export type UpdateStatus = Exclude<UpdateCheck, { state: "unavailable" }> & { capability: UpdateCapability } | Extract<UpdateCheck, { state: "unavailable" }>
+
+/** User-clicked check. Reads the public release page and returns a link. The download is a separate action. */
+export async function checkForUpdate(): Promise<UpdateStatus> {
   await requireOrgContext()
   const controller = new AbortController()
   const timer = setTimeout(() => controller.abort(), 8000)
@@ -18,7 +21,9 @@ export async function checkForUpdate(): Promise<UpdateCheck> {
       cache: "no-store",
     })
     if (!response.ok) return { state: "unavailable", message: "The release page did not respond." }
-    return interpretRelease(await response.json())
+    const result = interpretRelease(await response.json())
+    if (result.state === "unavailable") return result
+    return { ...result, capability: updateCapability(process.platform, process.arch, helperConfigured()) }
   } catch {
     return { state: "unavailable", message: "The release page could not be reached." }
   } finally {

@@ -16,14 +16,14 @@ import (
 
 func TestCatalogIDsMatchTheShippedAllowlist(t *testing.T) {
 	got := CatalogIDs()
-	want := []string{"qwen3:4b", "qwen2.5vl:3b", "x/flux2-klein:4b", "phonon"}
+	want := []string{"qwen2.5:3b", "qwen2.5vl:3b", "x/flux2-klein:4b", "phonon"}
 	if strings.Join(got, ",") != strings.Join(want, ",") {
 		t.Fatalf("catalog = %#v", got)
 	}
 }
 
 func TestPullAllowedByOS(t *testing.T) {
-	if !PullAllowed("qwen3:4b", "linux", "amd64") || !PullAllowed("qwen2.5vl:3b", "windows", "amd64") {
+	if !PullAllowed("qwen2.5:3b", "linux", "amd64") || !PullAllowed("qwen2.5vl:3b", "windows", "amd64") {
 		t.Fatal("text and vision must install on linux and windows")
 	}
 	if PullAllowed("x/flux2-klein:4b", "linux", "amd64") || PullAllowed("phonon", "linux", "amd64") {
@@ -38,7 +38,7 @@ func TestPullAllowedByOS(t *testing.T) {
 	if !PullAllowed("phonon", "darwin", "arm64") {
 		t.Fatal("speech must install on darwin/arm64")
 	}
-	if PullAllowed("llama3", "linux", "amd64") || PullAllowed("../qwen3:4b", "linux", "amd64") || PullAllowed("qwen3:4b\n", "linux", "amd64") {
+	if PullAllowed("llama3", "linux", "amd64") || PullAllowed("../qwen2.5:3b", "linux", "amd64") || PullAllowed("qwen2.5:3b\n", "linux", "amd64") {
 		t.Fatal("names outside the catalog must be refused")
 	}
 }
@@ -65,7 +65,7 @@ func TestPullCommandForRefusesTheWrongMachineBeforeExec(t *testing.T) {
 	if err := allowedBundleCommand(vision); err == nil {
 		t.Fatal("startup must refuse a vision pull")
 	}
-	_, err = PullCommandFor(binary, "https://models.example", nil, "qwen3:4b")
+	_, err = PullCommandFor(binary, "https://models.example", nil, "qwen2.5:3b")
 	if err == nil || strings.Contains(err.Error(), "models.example") {
 		t.Fatalf("remote pull: %v", err)
 	}
@@ -101,7 +101,7 @@ func TestListAndDeleteLocalModelsOnLoopback(t *testing.T) {
 		switch r.URL.Path {
 		case "/api/tags":
 			w.Header().Set("Content-Type", "application/json")
-			_, _ = io.WriteString(w, `{"models":[{"name":"qwen3:4b","size":10},{"name":"qwen3:4b:latest","size":11},{"name":"bad\nname","size":1}]}`)
+			_, _ = io.WriteString(w, `{"models":[{"name":"qwen2.5:3b","size":10},{"name":"qwen2.5:3b:latest","size":11},{"name":"bad\nname","size":1}]}`)
 		case "/api/delete":
 			if r.Method != http.MethodDelete {
 				t.Errorf("method %s", r.Method)
@@ -122,19 +122,19 @@ func TestListAndDeleteLocalModelsOnLoopback(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(listed) != 2 || listed[0].Name != "qwen3:4b" || listed[0].Size != 10 || listed[1].Size != 11 {
+	if len(listed) != 2 || listed[0].Name != "qwen2.5:3b" || listed[0].Size != 10 || listed[1].Size != 11 {
 		t.Fatalf("listed: %#v", listed)
 	}
-	if err := DeleteLocalModel(context.Background(), host, "qwen3:4b"); err != nil {
+	if err := DeleteLocalModel(context.Background(), host, "qwen2.5:3b"); err != nil {
 		t.Fatal(err)
 	}
-	if deleted != "qwen3:4b" {
+	if deleted != "qwen2.5:3b" {
 		t.Fatalf("deleted %q", deleted)
 	}
 	if err := DeleteLocalModel(context.Background(), host, "llama3"); !errors.Is(err, ErrModelRefused) {
 		t.Fatalf("unknown delete: %v", err)
 	}
-	if err := DeleteLocalModel(context.Background(), "https://models.example", "qwen3:4b"); err == nil || strings.Contains(err.Error(), "models.example") {
+	if err := DeleteLocalModel(context.Background(), "https://models.example", "qwen2.5:3b"); err == nil || strings.Contains(err.Error(), "models.example") {
 		t.Fatalf("remote delete: %v", err)
 	}
 	_, err = ListLocalModels(context.Background(), "http://ollama.example:11434")

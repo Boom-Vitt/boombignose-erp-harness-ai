@@ -80,5 +80,8 @@ func CheckEnv(getenv func(string) string) error {
 	if err := AllowService(getenv("OLLAMA_HOST")); err != nil {
 		return fmt.Errorf("OLLAMA_HOST: %w", ErrNotLocal)
 	}
+	if err := AllowEndpoint(getenv("BOOMBIGNOSE_UPDATE_URL")); err != nil {
+		return fmt.Errorf("BOOMBIGNOSE_UPDATE_URL: %w", ErrNotLocal)
+	}
 	return nil
 }

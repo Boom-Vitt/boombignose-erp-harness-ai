@@ -131,7 +131,7 @@ describe("local stack manager", () => {
       OPENROUTER_MODEL: "openai/gpt-4o-mini",
       ANTHROPIC_API_KEY: "drop-anthropic",
       OLLAMA_HOST: "127.0.0.1:11434",
-      OLLAMA_MODEL: "qwen3:4b",
+      OLLAMA_MODEL: "qwen2.5:3b",
       CRON_SECRET: "drop-me",
       RESEND_API_KEY: "drop-resend",
       EMAIL_FROM: "noreply@example.com",
@@ -160,7 +160,7 @@ describe("local stack manager", () => {
       ].sort()
     )
     expect(env.OLLAMA_HOST).toBe("127.0.0.1:11434")
-    expect(env.OLLAMA_MODEL).toBe("qwen3:4b")
+    expect(env.OLLAMA_MODEL).toBe("qwen2.5:3b")
     expect(env.OPENROUTER_API_KEY).toBeUndefined()
     expect(env.OPENROUTER_MODEL).toBeUndefined()
     expect(env.ANTHROPIC_API_KEY).toBeUndefined()
@@ -171,7 +171,7 @@ describe("local stack manager", () => {
       OLLAMA_HOST: "https://models.example:11434",
     })
     expect(remote.OLLAMA_HOST).toBeUndefined()
-    expect(remote.OLLAMA_MODEL).toBe("qwen3:4b")
+    expect(remote.OLLAMA_MODEL).toBe("qwen2.5:3b")
     expect(env.RESEND_API_KEY).toBeUndefined()
     expect(env.EMAIL_FROM).toBeUndefined()
     expect(env.N8N_WEBHOOK_SECRET).toBeUndefined()

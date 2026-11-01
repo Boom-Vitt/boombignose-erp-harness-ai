@@ -58,7 +58,7 @@ func TestAllowedBundleCommandRejectsOtherPrograms(t *testing.T) {
 	if err := allowedBundleCommand(Command{Name: ollama, Args: []string{"serve"}}); err != nil {
 		t.Fatal(err)
 	}
-	if err := allowedBundleCommand(Command{Name: ollama, Args: []string{"pull", "qwen3:4b"}}); err == nil {
+	if err := allowedBundleCommand(Command{Name: ollama, Args: []string{"pull", "qwen2.5:3b"}}); err == nil {
 		t.Fatal("pull must be refused")
 	}
 	if err := allowedBundleCommand(Command{Name: "node", Args: []string{layout.Server}}); err == nil {
@@ -147,12 +147,12 @@ func TestChildEnvKeepsLocalSupabaseAndPort(t *testing.T) {
 }
 
 func TestChildEnvKeepsLoopbackOllama(t *testing.T) {
-	env, err := ChildEnv([]string{"OLLAMA_HOST=127.0.0.1:11434", "OLLAMA_MODEL=qwen3:4b"}, "3100")
+	env, err := ChildEnv([]string{"OLLAMA_HOST=127.0.0.1:11434", "OLLAMA_MODEL=qwen2.5:3b"}, "3100")
 	if err != nil {
 		t.Fatal(err)
 	}
 	text := strings.Join(env, "\n")
-	if !strings.Contains(text, "OLLAMA_HOST=127.0.0.1:11434") || !strings.Contains(text, "OLLAMA_MODEL=qwen3:4b") {
+	if !strings.Contains(text, "OLLAMA_HOST=127.0.0.1:11434") || !strings.Contains(text, "OLLAMA_MODEL=qwen2.5:3b") {
 		t.Fatalf("ollama env: %s", text)
 	}
 	_, err = ChildEnv([]string{"OLLAMA_HOST=https://models.example:11434"}, "3100")
@@ -178,6 +178,30 @@ func TestChildEnvCopiesTotpFlagOnlyWhenEnabled(t *testing.T) {
 	}
 }
 
+func TestChildEnvKeepsTheLoopbackUpdateHelper(t *testing.T) {
+	token := strings.Repeat("ab", 32)
+	data := t.TempDir()
+	env, err := ChildEnv([]string{
+		"BOOMBIGNOSE_UPDATE_URL=http://127.0.0.1:43123",
+		"BOOMBIGNOSE_UPDATE_TOKEN=" + token,
+		"BOOMBIGNOSE_DATA=" + data,
+		"BOOMBIGNOSE_UPDATE_TOKEN=not-a-token",
+	}, "3100")
+	if err != nil {
+		t.Fatal(err)
+	}
+	text := strings.Join(env, "\n")
+	if !strings.Contains(text, "BOOMBIGNOSE_UPDATE_URL=http://127.0.0.1:43123") || !strings.Contains(text, "BOOMBIGNOSE_UPDATE_TOKEN="+token) {
+		t.Fatalf("helper env: %s", text)
+	}
+	if !strings.Contains(text, "BOOMBIGNOSE_DATA="+data) || strings.Contains(text, "not-a-token") {
+		t.Fatalf("data dir: %s", text)
+	}
+	if _, err := ChildEnv([]string{"BOOMBIGNOSE_UPDATE_URL=https://updates.example"}, "3100"); err == nil || strings.Contains(err.Error(), "updates.example") {
+		t.Fatalf("remote helper: %v", err)
+	}
+}
+
 func TestOllamaServeRefusesRemoteHost(t *testing.T) {
 	_, err := OllamaServe("/tmp/ollama", "https://ollama.example")
 	if err == nil {
@@ -193,7 +217,7 @@ func TestOllamaServeRefusesRemoteHost(t *testing.T) {
 	if len(cmd.Args) != 1 || cmd.Args[0] != "serve" {
 		t.Fatalf("args: %#v", cmd.Args)
 	}
-	if strings.Join(PullArgs(), " ") != "pull qwen3:4b" {
+	if strings.Join(PullArgs(), " ") != "pull qwen2.5:3b" {
 		t.Fatalf("pull args: %#v", PullArgs())
 	}
 	for _, arg := range cmd.Args {
@@ -342,7 +366,7 @@ func TestPullCommandIsNotAStartupCommand(t *testing.T) {
 	if !strings.Contains(text, "OLLAMA_HOST=127.0.0.1:11434") || !strings.Contains(text, "HOME=/home/me") {
 		t.Fatalf("pull env: %s", text)
 	}
-	if strings.Join(cmd.Args, " ") != "pull qwen3:4b" {
+	if strings.Join(cmd.Args, " ") != "pull qwen2.5:3b" {
 		t.Fatalf("args: %#v", cmd.Args)
 	}
 	_, err = PullCommand(binary, "https://models.example", nil)

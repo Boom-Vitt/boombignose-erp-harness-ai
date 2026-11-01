@@ -36,12 +36,12 @@ describe("local model routes", () => {
 
   it("lists text and vision for a signed-in member and hides weights that cannot run here", async () => {
     state.role = "member"
-    fake.mockResolvedValue(json({ models: [{ name: "qwen3:4b:latest", size: 20 }] }))
+    fake.mockResolvedValue(json({ models: [{ name: "qwen2.5:3b:latest", size: 20 }] }))
     const response = await GET()
     expect(response.status).toBe(200)
     const body = await response.json()
     expect(body.daemonUp).toBe(true)
-    expect(body.rows.find((row: { id: string }) => row.id === "qwen3:4b")?.installed).toBe(true)
+    expect(body.rows.find((row: { id: string }) => row.id === "qwen2.5:3b")?.installed).toBe(true)
     expect(body.rows.some((row: { id: string }) => row.id === "qwen2.5vl:3b")).toBe(true)
     const blocked = body.blocked.map((item: { modality: string }) => item.modality)
     expect(blocked).toEqual(expect.arrayContaining(["video", "asr", "voice-clone"]))
@@ -54,7 +54,7 @@ describe("local model routes", () => {
     const signedOut = await pull(new Request("http://127.0.0.1/api/local-models/pull", { method: "POST", body: "{}" }))
     expect(signedOut.status).toBe(401)
     state.role = "accountant"
-    const denied = await DELETE(new Request("http://127.0.0.1/api/local-models", { method: "DELETE", body: JSON.stringify({ model: "qwen3:4b" }) }))
+    const denied = await DELETE(new Request("http://127.0.0.1/api/local-models", { method: "DELETE", body: JSON.stringify({ model: "qwen2.5:3b" }) }))
     expect(denied.status).toBe(403)
     expect(fake).not.toHaveBeenCalled()
   })
@@ -64,11 +64,11 @@ describe("local model routes", () => {
     const response = await pull(new Request("http://127.0.0.1/api/local-models/pull", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ model: "qwen3:4b" }),
+      body: JSON.stringify({ model: "qwen2.5:3b" }),
     }))
     expect(response.status).toBe(200)
     expect(await response.text()).toContain('"done":true')
-    expect(JSON.parse(fake.mock.calls[0][1].body).model).toBe("qwen3:4b")
+    expect(JSON.parse(fake.mock.calls[0][1].body).model).toBe("qwen2.5:3b")
 
     fake.mockClear()
     const unknown = await pull(new Request("http://127.0.0.1/api/local-models/pull", {

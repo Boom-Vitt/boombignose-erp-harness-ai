@@ -17,14 +17,14 @@ import {
 
 describe("local model catalog", () => {
   it("ships the allowlist and no other weights", () => {
-    expect(catalogModelIds()).toEqual(["qwen3:4b", "qwen2.5vl:3b", "x/flux2-klein:4b", "phonon"])
+    expect(catalogModelIds()).toEqual(["qwen2.5:3b", "qwen2.5vl:3b", "x/flux2-klein:4b", "phonon"])
   })
 
   it("maps Node's Windows and x64 names onto the catalog", () => {
     expect(hostOS("win32")).toBe("windows")
     expect(hostArch("x64")).toBe("amd64")
     const windows = { platform: "win32" as const, arch: "x64" }
-    expect(modelPullable("qwen3:4b", windows)).toBe(true)
+    expect(modelPullable("qwen2.5:3b", windows)).toBe(true)
     expect(modelPullable("qwen2.5vl:3b", windows)).toBe(true)
     expect(modelPullable("x/flux2-klein:4b", windows)).toBe(false)
     expect(modelPullable("phonon", windows)).toBe(false)
@@ -38,29 +38,29 @@ describe("local model catalog", () => {
   })
 
   it("refuses names that are not the catalog", () => {
-    expect(safeModelId("qwen3:4b")).toBe(true)
+    expect(safeModelId("qwen2.5:3b")).toBe(true)
     expect(safeModelId("x/flux2-klein:4b")).toBe(true)
-    expect(safeModelId("../qwen3:4b")).toBe(false)
-    expect(safeModelId("qwen3:4b\nserve")).toBe(false)
+    expect(safeModelId("../qwen2.5:3b")).toBe(false)
+    expect(safeModelId("qwen2.5:3b\nserve")).toBe(false)
     expect(safeModelId("Llama3")).toBe(false)
     expect(modelPullable("llama3", { platform: "linux", arch: "x64" })).toBe(false)
   })
 
   it("matches an installed tag without treating a different size as the same model", () => {
-    expect(namesMatch("qwen3:4b", "qwen3:4b")).toBe(true)
+    expect(namesMatch("qwen2.5:3b", "qwen2.5:3b")).toBe(true)
     expect(namesMatch("phonon:latest", "phonon")).toBe(true)
-    expect(namesMatch("qwen3:8b", "qwen3:4b")).toBe(false)
+    expect(namesMatch("qwen2.5:7b", "qwen2.5:3b")).toBe(false)
     expect(namesMatch("qwen2.5vl:7b", "qwen2.5vl:3b")).toBe(false)
   })
 
   it("shows install rows for text and vision, and says what this Linux build cannot run", () => {
     const snapshot = buildSnapshot(
       { platform: "linux", arch: "x64" },
-      [{ name: "qwen3:4b", size: 2_500_000_000 }],
+      [{ name: "qwen2.5:3b", size: 2_500_000_000 }],
       { up: true },
     )
     expect(snapshot.daemonUp).toBe(true)
-    expect(snapshot.rows.map((row) => row.id)).toEqual(["qwen3:4b", "qwen2.5vl:3b"])
+    expect(snapshot.rows.map((row) => row.id)).toEqual(["qwen2.5:3b", "qwen2.5vl:3b"])
     expect(snapshot.rows[0]?.installed).toBe(true)
     expect(snapshot.rows[1]?.installed).toBe(false)
     expect(snapshot.blocked.map((item) => item.modality)).toEqual(["image", "tts", "video", "asr", "voice-clone"])

@@ -1,6 +1,7 @@
 import "server-only"
 
 import { AINotConfiguredError, localOllamaOrigin } from "@/lib/ai/client"
+import { ollamaReplyText } from "@/lib/ai/ollama-reply"
 import {
   buildSnapshot,
   cleanPrompt,
@@ -183,11 +184,11 @@ export async function describeLocalImage(
     return { error: "Ollama is not running on this computer.", status: 503 }
   }
   if (!res.ok) return { error: await readError(res), status: 502 }
-  const data = (await res.json().catch(() => null)) as { error?: unknown; message?: { content?: unknown } } | null
+  const data = (await res.json().catch(() => null)) as { error?: unknown; message?: { content?: unknown; thinking?: unknown } } | null
   if (typeof data?.error === "string" && data.error.trim()) return { error: clip(data.error), status: 502 }
-  const content = data?.message?.content
-  if (typeof content !== "string" || !content.trim()) return { error: "The vision model returned no text.", status: 502 }
-  return { text: content.trim().slice(0, 4000) }
+  const content = ollamaReplyText(data?.message)
+  if (!content) return { error: "The vision model returned no text.", status: 502 }
+  return { text: content.slice(0, 4000) }
 }
 
 export async function speakLocalText(

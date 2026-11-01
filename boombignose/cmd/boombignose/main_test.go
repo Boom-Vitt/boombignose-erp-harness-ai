@@ -128,7 +128,7 @@ func TestRunModelCommandsStayOnTheAllowlist(t *testing.T) {
 	}
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path == "/api/tags" {
-			fmt.Fprint(w, `{"models":[{"name":"qwen3:4b","size":4}]}`)
+			fmt.Fprint(w, `{"models":[{"name":"qwen2.5:3b","size":4}]}`)
 			return
 		}
 		if r.URL.Path == "/api/delete" && r.Method == http.MethodDelete {
@@ -142,7 +142,7 @@ func TestRunModelCommandsStayOnTheAllowlist(t *testing.T) {
 	if err := run([]string{"models"}); err != nil {
 		t.Fatal(err)
 	}
-	if err := run([]string{"remove-model", "qwen3:4b"}); err != nil {
+	if err := run([]string{"remove-model", "qwen2.5:3b"}); err != nil {
 		t.Fatal(err)
 	}
 }

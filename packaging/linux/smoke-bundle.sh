@@ -92,7 +92,7 @@ if [ "$ok" != 1 ]; then
 fi
 test -s "$pgdata/PG_VERSION"
 echo "health ok"
-if grep -F "pull qwen3" "$data/serve.log"; then
+if grep -F "pull qwen2.5" "$data/serve.log"; then
   echo "serve pulled a model" >&2
   exit 1
 fi

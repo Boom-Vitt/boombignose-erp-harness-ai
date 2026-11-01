@@ -25,7 +25,7 @@ const (
 	// DefaultOllamaListen is the loopback address used when OLLAMA_HOST is empty.
 	DefaultOllamaListen = "127.0.0.1:11434"
 	// LocalModel is the text model the ERP screens call. The window does not pull it at startup.
-	LocalModel = "qwen3:4b"
+	LocalModel = "qwen2.5:3b"
 )
 
 // ErrIncomplete means the bundle has no portable Node and ERP server.
@@ -92,6 +92,26 @@ func Discover(root string) (Layout, error) {
 		layout.PostgREST = postgrest
 	}
 	return layout, nil
+}
+
+func updateToken(value string) bool {
+	if len(value) != 64 {
+		return false
+	}
+	for _, r := range value {
+		if (r < '0' || r > '9') && (r < 'a' || r > 'f') {
+			return false
+		}
+	}
+	return true
+}
+
+func absDataDir(value string) bool {
+	value = strings.TrimSpace(value)
+	if value == "" || strings.ContainsAny(value, "\r\n\x00") {
+		return false
+	}
+	return filepath.IsAbs(value)
 }
 
 func exeName(base string) string {
@@ -189,6 +209,24 @@ func ChildEnv(parent []string, port string) ([]string, error) {
 			if strings.TrimSpace(value) != "" {
 				vals[key] = strings.TrimSpace(value)
 			}
+		case "BOOMBIGNOSE_UPDATE_URL":
+			if strings.Contains(value, "@") || strings.ContainsAny(value, "\r\n") {
+				return nil, fmt.Errorf("%s: %w", key, policy.ErrNotLocal)
+			}
+			if err := policy.AllowEndpoint(value); err != nil {
+				return nil, fmt.Errorf("%s: %w", key, policy.ErrNotLocal)
+			}
+			if strings.TrimSpace(value) != "" {
+				vals[key] = strings.TrimSpace(value)
+			}
+		case "BOOMBIGNOSE_UPDATE_TOKEN":
+			if updateToken(value) {
+				vals[key] = value
+			}
+		case "BOOMBIGNOSE_DATA":
+			if absDataDir(value) {
+				vals[key] = strings.TrimSpace(value)
+			}
 		case "LOCAL_TOTP_ENROLL":
 			if value == "1" {
 				vals[key] = "1"
@@ -256,7 +294,7 @@ func OllamaServe(binary, host string) (Command, error) {
 	}, nil
 }
 
-// PullCommand is `ollama pull qwen3:4b` on loopback. It is not a startup
+// PullCommand is `ollama pull qwen2.5:3b` on loopback. It is not a startup
 // command: allowedBundleCommand refuses it. The child env keeps path and
 // home values and drops cloud keys.
 func PullCommand(binary, host string, parent []string) (Command, error) {
@@ -385,7 +423,7 @@ func runPull(ctx context.Context, cmd Command) error {
 	return proc.Run()
 }
 
-// PullModel downloads qwen3:4b through the local ollama binary. Call it from
+// PullModel downloads qwen2.5:3b through the local ollama binary. Call it from
 // an explicit command or button. Do not call it from startup.
 func PullModel(ctx context.Context, layout Layout, host string, parent []string) error {
 	return PullNamedModel(ctx, layout, host, parent, LocalModel)

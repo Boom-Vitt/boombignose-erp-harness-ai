@@ -33,9 +33,9 @@ describe("ollama model admin", () => {
   })
 
   it("lists installed models from loopback and ignores a broken name", async () => {
-    fake.mockResolvedValue(json({ models: [{ name: "qwen3:4b", size: 10 }, { name: "bad\nname", size: 1 }, { name: 3 }] }))
+    fake.mockResolvedValue(json({ models: [{ name: "qwen2.5:3b", size: 10 }, { name: "bad\nname", size: 1 }, { name: 3 }] }))
     const listed = await listInstalledModels(fake)
-    expect(listed).toEqual({ up: true, models: [{ name: "qwen3:4b", size: 10 }] })
+    expect(listed).toEqual({ up: true, models: [{ name: "qwen2.5:3b", size: 10 }] })
     expect(fake.mock.calls[0][0]).toBe("http://127.0.0.1:11434/api/tags")
     expect(fake.mock.calls[0][1].headers?.Authorization).toBeUndefined()
   })
@@ -58,7 +58,7 @@ describe("ollama model admin", () => {
 
   it("pulls an allowlisted text model and forwards progress without the digest", async () => {
     fake.mockResolvedValue(new Response('{"status":"downloading","digest":"sha256:secret","total":4,"completed":1}\n{"status":"success"}\n', { status: 200 }))
-    const result = await pullInstalledModel("qwen3:4b", linux, fake)
+    const result = await pullInstalledModel("qwen2.5:3b", linux, fake)
     expect("stream" in result).toBe(true)
     if (!("stream" in result)) return
     const text = await new Response(result.stream).text()
@@ -67,7 +67,7 @@ describe("ollama model admin", () => {
     expect(text).not.toContain("sha256")
     const init = fake.mock.calls[0][1]
     expect(fake.mock.calls[0][0]).toBe("http://127.0.0.1:11434/api/pull")
-    expect(JSON.parse(init.body)).toEqual({ model: "qwen3:4b", stream: true })
+    expect(JSON.parse(init.body)).toEqual({ model: "qwen2.5:3b", stream: true })
     expect(init.headers.Authorization).toBeUndefined()
   })
 
@@ -84,7 +84,7 @@ describe("ollama model admin", () => {
     const result = await pullInstalledModel("llama3", linux, fake)
     expect(result).toEqual({ error: "That model is not in this build.", status: 400 })
     expect(fake).not.toHaveBeenCalled()
-    const removed = await deleteInstalledModel("../qwen3:4b", linux, fake)
+    const removed = await deleteInstalledModel("../qwen2.5:3b", linux, fake)
     expect(removed).toMatchObject({ status: 400 })
     expect(fake).not.toHaveBeenCalled()
   })
@@ -113,7 +113,14 @@ describe("ollama model admin", () => {
     expect(body.model).toBe("qwen2.5vl:3b")
     expect(body.messages[0].images).toEqual(["a".repeat(32)])
     expect(body.messages[0].content).toMatch(/do not file tax/i)
+    expect(body.think).toBe(false)
     expect(fake.mock.calls[1][0]).toBe("http://127.0.0.1:11434/api/chat")
+
+    fake.mockReset()
+    fake.mockResolvedValueOnce(json({ models: [{ name: "qwen2.5vl:3b", size: 3 }] }))
+    fake.mockResolvedValueOnce(json({ message: { content: "", thinking: "  a slip  " } }))
+    const thought = await describeLocalImage({ mediaType: "image/png", imageBase64: "a".repeat(32) }, linux, fake)
+    expect(thought).toEqual({ error: "The vision model returned no text.", status: 502 })
   })
 
   it("speaks English on Apple Silicon and refuses the same call on Linux", async () => {

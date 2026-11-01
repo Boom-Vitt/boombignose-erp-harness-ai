@@ -14,7 +14,7 @@
   <main>
     <img src="brandmark.png" width="72" height="72" alt="" />
     <p id="boot-status">กำลังเปิด ERP ที่ 127.0.0.1:3100</p>
-    <button id="pull-model" type="button">ดาวน์โหลดโมเดล qwen3:4b</button>
+    <button id="pull-model" type="button">ดาวน์โหลดโมเดล qwen2.5:3b</button>
     <p id="pull-status">การเปิดโปรแกรมไม่ได้ดาวน์โหลดโมเดล หลังเข้า ERP แล้ว ติดตั้งโมเดลได้ที่ Settings โดยไม่ต้องลงแอป AI อื่น</p>
   </main>
   <script>
@@ -25,9 +25,9 @@
         status.textContent = "ปุ่มนี้ใช้ในหน้าต่าง BoomBigNose เท่านั้น คำสั่งคือ boombignose pull-model";
         return;
       }
-      status.textContent = "กำลังดาวน์โหลด qwen3:4b";
+      status.textContent = "กำลังดาวน์โหลด qwen2.5:3b";
       bridge.PullLocalModel().then(function () {
-        status.textContent = "ดาวน์โหลด qwen3:4b แล้ว";
+        status.textContent = "ดาวน์โหลด qwen2.5:3b แล้ว";
       }).catch(function () {
         status.textContent = "ดาวน์โหลดไม่สำเร็จ";
       });
