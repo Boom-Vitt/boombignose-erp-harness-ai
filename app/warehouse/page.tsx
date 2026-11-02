@@ -1,9 +1,9 @@
 import type { Metadata } from "next"
 
-import { WarehouseApp } from "@/components/warehouse/warehouse-app"
+import { CampusApp } from "@/components/warehouse/campus-app"
 
 export const metadata: Metadata = { title: "Campus 3D · BoomBigNose" }
 
-export default function WarehousePage() {
-  return <WarehouseApp />
+export default function CampusPage() {
+  return <CampusApp />
 }
