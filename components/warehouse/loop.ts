@@ -19,6 +19,8 @@ import type { ShipmentInfo, ShuttleInfo, ShuttleState, StackerInfo, ZoneInfo } f
 
 const CAPACITY = 6
 const STOCK_CAP = 1800
+/** No ERP feed is wired into the sim yet: with LIVE off the vault stays empty and the vehicles idle. */
+const LIVE = false
 const CARGO_GAP = 5.2
 
 /** Tangent yaw for a model travelling counter-clockwise (dir = 1) or clockwise (dir = -1) at scene angle `a`. */
@@ -279,10 +281,10 @@ export function buildLoop(ctx: BuildCtx, simSpeed: number, simStart: number) {
     sh.slots.forEach((s, j) => (s.visible = (j < 3 ? j + 3 : j - 3) < sh.info.loaded))
   }
 
-  const out = buildShuttle("SH-2051", "BBN Freight", 1, "Loading", 2)
+  const out = buildShuttle("SH-2051", "—", 1, LIVE ? "Loading" : "Idle", LIVE ? 2 : 0)
   out.a = LAY.gateA
-  const inb = buildShuttle("SH-2287", "Siam Cargo", -1, "En route", CAPACITY)
-  inb.info.eta = 20 * simSpeed
+  const inb = buildShuttle("SH-2287", "—", -1, LIVE ? "En route" : "Idle", LIVE ? CAPACITY : 0)
+  inb.info.eta = LIVE ? 20 * simSpeed : null
   inb.timer = 20
   inb.holder.visible = false
   inb.a = LAY.portalOut
@@ -303,9 +305,9 @@ export function buildLoop(ctx: BuildCtx, simSpeed: number, simStart: number) {
   }
 
   // ------------------------------------------------------------ stock + shipment
-  let stock = 1412
+  let stock = LIVE ? 1412 : 0
   const stock0 = stock
-  const day = { received: 96, shipped: 128 }
+  const day = { received: LIVE ? 96 : 0, shipped: LIVE ? 128 : 0 }
   let shipSeq = 78442
   const cities = ["Chonburi", "Ayutthaya", "Chiang Mai", "Khon Kaen", "Hat Yai"]
   let cycle = 8
@@ -352,8 +354,8 @@ export function buildLoop(ctx: BuildCtx, simSpeed: number, simStart: number) {
     ctx.register(info.id, root, { ring: 2.4, focus: 40, mobile: true })
     return { info, root, carriage, cube, beam, a, v: 0, lift: 0.3, reach: 0, step: 0, timer: 0 }
   }
-  const st1 = buildStacker({ id: "ST-01", kind: "stacker", operator: "Somchai K.", model: "EV-18 side loader", status: "Picking pallet", carrying: "Empty", moves: 27, battery: 75, speedKmh: 0, charger: "C1" }, LAY.gateA + 0.28)
-  const st2 = buildStacker({ id: "ST-02", kind: "stacker", operator: "Wan P.", model: "EV-20 scanner", status: "Cycle count · Tier A", carrying: "Empty", moves: 14, battery: 58, speedKmh: 0, charger: "C2" }, LAY.vaultCenter - 0.6)
+  const st1 = buildStacker({ id: "ST-01", kind: "stacker", operator: "Somchai K.", model: "EV-18 side loader", status: LIVE ? "Picking pallet" : "Idle", carrying: "Empty", moves: LIVE ? 27 : 0, battery: 75, speedKmh: 0, charger: "C1" }, LAY.gateA + 0.28)
+  const st2 = buildStacker({ id: "ST-02", kind: "stacker", operator: "Wan P.", model: "EV-20 scanner", status: LIVE ? "Cycle count · Tier A" : "Idle", carrying: "Empty", moves: LIVE ? 14 : 0, battery: 58, speedKmh: 0, charger: "C2" }, LAY.vaultCenter - 0.6)
   const stackers = [st1, st2]
 
   function placeStacker(s: Stacker) {
@@ -395,6 +397,7 @@ export function buildLoop(ctx: BuildCtx, simSpeed: number, simStart: number) {
 
   function stepStacker1(dt: number) {
     const s = st1
+    if (!LIVE) return
     switch (s.step) {
       case 0: // back to the vault front
         if (!s.cube.visible) approach(s, "lift", 0.3, 2, dt)
@@ -448,6 +451,7 @@ export function buildLoop(ctx: BuildCtx, simSpeed: number, simStart: number) {
   const patrol = [LAY.vaultCenter - LAY.vaultSpan / 2 + 0.12, LAY.vaultCenter + LAY.vaultSpan / 2 - 0.12]
   function stepStacker2(dt: number) {
     const s = st2
+    if (!LIVE) return
     if (s.timer > 0) {
       s.timer -= dt
       s.beam.visible = true
@@ -469,6 +473,7 @@ export function buildLoop(ctx: BuildCtx, simSpeed: number, simStart: number) {
   // ------------------------------------------------------------ shuttle state machines
   const setState = (sh: Shuttle, state: ShuttleState) => (sh.info.state = state)
   function updateShuttles(dt: number, sim: number) {
+    if (!LIVE) return
     // outbound
     const o = out.info
     if (o.state === "Arriving") {
@@ -594,7 +599,7 @@ export function buildLoop(ctx: BuildCtx, simSpeed: number, simStart: number) {
       vault: vaultInfo(),
       stackers: stackers.map(snapStacker),
       shuttles: [out.info, inb.info].map((s) => ({ ...s })),
-      shipment: { ...shipment },
+      shipment: LIVE ? { ...shipment } : null,
       stock,
       stockCap: STOCK_CAP,
       stockDelta: stock - stock0,
