@@ -1,8 +1,10 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-label="BoomBigNose ERP Harness AI">
-  <rect width="1200" height="630" fill="#0B0D12"/>
-  <rect x="80" y="180" width="160" height="160" rx="36" fill="#12151C" stroke="#232733"/>
-  <path fill="#FF7A45" d="M116 292 L160 204 L204 292 H184 L160 244 L136 292 Z"/>
-  <text x="280" y="250" fill="#E8EAF0" font-family="Noto Sans, Inter, Segoe UI, sans-serif" font-size="64" font-weight="700">BoomBigNose</text>
-  <text x="280" y="320" fill="#9AA1B2" font-family="Noto Sans, Inter, Segoe UI, sans-serif" font-size="36">ERP Harness AI</text>
-  <text x="80" y="460" fill="#E8EAF0" font-family="Noto Sans Thai, Noto Sans, sans-serif" font-size="32">เดสก์ท็อปบนเครื่องคุณ · ไม่เรียก AI บนคลาวด์</text>
+  <rect width="1200" height="630" fill="#0B1222"/>
+  <circle cx="1040" cy="40" r="300" fill="#FF8A3D" opacity=".12"/>
+  <rect x="72" y="150" width="232" height="44" rx="22" fill="none" stroke="#F6C46A" stroke-opacity=".55"/>
+  <text x="188" y="181" text-anchor="middle" fill="#F6C46A" font-family="Inter, Segoe UI, sans-serif" font-size="22" font-weight="500">Desktop · Local AI</text>
+  <text x="72" y="290" fill="#E9EEF8" font-family="Inter, Segoe UI, sans-serif" font-size="76" font-weight="700">BoomBigNose</text>
+  <text x="72" y="370" fill="#FF8A3D" font-family="Inter, Segoe UI, sans-serif" font-size="76" font-weight="700">ERP Harness AI</text>
+  <text x="72" y="440" fill="#E9EEF8" font-family="Noto Sans Thai, IBM Plex Sans Thai, sans-serif" font-size="30">เดสก์ท็อปบนเครื่องคุณ · ไม่เรียก AI บนคลาวด์</text>
+  <rect x="72" y="624" width="240" height="6" fill="#FF8A3D"/>
 </svg>

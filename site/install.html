@@ -9,120 +9,14 @@
   <link rel="apple-touch-icon" href="assets/apple-touch-icon.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet" />
   <meta property="og:title" content="ติดตั้ง BoomBigNose บนเดสก์ท็อป" />
   <meta property="og:description" content="ดาวน์โหลดตรง ตรวจ SHA-256 แล้วเปิดแอปที่ไม่ได้ลงชื่อด้วยใบรับรองร้านค้า" />
   <meta property="og:image" content="https://boom-vitt.github.io/boombignose-erp-harness-ai/assets/brandmark.png" />
   <meta property="og:type" content="website" />
-  <style>
-    :root {
-      --paper: #0b0d12;
-      --surface: #12151c;
-      --line: #232733;
-      --text: #e8eaf0;
-      --muted: #9aa1b2;
-      --accent: #ff7a45;
-      --on-accent: #0b0d12;
-    }
-    * { box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
-    body {
-      margin: 0;
-      background: var(--paper);
-      color: var(--text);
-      font-family: "IBM Plex Sans Thai", Inter, "Noto Sans Thai", Anuphan, Sarabun, system-ui, sans-serif;
-      line-height: 1.6;
-    }
-    a { color: var(--accent); }
-    :focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
-    .skip {
-      position: absolute; left: 16px; top: -48px; background: var(--accent); color: var(--on-accent);
-      padding: 8px 12px; border-radius: 8px; font-weight: 700; z-index: 20;
-    }
-    .skip:focus { top: 12px; }
-    .wrap { max-width: 1040px; margin: 0 auto; padding: 0 20px; }
-    header.nav {
-      position: sticky; top: 0; z-index: 10;
-      background: rgb(11 13 18 / .92);
-      border-bottom: 1px solid var(--line);
-    }
-    .nav .wrap { display: flex; align-items: center; justify-content: space-between; min-height: 72px; gap: 16px; flex-wrap: wrap; padding-top: 8px; padding-bottom: 8px; }
-    .brand { display: flex; align-items: center; gap: 10px; color: var(--text); text-decoration: none; font-weight: 700; }
-    .brand img { width: 36px; height: 36px; border-radius: 12px; }
-    .nav-links { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
-    .nav-links a:not(.btn) { color: var(--text); text-decoration: none; font-weight: 600; min-height: 44px; display: inline-flex; align-items: center; }
-    .btn {
-      display: inline-flex; align-items: center; justify-content: center; text-align: center;
-      background: var(--accent); color: var(--on-accent); text-decoration: none;
-      font-weight: 700; border-radius: 999px; padding: 10px 18px; min-height: 44px;
-      border: 1px solid var(--accent); cursor: pointer;
-      font-family: inherit; font-size: 16px;
-      transition: filter .15s ease;
-    }
-    .btn:hover { filter: brightness(1.06); }
-    .btn.secondary { background: transparent; color: var(--text); border-color: var(--line); }
-    .hero { padding: 72px 0 16px; }
-    h1 {
-      font-size: clamp(36px, 6vw, 60px); line-height: 1.15; letter-spacing: -0.03em;
-      margin: 16px 0 12px; max-width: 16ch; font-weight: 700;
-    }
-    .lead { font-size: 20px; margin: 0 0 8px; }
-    .en { color: var(--muted); font-family: Inter, "IBM Plex Sans Thai", sans-serif; font-size: 16px; margin: 0 0 20px; }
-    .meta { color: var(--muted); font-size: 14px; margin: 12px 0 0; }
-    h2 { font-size: clamp(28px, 3vw, 36px); line-height: 1.2; margin: 0 0 8px; }
-    h3 { margin: 0 0 8px; font-size: 18px; }
-    .sub { color: var(--muted); margin: 0 0 20px; }
-    section { padding: 64px 0; }
-    .grid, .steps { display: grid; gap: 16px; }
-    .grid { grid-template-columns: repeat(2, 1fr); }
-    .steps { grid-template-columns: repeat(3, 1fr); }
-    .card {
-      background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 20px;
-    }
-    .card p, .card li { margin: 0; color: var(--muted); }
-    .card ol, .card ul { margin: 8px 0 0; padding-left: 1.2rem; }
-    .card li { margin: 6px 0; }
-    .card.is-this { border-color: var(--accent); }
-    .chip {
-      display: inline-block; margin-left: 8px; border: 1px solid var(--accent); color: var(--accent);
-      border-radius: 999px; padding: 2px 8px; font-size: 12px; font-weight: 700; vertical-align: middle;
-    }
-    .chip[hidden] { display: none !important; }
-    .btn:not(.secondary) .chip { color: var(--on-accent); border-color: var(--on-accent); }
-    .actions { display: flex; flex-direction: column; align-items: stretch; gap: 12px; margin-top: 20px; max-width: 640px; }
-    .actions .btn { width: 100%; }
-    .mono, pre {
-      font-family: "JetBrains Mono", ui-monospace, monospace; font-size: 13px; color: var(--muted);
-      overflow-wrap: anywhere; word-break: break-word;
-    }
-    pre {
-      margin: 12px 0; padding: 12px 14px; background: var(--paper); border: 1px solid var(--line);
-      border-radius: 12px; white-space: pre-wrap;
-    }
-    .hashrow { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-top: 8px; }
-    .hashrow .mono { flex: 1 1 220px; }
-    .fileline { color: var(--text); font-weight: 600; }
-    details.card { padding: 0; }
-    details.card summary {
-      min-height: 44px; padding: 16px 20px; cursor: pointer; font-weight: 700; list-style: none;
-    }
-    details.card summary::-webkit-details-marker { display: none; }
-    details.card .answer { padding: 0 20px 16px; }
-    footer { border-top: 1px solid var(--line); padding: 28px 0 48px; }
-    footer .wrap { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; align-items: center; }
-    .links { display: flex; gap: 16px; flex-wrap: wrap; }
-    #copy-status { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); border: 0; }
-    @media (max-width: 800px) {
-      section { padding: 40px 0; }
-      .grid, .steps { grid-template-columns: 1fr; }
-      h1 { max-width: none; }
-      .hashrow .btn { flex-basis: 100%; width: 100%; }
-    }
-    @media (prefers-reduced-motion: reduce) {
-      html { scroll-behavior: auto; }
-      .btn { transition: none; }
-    }
-  </style>
+  <meta name="theme-color" content="#0b1222" />
+  <meta name="color-scheme" content="dark" />
+  <link rel="stylesheet" href="assets/site.css" />
 </head>
 <body>
   <a class="skip" href="#content">ข้ามไปเนื้อหา</a>
@@ -130,14 +24,16 @@
   <header class="nav">
     <div class="wrap">
       <a class="brand" href="index.html">
-        <img src="assets/brandmark.png" width="36" height="36" alt="" />
+        <img src="assets/brandmark.png" width="34" height="34" alt="" />
         <span>BoomBigNose</span>
       </a>
-      <div class="nav-links">
+      <nav class="nav-links" aria-label="เมนูหลัก">
         <a href="index.html">หน้าแรก</a>
+        <a href="install.html" aria-current="page">วิธีติดตั้ง</a>
+        <a href="first-run.html">ครั้งแรกที่เปิด</a>
         <a href="guide.html">วิธีใช้</a>
         <a class="btn" href="#download">ดาวน์โหลด</a>
-      </div>
+      </nav>
     </div>
   </header>
   <main id="content">
