@@ -35,7 +35,7 @@ test("public form without JavaScript creates a deal in Lead and can be disabled"
   await expect(publicPage.getByRole("heading", { name, exact: true })).toBeVisible()
   await publicPage.getByLabel("Name", { exact: true }).fill(visitor)
   await publicPage.getByLabel("Company (optional)").fill(`Website company ${suffix}`)
-  await publicPage.getByLabel("Email", { exact: true }).fill(`website-${suffix}@example.invalid`)
+  await publicPage.getByLabel(/^(Email|à¸­à¸µà¹à¸¡à¸¥)$/).fill(`website-${suffix}@example.invalid`)
   await publicPage.getByLabel("Phone (optional)").fill("+66 20000000")
   await publicPage.getByLabel("Message", { exact: true }).fill(message)
   await publicPage.getByRole("button", { name: "Send message", exact: true }).click()

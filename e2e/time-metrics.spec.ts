@@ -7,9 +7,9 @@ const admin = createClient(api, process.env.SUPABASE_SERVICE_ROLE_KEY!, { auth: 
 
 async function signIn(page: Page, email: string, password: string) {
   await page.goto("/login")
-  await page.getByLabel("Email").fill(email)
-  await page.getByLabel("Password", { exact: true }).fill(password)
-  await page.getByRole("button", { name: "Sign in", exact: true }).click()
+  await page.getByLabel(/^(Email|à¸­à¸µà¹à¸¡à¸¥)$/).fill(email)
+  await page.getByLabel(/^(Password|à¸£à¸«à¸±à¸ªà¸à¹à¸²à¸)$/).fill(password)
+  await page.getByRole("button", { name: /^(Sign in|à¹à¸à¹à¸²à¸ªà¸¹à¹à¸£à¸°à¸à¸)$/ }).click()
   await page.waitForURL("**/dashboard")
 }
 

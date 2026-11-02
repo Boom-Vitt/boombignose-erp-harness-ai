@@ -29,9 +29,9 @@ export async function financeFixture() {
   }
   async function login(page: Page, credentials = { email, password }) {
     await page.goto("/login")
-    await page.getByLabel("Email").fill(credentials.email)
-    await page.getByLabel("Password", { exact: true }).fill(credentials.password)
-    await page.getByRole("button", { name: "Sign in", exact: true }).click()
+    await page.getByLabel(/^(Email|à¸­à¸µà¹à¸¡à¸¥)$/).fill(credentials.email)
+    await page.getByLabel(/^(Password|à¸£à¸«à¸±à¸ªà¸à¹à¸²à¸)$/).fill(credentials.password)
+    await page.getByRole("button", { name: /^(Sign in|à¹à¸à¹à¸²à¸ªà¸¹à¹à¸£à¸°à¸à¸)$/ }).click()
     await page.waitForURL("**/dashboard")
   }
   async function cleanup() {
