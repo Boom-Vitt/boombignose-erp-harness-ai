@@ -98,6 +98,39 @@ describe("local model routes", () => {
     expect(fake).not.toHaveBeenCalled()
   })
 
+  it("reads a receipt into a draft suggestion only, using the local Ollama origin and the receipt prompt", async () => {
+    fake.mockResolvedValueOnce(json({ models: [{ name: "qwen2.5vl:3b", size: 3 }] }))
+    fake.mockResolvedValueOnce(json({ message: { content: '{"vendor":"Shop","date":"2026-10-28","total":120,"vat":null,"items":"pens"}' } }))
+    const res = await vision(new Request("http://127.0.0.1/api/local-models/vision", {
+      method: "POST",
+      body: JSON.stringify({ mediaType: "image/jpeg", imageBase64: "a".repeat(32), purpose: "receipt" }),
+    }))
+    expect(res.status).toBe(200)
+    expect((await res.json()).draft).toMatchObject({ vendor: "Shop", spent_on: "2026-10-28", amountBaht: "120.00" })
+    for (const call of fake.mock.calls) expect(String(call[0])).toMatch(/^http:\/\/127\.0\.0\.1:11434\//)
+    expect(JSON.parse(fake.mock.calls[1][1].body).messages[0].content).toMatch(/JSON/)
+  })
+
+  it("degrades with a clear error when Ollama is offline, and with draft null when the reply is unreadable", async () => {
+    fake.mockResolvedValueOnce(json({ models: [{ name: "qwen2.5vl:3b", size: 3 }] }))
+    fake.mockRejectedValueOnce(new Error("ECONNREFUSED"))
+    const off = await vision(new Request("http://127.0.0.1/api/local-models/vision", {
+      method: "POST",
+      body: JSON.stringify({ mediaType: "image/jpeg", imageBase64: "a".repeat(32), purpose: "receipt" }),
+    }))
+    expect(off.status).toBe(503)
+    expect((await off.json()).error).toMatch(/Ollama/)
+
+    fake.mockReset()
+    fake.mockResolvedValueOnce(json({ models: [{ name: "qwen2.5vl:3b", size: 3 }] }))
+    fake.mockResolvedValueOnce(json({ message: { content: "blurry" } }))
+    const blur = await vision(new Request("http://127.0.0.1/api/local-models/vision", {
+      method: "POST",
+      body: JSON.stringify({ mediaType: "image/jpeg", imageBase64: "a".repeat(32), purpose: "receipt" }),
+    }))
+    expect((await blur.json()).draft).toBeNull()
+  })
+
   it("describes an image on the vision model and blocks speech and image generation where they cannot run", async () => {
     fake.mockResolvedValueOnce(json({ models: [{ name: "qwen2.5vl:3b", size: 3 }] }))
     fake.mockResolvedValueOnce(json({ message: { content: "visible text" } }))

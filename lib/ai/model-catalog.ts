@@ -205,12 +205,15 @@ export function formatBytes(size: number | null): string | null {
 const VISION_PROMPT =
   "Describe this image briefly in Thai and then in English. Mention only what is visible. Do not invent amounts, do not post a journal, and do not file tax."
 
-export function visionChatBody(imageBase64: string): { model: string; stream: false; think: false; messages: unknown[] } {
+export const RECEIPT_PROMPT =
+  'Read this Thai or English cash bill / receipt. Reply with ONE JSON object and nothing else: {"vendor": string, "date": "YYYY-MM-DD", "total": number, "vat": number|null, "items": string}. total is the final amount paid in THB including VAT. Use null for anything not visible. Do not guess amounts.'
+
+export function visionChatBody(imageBase64: string, prompt: string = VISION_PROMPT): { model: string; stream: false; think: false; messages: unknown[] } {
   return {
     model: "qwen2.5vl:3b",
     stream: false,
     think: false,
-    messages: [{ role: "user", content: VISION_PROMPT, images: [imageBase64] }],
+    messages: [{ role: "user", content: prompt, images: [imageBase64] }],
   }
 }
 
