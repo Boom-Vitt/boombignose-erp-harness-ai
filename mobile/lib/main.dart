@@ -6,6 +6,9 @@ import 'package:webview_flutter/webview_flutter.dart';
 
 import 'pairing.dart';
 
+/// Keep in sync with mobile/pubspec.yaml `version:`.
+const appVersion = '1.0.1+2';
+
 void main() => runApp(const BbnApp());
 
 class BbnApp extends StatelessWidget {
@@ -181,6 +184,9 @@ class _HomeState extends State<Home> {
           TextButton(onPressed: _check, child: const Text('Retry')),
           const Spacer(),
           OutlinedButton(onPressed: _unlink, child: const Text('Unlink this phone')),
+          const SizedBox(height: 12),
+          Text('v$appVersion', textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.bodySmall),
         ]),
       ),
     );
