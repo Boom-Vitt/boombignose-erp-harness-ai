@@ -57,11 +57,14 @@ export function AiPanel({ dealId }: { dealId: string }) {
   }
 
   return (
-    <Card className="bbn-deck-panel ring-0">
+    <Card className="bbn-deck-panel border-0 shadow-[4px_4px_0_0_rgb(0_0_0/0.5)]">
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-base">
-          <Sparkles className="size-4 text-primary" aria-hidden />
+          <span className="bbn-rough-sm border-primary/60 bg-primary/10 text-primary flex size-7 items-center justify-center border-[1.5px]">
+            <Sparkles className="size-3.5" aria-hidden />
+          </span>
           AI assist
+          <span className="bbn-chip ml-auto">รันบนเครื่องนี้ / On-device</span>
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -89,13 +92,13 @@ export function AiPanel({ dealId }: { dealId: string }) {
         </div>
 
         {panel.notConfigured ? (
-          <p className="text-muted-foreground rounded-xl border border-dashed p-4 text-sm">
+          <p className="bbn-sticky text-sm">
             AI is not configured. <Link href="/settings#local-models" className="underline">Install the text model in Settings</Link>. The BoomBigNose window starts the local service. You do not need a separate AI app, and nothing is sent to a cloud model.
           </p>
         ) : null}
 
         {panel.content ? (
-          <div className="bg-background/60 border-l-primary space-y-2 rounded-xl border border-l-2 p-4">
+          <div className="bbn-sketch-card space-y-2 p-4">
             <div className="flex items-center justify-between">
               <span className="text-muted-foreground text-xs font-medium">
                 {action === "followup" ? "Draft follow-up" : "Summary"}

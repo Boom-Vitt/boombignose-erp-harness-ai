@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { LogOut } from "lucide-react"
+import { LogOut, Pin } from "lucide-react"
 
 import { NAV_GROUPS, NAV_ITEMS, showNavItem, type NavItem } from "@/components/nav"
 import { useMode } from "@/components/mode-switch"
@@ -64,14 +64,14 @@ export function AppSidebar({
 
   return (
     <Sidebar collapsible="icon" className="bbn-shell-sidebar">
-      <SidebarHeader className="border-sidebar-border border-b pb-3">
+      <SidebarHeader className="border-sidebar-border border-b border-dashed pb-3">
         {workspaceHeader}
       </SidebarHeader>
 
       <SidebarContent className="gap-1 py-2">
         <SidebarGroup>
-          <SidebarGroupLabel className="text-signal gap-2 font-semibold">
-            <span aria-hidden className="bg-signal size-1.5 rounded-full" />
+          <SidebarGroupLabel data-start="true" className="bbn-nav-label h-auto! rounded-full!">
+            <Pin className="size-3" aria-hidden />
             เริ่มที่นี่ / Start here
           </SidebarGroupLabel>
           <SidebarGroupContent>
@@ -80,7 +80,7 @@ export function AppSidebar({
         </SidebarGroup>
         {sections.map((section) => (
           <SidebarGroup key={section.id}>
-            <SidebarGroupLabel>{section.label}</SidebarGroupLabel>
+            <SidebarGroupLabel className="bbn-nav-label h-auto! rounded-full!">{section.label}</SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>{section.items.map(renderItem)}</SidebarMenu>
             </SidebarGroupContent>
@@ -88,9 +88,9 @@ export function AppSidebar({
         ))}
       </SidebarContent>
 
-      <SidebarFooter className="border-sidebar-border border-t">
+      <SidebarFooter className="border-sidebar-border border-t border-dashed">
         <div className="flex items-center gap-2 px-1 py-1.5">
-          <Avatar className="size-7">
+          <Avatar className="border-primary/60 size-7 border-[1.5px]">
             <AvatarFallback className="text-xs">
               {(email ?? "?").slice(0, 2).toUpperCase()}
             </AvatarFallback>

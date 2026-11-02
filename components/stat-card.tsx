@@ -9,15 +9,17 @@ export type StatCardProps = {
   hint?: string
   icon?: LucideIcon
   tone?: "default" | "positive" | "negative" | "warning"
-  /** The one number the page leads with: larger, with a gold edge. */
+  /** The one number the page leads with: large, on an orange-edged sheet. */
   featured?: boolean
+  /** Dense ticket: icon and value on one line, no hint block. */
+  compact?: boolean
   className?: string
 }
 
 const VALUE_TONE: Record<NonNullable<StatCardProps["tone"]>, string> = {
   default: "text-foreground",
-  positive: "text-emerald-400",
-  negative: "text-rose-400",
+  positive: "text-emerald-300",
+  negative: "text-rose-300",
   warning: "text-amber-300",
 }
 
@@ -28,23 +30,60 @@ export function StatCard({
   icon: Icon,
   tone = "default",
   featured = false,
+  compact = false,
   className,
 }: StatCardProps) {
+  const chip = Icon ? (
+    <span
+      className={cn(
+        "bbn-rough-sm flex shrink-0 items-center justify-center border-[1.5px] border-primary/60 bg-primary/10 text-primary",
+        featured ? "size-9" : "size-7"
+      )}
+    >
+      <Icon className={featured ? "size-4.5" : "size-3.5"} aria-hidden />
+    </span>
+  ) : null
+
+  if (compact) {
+    return (
+      <Card size="sm" className={cn("gap-0", className)}>
+        <CardContent className="flex items-center gap-3">
+          {chip}
+          <div className="min-w-0">
+            <div className="text-muted-foreground truncate text-xs">{label}</div>
+            <div className={cn("font-heading truncate text-lg leading-tight font-semibold tabular-nums", VALUE_TONE[tone])}>{value}</div>
+            {hint ? <p className="text-muted-foreground truncate text-[11px]">{hint}</p> : null}
+          </div>
+        </CardContent>
+      </Card>
+    )
+  }
+
   return (
-    <Card className={cn("gap-0", featured && "bg-gradient-to-br from-raised to-card ring-primary/25", className)}>
-      <CardContent className="flex flex-col gap-2">
+    <Card
+      className={cn(
+        "gap-0",
+        featured && "border-primary bg-gradient-to-br from-raised to-card shadow-[5px_5px_0_0_rgb(242_138_60/0.35)]",
+        className
+      )}
+    >
+      <CardContent className={cn("flex h-full flex-col", featured ? "justify-between gap-6" : "gap-2")}>
         <div className="text-muted-foreground flex items-center justify-between gap-2 text-sm">
           <span className="min-w-0">{label}</span>
-          {Icon ? (
-            <span className="bg-primary/10 text-primary flex size-7 shrink-0 items-center justify-center rounded-lg">
-              <Icon className="size-3.5" aria-hidden />
-            </span>
-          ) : null}
+          {chip}
         </div>
-        <div className={cn("font-heading leading-none font-semibold tracking-tight tabular-nums", featured ? "text-4xl sm:text-5xl" : "text-xl sm:text-2xl lg:text-[1.75rem]", VALUE_TONE[tone])}>
-          {value}
+        <div>
+          <div
+            className={cn(
+              "font-heading leading-none font-semibold tracking-tight tabular-nums",
+              featured ? "text-4xl sm:text-6xl" : "text-xl sm:text-2xl",
+              VALUE_TONE[tone]
+            )}
+          >
+            {value}
+          </div>
+          {hint ? <p className="text-muted-foreground mt-2 text-xs">{hint}</p> : null}
         </div>
-        {hint ? <p className="text-muted-foreground text-xs">{hint}</p> : null}
       </CardContent>
     </Card>
   )

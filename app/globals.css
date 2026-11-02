@@ -47,6 +47,7 @@
   --color-surface: var(--surface);
   --color-raised: var(--raised);
   --color-signal: var(--signal);
+  --color-gold: var(--gold);
   --font-deck: var(--font-display);
   --radius-sm: calc(var(--radius) * 0.55);
   --radius-md: calc(var(--radius) * 0.75);
@@ -69,7 +70,7 @@
   --card-foreground: #f4efe4;
   --popover: #16223f;
   --popover-foreground: #f4efe4;
-  --primary: #e0a84a;
+  --primary: #f28a3c;
   --primary-foreground: #0b1222;
   --secondary: #16223f;
   --secondary-foreground: #f4efe4;
@@ -78,24 +79,24 @@
   --accent: #1c2a4b;
   --accent-foreground: #f4efe4;
   --destructive: #f0556f;
-  --border: #22304f;
-  --input: #2b3a5e;
-  --ring: #e0a84a;
-  --chart-1: #e0a84a;
-  --chart-2: #b7791f;
+  --border: #2a3a5e;
+  --input: #3a4d78;
+  --ring: #f6a15a;
+  --chart-1: #f28a3c;
+  --chart-2: #e8b84b;
   --chart-3: #5b78b8;
   --chart-4: #efe9dc;
   --chart-5: #9fabc2;
   --radius: 0.75rem;
-  --sidebar: #080e1c;
+  --sidebar: #0e1730;
   --sidebar-foreground: #c9d1e2;
-  --sidebar-primary: #e0a84a;
+  --sidebar-primary: #f28a3c;
   --sidebar-primary-foreground: #0b1222;
-  --sidebar-accent: #121c35;
+  --sidebar-accent: #17234a;
   --sidebar-accent-foreground: #f4efe4;
-  --sidebar-border: #18223c;
-  --sidebar-ring: #e0a84a;
-  --bbn-accent: #e0a84a;
+  --sidebar-border: #2a3a5e;
+  --sidebar-ring: #f6a15a;
+  --bbn-accent: #f28a3c;
   --bbn-gold: #b7791f;
   --bbn-ink: #0b1222;
   --bbn-paper: #efe9dc;
@@ -104,7 +105,9 @@
   --bbn-navy: #101a31;
   --surface: #101a31;
   --raised: #16223f;
-  --signal: #e0a84a;
+  --signal: #f28a3c;
+  --gold: #e8b84b;
+  --paper-line: rgb(159 171 194 / 0.14);
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
@@ -129,7 +132,7 @@
     text-wrap: balance;
   }
   ::selection {
-    background: rgb(224 168 74 / 0.35);
+    background: rgb(242 138 60 / 0.35);
   }
   @media (prefers-reduced-motion: reduce) {
     *,
@@ -141,42 +144,86 @@
   }
 }
 
+/* ---------- Sketchbook language ----------
+ * Hand-drawn edges (uneven corner radii), hard offset shadows like a cut-out on a
+ * whiteboard, dashed rules, and slightly tilted sticky chips. Orange acts, gold annotates.
+ */
+
+.bbn-rough {
+  border-radius: 15px 11px 16px 10px / 11px 15px 10px 16px;
+}
+.bbn-rough-sm {
+  border-radius: 9px 7px 10px 6px / 7px 10px 6px 9px;
+}
+
 /* ---------- App frame ---------- */
 
-/* Stage behind the content: a single soft gold glow at the top edge, nothing else. */
+/* Canvas: a dotted whiteboard grid with one warm glow at the top edge. */
 .bbn-shell {
   overflow-x: clip;
   background-color: var(--background);
-  background-image: radial-gradient(60rem 18rem at 50% -6rem, rgb(224 168 74 / 0.07), transparent 70%);
-  background-repeat: no-repeat;
+  background-image:
+    radial-gradient(52rem 16rem at 70% -5rem, rgb(242 138 60 / 0.09), transparent 70%),
+    radial-gradient(circle at 1px 1px, var(--paper-line) 1px, transparent 1.4px);
+  background-size: auto, 22px 22px;
+  background-repeat: no-repeat, repeat;
 }
 
+/* Top bar: a floating strip with a dashed underline instead of a solid band. */
 .bbn-shell-header {
-  background: rgb(11 18 34 / 0.78) !important;
-  border-bottom: 1px solid var(--border);
+  background: rgb(11 18 34 / 0.86) !important;
+  border-bottom: 1.5px dashed var(--input);
 }
 
 .bbn-shell-sidebar [data-sidebar="sidebar"] {
-  border-right: 1px solid var(--sidebar-border);
+  border-right: 1.5px solid var(--sidebar-border);
+  background-image: radial-gradient(circle at 1px 1px, rgb(159 171 194 / 0.07) 1px, transparent 1.4px);
+  background-size: 18px 18px;
 }
 
-/* Active place: a gold spine on the left edge, no filled block. */
+/* Sidebar section label: a tilted sticky chip. */
+.bbn-nav-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  width: fit-content;
+  margin: 0.35rem 0 0.15rem 0.35rem;
+  padding: 0.18rem 0.6rem;
+  border: 1px dashed rgb(232 184 75 / 0.55);
+  border-radius: 999px;
+  background: rgb(232 184 75 / 0.09);
+  color: var(--gold);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  transform: rotate(-1.4deg);
+}
+.bbn-nav-label[data-start="true"] {
+  border-style: solid;
+  border-color: var(--signal);
+  background: var(--signal);
+  color: var(--bbn-ink);
+  box-shadow: 2px 2px 0 rgb(0 0 0 / 0.5);
+}
+
+/* Nav row: dashed hover, active = solid orange chip with a hard shadow. */
 .bbn-nav-link {
   position: relative;
   color: var(--sidebar-foreground);
+  border: 1.5px solid transparent;
+  border-radius: 9px 7px 10px 6px / 7px 10px 6px 9px;
+}
+.bbn-nav-link:hover {
+  border-color: var(--input);
+  border-style: dashed;
+  background: transparent;
 }
 .bbn-nav-link[data-active="true"],
 .bbn-nav-link[data-active] {
-  background: linear-gradient(90deg, rgb(224 168 74 / 0.14), rgb(224 168 74 / 0.02) 80%);
+  background: rgb(242 138 60 / 0.16);
+  border: 1.5px solid var(--signal);
   color: var(--foreground);
-}
-.bbn-nav-link[data-active]::before {
-  content: "";
-  position: absolute;
-  inset: 6px auto 6px 0;
-  width: 2px;
-  border-radius: 2px;
-  background: var(--signal);
+  box-shadow: 2px 2px 0 rgb(0 0 0 / 0.55);
 }
 .bbn-nav-link[data-active] svg {
   color: var(--signal);
@@ -185,16 +232,15 @@
 /* ---------- Mode switch: the one memorable control ---------- */
 
 .bbn-mode {
-  --pill-w: 100%;
   position: relative;
   display: inline-grid;
   grid-auto-flow: column;
   grid-auto-columns: 1fr;
   padding: 3px;
-  border: 1px solid var(--input);
+  border: 1.5px solid var(--input);
   border-radius: 999px;
   background: var(--surface);
-  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.03);
+  box-shadow: 2px 2px 0 rgb(0 0 0 / 0.5);
   min-width: 0;
 }
 .bbn-mode-thumb {
@@ -205,7 +251,7 @@
   width: calc((100% - 6px) / 3);
   border-radius: 999px;
   background: var(--signal);
-  box-shadow: 0 0 18px rgb(224 168 74 / 0.35);
+  box-shadow: 0 0 18px rgb(242 138 60 / 0.4);
   transition: transform 320ms var(--ease-out);
   transform: translateX(calc(var(--i, 0) * 100%));
 }
@@ -241,38 +287,50 @@
   }
 }
 
-/* ---------- Surfaces (names kept from the deck era; look is new) ---------- */
+/* ---------- Surfaces ---------- */
 
 .bbn-sketch,
 .bbn-deck-panel {
   font-family: var(--font-body), var(--font-sans), sans-serif;
 }
 
+/* Raised panel (AI panel, Local AI, update): dashed inner frame on a navy sheet. */
 .bbn-deck-panel {
-  border: 1px solid var(--input);
-  border-radius: 16px;
+  border: 1.5px solid var(--input);
+  border-radius: 15px 11px 16px 10px / 11px 15px 10px 16px;
   background: linear-gradient(180deg, var(--raised), var(--surface));
   color: var(--foreground);
-  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.04), 0 18px 40px -24px rgb(0 0 0 / 0.7);
+  box-shadow: 4px 4px 0 rgb(0 0 0 / 0.5);
+  position: relative;
+}
+.bbn-deck-panel::after {
+  content: "";
+  position: absolute;
+  inset: 5px;
+  border: 1px dashed rgb(159 171 194 / 0.18);
+  border-radius: 11px 8px 12px 7px / 8px 11px 7px 12px;
+  pointer-events: none;
 }
 
 .bbn-sketch-card {
-  border: 1px solid var(--border);
-  border-left: 2px solid var(--signal);
-  border-radius: 10px;
+  border: 1.5px solid var(--border);
+  border-left: 4px solid var(--signal);
+  border-radius: 4px 12px 12px 4px / 4px 12px 12px 4px;
   background: var(--sidebar);
   color: var(--foreground);
 }
 
+/* Step / number marker: a round stamp. */
 .bbn-step-pill {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 1.5rem;
-  height: 1.5rem;
+  min-width: 1.6rem;
+  height: 1.6rem;
   padding: 0 0.45rem;
-  border-radius: 999px;
-  background: rgb(224 168 74 / 0.16);
+  border: 1.5px solid var(--signal);
+  border-radius: 999px 999px 999px 8px;
+  background: rgb(242 138 60 / 0.14);
   color: var(--signal);
   font-size: 0.75rem;
   font-weight: 700;
@@ -287,31 +345,79 @@
   padding: 0;
   list-style: none;
 }
-
 .bbn-sketch-steps li {
   display: flex;
   align-items: baseline;
   gap: 0.6rem;
 }
 
-/* Mode tip: a quiet line under the top bar, not a sticky note. */
+/* Sticky note: the mode tip and inline notices. A little crooked on purpose. */
 .bbn-sticky {
   display: flex;
   flex-wrap: wrap;
   align-items: baseline;
   gap: 0.25rem 0.6rem;
-  border: 1px solid var(--border);
-  border-left: 2px solid var(--signal);
-  border-radius: 10px;
-  background: var(--surface);
+  border: 1.5px dashed rgb(232 184 75 / 0.6);
+  border-radius: 6px 12px 8px 14px / 12px 7px 14px 8px;
+  background: rgb(232 184 75 / 0.08);
   color: var(--muted-foreground);
-  padding: 0.55rem 0.9rem;
+  padding: 0.5rem 0.9rem;
   max-width: 100%;
 }
 .bbn-sticky strong {
-  color: var(--foreground);
+  color: var(--gold);
   font-weight: 600;
 }
 .bbn-sticky a {
   color: var(--signal);
+}
+
+/* Tilted chip for tags and small labels. */
+.bbn-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.15rem 0.6rem;
+  border: 1px dashed rgb(232 184 75 / 0.55);
+  border-radius: 999px;
+  background: rgb(232 184 75 / 0.09);
+  color: var(--gold);
+  font-size: 0.72rem;
+  font-weight: 600;
+  transform: rotate(-1.2deg);
+}
+
+/* Page title: a hand-drawn orange squiggle underneath. */
+.bbn-title {
+  position: relative;
+  display: inline-block;
+  padding-bottom: 0.55rem;
+}
+.bbn-title::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: min(100%, 9rem);
+  height: 8px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='36' height='8' viewBox='0 0 36 8'%3E%3Cpath d='M1 5 Q5 0 9 4 T18 4 T27 4 T35 3' fill='none' stroke='%23f28a3c' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E") repeat-x left center / 36px 8px;
+}
+
+/* Hatched fill for bar charts, like a pencil shade. */
+.bbn-hatch {
+  background-color: rgb(242 138 60 / 0.35);
+  background-image: repeating-linear-gradient(135deg, var(--signal) 0 2px, transparent 2px 7px);
+  border: 1.5px solid var(--signal);
+  border-bottom: 0;
+  border-radius: 6px 4px 0 0 / 5px 6px 0 0;
+}
+
+/* Horizontal ruled lines behind a chart. */
+.bbn-ruled {
+  background-image: repeating-linear-gradient(0deg, transparent 0 31px, var(--paper-line) 31px 32px);
+}
+
+/* Ledger row: dashed separators between rows. */
+.bbn-ledger > * + * {
+  border-top: 1.5px dashed var(--border);
 }

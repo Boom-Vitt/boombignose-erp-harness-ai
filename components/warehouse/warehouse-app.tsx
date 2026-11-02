@@ -25,6 +25,9 @@ import {
   User,
   Users,
   X,
+  ArrowRight,
+  ArrowUp,
+  ArrowDown,
 } from "lucide-react"
 
 import { cn } from "@/lib/utils"
@@ -260,7 +263,7 @@ export function WarehouseApp() {
               <div className="mt-3 flex gap-2">
                 {current.links.map(([label, href]) => (
                   <Link key={href} href={href} className="flex-1 rounded-lg bg-blue-600 px-3 py-2 text-center text-sm font-semibold text-white hover:bg-blue-700">
-                    Open {label} →
+                    Open {label} <ArrowRight className="inline size-3.5" aria-hidden />
                   </Link>
                 ))}
               </div>
@@ -401,7 +404,7 @@ function Kpi({ icon, label, value, sub, delta, unit = "", className }: { icon: R
           <span className="text-2xl font-bold tabular-nums">{value}</span>
           {delta != null && delta !== 0 && (
             <span className={cn("text-xs font-semibold tabular-nums", delta > 0 ? "text-emerald-600" : "text-rose-600")}>
-              {delta > 0 ? "↑" : "↓"} {delta > 0 ? "+" : ""}
+              {delta > 0 ? <ArrowUp className="inline size-3" aria-hidden /> : <ArrowDown className="inline size-3" aria-hidden />} {delta > 0 ? "+" : ""}
               {delta}
               {unit}
             </span>

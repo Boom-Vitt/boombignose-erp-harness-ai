@@ -41,12 +41,12 @@ export default async function AppLayout({
           <header className="bbn-shell-header sticky top-0 z-10 flex h-14 min-w-0 items-center gap-2 px-3 backdrop-blur-md sm:px-5">
             <SidebarTrigger className="-ml-1 shrink-0" />
             <Separator orientation="vertical" className="mr-1 hidden h-5 sm:block" />
-            <span className="text-muted-foreground min-w-0 flex-1 basis-0 truncate text-sm font-medium">{ctx.orgName}</span>
+            <div className="min-w-0 flex-1 basis-0"><span className="bbn-chip max-w-full truncate">{ctx.orgName}</span></div>
             <CommandPalette role={ctx.role} orgId={ctx.orgId} />
             <ModeSwitch />
             <ActivityCounter />
           </header>
-          <div id="content" tabIndex={-1} className="mx-auto flex w-full max-w-[1480px] min-w-0 flex-1 flex-col gap-6 p-4 outline-none sm:p-6 lg:px-8 lg:py-8 [&>*]:min-w-0"><ModeTip />{children}</div>
+          <div id="content" tabIndex={-1} className="mx-auto flex w-full max-w-[1480px] min-w-0 flex-1 flex-col gap-5 p-4 outline-none sm:p-5 lg:px-7 lg:py-6 [&>*]:min-w-0"><ModeTip />{children}</div>
         </SidebarInset>
       </SidebarProvider>
     </>

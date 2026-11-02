@@ -1,4 +1,4 @@
-import { Wallet, Flame, Users, Lock } from "lucide-react"
+import { Wallet, Flame, Users, Lock, Cpu, Download } from "lucide-react"
 import Link from "next/link"
 
 import { createClient } from "@/lib/supabase/server"
@@ -40,7 +40,7 @@ function initials(name: string | null, fallback: string): string {
 }
 
 const SECTION_LINK =
-  "border-input text-muted-foreground hover:bg-accent hover:text-foreground rounded-full border px-3.5 py-1.5 text-sm transition-colors"
+  "border-input text-muted-foreground hover:border-primary/70 hover:bg-accent hover:text-foreground rounded-full border-[1.5px] border-dashed px-3.5 py-1.5 text-sm transition-colors"
 
 export default async function SettingsPage() {
   const ctx = await requireOrgContext()
@@ -101,16 +101,18 @@ export default async function SettingsPage() {
         {canEdit ? <Link href="/settings/purchasing" className={SECTION_LINK}>Purchasing</Link> : null}
         {canEdit ? <Link href="/settings/finance" className={SECTION_LINK}>Finance</Link> : null}
         {canEdit ? <Link href="/settings/lead-forms" className={SECTION_LINK}>Lead forms</Link> : null}
-        <Link href="/settings#local-models" className={`${SECTION_LINK} !border-primary/40 !text-primary`}>โมเดล AI / Local models</Link>
+        <Link href="/settings#local-models" className={`${SECTION_LINK} !border-primary !border-solid !text-primary`}>โมเดล AI / Local models</Link>
       </nav>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <StatCard
+          compact
           label="Cash on hand"
           value={formatTHB(cashSatang)}
           icon={Wallet}
         />
         <StatCard
+          compact
           label="Monthly burn override"
           value={burnSatang === null ? "Not set" : formatTHB(burnSatang)}
           icon={Flame}
@@ -118,6 +120,7 @@ export default async function SettingsPage() {
           hint={burnSatang === null ? "Using actual recorded costs" : undefined}
         />
         <StatCard
+          compact
           label="Team members"
           value={String(team.length)}
           icon={Users}
@@ -225,9 +228,9 @@ export default async function SettingsPage() {
         </Card>
       </div>
 
-      <Card className="bbn-deck-panel ring-0">
+      <Card className="bbn-deck-panel border-0 shadow-[4px_4px_0_0_rgb(0_0_0/0.5)]">
         <CardHeader>
-          <CardTitle className="text-base">โมเดล AI บนเครื่องนี้ / Local AI models</CardTitle>
+          <CardTitle className="flex items-center gap-2 text-base"><Cpu className="text-primary size-4" aria-hidden />โมเดล AI บนเครื่องนี้ / Local AI models</CardTitle>
           <CardDescription>ดาวน์โหลดในแอปนี้ ไม่ต้องเปิดโปรแกรม AI อื่น / Download inside this app. No separate AI program.</CardDescription>
         </CardHeader>
         <CardContent>
@@ -250,9 +253,9 @@ export default async function SettingsPage() {
       </Card> : null}
 
       <div className="grid gap-6 lg:grid-cols-2">
-        <Card className="bbn-deck-panel ring-0">
+        <Card className="bbn-deck-panel border-0 shadow-[4px_4px_0_0_rgb(0_0_0/0.5)]">
           <CardHeader>
-            <CardTitle className="text-base">อัปเดตแอป / App update</CardTitle>
+            <CardTitle className="flex items-center gap-2 text-base"><Download className="text-primary size-4" aria-hidden />อัปเดตแอป / App update</CardTitle>
             <CardDescription>ตรวจรุ่นที่เผยแพร่เมื่อกด บน macOS Apple Silicon ติดตั้งจากในแอปได้ / Check the published release when you ask. macOS Apple Silicon can install it here.</CardDescription>
           </CardHeader>
           <CardContent><UpdateCheckButton canUpdate={canEdit} /></CardContent>

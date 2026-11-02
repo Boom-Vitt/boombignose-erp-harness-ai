@@ -17,6 +17,9 @@ import {
   type LucideIcon,
   Package,
   Wallet,
+  Building2,
+  Rocket,
+  UserRound,
 } from "lucide-react"
 
 export type NavGroup = "sell" | "operate" | "money" | "workspace"
@@ -71,3 +74,10 @@ export const NAV_ITEMS: NavItem[] = [
   { title: "Settings", group: "workspace", href: "/settings", icon: Settings },
   { title: "Products", group: "operate", href: "/products", icon: Package },
 ]
+
+/** Operator-mode glyphs (login, mode tip). The switch itself stays text-only. */
+export const MODE_ICON: Record<"sme" | "startup" | "individual", LucideIcon> = {
+  sme: Building2,
+  startup: Rocket,
+  individual: UserRound,
+}

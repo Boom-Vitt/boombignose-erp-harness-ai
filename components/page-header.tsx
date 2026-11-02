@@ -28,7 +28,7 @@ export function PageHeader({
   return (
     <div
       className={cn(
-        "border-border/70 flex min-w-0 flex-col gap-4 border-b pb-5 sm:flex-row sm:items-end sm:justify-between",
+        "flex min-w-0 flex-col gap-4 sm:flex-row sm:items-end sm:justify-between",
         className
       )}
     >
@@ -52,7 +52,7 @@ export function PageHeader({
             </BreadcrumbList>
           </Breadcrumb>
         ) : null}
-        <h1 className="text-[1.75rem] leading-tight font-semibold break-words sm:text-3xl">{title}</h1>
+        <h1 className="bbn-title text-3xl leading-tight font-bold break-words sm:text-4xl">{title}</h1>
         {description ? (
           <p className="text-muted-foreground max-w-prose text-sm">{description}</p>
         ) : null}

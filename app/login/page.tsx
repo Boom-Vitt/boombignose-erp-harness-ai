@@ -4,7 +4,7 @@ import { Suspense, useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { useSearchParams } from "next/navigation"
-import { Loader2 } from "lucide-react"
+import { Loader2, ShieldCheck } from "lucide-react"
 import { toast } from "sonner"
 
 import { createClient } from "@/lib/supabase/client"
@@ -13,6 +13,7 @@ import { safeReturnPath } from "@/lib/supabase/redirect"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { MODE_ICON } from "@/components/nav"
 import { MODES, MODE_COPY } from "@/lib/mode"
 
 // Local-dev convenience, off by default: the demo button renders only when both
@@ -53,44 +54,56 @@ function LoginForm() {
   }
 
   return (
-    <main className="grid min-h-svh lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)]">
-      <aside
-        className="relative hidden flex-col justify-between overflow-hidden border-r p-12 lg:flex"
-        style={{
-          backgroundImage:
-            "radial-gradient(42rem 28rem at 15% 0%, rgb(224 168 74 / 0.16), transparent 70%), repeating-linear-gradient(0deg, transparent 0 39px, rgb(244 239 228 / 0.028) 39px 40px)",
-        }}
-      >
-        <div className="flex items-center gap-3">
-          <Image src="/icon.png" alt="" width={36} height={36} className="rounded-lg" priority />
-          <span className="font-heading text-lg font-semibold tracking-tight">BoomBigNose ERP</span>
-        </div>
-        <div className="max-w-xl space-y-8">
-          <h2 className="text-5xl leading-[1.08] font-semibold">
+    <main
+      className="relative grid min-h-svh place-items-center overflow-hidden p-4 sm:p-8"
+      style={{
+        backgroundImage:
+          "radial-gradient(46rem 22rem at 80% -4rem, rgb(242 138 60 / 0.12), transparent 70%), radial-gradient(circle at 1px 1px, rgb(159 171 194 / 0.14) 1px, transparent 1.4px)",
+        backgroundSize: "auto, 22px 22px",
+      }}
+    >
+      <div className="grid w-full max-w-5xl items-center gap-10 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,24rem)]">
+        <section className="hidden space-y-8 lg:block">
+          <div className="flex items-center gap-3">
+            <Image src="/icon.png" alt="" width={40} height={40} className="bbn-rough-sm" priority />
+            <span className="font-heading text-lg font-semibold tracking-tight">BoomBigNose ERP</span>
+          </div>
+          <h2 className="text-5xl leading-[1.12] font-bold">
             ทั้งธุรกิจ ในที่ทำงานเดียว
-            <span className="text-primary block">One desk for the whole business.</span>
+            <span className="text-primary mt-1 block text-3xl font-semibold">One desk for the whole business.</span>
           </h2>
-          <ul className="grid gap-4">
-            {MODES.map((m) => (
-              <li key={m} className="border-signal/60 grid gap-0.5 border-l-2 pl-4">
-                <span className="font-semibold">
-                  {MODE_COPY[m].th} / {MODE_COPY[m].en}
-                </span>
-                <span className="text-muted-foreground text-sm">{MODE_COPY[m].tipTh}</span>
-              </li>
-            ))}
+          <ul className="grid max-w-md gap-4">
+            {MODES.map((m, i) => {
+              const Icon = MODE_ICON[m]
+              return (
+                <li
+                  key={m}
+                  className="bbn-rough bg-card flex items-start gap-3 border-[1.5px] border-dashed border-input p-3.5"
+                  style={{ transform: `rotate(${i % 2 === 0 ? -0.8 : 0.7}deg)`, marginLeft: `${i * 1.25}rem` }}
+                >
+                  <span className="bbn-rough-sm border-primary/60 bg-primary/10 text-primary flex size-9 shrink-0 items-center justify-center border-[1.5px]">
+                    <Icon className="size-4.5" aria-hidden />
+                  </span>
+                  <span className="grid gap-0.5">
+                    <span className="font-semibold">
+                      {MODE_COPY[m].th} / {MODE_COPY[m].en}
+                    </span>
+                    <span className="text-muted-foreground text-sm">{MODE_COPY[m].tipTh}</span>
+                  </span>
+                </li>
+              )
+            })}
           </ul>
-        </div>
-        <p className="text-muted-foreground text-sm">
-          AI ทำงานบนเครื่องคุณ ข้อมูลไม่ออกนอกเครื่อง / AI runs on your own machine.
-        </p>
-      </aside>
+          <p className="text-muted-foreground flex items-center gap-2 text-sm">
+            <ShieldCheck className="text-gold size-4 shrink-0" aria-hidden />
+            AI ทำงานบนเครื่องคุณ ข้อมูลไม่ออกนอกเครื่อง / AI runs on your own machine.
+          </p>
+        </section>
 
-      <section className="flex items-center justify-center p-6">
-        <div className="w-full max-w-sm space-y-8">
+        <section className="bbn-rough bg-card w-full space-y-6 border-[1.5px] border-input p-6 shadow-[6px_6px_0_0_rgb(0_0_0/0.55)] sm:p-8">
           <div className="space-y-2">
-            <Image src="/icon.png" alt="" width={32} height={32} className="rounded-lg lg:hidden" priority />
-            <h1 className="text-3xl font-semibold">BoomBigNose ERP</h1>
+            <Image src="/icon.png" alt="" width={32} height={32} className="bbn-rough-sm lg:hidden" priority />
+            <h1 className="bbn-title text-3xl font-bold">BoomBigNose ERP</h1>
             <p className="text-muted-foreground text-sm">Sign in to your workspace.</p>
             {params.get("error") ? <p role="alert" className="text-destructive text-sm">{params.get("error")}</p> : null}
           </div>
@@ -142,14 +155,14 @@ function LoginForm() {
               ) : null}
             </div>
           </form>
-          <p className="text-muted-foreground text-sm">
+          <p className="text-muted-foreground border-t border-dashed pt-4 text-sm">
             No account yet?{" "}
             <Link href="/signup" className="text-primary underline underline-offset-4">
               Sign up
             </Link>
           </p>
-        </div>
-      </section>
+        </section>
+      </div>
     </main>
   )
 }

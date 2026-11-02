@@ -2,6 +2,7 @@
 
 import { useSyncExternalStore } from "react"
 
+import { MODE_ICON } from "@/components/nav"
 import { MODES, MODE_COPY, MODE_KEY, parseMode, type Mode } from "@/lib/mode"
 
 const EVENT = "bbn-mode-change"
@@ -61,8 +62,10 @@ export function ModeSwitch() {
 export function ModeTip() {
   const mode = useMode()
   const copy = MODE_COPY[mode]
+  const Icon = MODE_ICON[mode]
   return (
-    <p className="bbn-sticky !m-0 text-sm" data-testid="mode-tip">
+    <p className="bbn-sticky !m-0 items-center text-sm" data-testid="mode-tip">
+      <Icon className="text-gold size-4 shrink-0 self-center" aria-hidden />
       <strong>{copy.th} / {copy.en}</strong>
       <span>{copy.tipTh} / {copy.tipEn}</span>
     </p>
