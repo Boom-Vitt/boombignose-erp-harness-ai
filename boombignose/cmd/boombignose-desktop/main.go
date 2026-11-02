@@ -20,6 +20,7 @@ import (
 	"github.com/Boom-Vitt/boombignose-erp-harness-ai/boombignose/internal/update"
 	"github.com/Boom-Vitt/boombignose-erp-harness-ai/boombignose/nav"
 	"github.com/wailsapp/wails/v2"
+	"github.com/wailsapp/wails/v2/pkg/menu"
 	"github.com/wailsapp/wails/v2/pkg/options"
 	"github.com/wailsapp/wails/v2/pkg/options/assetserver"
 	"github.com/wailsapp/wails/v2/pkg/options/linux"
@@ -74,6 +75,9 @@ func run() error {
 		Width:            1280,
 		Height:           800,
 		BackgroundColour: options.NewRGB(0x0B, 0x12, 0x22),
+		// macOS routes Cmd+V/C/X/A/Z to the webview only through an Edit menu.
+		// Without it, login fields refuse paste and editing shortcuts.
+		Menu: appMenu(),
 		AssetServer: &assetserver.Options{
 			Assets: assets,
 		},
@@ -180,4 +184,13 @@ func checkoutStarts() []string {
 		dirs = append(dirs, filepath.Dir(exe))
 	}
 	return dirs
+}
+
+// appMenu gives the window the standard App and Edit menus so text inputs
+// (email, password) receive keyboard editing on macOS.
+func appMenu() *menu.Menu {
+	m := menu.NewMenu()
+	m.Append(menu.AppMenu())
+	m.Append(menu.EditMenu())
+	return m
 }
