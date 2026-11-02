@@ -17,7 +17,7 @@ test("create, confirm, partially receive and bill a purchase order", async ({ pa
   const name = `Purchasing smoke ${Date.now()}`
   await page.goto("/vendors/new")
   await page.getByLabel("Name", { exact: true }).fill(name)
-  await page.getByLabel(/^(Email|à¸­à¸µà¹à¸¡à¸¥)$/).fill("purchasing-smoke@example.invalid")
+  await page.getByLabel(/^(Email|อีเมล)$/).fill("purchasing-smoke@example.invalid")
   await page.getByRole("button", { name: "Create vendor", exact: true }).click()
   await expect(page.getByRole("heading", { name, exact: true })).toBeVisible()
   await page.getByRole("link", { name: "New purchase order", exact: true }).click()

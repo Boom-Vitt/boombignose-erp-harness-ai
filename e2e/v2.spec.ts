@@ -45,14 +45,14 @@ test("deals board filters to a single stage via the URL", async ({ page }) => {
 
 test("signup enforces the password policy and gates submit", async ({ page }) => {
   await page.goto("/signup")
-  await page.getByLabel(/^(Email|à¸­à¸µà¹à¸¡à¸¥)$/).fill("newperson@example.com")
+  await page.getByLabel(/^(Email|อีเมล)$/).fill("newperson@example.com")
   const submit = page.getByRole("button", { name: /create account/i })
 
-  await page.getByLabel(/^(Password|à¸£à¸«à¸±à¸ªà¸à¹à¸²à¸)$/).fill("short")
+  await page.getByLabel(/^(Password|รหัสผ่าน)$/).fill("short")
   await expect(submit).toBeDisabled()
   await expect(page.locator("ul.text-destructive li").first()).toBeVisible()
 
-  await page.getByLabel(/^(Password|à¸£à¸«à¸±à¸ªà¸à¹à¸²à¸)$/).fill("BoomDemo123!")
+  await page.getByLabel(/^(Password|รหัสผ่าน)$/).fill("BoomDemo123!")
   await expect(submit).toBeEnabled()
 })
 

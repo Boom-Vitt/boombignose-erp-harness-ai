@@ -55,9 +55,9 @@ class Fixtures {
 
   async signIn(actor: Actor, navigate = true) {
     if (navigate) await this.page.goto("/login")
-    await this.page.getByLabel(/^(Email|à¸­à¸µà¹à¸¡à¸¥)$/).fill(actor.email)
-    await this.page.getByLabel(/^(Password|à¸£à¸«à¸±à¸ªà¸à¹à¸²à¸)$/).fill(actor.password)
-    await this.page.getByRole("button", { name: /^(Sign in|à¹à¸à¹à¸²à¸ªà¸¹à¹à¸£à¸°à¸à¸)$/ }).click()
+    await this.page.getByLabel(/^(Email|อีเมล)$/).fill(actor.email)
+    await this.page.getByLabel(/^(Password|รหัสผ่าน)$/).fill(actor.password)
+    await this.page.getByRole("button", { name: /^(Sign in|เข้าสู่ระบบ)$/ }).click()
     await this.page.waitForURL(/\/(dashboard|onboarding|invite\/[^/]+)(?:\?.*)?$/)
   }
 

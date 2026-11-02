@@ -41,8 +41,8 @@ test("sign up, then record stock, a VAT invoice, a purchase, a transfer, a recei
   const reason = "Opening count"
 
   await page.goto("/signup")
-  await page.getByLabel(/^(Email|à¸­à¸µà¹à¸¡à¸¥)$/).fill(email)
-  await page.getByLabel(/^(Password|à¸£à¸«à¸±à¸ªà¸à¹à¸²à¸)$/).fill(password)
+  await page.getByLabel(/^(Email|อีเมล)$/).fill(email)
+  await page.getByLabel(/^(Password|รหัสผ่าน)$/).fill(password)
   await page.getByRole("button", { name: "Create account", exact: true }).click()
   await page.waitForURL("**/onboarding")
   await page.getByLabel("Workspace name / ชื่อพื้นที่ทำงาน").fill("Core flow shop")
@@ -51,9 +51,9 @@ test("sign up, then record stock, a VAT invoice, a purchase, a transfer, a recei
 
   await page.getByRole("button", { name: "Sign out", exact: true }).click()
   await page.waitForURL((url) => url.pathname === "/login")
-  await page.getByLabel(/^(Email|à¸­à¸µà¹à¸¡à¸¥)$/).fill(email)
-  await page.getByLabel(/^(Password|à¸£à¸«à¸±à¸ªà¸à¹à¸²à¸)$/).fill(password)
-  await page.getByRole("button", { name: /^(Sign in|à¹à¸à¹à¸²à¸ªà¸¹à¹à¸£à¸°à¸à¸)$/ }).click()
+  await page.getByLabel(/^(Email|อีเมล)$/).fill(email)
+  await page.getByLabel(/^(Password|รหัสผ่าน)$/).fill(password)
+  await page.getByRole("button", { name: /^(Sign in|เข้าสู่ระบบ)$/ }).click()
   await expectDashboard(page)
   await expect(page.getByRole("link", { name: "Skip to content", exact: true })).toHaveAttribute("href", "#content")
 
@@ -165,7 +165,7 @@ test("sign up, then record stock, a VAT invoice, a purchase, a transfer, a recei
   const line = "Core purchase line"
   await gotoApp(page, "/vendors/new")
   await page.getByLabel("Name", { exact: true }).fill(vendor)
-  await page.getByLabel(/^(Email|à¸­à¸µà¹à¸¡à¸¥)$/).fill("core-vendor@example.invalid")
+  await page.getByLabel(/^(Email|อีเมล)$/).fill("core-vendor@example.invalid")
   await page.getByRole("button", { name: "Create vendor", exact: true }).click()
   await expect(page.getByRole("heading", { name: vendor, exact: true })).toBeVisible()
   await page.getByRole("link", { name: "New purchase order", exact: true }).click()

@@ -39,7 +39,7 @@ test("customer report stays pending until owner verifies actual receipt",async({
     expect((await admin.from("payments").select().eq("invoice_id",invoiceId!)).data).toHaveLength(0)
     expect((await admin.from("invoices").select("status").eq("id",invoiceId!).single()).data?.status).toBe("sent")
     await page.goto("/login")
-    await page.getByLabel(/^(Email|à¸­à¸µà¹à¸¡à¸¥)$/).fill(email)
+    await page.getByLabel(/^(Email|อีเมล)$/).fill(email)
     await page.getByLabel("Password",{exact:true}).fill(password)
     await page.getByRole("button",{name:"Sign in",exact:true}).click()
     await page.waitForURL("**/dashboard")

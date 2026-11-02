@@ -24,9 +24,9 @@ test("VAT and WHT support reports: Thai default, ENG switch, record, checksummed
     expect((await admin.from("memberships").insert({ org_id: org, user_id: uid, role: "owner" })).error).toBeNull()
     expect((await admin.from("costs").insert({ org_id: org, category: "other", amount_satang: 107000, input_vat_satang: 7000, incurred_on: monthStart, vendor: "Synthetic consultant" })).error).toBeNull()
     await page.goto("/login")
-    await page.getByLabel(/^(Email|à¸­à¸µà¹à¸¡à¸¥)$/).fill(email)
-    await page.getByLabel(/^(Password|à¸£à¸«à¸±à¸ªà¸à¹à¸²à¸)$/).fill(password)
-    await page.getByRole("button", { name: /^(Sign in|à¹à¸à¹à¸²à¸ªà¸¹à¹à¸£à¸°à¸à¸)$/ }).click()
+    await page.getByLabel(/^(Email|อีเมล)$/).fill(email)
+    await page.getByLabel(/^(Password|รหัสผ่าน)$/).fill(password)
+    await page.getByRole("button", { name: /^(Sign in|เข้าสู่ระบบ)$/ }).click()
     await page.waitForURL("**/dashboard")
 
     // VAT report: Thai by default, disclaimer present, no filing claim.
