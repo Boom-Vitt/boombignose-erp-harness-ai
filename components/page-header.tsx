@@ -28,11 +28,11 @@ export function PageHeader({
   return (
     <div
       className={cn(
-        "flex min-w-0 flex-col gap-3 sm:flex-row sm:items-start sm:justify-between",
+        "border-border/70 flex min-w-0 flex-col gap-4 border-b pb-5 sm:flex-row sm:items-end sm:justify-between",
         className
       )}
     >
-      <div className="min-w-0 space-y-1">
+      <div className="min-w-0 space-y-1.5">
         {breadcrumbs?.length ? (
           <Breadcrumb>
             <BreadcrumbList>
@@ -52,9 +52,9 @@ export function PageHeader({
             </BreadcrumbList>
           </Breadcrumb>
         ) : null}
-        <h1 className="text-2xl font-semibold tracking-tight break-words">{title}</h1>
+        <h1 className="text-[1.75rem] leading-tight font-semibold break-words sm:text-3xl">{title}</h1>
         {description ? (
-          <p className="text-muted-foreground text-sm">{description}</p>
+          <p className="text-muted-foreground max-w-prose text-sm">{description}</p>
         ) : null}
       </div>
       {children ? <div className="flex min-w-0 flex-wrap items-center gap-2">{children}</div> : null}
