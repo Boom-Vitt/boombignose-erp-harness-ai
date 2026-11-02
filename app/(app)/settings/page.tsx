@@ -112,6 +112,7 @@ export default async function SettingsPage() {
         {canEdit ? <Link href="/settings/finance" className={SECTION_LINK}>Finance</Link> : null}
         {canEdit ? <Link href="/settings/lead-forms" className={SECTION_LINK}>Lead forms</Link> : null}
         <Link href="/settings#local-models" className={`${SECTION_LINK} !border-primary !border-solid !text-primary`}>โมเดล AI / Local models</Link>
+        {canEdit ? <Link href="/settings/connections" className={SECTION_LINK}>เชื่อมต่อแอป / Connect apps</Link> : null}
       </nav>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
@@ -238,7 +239,7 @@ export default async function SettingsPage() {
         </Card>
       </div>
 
-      <Card className="bbn-deck-panel border-0">
+      <Card id="local-models" className="bbn-deck-panel border-0">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-base"><Cpu className="text-primary size-4" aria-hidden />โมเดล AI บนเครื่องนี้ / Local AI models</CardTitle>
           <CardDescription>ดาวน์โหลดในแอปนี้ ไม่ต้องเปิดโปรแกรม AI อื่น / Download inside this app. No separate AI program.</CardDescription>

@@ -341,7 +341,7 @@ export function AssistantChat({ profileLocale = "th" }: { profileLocale?: string
         </CardContent>
       </Card>
 
-      <Card className="bbn-deck-panel border-0" data-testid="assistant-mcp">
+      <Card id="assistant-mcp" className="bbn-deck-panel border-0" data-testid="assistant-mcp">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-base">
             <Plug className="size-4" aria-hidden />
