@@ -1,16 +1,18 @@
 import { PageHeader } from "@/components/page-header"
 import { AssistantChat } from "@/components/assistant/assistant-chat"
+import { getOrgContext } from "@/lib/auth"
+import { createClient } from "@/lib/supabase/server"
 
 export const metadata = { title: "ERP AI" }
 
-export default function AssistantPage() {
+export default async function AssistantPage() {
+  const ctx = await getOrgContext()
+  const supabase = await createClient()
+  const { data } = ctx ? await supabase.from("profiles").select("locale").eq("id", ctx.userId).maybeSingle() : { data: null }
   return (
     <div className="space-y-5">
-      <PageHeader
-        title="ERP AI · แชท AI องค์กร"
-        description="Chat with the on-device model, attach screenshots and files, and connect the read-only ERP MCP tools. Nothing is sent to a cloud model."
-      />
-      <AssistantChat />
+      <PageHeader title="ERP AI" />
+      <AssistantChat profileLocale={data?.locale ?? "th"} />
     </div>
   )
 }
