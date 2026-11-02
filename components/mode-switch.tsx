@@ -38,7 +38,7 @@ export function ModeSwitch() {
     <div
       role="radiogroup"
       aria-label="โหมดการใช้งาน / Operator mode"
-      className="bbn-mode bbn-sketch"
+      className="bbn-mode"
       style={{ "--i": MODES.indexOf(mode) } as React.CSSProperties}
     >
       <span aria-hidden className="bbn-mode-thumb" />

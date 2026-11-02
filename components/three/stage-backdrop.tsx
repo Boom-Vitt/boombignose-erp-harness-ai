@@ -2,9 +2,11 @@
 
 import { Component, useCallback, useState, useSyncExternalStore, type ReactNode } from "react"
 import dynamic from "next/dynamic"
+import { usePathname } from "next/navigation"
 
 import { useMode } from "@/components/mode-switch"
 import type { Mode } from "@/lib/mode"
+import { sectionOf, type Section } from "./sections"
 
 // Three.js and the scene load only in the browser, after the page is usable.
 const Scene = dynamic(() => import("./scene"), { ssr: false })
@@ -49,13 +51,16 @@ class Boundary extends Component<{ onFail: () => void; children: ReactNode }, { 
 }
 
 /**
- * Ambient 3D backdrop for the app shell. Never takes pointer events, pauses when the tab is
- * hidden, shows one still frame under reduced motion, and falls back to the flat artwork
- * (always painted underneath) when WebGL is missing or the context is lost.
+ * The persistent 3D base behind every authenticated page (and the login). Full-bleed, never
+ * takes pointer events, pauses when the tab is hidden, shows one still frame under reduced
+ * motion, and falls back to the flat artwork (always painted underneath) when WebGL is
+ * missing or the context is lost. Scene follows the operator mode and the current section.
  */
-export function StageBackdrop({ mode: forced }: { mode?: Mode }) {
+export function StageBackdrop({ mode: forced, section: forcedSection }: { mode?: Mode; section?: Section }) {
   const current = useMode()
   const mode = forced ?? current
+  const pathname = usePathname()
+  const section = forcedSection ?? sectionOf(pathname)
   const [failed, setFailed] = useState(false)
   const onFail = useCallback(() => setFailed(true), [])
   const gl = useSyncExternalStore(() => () => {}, hasWebGL, () => false)
@@ -63,12 +68,12 @@ export function StageBackdrop({ mode: forced }: { mode?: Mode }) {
   const active = useSyncExternalStore(subscribeVisible, () => document.visibilityState === "visible", () => true)
 
   return (
-    <div aria-hidden className="bbn-stage" data-mode={mode} data-3d={gl && !failed ? "on" : "off"}>
+    <div aria-hidden className="bbn-stage" data-mode={mode} data-section={section} data-3d={gl && !failed ? "on" : "off"}>
       <div className="bbn-stage-flat" />
       {gl && !failed ? (
         <div className="bbn-stage-canvas">
           <Boundary onFail={onFail}>
-            <Scene mode={mode} active={active} still={still} onFail={onFail} />
+            <Scene mode={mode} section={section} active={active} still={still} onFail={onFail} />
           </Boundary>
         </div>
       ) : null}

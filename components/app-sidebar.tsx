@@ -64,7 +64,7 @@ export function AppSidebar({
 
   return (
     <Sidebar collapsible="icon" className="bbn-shell-sidebar">
-      <SidebarHeader className="border-sidebar-border border-b border-dashed pb-3">
+      <SidebarHeader className="border-sidebar-border border-b pb-3">
         {workspaceHeader}
       </SidebarHeader>
 
@@ -88,9 +88,9 @@ export function AppSidebar({
         ))}
       </SidebarContent>
 
-      <SidebarFooter className="border-sidebar-border border-t border-dashed">
+      <SidebarFooter className="border-sidebar-border border-t">
         <div className="flex items-center gap-2 px-1 py-1.5">
-          <Avatar className="border-primary/60 size-7 border-[1.5px]">
+          <Avatar className="border-primary/60 size-7 border">
             <AvatarFallback className="text-xs">
               {(email ?? "?").slice(0, 2).toUpperCase()}
             </AvatarFallback>

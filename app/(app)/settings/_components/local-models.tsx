@@ -375,7 +375,7 @@ export function LocalModelsCard({ initial, canInstall, asr = { offered: false, i
       ) : null}
       <ul className="space-y-3">
         {blocked.map((item) => (
-          <li key={item.modality} data-modality={item.modality} className="rounded-xl border border-dashed p-4 text-sm">
+          <li key={item.modality} data-modality={item.modality} className="rounded-xl border p-4 text-sm">
             <p className="font-medium">{blockedTitle(item.modality)}</p>
             <p className="text-muted-foreground mt-1">{item.reasonTh}</p>
             <p className="text-muted-foreground">{item.reasonEn}</p>

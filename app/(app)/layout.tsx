@@ -10,6 +10,7 @@ import { Separator } from "@/components/ui/separator"
 import { ActivityCounter } from "@/components/record/activity-counter"
 import { ModeSwitch, ModeTip } from "@/components/mode-switch"
 import { CommandPalette } from "@/components/command-palette/command-palette"
+import { StageBackdrop } from "@/components/three/stage-backdrop"
 
 // Authenticated pages read the session cookie. A build without one must not
 // freeze a redirect to /login and serve it to a signed-in browser.
@@ -30,7 +31,9 @@ export default async function AppLayout({
       >
         Skip to content
       </a>
-      <SidebarProvider>
+      {/* The 3D base: one persistent full-bleed stage behind every page (layouts don't remount on navigation). */}
+      <StageBackdrop />
+      <SidebarProvider className="relative z-10">
         <AppSidebar
           email={ctx.email}
           role={ctx.role}

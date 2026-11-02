@@ -57,10 +57,10 @@ export function AiPanel({ dealId }: { dealId: string }) {
   }
 
   return (
-    <Card className="bbn-deck-panel border-0 shadow-[4px_4px_0_0_rgb(0_0_0/0.5)]">
+    <Card className="bbn-deck-panel border-0">
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-base">
-          <span className="bbn-rough-sm border-primary/60 bg-primary/10 text-primary flex size-7 items-center justify-center border-[1.5px]">
+          <span className="bbn-rough-sm border-primary/60 bg-primary/10 text-primary flex size-7 items-center justify-center border">
             <Sparkles className="size-3.5" aria-hidden />
           </span>
           AI assist

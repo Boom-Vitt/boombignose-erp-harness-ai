@@ -150,7 +150,7 @@ export function CommandPalette({ role }: { role: Role; orgId: string }) {
       >
         <Search aria-hidden />
         <span className="max-sm:sr-only">Search</span>
-        <kbd className="bg-muted pointer-events-none ml-auto inline-flex items-center gap-0.5 rounded border border-dashed px-1.5 font-mono text-[10px] font-medium max-sm:hidden">
+        <kbd className="bg-muted pointer-events-none ml-auto inline-flex items-center gap-0.5 rounded border px-1.5 font-mono text-[10px] font-medium max-sm:hidden">
           {apple ? <><CommandKey className="size-2.5" aria-hidden />K</> : "Ctrl K"}
         </kbd>
       </Button>

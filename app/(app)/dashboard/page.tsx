@@ -132,7 +132,7 @@ export default async function DashboardPage() {
                     <div className="text-xs font-medium tabular-nums sm:text-sm">
                       {formatTHB(revenueSatang)}
                     </div>
-                    <div aria-hidden="true" className="bbn-ruled flex h-44 items-end justify-center border-b-[1.5px] border-dashed">
+                    <div aria-hidden="true" className="bbn-ruled flex h-44 items-end justify-center border-b">
                       <div
                         className="bbn-hatch w-full max-w-14"
                         style={{ height: `${maxRevenue > 0 ? (revenueSatang / maxRevenue) * 100 : 0}%` }}

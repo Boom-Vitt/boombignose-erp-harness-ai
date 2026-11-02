@@ -36,7 +36,7 @@ export function StatCard({
   const chip = Icon ? (
     <span
       className={cn(
-        "bbn-rough-sm flex shrink-0 items-center justify-center border-[1.5px] border-primary/60 bg-primary/10 text-primary",
+        "bbn-rough-sm flex shrink-0 items-center justify-center border border-primary/60 bg-primary/10 text-primary",
         featured ? "size-9" : "size-7"
       )}
     >
@@ -63,7 +63,7 @@ export function StatCard({
     <Card
       className={cn(
         "gap-0",
-        featured && "border-primary bg-gradient-to-br from-raised to-card shadow-[5px_5px_0_0_rgb(242_138_60/0.35)]",
+        featured && "border-primary bg-gradient-to-br from-raised to-card shadow-[0_0_30px_rgb(242_138_60/0.22)]",
         className
       )}
     >

@@ -47,10 +47,10 @@ export function PersonalAssistant() {
   }
 
   return (
-    <Card className="bbn-deck-panel border-0 shadow-[4px_4px_0_0_rgb(0_0_0/0.5)]" data-testid="personal-assistant">
+    <Card className="bbn-deck-panel border-0" data-testid="personal-assistant">
       <CardHeader>
         <CardTitle className="flex flex-wrap items-center gap-2 text-base">
-          <span className="bbn-rough-sm border-primary/60 bg-primary/10 text-primary flex size-7 items-center justify-center border-[1.5px]">
+          <span className="bbn-rough-sm border-primary/60 bg-primary/10 text-primary flex size-7 items-center justify-center border">
             <Bot className="size-3.5" aria-hidden />
           </span>
           ผู้ช่วยส่วนตัว / Personal assistant

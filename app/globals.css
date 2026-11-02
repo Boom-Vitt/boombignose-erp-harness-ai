@@ -144,86 +144,96 @@
   }
 }
 
-/* ---------- Sketchbook language ----------
- * Hand-drawn edges (uneven corner radii), hard offset shadows like a cut-out on a
- * whiteboard, dashed rules, and slightly tilted sticky chips. Orange acts, gold annotates.
+/* ---------- Campus HUD language ----------
+ * Navy glass panels over the live 3D base: thin borders, soft depth, backdrop blur.
+ * Orange acts, gold annotates. The same look as the /warehouse HUD.
  */
 
+:root {
+  --glass: rgb(16 26 49 / 0.68);
+  --glass-strong: rgb(16 26 49 / 0.86);
+  --glass-line: rgb(120 140 190 / 0.28);
+  --hud-shadow: 0 8px 30px rgb(0 0 0 / 0.38);
+}
+
 .bbn-rough {
-  border-radius: 15px 11px 16px 10px / 11px 15px 10px 16px;
+  border-radius: 0.875rem;
 }
 .bbn-rough-sm {
-  border-radius: 9px 7px 10px 6px / 7px 10px 6px 9px;
+  border-radius: 0.5rem;
+}
+/* Any glass surface: HUD card look for one-off panels. */
+.bbn-glass {
+  border: 1px solid var(--glass-line);
+  border-radius: 0.875rem;
+  background: var(--glass);
+  box-shadow: var(--hud-shadow);
+  -webkit-backdrop-filter: blur(14px) saturate(1.2);
+  backdrop-filter: blur(14px) saturate(1.2);
 }
 
 /* ---------- App frame ---------- */
 
-/* Canvas: a dotted whiteboard grid with one warm glow at the top edge. */
+/* Pages sit on the persistent 3D base (components/three/stage-backdrop): no opaque fills here. */
 .bbn-shell {
+  position: relative;
+  z-index: 1;
   overflow-x: clip;
-  background-color: var(--background);
-  background-image:
-    radial-gradient(52rem 16rem at 70% -5rem, rgb(242 138 60 / 0.09), transparent 70%),
-    radial-gradient(circle at 1px 1px, var(--paper-line) 1px, transparent 1.4px);
-  background-size: auto, 22px 22px;
-  background-repeat: no-repeat, repeat;
+  background: transparent !important;
 }
 
-/* Top bar: a floating strip with a dashed underline instead of a solid band. */
 .bbn-shell-header {
-  background: rgb(11 18 34 / 0.86) !important;
-  border-bottom: 1.5px dashed var(--input);
+  background: rgb(11 18 34 / 0.55) !important;
+  border-bottom: 1px solid var(--glass-line);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
 }
 
 .bbn-shell-sidebar [data-sidebar="sidebar"] {
-  border-right: 1.5px solid var(--sidebar-border);
-  background-image: radial-gradient(circle at 1px 1px, rgb(159 171 194 / 0.07) 1px, transparent 1.4px);
-  background-size: 18px 18px;
+  border-right: 1px solid var(--glass-line);
+  background: rgb(11 18 34 / 0.6);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
 }
 
-/* Sidebar section label: a tilted sticky chip. */
+/* Sidebar section label: small gold caps. */
 .bbn-nav-label {
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
   width: fit-content;
   margin: 0.35rem 0 0.15rem 0.35rem;
-  padding: 0.18rem 0.6rem;
-  border: 1px dashed rgb(232 184 75 / 0.55);
+  padding: 0.15rem 0.6rem;
+  border: 1px solid rgb(232 184 75 / 0.35);
   border-radius: 999px;
-  background: rgb(232 184 75 / 0.09);
+  background: rgb(232 184 75 / 0.08);
   color: var(--gold);
-  font-size: 0.72rem;
+  font-size: 0.7rem;
   font-weight: 600;
-  letter-spacing: 0.01em;
-  transform: rotate(-1.4deg);
+  letter-spacing: 0.04em;
 }
 .bbn-nav-label[data-start="true"] {
-  border-style: solid;
   border-color: var(--signal);
   background: var(--signal);
   color: var(--bbn-ink);
-  box-shadow: 2px 2px 0 rgb(0 0 0 / 0.5);
 }
 
-/* Nav row: dashed hover, active = solid orange chip with a hard shadow. */
+/* Nav row: hover lifts to glass, active = orange-edged tint. */
 .bbn-nav-link {
   position: relative;
   color: var(--sidebar-foreground);
-  border: 1.5px solid transparent;
-  border-radius: 9px 7px 10px 6px / 7px 10px 6px 9px;
+  border: 1px solid transparent;
+  border-radius: 0.6rem;
 }
 .bbn-nav-link:hover {
-  border-color: var(--input);
-  border-style: dashed;
-  background: transparent;
+  border-color: var(--glass-line);
+  background: rgb(120 140 190 / 0.1);
 }
 .bbn-nav-link[data-active="true"],
 .bbn-nav-link[data-active] {
   background: rgb(242 138 60 / 0.16);
-  border: 1.5px solid var(--signal);
+  border-color: rgb(242 138 60 / 0.6);
   color: var(--foreground);
-  box-shadow: 2px 2px 0 rgb(0 0 0 / 0.55);
 }
 .bbn-nav-link[data-active] svg {
   color: var(--signal);
@@ -237,10 +247,11 @@
   grid-auto-flow: column;
   grid-auto-columns: 1fr;
   padding: 3px;
-  border: 1.5px solid var(--input);
+  border: 1px solid var(--glass-line);
   border-radius: 999px;
-  background: var(--surface);
-  box-shadow: 2px 2px 0 rgb(0 0 0 / 0.5);
+  background: var(--glass-strong);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
   min-width: 0;
 }
 .bbn-mode-thumb {
@@ -251,7 +262,7 @@
   width: calc((100% - 6px) / 3);
   border-radius: 999px;
   background: var(--signal);
-  box-shadow: 0 0 18px rgb(242 138 60 / 0.4);
+  box-shadow: 0 0 18px rgb(242 138 60 / 0.45);
   transition: transform 320ms var(--ease-out);
   transform: translateX(calc(var(--i, 0) * 100%));
 }
@@ -289,38 +300,38 @@
 
 /* ---------- Surfaces ---------- */
 
-.bbn-sketch,
+/* Raised panel (AI panel, Local AI, update): glass with an orange hairline on top. */
 .bbn-deck-panel {
-  font-family: var(--font-body), var(--font-sans), sans-serif;
-}
-
-/* Raised panel (AI panel, Local AI, update): dashed inner frame on a navy sheet. */
-.bbn-deck-panel {
-  border: 1.5px solid var(--input);
-  border-radius: 15px 11px 16px 10px / 11px 15px 10px 16px;
-  background: linear-gradient(180deg, var(--raised), var(--surface));
-  color: var(--foreground);
-  box-shadow: 4px 4px 0 rgb(0 0 0 / 0.5);
   position: relative;
+  border: 1px solid var(--glass-line);
+  border-radius: 0.875rem;
+  background: var(--glass-strong);
+  color: var(--foreground);
+  box-shadow: var(--hud-shadow);
+  -webkit-backdrop-filter: blur(14px) saturate(1.2);
+  backdrop-filter: blur(14px) saturate(1.2);
 }
 .bbn-deck-panel::after {
   content: "";
   position: absolute;
-  inset: 5px;
-  border: 1px dashed rgb(159 171 194 / 0.18);
-  border-radius: 11px 8px 12px 7px / 8px 11px 7px 12px;
+  top: 0;
+  right: 1rem;
+  left: 1rem;
+  height: 2px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--signal), var(--gold), transparent);
   pointer-events: none;
 }
 
 .bbn-sketch-card {
-  border: 1.5px solid var(--border);
-  border-left: 4px solid var(--signal);
-  border-radius: 4px 12px 12px 4px / 4px 12px 12px 4px;
-  background: var(--sidebar);
+  border: 1px solid var(--glass-line);
+  border-left: 3px solid var(--signal);
+  border-radius: 0.5rem 0.875rem 0.875rem 0.5rem;
+  background: var(--glass);
   color: var(--foreground);
 }
 
-/* Step / number marker: a round stamp. */
+/* Step / number marker. */
 .bbn-step-pill {
   display: inline-flex;
   align-items: center;
@@ -328,8 +339,8 @@
   min-width: 1.6rem;
   height: 1.6rem;
   padding: 0 0.45rem;
-  border: 1.5px solid var(--signal);
-  border-radius: 999px 999px 999px 8px;
+  border: 1px solid var(--signal);
+  border-radius: 999px;
   background: rgb(242 138 60 / 0.14);
   color: var(--signal);
   font-size: 0.75rem;
@@ -351,15 +362,17 @@
   gap: 0.6rem;
 }
 
-/* Sticky note: the mode tip and inline notices. A little crooked on purpose. */
+/* Notice strip: the mode tip and inline notices. */
 .bbn-sticky {
   display: flex;
   flex-wrap: wrap;
   align-items: baseline;
   gap: 0.25rem 0.6rem;
-  border: 1.5px dashed rgb(232 184 75 / 0.6);
-  border-radius: 6px 12px 8px 14px / 12px 7px 14px 8px;
-  background: rgb(232 184 75 / 0.08);
+  border: 1px solid rgb(232 184 75 / 0.35);
+  border-radius: 0.875rem;
+  background: var(--glass);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
   color: var(--muted-foreground);
   padding: 0.5rem 0.9rem;
   max-width: 100%;
@@ -372,79 +385,77 @@
   color: var(--signal);
 }
 
-/* Tilted chip for tags and small labels. */
+/* Chip for tags and small labels. */
 .bbn-chip {
   display: inline-flex;
   align-items: center;
   gap: 0.3rem;
   padding: 0.15rem 0.6rem;
-  border: 1px dashed rgb(232 184 75 / 0.55);
+  border: 1px solid rgb(232 184 75 / 0.4);
   border-radius: 999px;
   background: rgb(232 184 75 / 0.09);
   color: var(--gold);
   font-size: 0.72rem;
   font-weight: 600;
-  transform: rotate(-1.2deg);
 }
 
-/* Page title: a hand-drawn orange squiggle underneath. */
+/* Page title: an orange-to-gold bar underneath. */
 .bbn-title {
   position: relative;
   display: inline-block;
-  padding-bottom: 0.55rem;
+  padding-bottom: 0.6rem;
 }
 .bbn-title::after {
   content: "";
   position: absolute;
   left: 0;
   bottom: 0;
-  width: min(100%, 9rem);
-  height: 8px;
-  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='36' height='8' viewBox='0 0 36 8'%3E%3Cpath d='M1 5 Q5 0 9 4 T18 4 T27 4 T35 3' fill='none' stroke='%23f28a3c' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E") repeat-x left center / 36px 8px;
+  width: min(100%, 5rem);
+  height: 3px;
+  border-radius: 3px;
+  background: linear-gradient(90deg, var(--signal), var(--gold));
 }
 
-/* Hatched fill for bar charts, like a pencil shade. */
+/* Bars for charts. */
 .bbn-hatch {
-  background-color: rgb(242 138 60 / 0.35);
-  background-image: repeating-linear-gradient(135deg, var(--signal) 0 2px, transparent 2px 7px);
-  border: 1.5px solid var(--signal);
-  border-bottom: 0;
-  border-radius: 6px 4px 0 0 / 5px 6px 0 0;
+  background: linear-gradient(180deg, var(--signal), rgb(242 138 60 / 0.35));
+  border-radius: 6px 6px 0 0;
+  box-shadow: 0 0 16px rgb(242 138 60 / 0.25);
 }
 
-/* Horizontal ruled lines behind a chart. */
+/* Horizontal rules behind a chart. */
 .bbn-ruled {
   background-image: repeating-linear-gradient(0deg, transparent 0 31px, var(--paper-line) 31px 32px);
 }
 
-/* Ledger row: dashed separators between rows. */
+/* Ledger row: thin separators between rows. */
 .bbn-ledger > * + * {
-  border-top: 1.5px dashed var(--border);
+  border-top: 1px solid var(--glass-line);
 }
 
-/* ---------- 3D stage (ambient backdrop behind the page, never interactive) ---------- */
+/* ---------- 3D base (persistent full-bleed stage behind every page, never interactive) ---------- */
 
-.bbn-shell {
-  isolation: isolate;
-}
 .bbn-stage {
   position: fixed;
-  top: 3.5rem;
-  right: 0;
-  left: 0;
-  height: 30rem;
-  z-index: -1;
+  inset: 0;
+  z-index: 0;
   pointer-events: none;
   overflow: hidden;
-  -webkit-mask-image: radial-gradient(75% 95% at 80% 0%, #000 0%, rgb(0 0 0 / 0.6) 45%, transparent 100%);
-  mask-image: radial-gradient(75% 95% at 80% 0%, #000 0%, rgb(0 0 0 / 0.6) 45%, transparent 100%);
-  opacity: 0.6;
+  background: var(--bbn-stage);
 }
-.bbn-stage[data-mode="startup"] {
-  opacity: 0.8;
+/* Veil: keeps HUD text readable on the left, lets the campus show on the right and below. */
+.bbn-stage::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, rgb(11 18 34 / 0.6) 0%, transparent 55%),
+    linear-gradient(180deg, rgb(11 18 34 / 0.5) 0%, transparent 18%);
 }
-.bbn-stage[data-mode="individual"] {
-  opacity: 0.55;
+/* R3F sets pointer-events:auto on its wrapper and canvas; the base must never catch a click. */
+.bbn-stage *,
+.bbn-stage canvas {
+  pointer-events: none !important;
 }
 .bbn-stage-canvas,
 .bbn-stage-canvas > div {
@@ -462,18 +473,21 @@
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(28rem 16rem at 82% 8%, rgb(242 138 60 / 0.16), transparent 70%),
-    repeating-linear-gradient(115deg, transparent 0 46px, rgb(232 184 75 / 0.07) 46px 47px);
+    radial-gradient(40rem 22rem at 78% 88%, rgb(242 138 60 / 0.16), transparent 70%),
+    repeating-linear-gradient(0deg, transparent 0 47px, rgb(159 171 194 / 0.07) 47px 48px),
+    repeating-linear-gradient(90deg, transparent 0 47px, rgb(159 171 194 / 0.07) 47px 48px);
 }
 .bbn-stage[data-mode="startup"] .bbn-stage-flat {
   background:
-    radial-gradient(28rem 16rem at 82% 8%, rgb(242 138 60 / 0.22), transparent 70%),
-    repeating-linear-gradient(160deg, transparent 0 34px, rgb(242 138 60 / 0.09) 34px 35px);
+    radial-gradient(40rem 22rem at 78% 88%, rgb(242 138 60 / 0.24), transparent 70%),
+    repeating-linear-gradient(0deg, transparent 0 47px, rgb(242 138 60 / 0.08) 47px 48px),
+    repeating-linear-gradient(90deg, transparent 0 47px, rgb(242 138 60 / 0.08) 47px 48px);
 }
 .bbn-stage[data-mode="individual"] .bbn-stage-flat {
   background:
-    radial-gradient(22rem 22rem at 82% 20%, rgb(232 184 75 / 0.14), transparent 70%),
-    repeating-radial-gradient(circle at 82% 30%, transparent 0 38px, rgb(159 171 194 / 0.08) 38px 39px);
+    radial-gradient(34rem 26rem at 78% 70%, rgb(232 184 75 / 0.14), transparent 70%),
+    repeating-linear-gradient(0deg, transparent 0 47px, rgb(159 171 194 / 0.06) 47px 48px),
+    repeating-linear-gradient(90deg, transparent 0 47px, rgb(159 171 194 / 0.06) 47px 48px);
 }
 @media print {
   .bbn-stage {

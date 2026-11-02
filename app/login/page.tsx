@@ -15,6 +15,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { MODE_ICON } from "@/components/nav"
 import { MODES, MODE_COPY } from "@/lib/mode"
+import { StageBackdrop } from "@/components/three/stage-backdrop"
 
 // Local-dev convenience, off by default: the demo button renders only when both
 // vars are set at build time. Never set them for a real deployment.
@@ -54,15 +55,9 @@ function LoginForm() {
   }
 
   return (
-    <main
-      className="relative grid min-h-svh place-items-center overflow-hidden p-4 sm:p-8"
-      style={{
-        backgroundImage:
-          "radial-gradient(46rem 22rem at 80% -4rem, rgb(242 138 60 / 0.12), transparent 70%), radial-gradient(circle at 1px 1px, rgb(159 171 194 / 0.14) 1px, transparent 1.4px)",
-        backgroundSize: "auto, 22px 22px",
-      }}
-    >
-      <div className="grid w-full max-w-5xl items-center gap-10 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,24rem)]">
+    <main className="relative grid min-h-svh place-items-center overflow-hidden p-4 sm:p-8">
+      <StageBackdrop section="other" />
+      <div className="relative z-10 grid w-full max-w-5xl items-center gap-10 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,24rem)]">
         <section className="hidden space-y-8 lg:block">
           <div className="flex items-center gap-3">
             <Image src="/icon.png" alt="" width={40} height={40} className="bbn-rough-sm" priority />
@@ -78,10 +73,10 @@ function LoginForm() {
               return (
                 <li
                   key={m}
-                  className="bbn-rough bg-card flex items-start gap-3 border-[1.5px] border-dashed border-input p-3.5"
-                  style={{ transform: `rotate(${i % 2 === 0 ? -0.8 : 0.7}deg)`, marginLeft: `${i * 1.25}rem` }}
+                  className="bbn-glass flex items-start gap-3 p-3.5"
+                  style={{ marginLeft: `${i * 1.25}rem` }}
                 >
-                  <span className="bbn-rough-sm border-primary/60 bg-primary/10 text-primary flex size-9 shrink-0 items-center justify-center border-[1.5px]">
+                  <span className="bbn-rough-sm border-primary/60 bg-primary/10 text-primary flex size-9 shrink-0 items-center justify-center border">
                     <Icon className="size-4.5" aria-hidden />
                   </span>
                   <span className="grid gap-0.5">
@@ -100,7 +95,7 @@ function LoginForm() {
           </p>
         </section>
 
-        <section className="bbn-rough bg-card w-full space-y-6 border-[1.5px] border-input p-6 shadow-[6px_6px_0_0_rgb(0_0_0/0.55)] sm:p-8">
+        <section className="bbn-glass w-full space-y-6 p-6 sm:p-8">
           <div className="space-y-2">
             <Image src="/icon.png" alt="" width={32} height={32} className="bbn-rough-sm lg:hidden" priority />
             <h1 className="bbn-title text-3xl font-bold">BoomBigNose ERP</h1>
@@ -155,7 +150,7 @@ function LoginForm() {
               ) : null}
             </div>
           </form>
-          <p className="text-muted-foreground border-t border-dashed pt-4 text-sm">
+          <p className="text-muted-foreground border-t pt-4 text-sm">
             No account yet?{" "}
             <Link href="/signup" className="text-primary underline underline-offset-4">
               Sign up
