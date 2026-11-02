@@ -113,13 +113,14 @@ test('the simple chat UI', { timeout: 300_000 }, async (t) => {
     assert.equal(await ui.cdp.evaluate(`[...document.querySelectorAll('.tool')].filter(r => r.hidden).length`), 1, 'the running row hides while the card is up');
     const accent = await strayAccent(ui);
     assert.ok(accent.painted >= 1, 'Allow once is the accent action'); assert.deepEqual(accent.stray, []);
-    await shot(ui, 'chat-light.png');
-    await scheme(ui, 'dark');
-    assert.equal(await ui.cdp.evaluate(`getComputedStyle(document.body).backgroundColor`), 'rgb(20, 18, 22)');
-    assert.deepEqual((await strayAccent(ui)).stray, []);
-    await shot(ui, 'chat-dark.png');
-    await scheme(ui, 'light');
-    assert.equal(await ui.cdp.evaluate(`getComputedStyle(document.body).backgroundColor`), 'rgb(255, 255, 255)');
+    await shot(ui, 'chat-night.png');
+    // one theme: night-ledger, whatever the system scheme says
+    for (const mode of ['dark', 'light'] as const) {
+      await scheme(ui, mode);
+      assert.equal(await ui.cdp.evaluate(`getComputedStyle(document.body).backgroundColor`), 'rgb(11, 18, 34)');
+      assert.deepEqual((await strayAccent(ui)).stray, []);
+    }
+    assert.equal(await ui.cdp.evaluate(`document.querySelectorAll('canvas.stage').length`), 1, 'one 3D stage behind the panel');
 
     // Esc anywhere in the page denies the newest pending card; Enter does not approve
     await ui.cdp.evaluate(`document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }))`);

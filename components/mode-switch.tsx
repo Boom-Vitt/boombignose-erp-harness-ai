@@ -1,7 +1,10 @@
 "use client"
 
+import Link from "next/link"
+import { Boxes, Cpu } from "lucide-react"
 import { useSyncExternalStore } from "react"
 
+import { MODE_ICON } from "@/components/nav"
 import { MODES, MODE_COPY, MODE_KEY, parseMode, type Mode } from "@/lib/mode"
 
 const EVENT = "bbn-mode-change"
@@ -32,7 +35,13 @@ function setMode(mode: Mode) {
 export function ModeSwitch() {
   const mode = useMode()
   return (
-    <div role="radiogroup" aria-label="โหมดการใช้งาน / Operator mode" className="bbn-sketch flex min-w-0 shrink items-center gap-0.5 sm:gap-1">
+    <div
+      role="radiogroup"
+      aria-label="โหมดการใช้งาน / Operator mode"
+      className="bbn-mode"
+      style={{ "--i": MODES.indexOf(mode) } as React.CSSProperties}
+    >
+      <span aria-hidden className="bbn-mode-thumb" />
       {MODES.map((m) => (
         <button
           key={m}
@@ -44,7 +53,7 @@ export function ModeSwitch() {
           className="bbn-mode-pill"
           title={`${MODE_COPY[m].th} / ${MODE_COPY[m].en}`}
         >
-          <span className="hidden lg:inline">{MODE_COPY[m].th} · </span>
+          <span className="hidden xl:inline">{MODE_COPY[m].th} · </span>
           {MODE_COPY[m].en}
         </button>
       ))}
@@ -55,9 +64,24 @@ export function ModeSwitch() {
 export function ModeTip() {
   const mode = useMode()
   const copy = MODE_COPY[mode]
+  const Icon = MODE_ICON[mode]
   return (
-    <p className="bbn-sketch bbn-sticky !m-0 text-sm" data-testid="mode-tip">
-      <strong>{copy.th} / {copy.en}</strong> · {copy.tipTh} / {copy.tipEn}
+    <p className="bbn-sticky !m-0 items-center text-sm" data-testid="mode-tip">
+      <Icon className="text-gold size-4 shrink-0 self-center" aria-hidden />
+      <strong>{copy.th} / {copy.en}</strong>
+      <span>{copy.tipTh} / {copy.tipEn}</span>
+      <span className="ml-auto flex flex-wrap items-center gap-2">
+        {mode === "individual" ? (
+          <Link href="/settings#local-models" prefetch={false} className="bbn-chip no-underline">
+            <Cpu className="size-3" aria-hidden />
+            AI บนเครื่อง / Local AI
+          </Link>
+        ) : null}
+        <Link href="/warehouse" prefetch={false} className="bbn-chip no-underline" data-testid="open-campus-3d">
+          <Boxes className="size-3" aria-hidden />
+          เปิด Campus 3D / Open Campus 3D
+        </Link>
+      </span>
     </p>
   )
 }

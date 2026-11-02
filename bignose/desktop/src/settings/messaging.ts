@@ -160,16 +160,16 @@ export function mountMessaging(pane: HTMLElement, api: Api): void {
       const ready = st.tokenSet && st.secretSet;
       const [tone, text] = !line.enabled ? ['', 'Off'] : st.running && ready && !st.warnings.length ? ['ok', 'Connected'] : ['warn', 'Needs setup'];
       status.className = `badge ${tone}`.trim(); status.textContent = text;
-      step1.className = ready ? 'step done' : 'step'; step1.textContent = ready ? '✓' : '1';
+      step1.className = ready ? 'step done' : 'step'; step1.replaceChildren(...(ready ? [icon('check')] : ['1']));
       credsSub.textContent = ready ? 'Both saved.' : st.tokenSet || st.secretSet ? `${st.tokenSet ? 'The secret' : 'The token'} is not set.` : 'Not set';
       paste.textContent = ready || st.tokenSet || st.secretSet ? 'Replace…' : 'Paste…';
       connect.disabled = test.disabled = !ready;
       for (const b of [connect, test]) { if (ready) b.removeAttribute('title'); else b.setAttribute('title', 'Paste the token first'); }
-      step2.className = connected ? 'step done' : 'step'; step2.textContent = connected ? '✓' : '2';
+      step2.className = connected ? 'step done' : 'step'; step2.replaceChildren(...(connected ? [icon('check')] : ['2']));
       webhookSub.replaceChildren(...(st.webhookUrl ? [el('code', {}, st.webhookUrl)] : ['Set the public address under More options first.']));
       copy.hidden = !st.webhookUrl;
       const all = KINDS.flatMap(([key]) => lists[key].box.value ? lines(lists[key].box.value) : []);
-      step3.className = all.length ? 'step done' : 'step'; step3.textContent = all.length ? '✓' : '3';
+      step3.className = all.length ? 'step done' : 'step'; step3.replaceChildren(...(all.length ? [icon('check')] : ['3']));
       peopleSub.textContent = all.length ? '' : 'Nobody yet.';
       people.replaceChildren(...all.map((id) => el('span', { class: 'badge' }, el('code', { title: id }, shortId(id)))));
       warnings.replaceChildren(...st.warnings.map((w) => el('div', { class: 'notice warn' }, w)),

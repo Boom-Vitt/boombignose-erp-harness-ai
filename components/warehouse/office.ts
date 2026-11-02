@@ -85,9 +85,9 @@ export function buildOffice(ctx: OfficeCtx) {
   const g = new THREE.Group()
   ctx.scene.add(g)
   const M = {
-    slab: mat("#dfe4ef"),
-    corridor: mat("#eef1f6"),
-    wall: mat("#f8fafc"),
+    slab: mat("#243556"),
+    corridor: mat("#1c2a4b"),
+    wall: mat("#c9d1e2"),
     frame: mat("#cbd5e1"),
     glass: mat("#bfdbfe", { transparent: true, opacity: 0.16, roughness: 0.1, depthWrite: false }),
     deskTop: mat("#fafaf9"),
@@ -101,7 +101,7 @@ export function buildOffice(ctx: OfficeCtx) {
     sofa: mat("#64748b"),
     wood: mat("#b08968"),
     white: mat("#ffffff"),
-    path: mat("#e2e6f0"),
+    path: mat("#2a3a5e"),
     rack: mat("#111827"),
     bottle: mat("#7dd3fc", { transparent: true, opacity: 0.7 }),
     ledOn: new THREE.MeshBasicMaterial({ color: "#22c55e" }),
@@ -122,7 +122,7 @@ export function buildOffice(ctx: OfficeCtx) {
     f.castShadow = false
     zoneFloors.set(z.id, f)
     ctx.register(z.id, f, 0, 42)
-    const tag = chip(`<b class="text-slate-900">${z.name}</b> <span data-s class="text-slate-500"></span>`)
+    const tag = chip(`<b class="text-[#f4efe4]">${z.name}</b> <span data-s class="text-[#9fabc2]"></span>`)
     tag.el.style.pointerEvents = "auto"
     tag.el.style.cursor = "pointer"
     tag.el.addEventListener("click", () => ctx.onZoneClick(z.id))
@@ -130,7 +130,7 @@ export function buildOffice(ctx: OfficeCtx) {
     g.add(tag.obj)
     zoneTags.set(z.id, tag.el.querySelector<HTMLElement>("[data-s]")!)
   }
-  const hq = chip(`<b class="text-blue-700">BoomBigNose HQ</b> Entrance`)
+  const hq = chip(`<b class="text-primary">BoomBigNose HQ</b> Entrance`)
   hq.obj.position.set(42, 3.4, CORR)
   g.add(hq.obj)
 
@@ -561,7 +561,7 @@ export function buildOffice(ctx: OfficeCtx) {
 
   const floaters: { obj: CSS2DObject; el: HTMLElement; t: number }[] = []
   function floatChip(text: string, x: number, z: number) {
-    const c = chip(`<span class="font-semibold text-white">${text}</span>`, "bg-emerald-500 px-2 py-0.5 text-[11px]")
+    const c = chip(`<span class="font-semibold text-emerald-950">${text}</span>`, "bg-emerald-400 px-2 py-0.5 text-[11px]")
     c.obj.position.set(x, 3, z)
     g.add(c.obj)
     floaters.push({ ...c, t: 0 })
@@ -751,7 +751,7 @@ export function buildOffice(ctx: OfficeCtx) {
       lit = id && zoneFloors.has(id) ? id : null
       if (lit) {
         const m = zoneFloors.get(lit)!.material
-        m.emissive.set("#2563eb")
+        m.emissive.set("#f28a3c")
         m.emissiveIntensity = 0.15
       }
     },

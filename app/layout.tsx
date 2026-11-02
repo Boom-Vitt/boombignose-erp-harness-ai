@@ -1,5 +1,5 @@
 import type { Metadata } from "next"
-import { Geist, Geist_Mono, Mali } from "next/font/google"
+import { Bricolage_Grotesque, Geist_Mono, IBM_Plex_Sans_Thai } from "next/font/google"
 import { ThemeProvider } from "next-themes"
 import "./globals.css"
 
@@ -7,20 +7,22 @@ import { Toaster } from "@/components/ui/sonner"
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { PublicEnvScript } from "@/lib/supabase/public-env"
 
-const fontSans = Geist({
-  variable: "--font-sans",
+// Body: Plex Sans Thai sets Thai and Latin together with tabular figures for ERP data.
+const fontBody = IBM_Plex_Sans_Thai({
+  variable: "--font-body",
+  subsets: ["latin", "thai"],
+  weight: ["400", "500", "600", "700"],
+})
+
+// Display: titles and big numbers. Latin only, Thai falls back to the body face.
+const fontDisplay = Bricolage_Grotesque({
+  variable: "--font-display",
   subsets: ["latin"],
 })
 
 const fontMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
-})
-
-const fontDeck = Mali({
-  variable: "--font-deck",
-  subsets: ["latin", "thai"],
-  weight: ["500", "600", "700"],
 })
 
 export const metadata: Metadata = {
@@ -36,14 +38,14 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${fontSans.variable} ${fontMono.variable} ${fontDeck.variable} h-full antialiased`}
+      className={`${fontBody.className} ${fontBody.variable} ${fontDisplay.variable} ${fontMono.variable} h-full antialiased`}
     >
       <body className="bg-background text-foreground min-h-full">
         <PublicEnvScript />
         <ThemeProvider
           attribute="class"
-          defaultTheme="system"
-          enableSystem
+          forcedTheme="dark"
+          defaultTheme="dark"
           disableTransitionOnChange
         >
           <TooltipProvider>{children}</TooltipProvider>

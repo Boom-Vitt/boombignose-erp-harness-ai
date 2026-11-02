@@ -7,9 +7,9 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-sans);
+  --font-sans: var(--font-body), "IBM Plex Sans Thai", ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-geist-mono);
-  --font-heading: var(--font-sans);
+  --font-heading: var(--font-display), var(--font-body), sans-serif;
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -44,9 +44,13 @@
   --color-bbn-paper: var(--bbn-paper);
   --color-bbn-navy: var(--bbn-navy);
   --color-bbn-gold: var(--bbn-gold);
-  --font-deck: var(--font-deck);
-  --radius-sm: calc(var(--radius) * 0.6);
-  --radius-md: calc(var(--radius) * 0.8);
+  --color-surface: var(--surface);
+  --color-raised: var(--raised);
+  --color-signal: var(--signal);
+  --color-gold: var(--gold);
+  --font-deck: var(--font-display);
+  --radius-sm: calc(var(--radius) * 0.55);
+  --radius-md: calc(var(--radius) * 0.75);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) * 1.4);
   --radius-2xl: calc(var(--radius) * 1.8);
@@ -54,180 +58,485 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
+/*
+ * Night ledger. One stage colour, three steps of navy for depth, and gold as the
+ * only signal: primary action, active place, focus. Everything else is neutral.
+ */
 :root,
 .dark {
   --background: #0b1222;
-  --foreground: #f8f3ea;
-  --card: #1b2a4a;
-  --card-foreground: #f8f3ea;
-  --popover: #1b2a4a;
-  --popover-foreground: #f8f3ea;
-  --primary: #e0a84a;
+  --foreground: #f4efe4;
+  --card: #101a31;
+  --card-foreground: #f4efe4;
+  --popover: #16223f;
+  --popover-foreground: #f4efe4;
+  --primary: #f28a3c;
   --primary-foreground: #0b1222;
-  --secondary: #121a2e;
-  --secondary-foreground: #f8f3ea;
-  --muted: #121a2e;
-  --muted-foreground: #d9d0bd;
-  --accent: #e0a84a;
-  --accent-foreground: #0b1222;
-  --destructive: #e11d48;
-  --border: #2a3d66;
-  --input: #2a3d66;
-  --ring: #e0a84a;
-  --chart-1: #e0a84a;
-  --chart-2: #b7791f;
-  --chart-3: #1b2a4a;
+  --secondary: #16223f;
+  --secondary-foreground: #f4efe4;
+  --muted: #141f3a;
+  --muted-foreground: #9fabc2;
+  --accent: #1c2a4b;
+  --accent-foreground: #f4efe4;
+  --destructive: #f0556f;
+  --border: #2a3a5e;
+  --input: #3a4d78;
+  --ring: #f6a15a;
+  --chart-1: #f28a3c;
+  --chart-2: #e8b84b;
+  --chart-3: #5b78b8;
   --chart-4: #efe9dc;
-  --chart-5: #d9d0bd;
-  --radius: 0.625rem;
-  --sidebar: #070b14;
-  --sidebar-foreground: #f8f3ea;
-  --sidebar-primary: #e0a84a;
+  --chart-5: #9fabc2;
+  --radius: 0.75rem;
+  --sidebar: #0e1730;
+  --sidebar-foreground: #c9d1e2;
+  --sidebar-primary: #f28a3c;
   --sidebar-primary-foreground: #0b1222;
-  --sidebar-accent: #1b2a4a;
-  --sidebar-accent-foreground: #f8f3ea;
-  --sidebar-border: #2a3d66;
-  --sidebar-ring: #e0a84a;
-  --bbn-accent: #e0a84a;
+  --sidebar-accent: #17234a;
+  --sidebar-accent-foreground: #f4efe4;
+  --sidebar-border: #2a3a5e;
+  --sidebar-ring: #f6a15a;
+  --bbn-accent: #f28a3c;
   --bbn-gold: #b7791f;
   --bbn-ink: #0b1222;
   --bbn-paper: #efe9dc;
-  --bbn-paper-2: #f8f3ea;
+  --bbn-paper-2: #f4efe4;
   --bbn-stage: #0b1222;
-  --bbn-navy: #1b2a4a;
+  --bbn-navy: #101a31;
+  --surface: #101a31;
+  --raised: #16223f;
+  --signal: #f28a3c;
+  --gold: #e8b84b;
+  --paper-line: rgb(159 171 194 / 0.14);
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
+  html {
+    font-feature-settings: "tnum" 1, "kern" 1;
+    -webkit-font-smoothing: antialiased;
+    color-scheme: dark;
+  }
   body {
     @apply bg-background text-foreground;
+    line-height: 1.55;
   }
-  html {
-    @apply font-sans;
+  /* Display face for titles; Thai falls through to the body face. */
+  h1,
+  h2 {
+    font-family: var(--font-heading);
+    letter-spacing: -0.015em;
+    text-wrap: balance;
+  }
+  ::selection {
+    background: rgb(242 138 60 / 0.35);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
   }
 }
 
-/* Local AI and update surfaces. Drawing language from the Excalidraw decks. */
-.bbn-sketch,
-.bbn-deck-panel {
-  font-family: var(--font-deck), var(--font-sans), sans-serif;
+/* ---------- Campus HUD language ----------
+ * Navy glass panels over the live 3D base: thin borders, soft depth, backdrop blur.
+ * Orange acts, gold annotates. The same look as the /warehouse HUD.
+ */
+
+:root {
+  --glass: rgb(16 26 49 / 0.68);
+  --glass-strong: rgb(16 26 49 / 0.86);
+  --glass-line: rgb(120 140 190 / 0.28);
+  --hud-shadow: 0 8px 30px rgb(0 0 0 / 0.38);
 }
 
+.bbn-rough {
+  border-radius: 0.875rem;
+}
+.bbn-rough-sm {
+  border-radius: 0.5rem;
+}
+/* Any glass surface: HUD card look for one-off panels. */
+.bbn-glass {
+  border: 1px solid var(--glass-line);
+  border-radius: 0.875rem;
+  background: var(--glass);
+  box-shadow: var(--hud-shadow);
+  -webkit-backdrop-filter: blur(14px) saturate(1.2);
+  backdrop-filter: blur(14px) saturate(1.2);
+}
+
+/* ---------- App frame ---------- */
+
+/* Pages sit on the persistent 3D base (components/three/stage-backdrop): no opaque fills here. */
+.bbn-shell {
+  position: relative;
+  z-index: 1;
+  overflow-x: clip;
+  background: transparent !important;
+}
+
+.bbn-shell-header {
+  background: rgb(11 18 34 / 0.55) !important;
+  border-bottom: 1px solid var(--glass-line);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+}
+
+.bbn-shell-sidebar [data-sidebar="sidebar"] {
+  border-right: 1px solid var(--glass-line);
+  background: rgb(11 18 34 / 0.6);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+}
+
+/* Sidebar section label: small gold caps. */
+.bbn-nav-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  width: fit-content;
+  margin: 0.35rem 0 0.15rem 0.35rem;
+  padding: 0.15rem 0.6rem;
+  border: 1px solid rgb(232 184 75 / 0.35);
+  border-radius: 999px;
+  background: rgb(232 184 75 / 0.08);
+  color: var(--gold);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+.bbn-nav-label[data-start="true"] {
+  border-color: var(--signal);
+  background: var(--signal);
+  color: var(--bbn-ink);
+}
+
+/* Nav row: hover lifts to glass, active = orange-edged tint. */
+.bbn-nav-link {
+  position: relative;
+  color: var(--sidebar-foreground);
+  border: 1px solid transparent;
+  border-radius: 0.6rem;
+}
+.bbn-nav-link:hover {
+  border-color: var(--glass-line);
+  background: rgb(120 140 190 / 0.1);
+}
+.bbn-nav-link[data-active="true"],
+.bbn-nav-link[data-active] {
+  background: rgb(242 138 60 / 0.16);
+  border-color: rgb(242 138 60 / 0.6);
+  color: var(--foreground);
+}
+.bbn-nav-link[data-active] svg {
+  color: var(--signal);
+}
+
+/* ---------- Mode switch: the one memorable control ---------- */
+
+.bbn-mode {
+  position: relative;
+  display: inline-grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  padding: 3px;
+  border: 1px solid var(--glass-line);
+  border-radius: 999px;
+  background: var(--glass-strong);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  min-width: 0;
+}
+.bbn-mode-thumb {
+  position: absolute;
+  top: 3px;
+  bottom: 3px;
+  left: 3px;
+  width: calc((100% - 6px) / 3);
+  border-radius: 999px;
+  background: var(--signal);
+  box-shadow: 0 0 18px rgb(242 138 60 / 0.45);
+  transition: transform 320ms var(--ease-out);
+  transform: translateX(calc(var(--i, 0) * 100%));
+}
+.bbn-mode-pill {
+  position: relative;
+  z-index: 1;
+  padding: 0.28rem 0.7rem;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--muted-foreground);
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.3;
+  white-space: nowrap;
+  cursor: pointer;
+  text-align: center;
+  transition: color 200ms;
+}
+.bbn-mode-pill:hover {
+  color: var(--foreground);
+}
+.bbn-mode-pill[aria-checked="true"] {
+  color: var(--bbn-ink);
+}
+.bbn-mode-pill:focus-visible {
+  outline: 2px solid var(--foreground);
+  outline-offset: 2px;
+}
+@media (max-width: 639px) {
+  .bbn-mode-pill {
+    padding: 0.28rem 0.45rem;
+    font-size: 0.6875rem;
+  }
+}
+
+/* ---------- Surfaces ---------- */
+
+/* Raised panel (AI panel, Local AI, update): glass with an orange hairline on top. */
 .bbn-deck-panel {
-  border: 2.5px solid var(--bbn-gold);
-  border-radius: 22px 16px 26px 14px / 18px 24px 14px 20px;
-  background: var(--bbn-navy);
-  color: var(--bbn-paper-2);
-  box-shadow: 5px 6px 0 #070b14;
+  position: relative;
+  border: 1px solid var(--glass-line);
+  border-radius: 0.875rem;
+  background: var(--glass-strong);
+  color: var(--foreground);
+  box-shadow: var(--hud-shadow);
+  -webkit-backdrop-filter: blur(14px) saturate(1.2);
+  backdrop-filter: blur(14px) saturate(1.2);
+}
+.bbn-deck-panel::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 1rem;
+  left: 1rem;
+  height: 2px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--signal), var(--gold), transparent);
+  pointer-events: none;
 }
 
 .bbn-sketch-card {
-  border: 2.5px solid var(--bbn-accent);
-  border-radius: 18px 12px 22px 14px / 14px 20px 12px 18px;
-  background: #070b14;
-  color: var(--bbn-paper-2);
-  box-shadow: 4px 5px 0 #070b14;
+  border: 1px solid var(--glass-line);
+  border-left: 3px solid var(--signal);
+  border-radius: 0.5rem 0.875rem 0.875rem 0.5rem;
+  background: var(--glass);
+  color: var(--foreground);
 }
 
+/* Step / number marker. */
 .bbn-step-pill {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 1.5rem;
-  height: 1.5rem;
+  min-width: 1.6rem;
+  height: 1.6rem;
   padding: 0 0.45rem;
-  border: 2px solid var(--bbn-gold);
-  border-radius: 999px 999px 999px 14px;
-  background: var(--bbn-accent);
-  color: var(--bbn-ink);
+  border: 1px solid var(--signal);
+  border-radius: 999px;
+  background: rgb(242 138 60 / 0.14);
+  color: var(--signal);
   font-size: 0.75rem;
   font-weight: 700;
   line-height: 1;
-  transform: rotate(-0.5deg);
+  font-variant-numeric: tabular-nums;
 }
 
 .bbn-sketch-steps {
   display: grid;
-  gap: 0.5rem;
+  gap: 0.6rem;
   margin: 0;
   padding: 0;
   list-style: none;
 }
-
 .bbn-sketch-steps li {
   display: flex;
   align-items: baseline;
   gap: 0.6rem;
 }
 
+/* Notice strip: the mode tip and inline notices. */
 .bbn-sticky {
-  border: 2px solid var(--bbn-gold);
-  border-radius: 3px 16px 4px 14px;
-  background: var(--bbn-paper);
-  color: var(--bbn-ink);
-  padding: 0.75rem 0.9rem;
-  box-shadow: 3px 3px 0 #070b14;
-  transform: rotate(-0.5deg);
-  max-width: calc(100% - 4px);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.25rem 0.6rem;
+  border: 1px solid rgb(232 184 75 / 0.35);
+  border-radius: 0.875rem;
+  background: var(--glass);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  color: var(--muted-foreground);
+  padding: 0.5rem 0.9rem;
+  max-width: 100%;
 }
-
-.bbn-sticky a {
-  color: var(--bbn-ink);
-}
-/* App shell in the deck language: stage behind, navy panel header, sketch borders. */
-.bbn-shell {
-  overflow-x: clip;
-  background-color: var(--bbn-paper-2);
-  background-image: radial-gradient(rgb(183 121 31 / 0.18) 1px, transparent 1px);
-  background-size: 22px 22px;
-}
-
-.dark .bbn-shell {
-  background-color: var(--bbn-stage);
-  background-image: radial-gradient(rgb(224 168 74 / 0.12) 1px, transparent 1px);
-}
-
-.bbn-shell-header {
-  font-family: var(--font-deck), var(--font-sans), sans-serif;
-  background: var(--bbn-navy) !important;
-  color: var(--bbn-paper-2);
-  border-bottom: 2.5px solid var(--bbn-gold);
-  border-radius: 0 0 18px 6px / 0 0 12px 6px;
-  box-shadow: 0 4px 0 #070b14;
-}
-
-.bbn-shell-sidebar [data-sidebar="sidebar"] {
-  border-right: 2.5px solid var(--bbn-gold);
-}
-
-.bbn-mode-pill {
-  padding: 0.2rem 0.4rem;
-  border: 2px solid var(--bbn-gold);
-  border-radius: 999px 999px 999px 12px;
-  background: transparent;
-  color: var(--bbn-paper-2);
-  font-size: 0.75rem;
+.bbn-sticky strong {
+  color: var(--gold);
   font-weight: 600;
-  line-height: 1.3;
-  white-space: nowrap;
-  cursor: pointer;
+}
+.bbn-sticky a {
+  color: var(--signal);
 }
 
-@media (min-width: 640px) {
-  .bbn-mode-pill {
-    padding: 0.2rem 0.6rem;
+/* Chip for tags and small labels. */
+.bbn-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.15rem 0.6rem;
+  border: 1px solid rgb(232 184 75 / 0.4);
+  border-radius: 999px;
+  background: rgb(232 184 75 / 0.09);
+  color: var(--gold);
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+
+/* Page title: an orange-to-gold bar underneath. */
+.bbn-title {
+  position: relative;
+  display: inline-block;
+  padding-bottom: 0.6rem;
+}
+.bbn-title::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: min(100%, 5rem);
+  height: 3px;
+  border-radius: 3px;
+  background: linear-gradient(90deg, var(--signal), var(--gold));
+}
+
+/* Bars for charts. */
+.bbn-hatch {
+  background: linear-gradient(180deg, var(--signal), rgb(242 138 60 / 0.35));
+  border-radius: 6px 6px 0 0;
+  box-shadow: 0 0 16px rgb(242 138 60 / 0.25);
+}
+
+/* Horizontal rules behind a chart. */
+.bbn-ruled {
+  background-image: repeating-linear-gradient(0deg, transparent 0 31px, var(--paper-line) 31px 32px);
+}
+
+/* Ledger row: thin separators between rows. */
+.bbn-ledger > * + * {
+  border-top: 1px solid var(--glass-line);
+}
+
+/* ---------- 3D base (persistent full-bleed stage behind every page, never interactive) ---------- */
+
+.bbn-stage {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+  background: var(--bbn-stage);
+}
+/* Veil: keeps HUD text readable on the left, lets the campus show on the right and below. */
+.bbn-stage::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, rgb(11 18 34 / 0.6) 0%, transparent 55%),
+    linear-gradient(180deg, rgb(11 18 34 / 0.5) 0%, transparent 18%);
+}
+/* R3F sets pointer-events:auto on its wrapper and canvas; the base must never catch a click. */
+.bbn-stage *,
+.bbn-stage canvas {
+  pointer-events: none !important;
+}
+.bbn-stage-canvas,
+.bbn-stage-canvas > div {
+  position: absolute;
+  inset: 0;
+  animation: bbn-stage-in 900ms var(--ease-out) both;
+}
+@keyframes bbn-stage-in {
+  from {
+    opacity: 0;
+  }
+}
+/* Flat artwork: the whole look when WebGL is unavailable, and the underlay while 3D loads. */
+.bbn-stage-flat {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(40rem 22rem at 78% 88%, rgb(242 138 60 / 0.16), transparent 70%),
+    repeating-linear-gradient(0deg, transparent 0 47px, rgb(159 171 194 / 0.07) 47px 48px),
+    repeating-linear-gradient(90deg, transparent 0 47px, rgb(159 171 194 / 0.07) 47px 48px);
+}
+.bbn-stage[data-mode="startup"] .bbn-stage-flat {
+  background:
+    radial-gradient(40rem 22rem at 78% 88%, rgb(242 138 60 / 0.24), transparent 70%),
+    repeating-linear-gradient(0deg, transparent 0 47px, rgb(242 138 60 / 0.08) 47px 48px),
+    repeating-linear-gradient(90deg, transparent 0 47px, rgb(242 138 60 / 0.08) 47px 48px);
+}
+.bbn-stage[data-mode="individual"] .bbn-stage-flat {
+  background:
+    radial-gradient(34rem 26rem at 78% 70%, rgb(232 184 75 / 0.14), transparent 70%),
+    repeating-linear-gradient(0deg, transparent 0 47px, rgb(159 171 194 / 0.06) 47px 48px),
+    repeating-linear-gradient(90deg, transparent 0 47px, rgb(159 171 194 / 0.06) 47px 48px);
+}
+@media print {
+  .bbn-stage {
+    display: none;
   }
 }
 
-.bbn-mode-pill[aria-checked="true"] {
-  background: var(--bbn-accent);
-  color: var(--bbn-ink);
-  transform: rotate(-0.5deg);
+/* Campus night-ledger HUD chat harness (Personal assistant panel). CSS only. */
+.bbn-hud-chat {
+  background: linear-gradient(180deg, rgb(16 26 49 / 0.82), rgb(11 18 34 / 0.92));
+  backdrop-filter: blur(10px);
+  box-shadow: inset 0 0 0 1px rgb(232 184 75 / 0.18), 0 18px 48px -24px rgb(0 0 0 / 0.7);
 }
-
-.bbn-mode-pill:focus-visible {
-  outline: 2px solid var(--bbn-paper-2);
-  outline-offset: 2px;
+.bbn-hud-chat [data-slot="card-title"] { letter-spacing: 0.02em; }
+.bbn-hud-tools [data-slot="button"] {
+  border-radius: 999px;
+  border-color: rgb(232 184 75 / 0.28);
+  background: rgb(232 184 75 / 0.06);
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 0.75rem;
 }
+.bbn-hud-tools [data-slot="button"]:hover { border-color: var(--bbn-accent); background: rgb(242 138 60 / 0.14); }
+.bbn-hud-composer {
+  position: relative;
+  padding: 0.75rem 0.9rem;
+  border: 1px solid rgb(232 184 75 / 0.22);
+  background: rgb(11 18 34 / 0.6);
+}
+.bbn-hud-composer::before,
+.bbn-hud-composer::after {
+  content: "";
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border-color: var(--bbn-accent);
+  pointer-events: none;
+}
+.bbn-hud-composer::before { top: -1px; left: -1px; border-top: 2px solid; border-left: 2px solid; }
+.bbn-hud-composer::after { bottom: -1px; right: -1px; border-bottom: 2px solid; border-right: 2px solid; }
+.bbn-hud-composer textarea {
+  background: transparent;
+  border-color: rgb(239 233 220 / 0.12);
+  font-family: var(--font-mono, ui-monospace, monospace);
+}
+.bbn-hud-composer textarea:focus-visible { border-color: var(--bbn-accent); }
+.bbn-hud-reply {
+  border-left: 2px solid var(--gold);
+  background: linear-gradient(90deg, rgb(232 184 75 / 0.08), transparent 70%);
+  animation: bbn-hud-in 220ms ease-out;
+}
+@keyframes bbn-hud-in { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .bbn-hud-reply { animation: none; } }

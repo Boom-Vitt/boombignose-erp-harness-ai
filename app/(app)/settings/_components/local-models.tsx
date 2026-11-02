@@ -299,7 +299,7 @@ export function LocalModelsCard({ initial, canInstall, asr = { offered: false, i
       {progress ? <p className="text-sm tabular-nums">{progress}</p> : null}
       <ul className="space-y-4">
         {snapshot.rows.map((row) => (
-          <li key={row.id} data-modality={row.modality} className="bbn-sketch-card space-y-2 p-3">
+          <li key={row.id} data-modality={row.modality} className="bbn-sketch-card space-y-2 p-4">
             <div className="flex flex-wrap items-baseline justify-between gap-2">
               <h3 className="flex items-center gap-2 text-sm font-medium"><span className="bbn-step-pill">{stepNumber(row.modality)}</span>{row.titleTh} / {row.titleEn}</h3>
               <span className="text-muted-foreground text-xs">{row.installed ? "ติดตั้งแล้ว / Installed" : "ยังไม่ได้ติดตั้ง / Not installed"}</span>
@@ -325,7 +325,7 @@ export function LocalModelsCard({ initial, canInstall, asr = { offered: false, i
             {row.installed && row.try === "speech" ? (
               <form className="flex flex-wrap items-end gap-2" action={(form) => void speak(form)}>
                 <label className="text-sm">ประโยคภาษาอังกฤษ / English sentence
-                  <input name="text" maxLength={200} className="mt-1 block h-9 rounded-md border bg-background px-2" />
+                  <input name="text" maxLength={200} className="mt-1 block h-9 rounded-[0.6rem] border border-input bg-background px-3" />
                 </label>
                 <Button type="submit" variant="outline" disabled={pending !== ""}>พูด / Speak</Button>
               </form>
@@ -334,7 +334,7 @@ export function LocalModelsCard({ initial, canInstall, asr = { offered: false, i
             {row.installed && row.try === "image" ? (
               <form className="flex flex-wrap items-end gap-2" action={(form) => void draw(form)}>
                 <label className="text-sm">คำอธิบายภาพ / Picture prompt
-                  <input name="prompt" maxLength={300} className="mt-1 block h-9 rounded-md border bg-background px-2" />
+                  <input name="prompt" maxLength={300} className="mt-1 block h-9 rounded-[0.6rem] border border-input bg-background px-3" />
                 </label>
                 <Button type="submit" variant="outline" disabled={pending !== ""}>สร้างภาพ / Draw</Button>
               </form>
@@ -348,7 +348,7 @@ export function LocalModelsCard({ initial, canInstall, asr = { offered: false, i
         ))}
       </ul>
       {asr.offered ? (
-        <section data-modality="asr" className="bbn-sketch-card space-y-2 p-3">
+        <section data-modality="asr" className="bbn-sketch-card space-y-2 p-4">
           <div className="flex flex-wrap items-baseline justify-between gap-2">
             <h3 className="text-sm font-medium">ถอดเสียง / Speech to text</h3>
             <span className="text-muted-foreground text-xs">{asrInstalled ? "ติดตั้งแล้ว / Installed" : "ยังไม่ได้ติดตั้ง / Not installed"}</span>
@@ -375,7 +375,7 @@ export function LocalModelsCard({ initial, canInstall, asr = { offered: false, i
       ) : null}
       <ul className="space-y-3">
         {blocked.map((item) => (
-          <li key={item.modality} data-modality={item.modality} className="rounded-md border border-dashed p-3 text-sm">
+          <li key={item.modality} data-modality={item.modality} className="rounded-xl border p-4 text-sm">
             <p className="font-medium">{blockedTitle(item.modality)}</p>
             <p className="text-muted-foreground mt-1">{item.reasonTh}</p>
             <p className="text-muted-foreground">{item.reasonEn}</p>

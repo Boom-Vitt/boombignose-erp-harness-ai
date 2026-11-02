@@ -127,6 +127,7 @@ const BOT = '\u{1F916}'; // the default icon the API gives new agents
 export function avatar(a: Pick<Agent, 'icon'>, size: '' | 'sm' = ''): HTMLElement {
   const glyph = a.icon.trim();
   const cls = `avatar ${size}`.trim();
+  if (glyph.startsWith('i:')) return el('span', { class: `${cls} sprite-icon`, 'aria-hidden': 'true' }, icon(glyph.slice(2))); // built-in agents use a sprite icon, not an emoji
   if (glyph && glyph !== BOT) return el('span', { class: cls, 'aria-hidden': 'true' }, glyph);
   const bot = el('span', { class: `${cls} bot`, 'aria-hidden': 'true' });
   bot.appendChild(svgUse('#bot'));

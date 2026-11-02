@@ -4,19 +4,18 @@ import { STATUS_DISPLAY, type RecordStatus, type Tone } from "@/lib/record/statu
 import type { Enums } from "@/lib/types/database"
 
 const TONE: Record<Tone, string> = {
-  neutral: "bg-muted text-muted-foreground border-transparent",
-  info: "bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300 border-transparent",
-  success:
-    "bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 border-transparent",
-  warning:
-    "bg-orange-100 text-orange-900 dark:bg-orange-950 dark:text-orange-300 border-transparent",
-  danger: "bg-red-100 text-red-800 dark:bg-red-950 dark:text-red-300 border-transparent",
+  neutral: "bg-slate-400/10 text-slate-300 border-transparent [--dot:#94a3b8]",
+  info: "bg-sky-400/10 text-sky-300 border-transparent [--dot:#38bdf8]",
+  success: "bg-emerald-400/10 text-emerald-300 border-transparent [--dot:#34d399]",
+  warning: "bg-amber-400/10 text-amber-300 border-transparent [--dot:#e0a84a]",
+  danger: "bg-rose-400/10 text-rose-300 border-transparent [--dot:#fb7185]",
 }
 
 export function StatusBadge({ status }: { status: RecordStatus }) {
   const { label, tone } = STATUS_DISPLAY[status]
   return (
     <Badge variant="outline" className={cn("font-medium", TONE[tone])}>
+      <span aria-hidden className="size-1.5 rounded-full bg-(--dot)" />
       {label}
     </Badge>
   )

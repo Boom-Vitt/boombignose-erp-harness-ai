@@ -1,9 +1,10 @@
 "use client"
 
 import { Suspense, useState } from "react"
+import Image from "next/image"
 import Link from "next/link"
 import { useSearchParams } from "next/navigation"
-import { Loader2 } from "lucide-react"
+import { Loader2, ShieldCheck } from "lucide-react"
 import { toast } from "sonner"
 
 import { createClient } from "@/lib/supabase/client"
@@ -12,14 +13,9 @@ import { safeReturnPath } from "@/lib/supabase/redirect"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
+import { MODE_ICON } from "@/components/nav"
+import { MODES, MODE_COPY } from "@/lib/mode"
+import { StageBackdrop } from "@/components/three/stage-backdrop"
 
 // Local-dev convenience, off by default: the demo button renders only when both
 // vars are set at build time. Never set them for a real deployment.
@@ -59,20 +55,60 @@ function LoginForm() {
   }
 
   return (
-    <div className="flex min-h-svh items-center justify-center p-4">
-      <Card className="w-full max-w-sm">
-        <CardHeader>
-          <CardTitle className="text-xl">BoomBigNose ERP</CardTitle>
-          <CardDescription>Sign in to your workspace.</CardDescription>
-          {params.get("error") ? <p role="alert" className="text-destructive text-sm">{params.get("error")}</p> : null}
-        </CardHeader>
-        <form
-          onSubmit={(e) => {
-            e.preventDefault()
-            void signIn(email, password)
-          }}
-        >
-          <CardContent className="space-y-4">
+    <main className="relative grid min-h-svh place-items-center overflow-hidden p-4 sm:p-8">
+      <StageBackdrop section="other" />
+      <div className="relative z-10 grid w-full max-w-5xl items-center gap-10 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,24rem)]">
+        <section className="hidden space-y-8 lg:block">
+          <div className="flex items-center gap-3">
+            <Image src="/icon.png" alt="" width={40} height={40} className="bbn-rough-sm" priority />
+            <span className="font-heading text-lg font-semibold tracking-tight">BoomBigNose ERP</span>
+          </div>
+          <h2 className="text-5xl leading-[1.12] font-bold">
+            ทั้งธุรกิจ ในที่ทำงานเดียว
+            <span className="text-primary mt-1 block text-3xl font-semibold">One desk for the whole business.</span>
+          </h2>
+          <ul className="grid max-w-md gap-4">
+            {MODES.map((m, i) => {
+              const Icon = MODE_ICON[m]
+              return (
+                <li
+                  key={m}
+                  className="bbn-glass flex items-start gap-3 p-3.5"
+                  style={{ marginLeft: `${i * 1.25}rem` }}
+                >
+                  <span className="bbn-rough-sm border-primary/60 bg-primary/10 text-primary flex size-9 shrink-0 items-center justify-center border">
+                    <Icon className="size-4.5" aria-hidden />
+                  </span>
+                  <span className="grid gap-0.5">
+                    <span className="font-semibold">
+                      {MODE_COPY[m].th} / {MODE_COPY[m].en}
+                    </span>
+                    <span className="text-muted-foreground text-sm">{MODE_COPY[m].tipTh}</span>
+                  </span>
+                </li>
+              )
+            })}
+          </ul>
+          <p className="text-muted-foreground flex items-center gap-2 text-sm">
+            <ShieldCheck className="text-gold size-4 shrink-0" aria-hidden />
+            AI ทำงานบนเครื่องคุณ ข้อมูลไม่ออกนอกเครื่อง / AI runs on your own machine.
+          </p>
+        </section>
+
+        <section className="bbn-glass w-full space-y-6 p-6 sm:p-8">
+          <div className="space-y-2">
+            <Image src="/icon.png" alt="" width={32} height={32} className="bbn-rough-sm lg:hidden" priority />
+            <h1 className="bbn-title text-3xl font-bold">BoomBigNose ERP</h1>
+            <p className="text-muted-foreground text-sm">Sign in to your workspace.</p>
+            {params.get("error") ? <p role="alert" className="text-destructive text-sm">{params.get("error")}</p> : null}
+          </div>
+          <form
+            className="space-y-5"
+            onSubmit={(e) => {
+              e.preventDefault()
+              void signIn(email, password)
+            }}
+          >
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <Input
@@ -96,32 +132,33 @@ function LoginForm() {
                 required
               />
             </div>
-          </CardContent>
-          <CardFooter className="mt-2 flex-col gap-3">
-            <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? <Loader2 className="size-4 animate-spin" /> : "Sign in"}
-            </Button>
-            {DEMO_EMAIL && DEMO_PASSWORD ? (
-              <Button
-                type="button"
-                variant="outline"
-                className="w-full"
-                disabled={loading}
-                onClick={() => void signIn(DEMO_EMAIL, DEMO_PASSWORD)}
-              >
-                Use demo account
+            <div className="space-y-3 pt-1">
+              <Button type="submit" size="lg" className="w-full" disabled={loading}>
+                {loading ? <Loader2 className="size-4 animate-spin" /> : "Sign in"}
               </Button>
-            ) : null}
-            <p className="text-muted-foreground text-center text-xs">
-              No account yet?{" "}
-              <Link href="/signup" className="underline underline-offset-4">
-                Sign up
-              </Link>
-            </p>
-          </CardFooter>
-        </form>
-      </Card>
-    </div>
+              {DEMO_EMAIL && DEMO_PASSWORD ? (
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="lg"
+                  className="w-full"
+                  disabled={loading}
+                  onClick={() => void signIn(DEMO_EMAIL, DEMO_PASSWORD)}
+                >
+                  Use demo account
+                </Button>
+              ) : null}
+            </div>
+          </form>
+          <p className="text-muted-foreground border-t pt-4 text-sm">
+            No account yet?{" "}
+            <Link href="/signup" className="text-primary underline underline-offset-4">
+              Sign up
+            </Link>
+          </p>
+        </section>
+      </div>
+    </main>
   )
 }
 
