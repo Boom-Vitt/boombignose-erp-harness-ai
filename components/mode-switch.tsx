@@ -32,7 +32,13 @@ function setMode(mode: Mode) {
 export function ModeSwitch() {
   const mode = useMode()
   return (
-    <div role="radiogroup" aria-label="โหมดการใช้งาน / Operator mode" className="bbn-sketch flex min-w-0 shrink items-center gap-0.5 sm:gap-1">
+    <div
+      role="radiogroup"
+      aria-label="โหมดการใช้งาน / Operator mode"
+      className="bbn-mode bbn-sketch"
+      style={{ "--i": MODES.indexOf(mode) } as React.CSSProperties}
+    >
+      <span aria-hidden className="bbn-mode-thumb" />
       {MODES.map((m) => (
         <button
           key={m}
@@ -44,7 +50,7 @@ export function ModeSwitch() {
           className="bbn-mode-pill"
           title={`${MODE_COPY[m].th} / ${MODE_COPY[m].en}`}
         >
-          <span className="hidden lg:inline">{MODE_COPY[m].th} · </span>
+          <span className="hidden xl:inline">{MODE_COPY[m].th} · </span>
           {MODE_COPY[m].en}
         </button>
       ))}
@@ -56,8 +62,9 @@ export function ModeTip() {
   const mode = useMode()
   const copy = MODE_COPY[mode]
   return (
-    <p className="bbn-sketch bbn-sticky !m-0 text-sm" data-testid="mode-tip">
-      <strong>{copy.th} / {copy.en}</strong> · {copy.tipTh} / {copy.tipEn}
+    <p className="bbn-sticky !m-0 text-sm" data-testid="mode-tip">
+      <strong>{copy.th} / {copy.en}</strong>
+      <span>{copy.tipTh} / {copy.tipEn}</span>
     </p>
   )
 }

@@ -144,13 +144,13 @@ export function CommandPalette({ role }: { role: Role; orgId: string }) {
       <Button
         variant="outline"
         size="sm"
-        className="text-muted-foreground"
+        className="text-muted-foreground sm:w-56 sm:justify-start"
         aria-keyshortcuts="Control+K Meta+K"
         onClick={() => changeOpen(true)}
       >
         <Search aria-hidden />
         <span className="max-sm:sr-only">Search</span>
-        <kbd className="bg-muted pointer-events-none rounded px-1.5 font-mono text-[10px] font-medium max-sm:hidden">
+        <kbd className="bg-muted pointer-events-none ml-auto rounded px-1.5 font-mono text-[10px] font-medium max-sm:hidden">
           {apple ? "⌘K" : "Ctrl K"}
         </kbd>
       </Button>

@@ -19,8 +19,19 @@ import {
   Wallet,
 } from "lucide-react"
 
+export type NavGroup = "sell" | "operate" | "money" | "workspace"
+
+/** Sidebar sections, in order. Titles are bilingual so Thai operators scan the same rail. */
+export const NAV_GROUPS: { id: NavGroup; label: string }[] = [
+  { id: "sell", label: "ขาย / Sell" },
+  { id: "operate", label: "ปฏิบัติการ / Operate" },
+  { id: "money", label: "การเงิน / Money" },
+  { id: "workspace", label: "พื้นที่ทำงาน / Workspace" },
+]
+
 export type NavItem = {
   title: string
+  group: NavGroup
   href: string
   icon: LucideIcon
   /** Hide from staff members. Accountants still see the audit log. */
@@ -39,24 +50,24 @@ export function showNavItem(role: string, item: NavItem): boolean {
  * Every module route is registered here so the sidebar stays in sync.
  */
 export const NAV_ITEMS: NavItem[] = [
-  { title: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-  { title: "Clients", href: "/clients", icon: Users },
-  { title: "Deals", href: "/deals", icon: Handshake },
-  { title: "Inventory", href: "/inventory", icon: Package },
-  { title: "Purchases", href: "/purchases", icon: Receipt },
-  { title: "Vendors", href: "/vendors", icon: Users },
-  { title: "Quotes", href: "/quotes", icon: FileText },
-  { title: "Projects", href: "/projects", icon: FolderKanban },
-  { title: "Timesheets", href: "/timesheets", icon: Clock },
-  { title: "Finance", href: "/finance", icon: Receipt },
-  { title: "Expenses", href: "/expenses", icon: Wallet },
-  { title: "Reports", href: "/reports", icon: BarChart3 },
-  { title: "Calendar", href: "/calendar", icon: CalendarDays },
-  { title: "Templates", href: "/templates", icon: Sparkles },
-  { title: "Intake", href: "/intake", icon: NotebookPen },
-  { title: "Automation", href: "/automation", icon: Workflow },
-  { title: "Activity", href: "/audit", icon: ScrollText, ownerAdminOnly: true },
-  { title: "Blueprint", href: "/blueprint", icon: Compass },
-  { title: "Settings", href: "/settings", icon: Settings },
-  { title: "Products", href: "/products", icon: Package },
+  { title: "Dashboard", group: "sell", href: "/dashboard", icon: LayoutDashboard },
+  { title: "Clients", group: "sell", href: "/clients", icon: Users },
+  { title: "Deals", group: "sell", href: "/deals", icon: Handshake },
+  { title: "Inventory", group: "operate", href: "/inventory", icon: Package },
+  { title: "Purchases", group: "operate", href: "/purchases", icon: Receipt },
+  { title: "Vendors", group: "operate", href: "/vendors", icon: Users },
+  { title: "Quotes", group: "sell", href: "/quotes", icon: FileText },
+  { title: "Projects", group: "operate", href: "/projects", icon: FolderKanban },
+  { title: "Timesheets", group: "operate", href: "/timesheets", icon: Clock },
+  { title: "Finance", group: "money", href: "/finance", icon: Receipt },
+  { title: "Expenses", group: "money", href: "/expenses", icon: Wallet },
+  { title: "Reports", group: "money", href: "/reports", icon: BarChart3 },
+  { title: "Calendar", group: "operate", href: "/calendar", icon: CalendarDays },
+  { title: "Templates", group: "workspace", href: "/templates", icon: Sparkles },
+  { title: "Intake", group: "workspace", href: "/intake", icon: NotebookPen },
+  { title: "Automation", group: "workspace", href: "/automation", icon: Workflow },
+  { title: "Activity", group: "workspace", href: "/audit", icon: ScrollText, ownerAdminOnly: true },
+  { title: "Blueprint", group: "workspace", href: "/blueprint", icon: Compass },
+  { title: "Settings", group: "workspace", href: "/settings", icon: Settings },
+  { title: "Products", group: "operate", href: "/products", icon: Package },
 ]
