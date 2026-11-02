@@ -93,9 +93,9 @@ export function dampAngle(a: number, b: number, rate: number, dt: number) {
 export const curve = (pts: [number, number][]) =>
   new THREE.CatmullRomCurve3(pts.map(([x, z]) => new THREE.Vector3(x, 0, z)), false, "centripetal")
 
-export function chip(html: string, cls = "bg-white/95 px-2 py-0.5 text-[11px]") {
+export function chip(html: string, cls = "bg-card/90 px-2 py-0.5 text-[11px]") {
   const el = document.createElement("div")
-  el.className = `pointer-events-none select-none whitespace-nowrap rounded-md font-medium text-slate-600 shadow-md ring-1 ring-slate-900/5 ${cls}`
+  el.className = `pointer-events-none select-none whitespace-nowrap rounded-md font-medium text-[#c9d1e2] shadow-md ring-1 ring-border backdrop-blur-sm ${cls}`
   el.innerHTML = html
   return { obj: new CSS2DObject(el), el }
 }

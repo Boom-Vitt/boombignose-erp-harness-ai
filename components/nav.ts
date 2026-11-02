@@ -20,6 +20,7 @@ import {
   Building2,
   Rocket,
   UserRound,
+  Boxes,
 } from "lucide-react"
 
 export type NavGroup = "sell" | "operate" | "money" | "workspace"
@@ -70,6 +71,7 @@ export const NAV_ITEMS: NavItem[] = [
   { title: "Intake", group: "workspace", href: "/intake", icon: NotebookPen },
   { title: "Automation", group: "workspace", href: "/automation", icon: Workflow },
   { title: "Activity", group: "workspace", href: "/audit", icon: ScrollText, ownerAdminOnly: true },
+  { title: "Campus 3D", group: "workspace", href: "/warehouse", icon: Boxes },
   { title: "Blueprint", group: "workspace", href: "/blueprint", icon: Compass },
   { title: "Settings", group: "workspace", href: "/settings", icon: Settings },
   { title: "Products", group: "operate", href: "/products", icon: Package },

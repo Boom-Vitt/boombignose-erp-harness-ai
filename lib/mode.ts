@@ -9,21 +9,21 @@ export const MODE_COPY: Record<Mode, { th: string; en: string; tipTh: string; ti
     en: "SMEs",
     tipTh: "เริ่มจากใบเสนอราคา ใบแจ้งหนี้ และการซื้อ",
     tipEn: "Start with quotes, invoices and purchases.",
-    first: ["/dashboard", "/quotes", "/purchases", "/inventory", "/finance"],
+    first: ["/dashboard", "/quotes", "/purchases", "/inventory", "/finance", "/warehouse"],
   },
   startup: {
     th: "สตาร์ทอัป",
     en: "Startup",
     tipTh: "เริ่มจากดีล โปรเจกต์ และรายงานการเติบโต",
     tipEn: "Start with deals, projects and growth reports.",
-    first: ["/dashboard", "/deals", "/projects", "/reports", "/automation"],
+    first: ["/dashboard", "/deals", "/projects", "/reports", "/automation", "/warehouse"],
   },
   individual: {
     th: "บุคคลธรรมดา",
     en: "Individual",
     tipTh: "เริ่มจากไทม์ชีต ค่าใช้จ่าย และใบแจ้งหนี้ฟรีแลนซ์",
     tipEn: "Start with timesheets, expenses and freelance invoices.",
-    first: ["/dashboard", "/intake", "/timesheets", "/expenses", "/clients", "/finance"],
+    first: ["/dashboard", "/intake", "/timesheets", "/expenses", "/clients", "/finance", "/warehouse"],
   },
 }
 
