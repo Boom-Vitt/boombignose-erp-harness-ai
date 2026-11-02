@@ -9,13 +9,13 @@
   <link rel="apple-touch-icon" href="assets/apple-touch-icon.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Prompt:wght@500;600;700;800&display=swap" rel="stylesheet" />
   <meta property="og:title" content="BoomBigNose ERP Harness AI" />
   <meta property="og:description" content="เดสก์ท็อปบนเครื่องคุณ ไม่เรียก AI บนคลาวด์" />
   <meta property="og:image" content="https://boom-vitt.github.io/boombignose-erp-harness-ai/assets/og.png" />
   <meta property="og:type" content="website" />
   <link rel="stylesheet" href="assets/site.css" />
-  <meta name="theme-color" content="#0B1222" />
+  <meta name="theme-color" content="#05060D" />
 </head>
 <body class="home">
   <a class="skip" href="#content">ข้ามไปเนื้อหา</a>
@@ -25,20 +25,20 @@
         <img src="assets/brandmark.png" width="36" height="36" alt="" />
         <span>BoomBigNose</span>
       </a>
-      <div class="nav-links">
+      <nav class="nav-links" aria-label="เมนูหลัก">
         <a href="#showcase">ภาพจากแอป</a>
         <a href="install.html">วิธีติดตั้ง</a>
         <a href="first-run.html">ครั้งแรกที่เปิด</a>
         <a href="guide.html">วิธีใช้</a>
-        <a class="btn" href="#download">ดาวน์โหลด</a>
-      </div>
+      </nav>
+      <a class="btn sm nav-cta" href="#download">ดาวน์โหลด</a>
     </div>
   </header>
   <main id="content">
     <div class="wrap hero">
       <div class="hero-text">
         <span class="eyebrow">Local-first · Desktop ERP</span>
-        <h1>BoomBigNose <span class="grad">ERP Harness AI</span></h1>
+        <h1><span class="h1-a">BoomBigNose</span> <span class="grad">ERP Harness AI</span></h1>
         <p class="lead">เดสก์ท็อปบนเครื่องคุณ ไม่เรียก AI บนคลาวด์</p>
         <p class="en">Fully local. No cloud AI at runtime.</p>
         <div class="cta-row">
@@ -48,6 +48,8 @@
         <p class="meta" id="primary-meta">หน้าต่างแอป ไม่ใช่แค่คำสั่ง harness ถ้าเบราว์เซอร์ไม่บอกระบบ ให้เลือกการ์ดด้านล่าง ขนาดเป็นจำนวนไบต์จริงจาก Release</p>
       </div>
       <div class="hero-shot">
+        <span class="float f1" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24"><path d="M12 3l7 3v5c0 5-3.5 8.5-7 10-3.5-1.5-7-5-7-10V6z"/></svg>127.0.0.1:3100</span>
+        <span class="float f2" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24"><path d="M7 18h9a4 4 0 0 0 .8-7.9A6 6 0 0 0 5.4 11 3.5 3.5 0 0 0 7 18z"/><path d="M3 3l18 18"/></svg>No cloud AI at runtime</span>
         <figure class="shot">
           <div class="appwin">
             <div class="appbar"><i></i><i></i><i></i><span>BoomBigNose · Campus 3D</span></div>
@@ -58,10 +60,21 @@
       </div>
     </div>
 
+    <section class="stack" aria-labelledby="stack-line">
+      <div class="wrap">
+        <p id="stack-line">ในไฟล์เดียวกัน ไม่รวมน้ำหนักโมเดล qwen2.5:3b</p>
+        <ul class="pills">
+          <li>Node</li><li>server.js</li><li>Postgres</li><li>Auth</li><li>PostgREST</li><li>Ollama</li>
+        </ul>
+      </div>
+    </section>
+
     <section id="showcase">
       <div class="wrap">
-        <h2>ภาพจากแอป</h2>
-        <p class="sub">ภาพหน้าจอของแอปบนเครื่อง ไม่ใช่ภาพจำลอง แต่ละภาพอธิบายตามสิ่งที่เห็นในหน้าจอ</p>
+        <div class="sec-head">
+          <h2>ภาพจากแอป</h2>
+          <p class="sub">ภาพหน้าจอของแอปบนเครื่อง ไม่ใช่ภาพจำลอง แต่ละภาพอธิบายตามสิ่งที่เห็นในหน้าจอ</p>
+        </div>
         <div class="showcase">
           <figure class="shot">
             <div class="appwin">
@@ -97,65 +110,52 @@
 
     <section>
       <div class="wrap">
-        <h2>สิ่งที่ยืนยันได้</h2>
+        <div class="sec-head"><h2>สิ่งที่ยืนยันได้</h2></div>
         <div class="badges">
-          <article class="card"><h3>เฉพาะในเครื่อง</h3><p>ที่อยู่ที่อนุญาตคือ loopback เท่านั้น</p></article>
-          <article class="card"><h3>ไม่มี AI บนคลาวด์</h3><p>ตัวตรวจปฏิเสธคีย์ของบริการโมเดล</p></article>
-          <article class="card"><h3>AGPL-3.0</h3><p>รีโประบุ AGPL-3.0-only หรือสัญญาเชิงพาณิชย์ อ่านที่ <a href="https://github.com/Boom-Vitt/boombignose-erp-harness-ai/blob/main/LICENSE">LICENSE</a></p></article>
-          <article class="card"><h3>ข้อมูลอยู่กับคุณ</h3><p>เป้าหมายคือข้อมูลลูกค้าบนเครื่องที่เปิดโปรแกรม หน้านี้ไม่ได้รับรอง PDPA ทั้งฉบับ</p></article>
+          <article class="card">
+            <span class="ico-tile"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l7 3v5c0 5-3.5 8.5-7 10-3.5-1.5-7-5-7-10V6z"/></svg></span>
+            <h3>เฉพาะในเครื่อง</h3><p>ที่อยู่ที่อนุญาตคือ loopback เท่านั้น</p>
+            <span class="ghost" aria-hidden="true">127.0.0.1</span>
+          </article>
+          <article class="card">
+            <span class="ico-tile"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 18h9a4 4 0 0 0 .8-7.9A6 6 0 0 0 5.4 11 3.5 3.5 0 0 0 7 18z"/><path d="M3 3l18 18"/></svg></span>
+            <h3>ไม่มี AI บนคลาวด์</h3><p>ตัวตรวจปฏิเสธคีย์ของบริการโมเดล</p>
+          </article>
+          <article class="card">
+            <span class="ico-tile"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4M9 13h6M9 17h4"/></svg></span>
+            <h3>AGPL-3.0</h3><p>รีโประบุ AGPL-3.0-only หรือสัญญาเชิงพาณิชย์ อ่านที่ <a href="https://github.com/Boom-Vitt/boombignose-erp-harness-ai/blob/main/LICENSE">LICENSE</a></p>
+          </article>
+          <article class="card">
+            <span class="ico-tile"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v6c0 1.7 3.1 3 7 3s7-1.3 7-3V6M5 12v6c0 1.7 3.1 3 7 3s7-1.3 7-3v-6"/></svg></span>
+            <h3>ข้อมูลอยู่กับคุณ</h3><p>เป้าหมายคือข้อมูลลูกค้าบนเครื่องที่เปิดโปรแกรม หน้านี้ไม่ได้รับรอง PDPA ทั้งฉบับ</p>
+            <span class="ghost" aria-hidden="true">on-device</span>
+          </article>
         </div>
       </div>
     </section>
 
     <section>
-      <div class="wrap">
-        <h2>ส่วนของ ERP</h2>
-        <p class="sub">รายการนี้มีในโปรเจกต์ หน้านี้ไม่โฆษณาซื้อของหรือสต็อก</p>
+      <div class="wrap split">
+        <div class="sec-head">
+          <h2>ส่วนของ ERP</h2>
+          <p class="sub">รายการนี้มีในโปรเจกต์ หน้านี้ไม่โฆษณาซื้อของหรือสต็อก</p>
+        </div>
         <div class="grid">
-          <article class="card"><h3>ลูกค้าและดีล</h3><p>รายชื่อและขั้นของดีลอยู่ในโปรแกรม</p></article>
-          <article class="card"><h3>โปรเจกต์</h3><p>งานอยู่บนฐานเดียวกับลูกค้า</p></article>
-          <article class="card"><h3>การเงินบนเอกสาร</h3><p>ใบเสนอราคาและใบแจ้งหนี้ ยอดเป็นสตางค์จำนวนเต็ม ไม่ได้บอกว่าเป็นสมุดบัญชีตามกฎหมาย</p></article>
-          <article class="card"><h3>แดชบอร์ด</h3><p>สรุปจากข้อมูลในเครื่อง ไม่ได้ส่งตารางให้บริการแชท</p></article>
-        </div>
-      </div>
-    </section>
-
-    <section>
-      <div class="wrap">
-        <h2>สามขั้น</h2>
-        <div class="steps">
-          <article class="card"><h3>1. เลือกไฟล์ของระบบ</h3><p>เวอร์ชัน <span data-release="tag">boombignose-v0.3.0</span> มีตัวติดตั้งสำหรับ macOS arm64, Windows x64 และ Linux amd64 พร้อม Node, server.js, Postgres, Auth, PostgREST และ Ollama ในไฟล์เดียวกัน ไม่รวมน้ำหนักโมเดล qwen2.5:3b ขั้นตอนเปิดไฟล์อยู่ที่ <a href="install.html">วิธีติดตั้ง</a></p></article>
-          <article class="card"><h3>2. ยอมรับคำเตือนของระบบ</h3><p>ไม่มีใบรับรองที่ซื้อจากร้านค้า macOS ใช้ Open Anyway Windows ใช้ More info แล้ว Run anyway Smart App Control อาจยังบล็อก</p></article>
-          <article class="card"><h3>3. เปิดหน้าต่าง</h3><p>โปรแกรมที่ติดตั้งชื่อ BoomBigNose และเปิดเป็นหน้าต่าง ชุดนี้สตาร์ท ERP ในเครื่องที่ 127.0.0.1:3100 ไม่รวม Docker และไม่ดาวน์โหลดโมเดลเอง การดึง qwen2.5:3b เกิดเมื่อผู้ใช้กดปุ่มหรือรัน boombignose pull-model เท่านั้น ยังไม่ถูกคลิกทดสอบบนเครื่องจริง</p></article>
-        </div>
-      </div>
-    </section>
-
-    <section id="download">
-      <div class="wrap">
-        <h2>ไฟล์แต่ละระบบ</h2>
-        <p class="sub">สร้างจาก CI ของแท็ก <span data-release="tag">boombignose-v0.3.0</span> ขนาดเป็นไบต์ตาม Release ค่าแฮชทั้งไฟล์มาจาก SHA256SUMS ของแท็กนั้น ชุดนี้รวมหน้าต่างกับ Node, server.js, Postgres, Auth, PostgREST และ Ollama v0.40.11 ไม่รวมน้ำหนักโมเดล และไม่ได้ลงชื่อด้วยใบรับรองที่ซื้อมา Linux กับ Windows ไม่รวมตัวรัน CUDA วิธีเปิดไฟล์อยู่ที่ <a href="install.html">หน้าติดตั้ง</a></p>
-        <div class="os-grid">
-          <a class="card os" id="card-mac" data-os="macos" data-release-href="macos" href="https://github.com/Boom-Vitt/boombignose-erp-harness-ai/releases/download/boombignose-v0.3.0/BoomBigNose-macos-arm64.dmg">
-            <strong>macOS <span class="chip" data-chip hidden>เครื่องนี้</span></strong>
-            <span data-release="line-macos">arm64 · boombignose-v0.3.0 · 505,963,961 ไบต์</span>
-            <span class="mono" data-release="sha-macos">59ab51d7490cbe357360de9ed1b43236fbfb57324f98bf449e1f8f3a1e85cad3</span>
-            <span class="mono" data-release="name-macos">BoomBigNose-macos-arm64.dmg</span>
-          </a>
-          <a class="card os" id="card-win" data-os="windows" data-release-href="windows" href="https://github.com/Boom-Vitt/boombignose-erp-harness-ai/releases/download/boombignose-v0.3.0/BoomBigNose-windows-x64-setup.exe">
-            <strong>Windows <span class="chip" data-chip hidden>เครื่องนี้</span></strong>
-            <span data-release="line-windows">x64 · boombignose-v0.3.0 · 507,445,373 ไบต์</span>
-            <span class="mono" data-release="sha-windows">645250da05694ed762a590d2e7c1f6d2b39ad0a4475ab3786ad239874b60f9ca</span>
-            <span class="mono" data-release="name-windows">BoomBigNose-windows-x64-setup.exe</span>
-          </a>
-          <article class="card os" id="card-linux" data-os="linux">
-            <a data-release-href="linux" href="https://github.com/Boom-Vitt/boombignose-erp-harness-ai/releases/download/boombignose-v0.3.0/BoomBigNose-linux-amd64.tar.gz"><strong>Linux <span class="chip" data-chip hidden>เครื่องนี้</span></strong></a>
-            <span data-release="line-linux">amd64 · boombignose-v0.3.0 · 202,666,839 ไบต์</span>
-            <span class="mono" data-release="sha-linux">70c829dc802a067e2344515bcfa4cd880b947473dc70634153cd34c534e1df89</span>
-            <span class="mono" data-release="name-linux">BoomBigNose-linux-amd64.tar.gz</span>
-            <a data-release-href="appimage" href="https://github.com/Boom-Vitt/boombignose-erp-harness-ai/releases/download/boombignose-v0.3.0/BoomBigNose-linux-amd64.AppImage">AppImage · <span data-release="size-appimage">138,394,104 ไบต์</span></a>
-            <span class="mono" data-release="sha-appimage">cd04095ca8cc6478fea1a16f86cf5cf41592179945b15d5e9040726b2e646a62</span>
-            <span class="mono" data-release="name-appimage">BoomBigNose-linux-amd64.AppImage</span>
+          <article class="card">
+            <span class="ico-tile"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6M16 5.2a3.2 3.2 0 0 1 0 5.6M18 14.3c2 .7 3.5 2.8 3.5 5.7"/></svg></span>
+            <h3>ลูกค้าและดีล</h3><p>รายชื่อและขั้นของดีลอยู่ในโปรแกรม</p>
+          </article>
+          <article class="card">
+            <span class="ico-tile"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M3 9h18M8 4v16"/></svg></span>
+            <h3>โปรเจกต์</h3><p>งานอยู่บนฐานเดียวกับลูกค้า</p>
+          </article>
+          <article class="card">
+            <span class="ico-tile"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6M9 12h6"/></svg></span>
+            <h3>การเงินบนเอกสาร</h3><p>ใบเสนอราคาและใบแจ้งหนี้ ยอดเป็นสตางค์จำนวนเต็ม ไม่ได้บอกว่าเป็นสมุดบัญชีตามกฎหมาย</p>
+          </article>
+          <article class="card">
+            <span class="ico-tile"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-8M22 20H2"/></svg></span>
+            <h3>แดชบอร์ด</h3><p>สรุปจากข้อมูลในเครื่อง ไม่ได้ส่งตารางให้บริการแชท</p>
           </article>
         </div>
       </div>
@@ -163,7 +163,58 @@
 
     <section>
       <div class="wrap">
-        <h2>เปิดไฟล์ที่ไม่ได้ลงชื่อ</h2>
+        <div class="sec-head"><h2>สามขั้น</h2></div>
+        <div class="steps flow">
+          <article class="card"><span class="num" aria-hidden="true">1</span><h3>เลือกไฟล์ของระบบ</h3><p>เวอร์ชัน <span data-release="tag">boombignose-v0.3.0</span> มีตัวติดตั้งสำหรับ macOS arm64, Windows x64 และ Linux amd64 พร้อม Node, server.js, Postgres, Auth, PostgREST และ Ollama ในไฟล์เดียวกัน ไม่รวมน้ำหนักโมเดล qwen2.5:3b ขั้นตอนเปิดไฟล์อยู่ที่ <a href="install.html">วิธีติดตั้ง</a></p></article>
+          <article class="card"><span class="num" aria-hidden="true">2</span><h3>ยอมรับคำเตือนของระบบ</h3><p>ไม่มีใบรับรองที่ซื้อจากร้านค้า macOS ใช้ Open Anyway Windows ใช้ More info แล้ว Run anyway Smart App Control อาจยังบล็อก</p></article>
+          <article class="card"><span class="num" aria-hidden="true">3</span><h3>เปิดหน้าต่าง</h3><p>โปรแกรมที่ติดตั้งชื่อ BoomBigNose และเปิดเป็นหน้าต่าง ชุดนี้สตาร์ท ERP ในเครื่องที่ 127.0.0.1:3100 ไม่รวม Docker และไม่ดาวน์โหลดโมเดลเอง การดึง qwen2.5:3b เกิดเมื่อผู้ใช้กดปุ่มหรือรัน boombignose pull-model เท่านั้น ยังไม่ถูกคลิกทดสอบบนเครื่องจริง</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section id="download">
+      <div class="wrap">
+        <div class="sec-head">
+          <h2>ไฟล์แต่ละระบบ</h2>
+          <p class="sub">สร้างจาก CI ของแท็ก <span data-release="tag">boombignose-v0.3.0</span> ขนาดเป็นไบต์ตาม Release ค่าแฮชทั้งไฟล์มาจาก SHA256SUMS ของแท็กนั้น ชุดนี้รวมหน้าต่างกับ Node, server.js, Postgres, Auth, PostgREST และ Ollama v0.40.11 ไม่รวมน้ำหนักโมเดล และไม่ได้ลงชื่อด้วยใบรับรองที่ซื้อมา Linux กับ Windows ไม่รวมตัวรัน CUDA วิธีเปิดไฟล์อยู่ที่ <a href="install.html">หน้าติดตั้ง</a></p>
+        </div>
+        <div class="os-grid">
+          <a class="card os" id="card-mac" data-os="macos" data-release-href="macos" href="https://github.com/Boom-Vitt/boombignose-erp-harness-ai/releases/download/boombignose-v0.3.0/BoomBigNose-macos-arm64.dmg">
+            <span class="ico-tile"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="6" width="12" height="12" rx="2"/><path d="M9 2v4M15 2v4M9 18v4M15 18v4M2 9h4M2 15h4M18 9h4M18 15h4"/></svg></span>
+            <strong>macOS <span class="chip" data-chip hidden>เครื่องนี้</span></strong>
+            <span data-release="line-macos">arm64 · boombignose-v0.3.0 · 505,963,961 ไบต์</span>
+            <span class="mono" data-release="sha-macos">59ab51d7490cbe357360de9ed1b43236fbfb57324f98bf449e1f8f3a1e85cad3</span>
+            <span class="mono" data-release="name-macos">BoomBigNose-macos-arm64.dmg</span>
+            <span class="get">ดาวน์โหลด</span>
+          </a>
+          <a class="card os" id="card-win" data-os="windows" data-release-href="windows" href="https://github.com/Boom-Vitt/boombignose-erp-harness-ai/releases/download/boombignose-v0.3.0/BoomBigNose-windows-x64-setup.exe">
+            <span class="ico-tile"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="6" width="12" height="12" rx="2"/><path d="M9 2v4M15 2v4M9 18v4M15 18v4M2 9h4M2 15h4M18 9h4M18 15h4"/></svg></span>
+            <strong>Windows <span class="chip" data-chip hidden>เครื่องนี้</span></strong>
+            <span data-release="line-windows">x64 · boombignose-v0.3.0 · 507,445,373 ไบต์</span>
+            <span class="mono" data-release="sha-windows">645250da05694ed762a590d2e7c1f6d2b39ad0a4475ab3786ad239874b60f9ca</span>
+            <span class="mono" data-release="name-windows">BoomBigNose-windows-x64-setup.exe</span>
+            <span class="get">ดาวน์โหลด</span>
+          </a>
+          <article class="card os" id="card-linux" data-os="linux">
+            <span class="ico-tile"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="6" width="12" height="12" rx="2"/><path d="M9 2v4M15 2v4M9 18v4M15 18v4M2 9h4M2 15h4M18 9h4M18 15h4"/></svg></span>
+            <a data-release-href="linux" href="https://github.com/Boom-Vitt/boombignose-erp-harness-ai/releases/download/boombignose-v0.3.0/BoomBigNose-linux-amd64.tar.gz"><strong>Linux <span class="chip" data-chip hidden>เครื่องนี้</span></strong></a>
+            <span data-release="line-linux">amd64 · boombignose-v0.3.0 · 202,666,839 ไบต์</span>
+            <span class="mono" data-release="sha-linux">70c829dc802a067e2344515bcfa4cd880b947473dc70634153cd34c534e1df89</span>
+            <span class="mono" data-release="name-linux">BoomBigNose-linux-amd64.tar.gz</span>
+            <a class="get" data-release-href="linux" href="https://github.com/Boom-Vitt/boombignose-erp-harness-ai/releases/download/boombignose-v0.3.0/BoomBigNose-linux-amd64.tar.gz">ดาวน์โหลด</a>
+            <div class="alt">
+              <a data-release-href="appimage" href="https://github.com/Boom-Vitt/boombignose-erp-harness-ai/releases/download/boombignose-v0.3.0/BoomBigNose-linux-amd64.AppImage">AppImage · <span data-release="size-appimage">138,394,104 ไบต์</span></a>
+              <span class="mono" data-release="sha-appimage">cd04095ca8cc6478fea1a16f86cf5cf41592179945b15d5e9040726b2e646a62</span>
+              <span class="mono" data-release="name-appimage">BoomBigNose-linux-amd64.AppImage</span>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap">
+        <div class="sec-head"><h2>เปิดไฟล์ที่ไม่ได้ลงชื่อ</h2></div>
         <div class="steps">
           <article class="card">
             <h3>macOS</h3>
@@ -195,10 +246,11 @@
       </div>
     </section>
 
-    <section>
+    <section class="privacy">
       <div class="wrap">
-        <h2>ความเป็นส่วนตัว</h2>
+        <div class="sec-head"><h2>ความเป็นส่วนตัว</h2></div>
         <div class="card">
+          <span class="ico-tile"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></span>
           <p>ผลิตภัณฑ์ตั้งใจไม่เรียกโมเดลบนอินเทอร์เน็ตตอนทำงาน และไม่ส่งตารางลูกค้าออกไป หน้าเว็บนี้เป็นไฟล์นิ่ง ไม่มีตัววัดผู้ชม ฟอนต์โหลดจาก Google Fonts เพื่อตัวอักษรไทยและละติน การโหลดฟอนต์นั้นเป็นการขอไฟล์จากภายนอกเฉพาะหน้านี้</p>
         </div>
       </div>
@@ -206,7 +258,7 @@
 
     <section id="faq">
       <div class="wrap">
-        <h2>คำถามและความต้องการของเครื่อง</h2>
+        <div class="sec-head"><h2>คำถามและความต้องการของเครื่อง</h2></div>
         <div class="os-grid">
           <article class="card"><h3>ต้องมีอะไรบนเครื่อง</h3><p>Windows x64, macOS arm64 หรือ Linux amd64 พร้อม WebKitGTK 4.1 บนลินุกซ์ ไฟล์ <span data-release="tag">boombignose-v0.3.0</span> รวม Node, server.js, Postgres, Auth, PostgREST และ Ollama ไว้ในตัว ไม่รวมน้ำหนักโมเดล qwen2.5:3b</p></article>
           <article class="card"><h3>หน้านี้คือโปรแกรมหรือ</h3><p>ไม่ใช่ GitHub Pages แสดงหน้านี้ หน้าต่างเปิด ERP ที่ 127.0.0.1:3100 ชุดนี้คอมไพล์ใน CI และยังไม่ถูกคลิกทดสอบบนเครื่องจริง วิธีติดตั้งแบบละเอียดอยู่ที่ <a href="install.html">หน้าติดตั้ง</a></p></article>
@@ -222,9 +274,12 @@
         <span>BoomBigNose</span>
       </a>
       <span>BoomBigNose ERP Harness AI</span>
-      <a href="install.html">วิธีติดตั้ง</a>
-      <a href="https://github.com/Boom-Vitt/boombignose-erp-harness-ai">ซอร์สโค้ด</a>
+      <div class="links">
+        <a href="install.html">วิธีติดตั้ง</a>
+        <a href="https://github.com/Boom-Vitt/boombignose-erp-harness-ai">ซอร์สโค้ด</a>
+      </div>
     </div>
+    <span class="mega" aria-hidden="true">BoomBigNose</span>
   </footer>
   <script id="bbn-release" type="application/json">{
   "assets": {
