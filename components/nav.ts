@@ -27,11 +27,11 @@ import {
 export type NavGroup = "sell" | "operate" | "money" | "workspace"
 
 /** Sidebar sections, in order. Titles are bilingual so Thai operators scan the same rail. */
-export const NAV_GROUPS: { id: NavGroup; label: string }[] = [
-  { id: "sell", label: "ขาย / Sell" },
-  { id: "operate", label: "ปฏิบัติการ / Operate" },
-  { id: "money", label: "การเงิน / Money" },
-  { id: "workspace", label: "พื้นที่ทำงาน / Workspace" },
+export const NAV_GROUPS: { id: NavGroup; label: string; th: string }[] = [
+  { id: "sell", label: "Sell", th: "ขาย" },
+  { id: "operate", label: "Operate", th: "ปฏิบัติการ" },
+  { id: "money", label: "Money", th: "การเงิน" },
+  { id: "workspace", label: "Workspace", th: "พื้นที่ทำงาน" },
 ]
 
 export type NavItem = {

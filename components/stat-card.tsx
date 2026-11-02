@@ -69,20 +69,20 @@ export function StatCard({
     >
       <CardContent className={cn("flex h-full flex-col", featured ? "justify-between gap-6" : "gap-2")}>
         <div className="text-muted-foreground flex items-center justify-between gap-2 text-sm">
-          <span className="min-w-0">{label}</span>
+          <span className="min-w-0 break-words">{label}</span>
           {chip}
         </div>
-        <div>
+        <div className="min-w-0">
           <div
             className={cn(
-              "font-heading leading-none font-semibold tracking-tight tabular-nums",
+              "font-heading min-w-0 truncate leading-none font-semibold tracking-tight tabular-nums",
               featured ? "text-4xl sm:text-6xl" : "text-xl sm:text-2xl",
               VALUE_TONE[tone]
             )}
           >
             {value}
           </div>
-          {hint ? <p className="text-muted-foreground mt-2 text-xs">{hint}</p> : null}
+          {hint ? <p className="text-muted-foreground mt-2 text-xs break-words">{hint}</p> : null}
         </div>
       </CardContent>
     </Card>

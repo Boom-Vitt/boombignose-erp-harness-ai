@@ -37,9 +37,9 @@ async function quoteWorkspace(page: Page, cleanup: (() => Promise<void>)[], stat
     expect((await owner.from("quotes").update({ status: "sent" }).eq("id", quote.id)).error).toBeNull()
   }
   await page.goto("/login")
-  await page.getByLabel("Email", { exact: true }).fill(email)
-  await page.getByLabel("Password", { exact: true }).fill(password)
-  await page.getByRole("button", { name: "Sign in", exact: true }).click()
+  await page.getByLabel(/^(Email|อีเมล)$/).fill(email)
+  await page.getByLabel(/^(Password|รหัสผ่าน)$/).fill(password)
+  await page.getByRole("button", { name: /^(Sign in|เข้าสู่ระบบ)$/ }).click()
   await page.waitForURL(/\/(dashboard|onboarding)(?:\?.*)?$/)
   return { quoteId: quote.id }
 }

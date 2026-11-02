@@ -55,9 +55,9 @@ class Fixtures {
 
   async signIn(actor: Actor, navigate = true) {
     if (navigate) await this.page.goto("/login")
-    await this.page.getByLabel("Email", { exact: true }).fill(actor.email)
-    await this.page.getByLabel("Password", { exact: true }).fill(actor.password)
-    await this.page.getByRole("button", { name: "Sign in", exact: true }).click()
+    await this.page.getByLabel(/^(Email|อีเมล)$/).fill(actor.email)
+    await this.page.getByLabel(/^(Password|รหัสผ่าน)$/).fill(actor.password)
+    await this.page.getByRole("button", { name: /^(Sign in|เข้าสู่ระบบ)$/ }).click()
     await this.page.waitForURL(/\/(dashboard|onboarding|invite\/[^/]+)(?:\?.*)?$/)
   }
 

@@ -4,9 +4,9 @@ import { loginDemo } from "./auth"
 /** A seeded member (supabase/seed.sql); members can claim but never approve. */
 async function loginMember(page: Page) {
   await page.goto("/login")
-  await page.getByLabel("Email").fill("nattapong@boombignose.org")
-  await page.getByLabel("Password").fill("BoomDemo123!")
-  await page.getByRole("button", { name: "Sign in", exact: true }).click()
+  await page.getByLabel(/^(Email|อีเมล)$/).fill("nattapong@boombignose.org")
+  await page.getByLabel(/^(Password|รหัสผ่าน)$/).fill("BoomDemo123!")
+  await page.getByRole("button", { name: /^(Sign in|เข้าสู่ระบบ)$/ }).click()
   await page.waitForURL("**/dashboard")
 }
 

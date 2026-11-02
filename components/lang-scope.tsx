@@ -1,6 +1,6 @@
 "use client"
 
-import { createContext, useContext, useState, useTransition, type ReactNode } from "react"
+import { createContext, useContext, useEffect, useState, useTransition, type ReactNode } from "react"
 
 import { saveLang } from "@/app/(app)/reports/lang-action"
 import { Button } from "@/components/ui/button"
@@ -9,6 +9,13 @@ type Lang = "th" | "en"
 type LangState = { lang: Lang; toggle: () => void }
 
 const ShellLang = createContext<LangState | null>(null)
+/** The language of the nearest LangShell/LangScope; null outside both. */
+const ActiveLang = createContext<Lang | null>(null)
+
+/** Current UI language ("th" default). <Bi> and nav labels read this, so no CSS group trick is needed. */
+export function useLang(): Lang {
+  return useContext(ActiveLang) ?? "th"
+}
 
 function useLangState(initial: Lang): LangState {
   const [lang, setLang] = useState<Lang>(initial)
@@ -35,9 +42,12 @@ function LangButton({ lang, toggle }: LangState) {
  */
 export function LangShell({ initial, children }: { initial: Lang; children: ReactNode }) {
   const state = useLangState(initial)
+  useEffect(() => { document.documentElement.lang = state.lang }, [state.lang])
   return (
     <ShellLang.Provider value={state}>
-      <div data-lang={state.lang} className="group/lang contents">{children}</div>
+      <ActiveLang.Provider value={state.lang}>
+        <div data-lang={state.lang} lang={state.lang} className="group/lang flex min-h-svh w-full flex-col">{children}</div>
+      </ActiveLang.Provider>
     </ShellLang.Provider>
   )
 }
@@ -57,9 +67,11 @@ export function LangScope({ initial, children }: { initial: Lang; children: Reac
   const own = useLangState(initial)
   if (shell) return <div className="space-y-6">{children}</div>
   return (
-    <div data-lang={own.lang} className="group/lang space-y-6">
-      <div className="flex justify-end print:hidden"><LangButton {...own} /></div>
-      {children}
-    </div>
+    <ActiveLang.Provider value={own.lang}>
+      <div data-lang={own.lang} lang={own.lang} className="group/lang space-y-6">
+        <div className="flex justify-end print:hidden"><LangButton {...own} /></div>
+        {children}
+      </div>
+    </ActiveLang.Provider>
   )
 }
