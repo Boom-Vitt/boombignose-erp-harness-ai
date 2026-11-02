@@ -1,5 +1,7 @@
 "use client"
 
+import Link from "next/link"
+import { Cpu } from "lucide-react"
 import { useSyncExternalStore } from "react"
 
 import { MODE_ICON } from "@/components/nav"
@@ -68,6 +70,12 @@ export function ModeTip() {
       <Icon className="text-gold size-4 shrink-0 self-center" aria-hidden />
       <strong>{copy.th} / {copy.en}</strong>
       <span>{copy.tipTh} / {copy.tipEn}</span>
+      {mode === "individual" ? (
+        <Link href="/settings#local-models" prefetch={false} className="bbn-chip ml-auto no-underline">
+          <Cpu className="size-3" aria-hidden />
+          AI บนเครื่อง / Local AI
+        </Link>
+      ) : null}
     </p>
   )
 }

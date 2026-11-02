@@ -23,7 +23,7 @@ export const MODE_COPY: Record<Mode, { th: string; en: string; tipTh: string; ti
     en: "Individual",
     tipTh: "เริ่มจากไทม์ชีต ค่าใช้จ่าย และใบแจ้งหนี้ฟรีแลนซ์",
     tipEn: "Start with timesheets, expenses and freelance invoices.",
-    first: ["/dashboard", "/timesheets", "/expenses", "/clients", "/finance"],
+    first: ["/dashboard", "/intake", "/timesheets", "/expenses", "/clients", "/finance"],
   },
 }
 

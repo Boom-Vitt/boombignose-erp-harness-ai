@@ -9,6 +9,7 @@ import {
 import { Separator } from "@/components/ui/separator"
 import { ActivityCounter } from "@/components/record/activity-counter"
 import { ModeSwitch, ModeTip } from "@/components/mode-switch"
+import { StageBackdrop } from "@/components/three/stage-backdrop"
 import { CommandPalette } from "@/components/command-palette/command-palette"
 
 // Authenticated pages read the session cookie. A build without one must not
@@ -38,6 +39,7 @@ export default async function AppLayout({
         />
         {/* min-w-0: wide content (kanban boards) scrolls in its own container instead of widening the page. */}
         <SidebarInset className="bbn-shell min-w-0">
+          <StageBackdrop />
           <header className="bbn-shell-header sticky top-0 z-10 flex h-14 min-w-0 items-center gap-2 px-3 backdrop-blur-md sm:px-5">
             <SidebarTrigger className="-ml-1 shrink-0" />
             <Separator orientation="vertical" className="mr-1 hidden h-5 sm:block" />

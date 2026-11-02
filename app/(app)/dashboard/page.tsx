@@ -21,6 +21,7 @@ import {
 } from "lucide-react"
 
 import { getDashboardData } from "@/lib/queries/dashboard"
+import { PersonalAssistant } from "@/components/personal-ai"
 import { PageHeader } from "@/components/page-header"
 import { StatCard } from "@/components/stat-card"
 import { EmptyState } from "@/components/empty-state"
@@ -49,6 +50,8 @@ export default async function DashboardPage() {
         title="Dashboard"
         description="Cash, pipeline, delivery, and what needs attention today."
       />
+
+      <PersonalAssistant />
 
       {/* Board: one tall cash sheet on the left, four key numbers pinned to its right. */}
       <div className="grid gap-4 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)_minmax(0,1fr)]">

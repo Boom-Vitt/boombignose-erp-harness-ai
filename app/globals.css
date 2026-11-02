@@ -421,3 +421,62 @@
 .bbn-ledger > * + * {
   border-top: 1.5px dashed var(--border);
 }
+
+/* ---------- 3D stage (ambient backdrop behind the page, never interactive) ---------- */
+
+.bbn-shell {
+  isolation: isolate;
+}
+.bbn-stage {
+  position: fixed;
+  top: 3.5rem;
+  right: 0;
+  left: 0;
+  height: 30rem;
+  z-index: -1;
+  pointer-events: none;
+  overflow: hidden;
+  -webkit-mask-image: radial-gradient(75% 95% at 80% 0%, #000 0%, rgb(0 0 0 / 0.6) 45%, transparent 100%);
+  mask-image: radial-gradient(75% 95% at 80% 0%, #000 0%, rgb(0 0 0 / 0.6) 45%, transparent 100%);
+  opacity: 0.6;
+}
+.bbn-stage[data-mode="startup"] {
+  opacity: 0.8;
+}
+.bbn-stage[data-mode="individual"] {
+  opacity: 0.55;
+}
+.bbn-stage-canvas,
+.bbn-stage-canvas > div {
+  position: absolute;
+  inset: 0;
+  animation: bbn-stage-in 900ms var(--ease-out) both;
+}
+@keyframes bbn-stage-in {
+  from {
+    opacity: 0;
+  }
+}
+/* Flat artwork: the whole look when WebGL is unavailable, and the underlay while 3D loads. */
+.bbn-stage-flat {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(28rem 16rem at 82% 8%, rgb(242 138 60 / 0.16), transparent 70%),
+    repeating-linear-gradient(115deg, transparent 0 46px, rgb(232 184 75 / 0.07) 46px 47px);
+}
+.bbn-stage[data-mode="startup"] .bbn-stage-flat {
+  background:
+    radial-gradient(28rem 16rem at 82% 8%, rgb(242 138 60 / 0.22), transparent 70%),
+    repeating-linear-gradient(160deg, transparent 0 34px, rgb(242 138 60 / 0.09) 34px 35px);
+}
+.bbn-stage[data-mode="individual"] .bbn-stage-flat {
+  background:
+    radial-gradient(22rem 22rem at 82% 20%, rgb(232 184 75 / 0.14), transparent 70%),
+    repeating-radial-gradient(circle at 82% 30%, transparent 0 38px, rgb(159 171 194 / 0.08) 38px 39px);
+}
+@media print {
+  .bbn-stage {
+    display: none;
+  }
+}

@@ -4,6 +4,7 @@ import Link from "next/link"
 import { createClient } from "@/lib/supabase/server"
 import { requireOrgContext } from "@/lib/auth"
 import { formatTHB, satangToBaht } from "@/lib/money"
+import { PersonalAiCallout } from "@/components/personal-ai"
 import { PageHeader } from "@/components/page-header"
 import { StatCard } from "@/components/stat-card"
 import { EmptyState } from "@/components/empty-state"
@@ -95,6 +96,11 @@ export default async function SettingsPage() {
       <PageHeader
         title="Settings"
         description="Workspace finances and your team. Cash here drives the dashboard."
+      />
+      <PersonalAiCallout
+        installed={localModels.rows.filter((r) => r.installed).length}
+        total={localModels.rows.length}
+        daemonUp={localModels.daemonUp}
       />
       <nav aria-label="Settings sections" className="flex flex-wrap gap-2">
         <Link href="/settings/security" className={SECTION_LINK}>Authenticator</Link>
