@@ -18,7 +18,7 @@ export const ACCOUNTANT_PACK_DISCLAIMER_TH =
   "ข้อมูลประกอบสำหรับนักบัญชีภายนอกเท่านั้น ชุดนี้ไม่ยื่นแบบ ภ.พ.30 ไม่ติดต่อกรมสรรพากร และไม่ใช่งบการเงินตามกฎหมาย"
 
 export const VENDOR_WHT_NOTE =
-  `Vendor bills do not store withholding. Totals are only withholding already stored on issued invoices and credit notes, grouped by customer. ${WHT_SUPPORT_EN} ${WHT_SUPPORT_TH}`
+  `Customer withholding is only what is already stored on issued invoices and credit notes, grouped by customer. Withholding we deducted on purchases is listed separately from the purchase withholding records. ${WHT_SUPPORT_EN} ${WHT_SUPPORT_TH}`
 
 export const PACK_LINE_HEADERS = [
   "วันที่ / Date",
@@ -101,6 +101,21 @@ export type PackPurchaseLine = {
   matched: boolean
 }
 
+/** Withholding we deducted when paying a vendor (ภ.ง.ด.3 / ภ.ง.ด.53 support). */
+export type PackPurchaseWht = {
+  id: string
+  costId: string
+  certificateNo: string
+  paidOn: string
+  form: "pnd3" | "pnd53"
+  incomeType: string
+  rateBps: number
+  vendorName: string
+  vendorTaxId: string | null
+  baseSatang: number
+  whtSatang: number
+}
+
 export type PackPurchaseVatTotal = {
   month: string
   baseSatang: number
@@ -145,6 +160,8 @@ export type AccountantPack = {
   outputMinusInputVatSatang: number
   whtParties: WhtPartyTotal[]
   whtSatang: number
+  purchaseWht: PackPurchaseWht[]
+  purchaseWhtSatang: number
 }
 
 export type CreditSupport = {
@@ -222,6 +239,7 @@ export function assembleAccountantPack(input: {
   credits: readonly PackCreditRow[]
   purchaseLines: readonly PackPurchaseLine[]
   purchaseVat: readonly PackPurchaseVatTotal[]
+  purchaseWithholdings?: readonly PackPurchaseWht[]
 }): AccountantPack {
   if (!accountantPackMonth(input.month)) throw new Error("Choose a month as YYYY-MM")
   const invoices = input.invoices.filter((row) => isIssued(row.status) && inMonth(row.issueDate, input.month))
@@ -247,6 +265,10 @@ export function assembleAccountantPack(input: {
   }
 
   const whtParties = groupCustomerWht(invoices, credits)
+  const purchaseWht = (input.purchaseWithholdings ?? [])
+    .filter((row) => inMonth(row.paidOn, input.month))
+    .map((row) => ({ ...row, baseSatang: nonNegative(row.baseSatang, "Withholding base"), whtSatang: nonNegative(row.whtSatang, "Withholding") }))
+    .sort((a, b) => a.certificateNo.localeCompare(b.certificateNo))
   const label = buddhistEraLabel(`${input.month}-01`)
   return {
     orgName: input.orgName,
@@ -262,6 +284,8 @@ export function assembleAccountantPack(input: {
     outputMinusInputVatSatang: subtractSatang(outputVatSatang, inputVatSatang),
     whtParties,
     whtSatang: sumSatang(whtParties.map((row) => row.whtSatang)),
+    purchaseWht,
+    purchaseWhtSatang: sumSatang(purchaseWht.map((row) => row.whtSatang)),
   }
 }
 
@@ -293,8 +317,10 @@ export function accountantPackCsv(pack: AccountantPack): string {
     summary(pack, "input_vat", pack.inputBaseSatang, pack.inputVatSatang, "", "Matched vendor bills on the purchase VAT table, including linked credits. Input VAT support, not a filing."),
     summary(pack, "output_minus_input", "", pack.outputMinusInputVatSatang, "", "Support difference only. Not tax payable and not a ภ.พ.30 filing."),
     summary(pack, "wht", "", "", pack.whtSatang, VENDOR_WHT_NOTE),
+    summary(pack, "purchase_wht", "", "", pack.purchaseWhtSatang, "Withholding deducted on purchases, from purchase withholding records. Support for ภ.ง.ด.3/53 lists, not a filing."),
     ...pack.outputLines.map((row) => detail("output_vat", row)),
     ...pack.inputLines.map((row) => detail("input_vat", row)),
+    ...pack.purchaseWht.map((row) => ["purchase_wht", row.form, row.certificateNo, row.paidOn, "vendor", row.vendorName, row.vendorTaxId ?? "", baht(row.baseSatang), "", baht(row.whtSatang), row.id, `${row.rateBps / 100}% ${row.incomeType}`]),
     ...pack.whtParties.map((row) => [
       "wht",
       "customer_total",
