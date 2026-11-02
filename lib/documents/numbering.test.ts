@@ -74,6 +74,6 @@ it("labels an unissued invoice by identity without allocating a series number", 
 })
 
 it("reserves every numeric invoice series spelling for issuance", () => {
-  for (const number of ["INV-2026-001", "INV-2026-000001", " inv-2026-12 "]) expect(isIssuedInvoiceNumber(number)).toBe(true)
-  for (const number of ["DRAFT-12345678", "Customer reference", "INV-QUO-2026-001"]) expect(isIssuedInvoiceNumber(number)).toBe(false)
+  for (const number of ["INV-2026-001", "INV-2026-000001", " inv-2026-12 ", "TX-2026-000001", "ABB-2026-000001", " abb-2026-7 "]) expect(isIssuedInvoiceNumber(number)).toBe(true)
+  for (const number of ["DRAFT-12345678", "Customer reference", "INV-QUO-2026-001", "TXX-2026-000001", "TX-26-1"]) expect(isIssuedInvoiceNumber(number)).toBe(false)
 })
