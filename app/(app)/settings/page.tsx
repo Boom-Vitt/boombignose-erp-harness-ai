@@ -1,4 +1,4 @@
-import { Wallet, Flame, Users, Lock, Cpu, Download } from "lucide-react"
+import { Wallet, Flame, Users, Lock, Cpu, Download, Smartphone } from "lucide-react"
 import Link from "next/link"
 
 import { createClient } from "@/lib/supabase/server"
@@ -24,11 +24,14 @@ import { InvitationsCard } from "./_components/invitations-card"
 import { AccountingIntegrationCard } from "@edition"
 import { StartLogViewer, UpdateCheckButton } from "./_components/local-install"
 import { LocalBackupCard } from "./_components/local-backup"
+import { MobileLinkCard } from "./_components/mobile-link"
 import { LocalModelsCard } from "./_components/local-models"
 import { currentModelHost } from "@/lib/ai/local-model-access"
 import { asrCard } from "@/lib/ai/asr-install"
 import { loadModelSettings } from "@/lib/ai/ollama-admin"
 import { updateOrgSettings } from "./actions"
+import { listDevices } from "@/lib/mobile/pairing"
+import { createAdminClient } from "@/lib/supabase/admin"
 
 export const dynamic = "force-dynamic"
 
@@ -78,6 +81,7 @@ export default async function SettingsPage() {
     (profiles ?? []).map((p) => [p.id, p.full_name] as const)
   )
 
+  const mobileDevices = canEdit ? await listDevices(createAdminClient(), ctx.orgId) : []
   const localModels = await loadModelSettings(currentModelHost())
   const asr = await asrCard(process.platform, process.arch)
 
@@ -249,6 +253,14 @@ export default async function SettingsPage() {
       <InvitationsCard />
 
       <AccountingIntegrationCard />
+
+      {canEdit ? <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-base"><Smartphone className="text-primary size-4" aria-hidden />เชื่อมมือถือ / Link mobile</CardTitle>
+          <CardDescription>Scan a one-time QR with the BoomBigNose iOS app. Devices can be revoked here.</CardDescription>
+        </CardHeader>
+        <CardContent><MobileLinkCard initial={mobileDevices} /></CardContent>
+      </Card> : null}
 
       {canEdit ? <Card>
         <CardHeader>

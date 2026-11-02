@@ -6,7 +6,7 @@ import { safeReturnPath } from "@/lib/supabase/redirect"
 import type { Database } from "@/lib/types/database"
 
 /** Public route prefixes that do not require an authenticated session. */
-const PUBLIC_PREFIXES = ["/login", "/signup", "/auth", "/api/webhooks", "/api/cron", "/portal"]
+const PUBLIC_PREFIXES = ["/login", "/signup", "/auth", "/api/webhooks", "/api/cron", "/portal", "/api/mobile/pair/redeem", "/api/mobile/session", "/api/mobile/status"]
 
 function isPublic(pathname: string): boolean {
   if (pathname === "/" || pathname === "/blueprint-preview") return true
