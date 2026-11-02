@@ -467,6 +467,30 @@ isOneToOne: false
       referencedColumns: ["id"]
     }
                   ]
+                },"mobile_devices": {
+                  Row: {
+                    "created_at": string,"id": string,"last_seen_at": string | null,"name": string,"org_id": string,"revoked_at": string | null,"token_hash": string,"user_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "created_at"?: string,"id"?: string,"last_seen_at"?: string | null,"name": string,"org_id": string,"revoked_at"?: string | null,"token_hash": string,"user_id": string
+                  }
+                  Update: {
+                    "created_at"?: string,"id"?: string,"last_seen_at"?: string | null,"name"?: string,"org_id"?: string,"revoked_at"?: string | null,"token_hash"?: string,"user_id"?: string
+                  }
+                  Relationships: []
+                },"mobile_pairings": {
+                  Row: {
+                    "consumed_at": string | null,"created_at": string,"created_by": string,"expires_at": string,"id": string,"org_id": string,"token_hash": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "consumed_at"?: string | null,"created_at"?: string,"created_by": string,"expires_at": string,"id"?: string,"org_id": string,"token_hash": string
+                  }
+                  Update: {
+                    "consumed_at"?: string | null,"created_at"?: string,"created_by"?: string,"expires_at"?: string,"id"?: string,"org_id"?: string,"token_hash"?: string
+                  }
+                  Relationships: []
                 },"integration_receipts": {
                   Row: {
                     "created_at": string,"event_type": string,"id": string,"key": string,"org_id": string,"payload": NonNullable<Json>

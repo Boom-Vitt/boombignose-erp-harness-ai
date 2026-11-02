@@ -39,7 +39,7 @@ rewrite.
 ## Explicit non-goals (guarding against ERP creep)
 
 No inventory, procurement, payroll engine, or accounting/tax-invoice generation in
-the core. No per-client forks. No native mobile app in the near term. Accounting
+the core. No per-client forks. Mobile: an iOS MVP (Flutter, QR pair, Tailscale-only) started 2026-11-03 by owner override — see `docs/mobile/README.md`. Accounting
 stays in FlowAccount/PEAK/Xero — this product is the operational layer.
 
 ## Personas (who we build for)

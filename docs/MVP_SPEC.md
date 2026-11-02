@@ -41,7 +41,7 @@ a Community + Pro open-core product.
 
 No inventory, procurement, payroll engine, or accounting/tax-invoice generation.
 No multi-org **UX** (the data model is ready; the UI is single-org). No native
-mobile app. No per-client code forks. No advanced RBAC beyond owner/admin/member.
+mobile app in the core MVP (owner override 2026-11-03: a Flutter iOS companion started, see `docs/mobile/README.md`). No per-client code forks. No advanced RBAC beyond owner/admin/member.
 Accounting is delegated to FlowAccount/PEAK/Xero (future integration).
 
 ## User roles
