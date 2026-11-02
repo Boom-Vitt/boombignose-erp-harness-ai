@@ -36,7 +36,11 @@ func Addr(raw string) (string, error) {
 	return net.JoinHostPort(u.Hostname(), u.Port()), nil
 }
 
-// Ready reports whether rawURL's /api/health returns {"ok":true}.
+// Fingerprint is the "app" value /api/health must carry, so another server
+// answering {"ok":true} on the ERP port is never mistaken for this app.
+const Fingerprint = "boombignose-erp"
+
+// Ready reports whether rawURL's /api/health returns {"ok":true,"app":Fingerprint}.
 // A slow server (a dev build compiling its first route) gets several probes of
 // probeTimeout each within readyWindow, or until ctx ends. A closed port or a
 // non-JSON response is false, not an error.
@@ -93,12 +97,13 @@ func probeHealth(ctx context.Context, health string) (bool, error) {
 		return false, nil
 	}
 	var payload struct {
-		OK bool `json:"ok"`
+		OK  bool   `json:"ok"`
+		App string `json:"app"`
 	}
 	if json.Unmarshal(body, &payload) != nil {
 		return false, nil
 	}
-	return payload.OK, nil
+	return payload.OK && payload.App == Fingerprint, nil
 }
 
 // Busy is the error shown when the ERP port is open and is not this app.
@@ -107,7 +112,7 @@ func Busy(raw string) error {
 	if err != nil {
 		return errors.New("address is already in use by another program")
 	}
-	return fmt.Errorf("%s is already in use by another program. Stop that program before opening BoomBigNose", addr)
+	return fmt.Errorf("พอร์ต %[1]s ถูกโปรแกรมอื่นใช้อยู่ ปิดโปรแกรมนั้นแล้วกดลองใหม่ / %[1]s is already in use by another program. Stop that program before opening BoomBigNose", addr)
 }
 
 // Listening reports whether something accepts TCP on the ERP address.
