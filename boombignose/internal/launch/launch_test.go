@@ -212,3 +212,34 @@ func TestEnsureKeepsAHealthyERP(t *testing.T) {
 		t.Fatalf("err=%v called=%v", err, called)
 	}
 }
+
+func TestReadyRetriesASlowServer(t *testing.T) {
+	var hits int
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		hits++
+		if hits < 3 {
+			http.Error(w, "compiling", http.StatusServiceUnavailable)
+			return
+		}
+		_, _ = w.Write([]byte(`{"ok":true}`))
+	}))
+	defer srv.Close()
+	ok, err := Ready(context.Background(), srv.URL)
+	if err != nil || !ok || hits != 3 {
+		t.Fatalf("ok=%v err=%v hits=%d", ok, err, hits)
+	}
+}
+
+func TestReadyGivesUpOnAForeignServer(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		_, _ = w.Write([]byte("<html>not the erp</html>"))
+	}))
+	defer srv.Close()
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+	start := time.Now()
+	ok, err := Ready(ctx, srv.URL)
+	if err != nil || ok || time.Since(start) > 2*time.Second {
+		t.Fatalf("ok=%v err=%v after %s", ok, err, time.Since(start))
+	}
+}

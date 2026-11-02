@@ -37,7 +37,9 @@ func Addr(raw string) (string, error) {
 }
 
 // Ready reports whether rawURL's /api/health returns {"ok":true}.
-// A closed port or a non-JSON response is false, not an error.
+// A slow server (a dev build compiling its first route) gets several probes of
+// probeTimeout each within readyWindow, or until ctx ends. A closed port or a
+// non-JSON response is false, not an error.
 func Ready(ctx context.Context, raw string) (bool, error) {
 	if err := policy.AllowEndpoint(raw); err != nil {
 		return false, err
@@ -49,13 +51,39 @@ func Ready(ctx context.Context, raw string) (bool, error) {
 	u.Path = "/api/health"
 	u.RawQuery = ""
 	u.Fragment = ""
-	reqCtx, cancel := context.WithTimeout(ctx, 500*time.Millisecond)
+	ctx, cancel := context.WithTimeout(ctx, readyWindow)
 	defer cancel()
-	req, err := http.NewRequestWithContext(reqCtx, http.MethodGet, u.String(), nil)
+	for {
+		ok, err := probeHealth(ctx, u.String())
+		if err != nil {
+			return false, err
+		}
+		if ok {
+			return true, nil
+		}
+		select {
+		case <-ctx.Done():
+			return false, nil
+		case <-time.After(retryEvery):
+		}
+	}
+}
+
+// Ready retries for readyWindow; each request waits at most probeTimeout.
+const (
+	readyWindow  = 3 * time.Second
+	probeTimeout = 1500 * time.Millisecond
+	retryEvery   = 250 * time.Millisecond
+)
+
+func probeHealth(ctx context.Context, health string) (bool, error) {
+	reqCtx, cancel := context.WithTimeout(ctx, probeTimeout)
+	defer cancel()
+	req, err := http.NewRequestWithContext(reqCtx, http.MethodGet, health, nil)
 	if err != nil {
 		return false, err
 	}
-	resp, err := (&http.Client{Timeout: 500 * time.Millisecond}).Do(req)
+	resp, err := (&http.Client{Timeout: probeTimeout}).Do(req)
 	if err != nil {
 		return false, nil
 	}

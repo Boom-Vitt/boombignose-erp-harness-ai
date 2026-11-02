@@ -24,11 +24,13 @@ func Script(target string) (string, error) {
 }
 
 // BootFailure returns a script that writes message onto the splash and does
-// not navigate. The message is JSON-encoded so it cannot close the script.
+// not navigate. It adds a retry hint. The splash page may define
+// window.bbnBootFailed to style the message; otherwise #boot-status is used.
+// The message is JSON-encoded so it cannot close the script.
 func BootFailure(message string) (string, error) {
 	quoted, err := json.Marshal(message)
 	if err != nil {
 		return "", err
 	}
-	return `var el=document.getElementById("boot-status"); if(el){el.textContent="เปิด ERP ไม่สำเร็จ "+` + string(quoted) + `;}`, nil
+	return `var m="เปิด ERP ไม่สำเร็จ "+` + string(quoted) + `+" ลองใหม่โดยปิดแล้วเปิดแอปอีกครั้ง"; if(window.bbnBootFailed){window.bbnBootFailed(m);}else{var el=document.getElementById("boot-status"); if(el){el.textContent=m;}}`, nil
 }
