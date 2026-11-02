@@ -57,7 +57,7 @@ export function AiPanel({ dealId }: { dealId: string }) {
   }
 
   return (
-    <Card>
+    <Card className="bbn-deck-panel ring-0">
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-base">
           <Sparkles className="size-4 text-primary" aria-hidden />
@@ -69,7 +69,7 @@ export function AiPanel({ dealId }: { dealId: string }) {
           <Button
             type="button"
             variant="outline"
-            size="sm"
+            size="default"
             disabled={pending}
             onClick={() => run("summary")}
           >
@@ -79,7 +79,7 @@ export function AiPanel({ dealId }: { dealId: string }) {
           <Button
             type="button"
             variant="outline"
-            size="sm"
+            size="default"
             disabled={pending}
             onClick={() => run("followup")}
           >
@@ -89,15 +89,15 @@ export function AiPanel({ dealId }: { dealId: string }) {
         </div>
 
         {panel.notConfigured ? (
-          <p className="text-muted-foreground rounded-lg border border-dashed p-3 text-sm">
+          <p className="text-muted-foreground rounded-xl border border-dashed p-4 text-sm">
             AI is not configured. <Link href="/settings#local-models" className="underline">Install the text model in Settings</Link>. The BoomBigNose window starts the local service. You do not need a separate AI app, and nothing is sent to a cloud model.
           </p>
         ) : null}
 
         {panel.content ? (
-          <div className="space-y-2 rounded-lg border p-3">
+          <div className="bg-background/60 border-l-primary space-y-2 rounded-xl border border-l-2 p-4">
             <div className="flex items-center justify-between">
-              <span className="text-muted-foreground text-xs font-medium uppercase tracking-wide">
+              <span className="text-muted-foreground text-xs font-medium">
                 {action === "followup" ? "Draft follow-up" : "Summary"}
               </span>
               <Button

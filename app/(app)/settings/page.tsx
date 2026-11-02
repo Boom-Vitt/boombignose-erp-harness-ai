@@ -39,6 +39,9 @@ function initials(name: string | null, fallback: string): string {
   return (parts[0]![0]! + parts[parts.length - 1]![0]!).toUpperCase()
 }
 
+const SECTION_LINK =
+  "border-input text-muted-foreground hover:bg-accent hover:text-foreground rounded-full border px-3.5 py-1.5 text-sm transition-colors"
+
 export default async function SettingsPage() {
   const ctx = await requireOrgContext()
   const supabase = await createClient()
@@ -93,11 +96,13 @@ export default async function SettingsPage() {
         title="Settings"
         description="Workspace finances and your team. Cash here drives the dashboard."
       />
-      <Link href="/settings/security" className="mr-4 text-sm underline">Authenticator</Link>
-      {canEdit ? <Link href="/settings/purchasing" className="mr-4 text-sm underline">Purchasing</Link> : null}
-      {canEdit ? <Link href="/settings/finance" className="mr-4 text-sm underline">Finance</Link> : null}
-      {canEdit ? <Link href="/settings/lead-forms" className="mr-4 text-sm underline">Lead forms</Link> : null}
-      <Link href="/settings#local-models" className="text-sm underline">โมเดล AI / Local models</Link>
+      <nav aria-label="Settings sections" className="flex flex-wrap gap-2">
+        <Link href="/settings/security" className={SECTION_LINK}>Authenticator</Link>
+        {canEdit ? <Link href="/settings/purchasing" className={SECTION_LINK}>Purchasing</Link> : null}
+        {canEdit ? <Link href="/settings/finance" className={SECTION_LINK}>Finance</Link> : null}
+        {canEdit ? <Link href="/settings/lead-forms" className={SECTION_LINK}>Lead forms</Link> : null}
+        <Link href="/settings#local-models" className={`${SECTION_LINK} !border-primary/40 !text-primary`}>โมเดล AI / Local models</Link>
+      </nav>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <StatCard

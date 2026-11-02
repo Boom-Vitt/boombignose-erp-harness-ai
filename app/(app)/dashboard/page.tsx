@@ -52,6 +52,8 @@ export default async function DashboardPage() {
 
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <StatCard
+          featured
+          className="col-span-2"
           label="Cash on hand"
           value={formatTHBWhole(d.cashSatang)}
           icon={Wallet}
@@ -70,6 +72,9 @@ export default async function DashboardPage() {
           tone="negative"
           hint={`Operating costs · net burn ${formatTHB(d.netBurnSatang)}`}
         />
+      </div>
+
+      <div className="grid grid-cols-2 gap-4 lg:grid-cols-3">
         <StatCard
           label="Cost of goods sold this month"
           value={formatTHB(d.monthlyCogsSatang)}
