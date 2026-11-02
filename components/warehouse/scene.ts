@@ -76,7 +76,7 @@ function sideTexture(name: string, color: string, sub: string) {
     c.fillRect(0, 0, 1024, 384)
     c.fillStyle = color
     c.fillRect(0, 330, 1024, 54)
-    drawCube(c, 210, 170, 70, "#93c5fd", color, "#1e3a8a")
+    drawCube(c, 210, 170, 70, "#f3c79a", color, "#26365f")
     c.fillStyle = color
     c.font = "bold 92px system-ui, sans-serif"
     c.fillText(name, 300, 200)
@@ -93,18 +93,18 @@ export function createWarehouseScene(
   opts: { onSnapshot(s: Snapshot): void; onSelect(id: string | null): void; reducedMotion?: boolean },
 ): WarehouseScene {
   const M = {
-    ground: mat("#e7ebf7"),
-    yard: mat("#f3f5fb"),
-    road: mat("#d3d8f2"),
-    white: mat("#ffffff"),
+    ground: mat("#0b1222"),
+    yard: mat("#16223f"),
+    road: mat("#1c2a4b"),
+    white: mat("#9fabc2"),
     yellow: mat("#f5c33b"),
-    grass: mat("#d8efdf"),
-    blue: mat("#2563eb"),
-    roof: mat("#3b82f6"),
-    rib: mat("#2f6fe4"),
-    navy: mat("#1e3a8a"),
-    wall: mat("#f1f5f9"),
-    concrete: mat("#dfe4ef"),
+    grass: mat("#12302f"),
+    blue: mat("#f28a3c"),
+    roof: mat("#c96f2d"),
+    rib: mat("#a95a22"),
+    navy: mat("#26365f"),
+    wall: mat("#c9d1e2"),
+    concrete: mat("#34456e"),
     door: mat("#283449"),
     dark: mat("#1f2937"),
     glass: mat("#1e293b", { roughness: 0.15, metalness: 0.4 }),
@@ -122,7 +122,7 @@ export function createWarehouseScene(
     rubber: mat("#111827"),
     beam: mat("#f59e0b"),
     lamp: mat("#fef9c3", { emissive: "#fde68a", emissiveIntensity: 0.6 }),
-    select: new THREE.MeshBasicMaterial({ color: "#2563eb", transparent: true, opacity: 0.55, depthWrite: false }),
+    select: new THREE.MeshBasicMaterial({ color: "#f6a15a", transparent: true, opacity: 0.55, depthWrite: false }),
   }
   const textures: THREE.Texture[] = []
   const r = rng(7)
@@ -144,8 +144,8 @@ export function createWarehouseScene(
   host.appendChild(labels.domElement)
 
   const scene = new THREE.Scene()
-  scene.background = new THREE.Color("#e7ebf7")
-  scene.fog = new THREE.Fog("#e7ebf7", 240, 420)
+  scene.background = new THREE.Color("#0b1222")
+  scene.fog = new THREE.Fog("#0b1222", 200, 380)
 
   const camera = new THREE.PerspectiveCamera(28, 1, 1, 600)
   const controls = new OrbitControls(camera, renderer.domElement)
@@ -159,8 +159,8 @@ export function createWarehouseScene(
   controls.autoRotateSpeed = 0.35
 
   // lights
-  scene.add(new THREE.HemisphereLight("#ffffff", "#b9c3e6", 1.5))
-  const sun = new THREE.DirectionalLight("#ffffff", 2.1)
+  scene.add(new THREE.HemisphereLight("#8fa6d8", "#0b1222", 1.25))
+  const sun = new THREE.DirectionalLight("#ffd9b0", 1.9)
   sun.target.position.set(24, 0, -6)
   sun.position.set(-2, 52, 24)
   scene.add(sun.target)
@@ -200,7 +200,7 @@ export function createWarehouseScene(
   // forklift lane
   for (let x = 2; x < 13; x += 1.6) flat(scene, 0.9, 0.12, M.yellow, x, 6.4, 0.02)
   for (const [txt, z] of [["Bay 1", 9.4], ["Bay 2", 13.4]] as const) {
-    const { obj } = chip(`<span class="font-semibold text-slate-700">${txt}</span>`, "bg-white/80 px-2 py-0.5 text-[10px]")
+    const { obj } = chip(`<span class="font-semibold text-[#c9d1e2]">${txt}</span>`, "bg-card/75 px-2 py-0.5 text-[10px]")
     obj.position.set(-10.6, 0.2, z)
     scene.add(obj)
   }
@@ -243,8 +243,8 @@ export function createWarehouseScene(
     c.beginPath()
     c.ellipse(256, 256, 250, 250, 0, 0, Math.PI * 2)
     c.fill()
-    drawCube(c, 256, 230, 120, "#93c5fd", "#2563eb", "#1e3a8a")
-    c.fillStyle = "#1e3a8a"
+    drawCube(c, 256, 230, 120, "#f3c79a", "#f28a3c", "#26365f")
+    c.fillStyle = "#26365f"
     c.font = "bold 64px system-ui, sans-serif"
     c.textAlign = "center"
     c.fillText("WH-01", 256, 440)
@@ -259,7 +259,7 @@ export function createWarehouseScene(
     block(scene, 3.3, 3.4, 0.14, M.white, x, 0.3, -1.45)
     block(scene, 2.8, 2.95, 0.16, M.door, x, 0.3, -1.42)
     for (let k = 0; k < 6; k++) block(scene, 2.8, 0.05, 0.17, M.dark, x, 0.75 + k * 0.45, -1.41)
-    const { obj } = chip(`<span class="font-semibold text-blue-700">D${i + 1}</span>`, "bg-white/95 px-1.5 py-0.5 text-[10px]")
+    const { obj } = chip(`<span class="font-semibold text-primary">D${i + 1}</span>`, "bg-card/90 px-1.5 py-0.5 text-[10px]")
     obj.position.set(x, 4.8, -1.3)
     scene.add(obj)
     block(scene, 0.5, 0.18, 0.2, M.lamp, x, 3.95, -1.35)
@@ -294,7 +294,7 @@ export function createWarehouseScene(
   for (const [x, z] of [[-7.5, -0.4], [2.5, -0.4], [-9.2, 3.2], [-7.6, 3.2], [-9.2, 4.6]]) pallet(scene, x, z, { layers: 2 })
   for (const [x, z] of [[25.2, 0.2], [25.2, 1.8], [26.8, 0.2], [26.8, 1.8], [25.2, 5.6], [26.8, 5.6]]) pallet(scene, x, z, { blue: true, layers: 2 })
   for (const [x, z] of [[14.5, -12], [16.1, -12], [14.5, -13.6]]) pallet(scene, x, z, { blue: true, layers: 3 })
-  const pal1026 = chip(`<b class="text-slate-900">PAL-1026</b> Event kits`)
+  const pal1026 = chip(`<b class="text-[#f4efe4]">PAL-1026</b> Event kits`)
   pal1026.obj.position.set(-8.4, 1.9, 3.9)
   scene.add(pal1026.obj)
 
@@ -511,7 +511,7 @@ export function createWarehouseScene(
     const label = l.steps[l.i].label
     if (label !== l.info.status) {
       l.info.status = label
-      l.tag.el.innerHTML = `<b class="text-blue-700">${l.info.id}</b> ${label}`
+      l.tag.el.innerHTML = `<b class="text-primary">${l.info.id}</b> ${label}`
     }
   }
 
@@ -563,7 +563,7 @@ export function createWarehouseScene(
   const out = makeTruck(
     { id: "TRK-2051", carrier: "BoomBigNose", bay: "Bay 1", direction: "outbound", state: "Loading", loaded: 2, capacity: 6, eta: null },
     M.blue,
-    sideTexture("BoomBigNose", "#2563eb", "Logistics · Bangkok"),
+    sideTexture("BoomBigNose", "#f28a3c", "Logistics · Bangkok"),
     curve([[80, ROAD], [30, ROAD], [14, 14.6], [5, 9.9], [-3, 9.4]]),
     curve([[-3, 9.4], [-14, 9.5], [-24, 12.6], [-34, ROAD], [-90, ROAD]]),
   )
@@ -723,7 +723,7 @@ export function createWarehouseScene(
       n.eta = inb.timer * SIM_SPEED
     }
     for (const a of [out, inb]) {
-      const html = `<b class="text-slate-900">${a.info.id}</b> ${a.info.state}`
+      const html = `<b class="text-[#f4efe4]">${a.info.id}</b> ${a.info.state}`
       if (a.tag.el.innerHTML !== html) a.tag.el.innerHTML = html
     }
 

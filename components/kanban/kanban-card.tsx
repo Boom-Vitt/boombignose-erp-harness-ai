@@ -61,7 +61,7 @@ export function KanbanCard<S extends string>({
       onDragEnd={onDragEnd}
       data-card={card.id}
       className={cn(
-        "group/card relative cursor-grab rounded-lg border bg-card p-3 text-card-foreground shadow-xs transition-colors hover:border-ring active:cursor-grabbing",
+        "group/card relative cursor-grab rounded-[0.7rem] border bg-card p-3 text-card-foreground shadow-[inset_0_1px_0_rgb(255_255_255/0.04)] transition-colors hover:border-primary/60 active:cursor-grabbing",
         dragging && "opacity-50"
       )}
     >

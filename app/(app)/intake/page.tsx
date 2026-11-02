@@ -88,7 +88,7 @@ export default function IntakePage() {
             </Button>
 
             {state.status === "notConfigured" ? (
-              <p className="text-muted-foreground rounded-lg border border-dashed p-3 text-sm">
+              <p className="text-muted-foreground rounded-lg border p-3 text-sm">
                 AI is not configured. <Link href="/settings#local-models" className="underline">Install the text model in Settings</Link>. The BoomBigNose window starts the local service. You do not need a separate AI app, and nothing is sent to a cloud model.
               </p>
             ) : null}

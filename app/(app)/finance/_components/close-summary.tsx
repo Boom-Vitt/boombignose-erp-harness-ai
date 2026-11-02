@@ -79,7 +79,7 @@ export function CloseSummary() {
         ) : null}
 
         {state.status === "ready" && state.notice ? (
-          <p className="text-muted-foreground rounded-lg border border-dashed p-3 text-sm">{state.notice}</p>
+          <p className="text-muted-foreground rounded-lg border p-3 text-sm">{state.notice}</p>
         ) : null}
         {state.status === "ready" && state.content ? (
           <p className="text-sm whitespace-pre-wrap">{state.content}</p>

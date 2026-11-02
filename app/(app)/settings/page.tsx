@@ -1,9 +1,10 @@
-import { Wallet, Flame, Users, Lock } from "lucide-react"
+import { Wallet, Flame, Users, Lock, Cpu, Download } from "lucide-react"
 import Link from "next/link"
 
 import { createClient } from "@/lib/supabase/server"
 import { requireOrgContext } from "@/lib/auth"
 import { formatTHB, satangToBaht } from "@/lib/money"
+import { PersonalAiCallout } from "@/components/personal-ai"
 import { PageHeader } from "@/components/page-header"
 import { StatCard } from "@/components/stat-card"
 import { EmptyState } from "@/components/empty-state"
@@ -38,6 +39,9 @@ function initials(name: string | null, fallback: string): string {
   if (parts.length === 1) return parts[0]!.slice(0, 2).toUpperCase()
   return (parts[0]![0]! + parts[parts.length - 1]![0]!).toUpperCase()
 }
+
+const SECTION_LINK =
+  "border-input text-muted-foreground hover:border-primary/70 hover:bg-accent hover:text-foreground rounded-full border px-3.5 py-1.5 text-sm transition-colors"
 
 export default async function SettingsPage() {
   const ctx = await requireOrgContext()
@@ -93,19 +97,28 @@ export default async function SettingsPage() {
         title="Settings"
         description="Workspace finances and your team. Cash here drives the dashboard."
       />
-      <Link href="/settings/security" className="mr-4 text-sm underline">Authenticator</Link>
-      {canEdit ? <Link href="/settings/purchasing" className="mr-4 text-sm underline">Purchasing</Link> : null}
-      {canEdit ? <Link href="/settings/finance" className="mr-4 text-sm underline">Finance</Link> : null}
-      {canEdit ? <Link href="/settings/lead-forms" className="mr-4 text-sm underline">Lead forms</Link> : null}
-      <Link href="/settings#local-models" className="text-sm underline">โมเดล AI / Local models</Link>
+      <PersonalAiCallout
+        installed={localModels.rows.filter((r) => r.installed).length}
+        total={localModels.rows.length}
+        daemonUp={localModels.daemonUp}
+      />
+      <nav aria-label="Settings sections" className="flex flex-wrap gap-2">
+        <Link href="/settings/security" className={SECTION_LINK}>Authenticator</Link>
+        {canEdit ? <Link href="/settings/purchasing" className={SECTION_LINK}>Purchasing</Link> : null}
+        {canEdit ? <Link href="/settings/finance" className={SECTION_LINK}>Finance</Link> : null}
+        {canEdit ? <Link href="/settings/lead-forms" className={SECTION_LINK}>Lead forms</Link> : null}
+        <Link href="/settings#local-models" className={`${SECTION_LINK} !border-primary !border-solid !text-primary`}>โมเดล AI / Local models</Link>
+      </nav>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <StatCard
+          compact
           label="Cash on hand"
           value={formatTHB(cashSatang)}
           icon={Wallet}
         />
         <StatCard
+          compact
           label="Monthly burn override"
           value={burnSatang === null ? "Not set" : formatTHB(burnSatang)}
           icon={Flame}
@@ -113,6 +126,7 @@ export default async function SettingsPage() {
           hint={burnSatang === null ? "Using actual recorded costs" : undefined}
         />
         <StatCard
+          compact
           label="Team members"
           value={String(team.length)}
           icon={Users}
@@ -220,9 +234,9 @@ export default async function SettingsPage() {
         </Card>
       </div>
 
-      <Card className="bbn-deck-panel ring-0">
+      <Card className="bbn-deck-panel border-0">
         <CardHeader>
-          <CardTitle className="text-base">โมเดล AI บนเครื่องนี้ / Local AI models</CardTitle>
+          <CardTitle className="flex items-center gap-2 text-base"><Cpu className="text-primary size-4" aria-hidden />โมเดล AI บนเครื่องนี้ / Local AI models</CardTitle>
           <CardDescription>ดาวน์โหลดในแอปนี้ ไม่ต้องเปิดโปรแกรม AI อื่น / Download inside this app. No separate AI program.</CardDescription>
         </CardHeader>
         <CardContent>
@@ -245,9 +259,9 @@ export default async function SettingsPage() {
       </Card> : null}
 
       <div className="grid gap-6 lg:grid-cols-2">
-        <Card className="bbn-deck-panel ring-0">
+        <Card className="bbn-deck-panel border-0">
           <CardHeader>
-            <CardTitle className="text-base">อัปเดตแอป / App update</CardTitle>
+            <CardTitle className="flex items-center gap-2 text-base"><Download className="text-primary size-4" aria-hidden />อัปเดตแอป / App update</CardTitle>
             <CardDescription>ตรวจรุ่นที่เผยแพร่เมื่อกด บน macOS Apple Silicon ติดตั้งจากในแอปได้ / Check the published release when you ask. macOS Apple Silicon can install it here.</CardDescription>
           </CardHeader>
           <CardContent><UpdateCheckButton canUpdate={canEdit} /></CardContent>

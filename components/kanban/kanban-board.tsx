@@ -248,8 +248,8 @@ export function KanbanBoard<S extends string>({
               />
               <div
                 className={cn(
-                  "min-h-24 space-y-2 rounded-lg bg-muted/40 p-2 transition-colors",
-                  over?.column === group.id && "bg-muted ring-2 ring-ring/40"
+                  "border-border/60 bg-sidebar/70 min-h-24 space-y-2 rounded-xl border p-2 transition-colors",
+                  over?.column === group.id && "bg-accent ring-2 ring-ring/40"
                 )}
               >
                 {quickCreate && creatingIn === group.id ? (

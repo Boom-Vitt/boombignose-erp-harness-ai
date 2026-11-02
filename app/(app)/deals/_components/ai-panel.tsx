@@ -57,11 +57,14 @@ export function AiPanel({ dealId }: { dealId: string }) {
   }
 
   return (
-    <Card>
+    <Card className="bbn-deck-panel border-0">
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-base">
-          <Sparkles className="size-4 text-primary" aria-hidden />
+          <span className="bbn-rough-sm border-primary/60 bg-primary/10 text-primary flex size-7 items-center justify-center border">
+            <Sparkles className="size-3.5" aria-hidden />
+          </span>
           AI assist
+          <span className="bbn-chip ml-auto">รันบนเครื่องนี้ / On-device</span>
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -69,7 +72,7 @@ export function AiPanel({ dealId }: { dealId: string }) {
           <Button
             type="button"
             variant="outline"
-            size="sm"
+            size="default"
             disabled={pending}
             onClick={() => run("summary")}
           >
@@ -79,7 +82,7 @@ export function AiPanel({ dealId }: { dealId: string }) {
           <Button
             type="button"
             variant="outline"
-            size="sm"
+            size="default"
             disabled={pending}
             onClick={() => run("followup")}
           >
@@ -89,15 +92,15 @@ export function AiPanel({ dealId }: { dealId: string }) {
         </div>
 
         {panel.notConfigured ? (
-          <p className="text-muted-foreground rounded-lg border border-dashed p-3 text-sm">
+          <p className="bbn-sticky text-sm">
             AI is not configured. <Link href="/settings#local-models" className="underline">Install the text model in Settings</Link>. The BoomBigNose window starts the local service. You do not need a separate AI app, and nothing is sent to a cloud model.
           </p>
         ) : null}
 
         {panel.content ? (
-          <div className="space-y-2 rounded-lg border p-3">
+          <div className="bbn-sketch-card space-y-2 p-4">
             <div className="flex items-center justify-between">
-              <span className="text-muted-foreground text-xs font-medium uppercase tracking-wide">
+              <span className="text-muted-foreground text-xs font-medium">
                 {action === "followup" ? "Draft follow-up" : "Summary"}
               </span>
               <Button
