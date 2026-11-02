@@ -21,6 +21,7 @@ import {
   Rocket,
   UserRound,
   Boxes,
+  Bot,
 } from "lucide-react"
 
 export type NavGroup = "sell" | "operate" | "money" | "workspace"
@@ -70,6 +71,7 @@ export const NAV_ITEMS: NavItem[] = [
   { title: "Reports", group: "money", href: "/reports", icon: BarChart3 },
   { title: "Calendar", group: "operate", href: "/calendar", icon: CalendarDays },
   { title: "Templates", group: "workspace", href: "/templates", icon: Sparkles },
+  { title: "ERP AI", th: "แชท AI องค์กร", group: "workspace", href: "/assistant", icon: Bot },
   { title: "Intake", group: "workspace", href: "/intake", icon: NotebookPen },
   { title: "Automation", group: "workspace", href: "/automation", icon: Workflow },
   { title: "Activity", group: "workspace", href: "/audit", icon: ScrollText, ownerAdminOnly: true },
