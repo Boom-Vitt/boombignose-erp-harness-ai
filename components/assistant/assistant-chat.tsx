@@ -29,11 +29,11 @@ const onLangChange = (cb: () => void) => {
 const COPY = {
   th: {
     title: "ERP AI · แชท AI องค์กร",
-    intro: "คุยกับโมเดลบนเครื่องนี้ แนบภาพหน้าจอหรือไฟล์ และให้ AI อ่านข้อมูล ERP ขององค์กรนี้ผ่านเครื่องมือ MCP แบบอ่านอย่างเดียว ไม่มีอะไรถูกส่งไปโมเดลบนคลาวด์",
+    intro: "โมเดลบนเครื่องนี้ อ่านข้อมูล ERP แบบอ่านอย่างเดียว",
     onDevice: "รันบนเครื่องนี้",
     toggle: "สลับ ENG",
     toggleHint: "Switch to English",
-    empty: "พิมพ์คำถาม หรือแนบภาพหน้าจอ / ไฟล์ แล้วถามได้เลย วางภาพลงในกล่องข้อความได้โดยตรง",
+    empty: "พิมพ์คำถาม หรือแนบภาพ / ไฟล์",
     thinking: "กำลังคิด…",
     toolUsed: "ใช้เครื่องมือ ERP",
     toolFailed: "ล้มเหลว",
@@ -54,20 +54,20 @@ const COPY = {
     mcpDown: "เชื่อม ERP MCP ไม่ได้",
     readOnly: "อ่านอย่างเดียว",
     tools: "เครื่องมือ",
-    mcpNote: "แชทนี้เรียกเครื่องมือเหล่านี้ได้เอง เฉพาะข้อมูลขององค์กรที่คุณล็อกอินอยู่ และอ่านอย่างเดียว (ต้องเปิด Supabase บนเครื่อง และเลือกโมเดลข้อความ ภาพหน้าจอใช้โมเดลภาพซึ่งยังไม่เรียกเครื่องมือ)",
+    mcpNote: "แชทเรียกเครื่องมือเหล่านี้ได้เอง เฉพาะองค์กรของคุณ อ่านอย่างเดียว",
     howTo: "วิธีเชื่อมกับ BigNose",
     copy: "คัดลอก",
     copied: "คัดลอกแล้ว",
-    howToNote: "เพิ่มเป็นตัวเชื่อมแบบ stdio ใน BigNose ดู docs/desktop/erp-mcp.md",
+    howToNote: "เพิ่มเป็นตัวเชื่อม stdio ใน BigNose · docs/desktop/erp-mcp.md",
     formats: "PNG · JPEG · WebP · PDF · txt/md/csv/json",
   },
   en: {
     title: "ERP AI · Organization chat",
-    intro: "Chat with the on-device model, attach screenshots and files, and let it read this organization's ERP data through read-only MCP tools. Nothing is sent to a cloud model.",
+    intro: "On-device model with read-only access to ERP data.",
     onDevice: "On-device",
     toggle: "สลับ ไทย",
     toggleHint: "เปลี่ยนเป็นภาษาไทย",
-    empty: "Ask a question, or attach a screenshot or file. Paste an image straight into the box.",
+    empty: "Ask a question, or attach an image or file.",
     thinking: "Thinking…",
     toolUsed: "Used ERP tool",
     toolFailed: "failed",
@@ -88,11 +88,11 @@ const COPY = {
     mcpDown: "ERP MCP is not reachable.",
     readOnly: "read-only",
     tools: "tools",
-    mcpNote: "This chat can call these tools itself: read-only, and only for the organization you are signed in to (needs local Supabase and the text model; screenshots use the vision model, which does not call tools).",
+    mcpNote: "The chat calls these tools itself. Read-only, your organization only.",
     howTo: "How to connect to BigNose",
     copy: "Copy",
     copied: "Copied",
-    howToNote: "{t.howToNote}",
+    howToNote: "Add as a stdio connector in BigNose · docs/desktop/erp-mcp.md",
     formats: "PNG · JPEG · WebP · PDF · txt/md/csv/json",
   },
 } as const
@@ -374,7 +374,7 @@ export function AssistantChat({ profileLocale = "th" }: { profileLocale?: string
               {copied ? <Check className="size-3" /> : <Copy className="size-3" />}
               {copied ? t.copied : t.copy}
             </Button>
-            <p className="text-muted-foreground mt-1 text-xs">Add it as a stdio connector in BigNose. See docs/desktop/erp-mcp.md.</p>
+            <p className="text-muted-foreground mt-1 text-xs">{t.howToNote}</p>
           </details>
         </CardContent>
       </Card>

@@ -44,7 +44,7 @@ export default async function SecuritySettingsPage() {
     <div className="space-y-6">
       <PageHeader
         title="Authenticator"
-        description="Optional authenticator for this local account. An account with no authenticator stays on one step."
+        description="ตัวยืนยันตัวตนเสริมสำหรับบัญชีนี้"
       />
       <p className="text-sm">
         <Link href="/settings" className="underline">
@@ -54,9 +54,7 @@ export default async function SecuritySettingsPage() {
       <Card>
         <CardHeader>
           <CardTitle className="text-base">TOTP</CardTitle>
-          <CardDescription>
-            Enrollment uses the local GoTrue API. It does not call a cloud model.
-          </CardDescription>
+          <CardDescription>ลงทะเบียนผ่านระบบบนเครื่องนี้</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <p>{aal2RolloutNote(rollout)}</p>

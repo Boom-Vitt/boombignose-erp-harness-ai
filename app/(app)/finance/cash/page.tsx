@@ -6,7 +6,7 @@ import { todayISO } from "@/lib/dates"
 import { formatTHB } from "@/lib/money"
 import { canReviewFinanceClose } from "@/lib/finance/close-access"
 import { cashTruth } from "@/lib/finance/cash-truth"
-import { BAHT_CAPTION_EN, BAHT_CAPTION_TH, closeDateLabel, closeMonthLabel } from "@/lib/finance/close-copy"
+import { BAHT_CAPTION_TH, closeDateLabel, closeMonthLabel } from "@/lib/finance/close-copy"
 import { bangkokCalendarDate, resolveCloseMonth } from "@/lib/finance/close-window"
 import { PageHeader } from "@/components/page-header"
 import { StatCard } from "@/components/stat-card"
@@ -56,7 +56,7 @@ export default async function CashClosePage({ searchParams }: { searchParams: Pr
   return <div className="space-y-6">
     <PageHeader
       title="เงินสดตอนปิดงวด / Cash at close"
-      description={`เทียบยอดที่บันทึกไว้กับเงินสดในระบบ ถึง ${closeDateLabel(cash.asOf)} / Recorded balance beside cash in the system through ${closeDateLabel(cash.asOf)}. Not a bank balance and not a ledger. ${BAHT_CAPTION_TH} / ${BAHT_CAPTION_EN}`}
+      description={`ถึง ${closeDateLabel(cash.asOf)} · Not a bank balance and not a ledger. ${BAHT_CAPTION_TH}`}
       breadcrumbs={[{ label: "Finance", href: "/finance" }, { label: "Bank lines", href: "/finance/bank" }]}
     />
     <form method="get" className="flex flex-wrap items-end gap-3">

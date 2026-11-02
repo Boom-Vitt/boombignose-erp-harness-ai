@@ -22,10 +22,7 @@ export async function InvitationsCard() {
     <Card>
       <CardHeader>
         <CardTitle className="text-base">Invitations</CardTitle>
-        <CardDescription>
-          Invite teammates by email. They join this workspace when they
-          accept the link.
-        </CardDescription>
+        <CardDescription>Invite teammates by email.</CardDescription>
       </CardHeader>
       <CardContent>
         <TeamInvitations

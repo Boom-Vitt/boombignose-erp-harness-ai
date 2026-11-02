@@ -16,7 +16,7 @@ export function UpdateCheckButton({ canUpdate = false }: { canUpdate?: boolean }
       <li><span className="bbn-step-pill">2</span><span>ดาวน์โหลดแล้วตรวจ SHA256 / Download and check SHA256</span></li>
       <li><span className="bbn-step-pill">3</span><span>ติดตั้งแล้วเปิดใหม่ / Install and reopen</span></li>
     </ol>
-    <p className="text-sm text-muted-foreground">ติดตั้งอยู่รุ่น {APP_VERSION}. กดตรวจเมื่อต้องการ. บน macOS Apple Silicon แอปดาวน์โหลด ตรวจ SHA256 แล้วติดตั้งให้. บน Windows และ Linux รุ่นนี้ยังติดตั้งทับให้อัตโนมัติไม่ได้ / Installed version {APP_VERSION}. The check runs when you ask. On macOS Apple Silicon this app downloads, checks SHA256, and installs. On Windows and Linux this version does not replace the app automatically.</p>
+    <p className="text-sm text-muted-foreground">รุ่นที่ติดตั้ง {APP_VERSION} · Installed {APP_VERSION}</p>
     <Button type="button" disabled={pending || installing} onClick={check}>{pending ? "กำลังตรวจ…" : "ตรวจอัปเดต / Check for updates"}</Button>
     {result?.state === "available" ? <aside className="bbn-sticky text-sm">รุ่น {result.version} พร้อมแล้ว / Version {result.version} is published. <a className="underline" href={result.url} target="_blank" rel="noopener noreferrer">เปิดหน้า release / Open the release page</a></aside> : null}
     {result?.state === "current" ? <p className="text-sm">รุ่นนี้ตรงกับที่เผยแพร่ / This install matches the published release. <a className="underline" href={result.url} target="_blank" rel="noopener noreferrer">เปิดหน้า release / Open the release page</a></p> : null}
@@ -36,7 +36,7 @@ export function StartLogViewer() {
   const [text, setText] = useState<string | null>(null)
   const [error, setError] = useState("")
   return <div className="space-y-3">
-    <p className="text-sm text-muted-foreground">Postgres, auth, and API start logs from this computer. Database URLs and tokens are hidden. Nothing is sent over the network.</p>
+    <p className="text-sm text-muted-foreground">URL ฐานข้อมูลและโทเคนถูกซ่อน / Database URLs and tokens are hidden.</p>
     <label className="block text-sm">Log<select className="mt-1 block h-9 rounded-md border bg-background px-2" value={name} onChange={event => setName(event.target.value as (typeof START_LOGS)[number])}>{START_LOGS.map(log => <option key={log} value={log}>{log}</option>)}</select></label>
     <Button type="button" disabled={pending} onClick={() => start(async () => {
       const result = await readLocalLog(name)

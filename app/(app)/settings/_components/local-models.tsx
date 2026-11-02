@@ -285,12 +285,10 @@ export function LocalModelsCard({ initial, canInstall, asr = { offered: false, i
         ))}
       </ol>
       <aside className="bbn-sticky">
-        <p className="text-sm">โมเดลเหล่านี้ไม่ได้ลงรายการบัญชี และไม่ได้ยื่น ภ.พ.30 These models do not post a journal and do not file VAT.</p>
+        <p className="text-sm">ไม่ลงบัญชีและไม่ยื่น ภ.พ.30 / Does not post or file VAT.</p>
       </aside>
       <p className="text-sm text-muted-foreground">
-        ติดตั้งโมเดลจากหน้านี้ได้เลย ไม่ต้องลง Ollama Desktop, ComfyUI, Whisper หรือแอปเสียงแยก น้ำหนักโมเดลไม่ได้อยู่ในไฟล์ติดตั้ง จะดาวน์โหลดเมื่อกดเท่านั้น และอยู่บนเครื่องนี้
-        {" "}
-        Install models here. You do not need Ollama Desktop, ComfyUI, a Whisper app, or a separate voice app. Weights are not in the installer. A download starts only when you ask, and it stays on this computer.
+        ดาวน์โหลดเมื่อกดเท่านั้น และอยู่บนเครื่องนี้
       </p>
       {snapshot.daemonMessage ? <p role="alert" className="text-sm">{snapshot.daemonMessage}</p> : null}
       <Button type="button" variant="outline" disabled={pending !== ""} onClick={() => void refresh().catch(() => setError("ตรวจสถานะไม่สำเร็จ / Could not refresh the model list."))}>ตรวจอีกครั้ง / Check again</Button>
@@ -305,7 +303,7 @@ export function LocalModelsCard({ initial, canInstall, asr = { offered: false, i
               <span className="text-muted-foreground text-xs">{row.installed ? "ติดตั้งแล้ว / Installed" : "ยังไม่ได้ติดตั้ง / Not installed"}</span>
             </div>
             <p className="text-muted-foreground text-xs">{row.id} · {row.license} · {row.sizeNote}{row.installedBytes ? ` · ${formatBytes(row.installedBytes)}` : ""}</p>
-            <p className="text-sm">{row.detailTh} {row.detailEn}</p>
+            <p className="text-sm">{row.detailTh}</p>
             {canInstall ? (
               <Button type="button" variant={row.installed ? "outline" : "default"} disabled={pending !== "" || !snapshot.daemonUp} onClick={() => (row.installed ? remove(row.id) : install(row.id))}>
                 {pending === row.id ? "กำลังทำงาน…" : row.installed ? "เอาออก / Remove" : "ติดตั้ง / Install"}
@@ -354,7 +352,7 @@ export function LocalModelsCard({ initial, canInstall, asr = { offered: false, i
             <span className="text-muted-foreground text-xs">{asrInstalled ? "ติดตั้งแล้ว / Installed" : "ยังไม่ได้ติดตั้ง / Not installed"}</span>
           </div>
           <p className="text-muted-foreground text-xs">whisper.cpp {`b5454`} · MIT · ggml-tiny about 74 MB</p>
-          <p className="text-sm">ถอดเสียงบนเครื่องนี้ แอปดาวน์โหลด whisper.cpp ให้เอง ไม่ต้องติดตั้ง Whisper Desktop โมเดล tiny ฟังภาษาไทยและภาษาอื่นได้ในระดับหนึ่ง ข้อความอยู่แค่บนหน้านี้ ไม่ได้ถูกบันทึกเป็นรายการบัญชีและไม่ได้ยื่น ภ.พ.30 Speech to text stays on this computer. This app downloads whisper.cpp. You do not install Whisper Desktop. The tiny model can transcribe Thai and other languages, with the limits of a small model. The text stays on this page. It is not saved as an accounting entry and it does not file VAT.</p>
+          <p className="text-sm">ถอดเสียงบนเครื่องนี้ ข้อความอยู่แค่บนหน้านี้</p>
           {canInstall ? (
             <Button type="button" variant={asrInstalled ? "outline" : "default"} disabled={pending !== ""} onClick={() => void (asrInstalled ? removeAsr() : installAsr())}>
               {pending === "asr" ? "กำลังทำงาน…" : asrInstalled ? "เอาออก / Remove" : "ติดตั้ง / Install"}
@@ -378,7 +376,6 @@ export function LocalModelsCard({ initial, canInstall, asr = { offered: false, i
           <li key={item.modality} data-modality={item.modality} className="rounded-xl border p-4 text-sm">
             <p className="font-medium">{blockedTitle(item.modality)}</p>
             <p className="text-muted-foreground mt-1">{item.reasonTh}</p>
-            <p className="text-muted-foreground">{item.reasonEn}</p>
           </li>
         ))}
       </ul>

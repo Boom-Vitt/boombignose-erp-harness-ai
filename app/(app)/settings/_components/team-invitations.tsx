@@ -116,7 +116,7 @@ export function TeamInvitations({
         <EmptyState
           icon={Mail}
           title="No pending invitations"
-          description="Invite a teammate by email to give them access."
+          description="Invite by email."
           className="border-0 p-6"
         />
       ) : (

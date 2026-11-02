@@ -19,8 +19,7 @@ describe("local model settings", () => {
     expect(html).toContain('data-step="image"')
     expect(html).toContain("ยังไม่มีบนระบบนี้ / Not on this operating system")
     expect(html).toContain("ตรวจอีกครั้ง / Check again")
-    expect(html).toContain("ไม่ต้องลง Ollama Desktop")
-    expect(html).toContain("You do not need Ollama Desktop, ComfyUI, a Whisper app")
+    expect(html).toContain("ดาวน์โหลดเมื่อกดเท่านั้น")
     expect(html).toContain("ติดตั้งแล้ว / Installed")
     expect(html).toContain("qwen2.5vl:3b")
     expect(html).toContain("ติดตั้ง / Install")
@@ -28,15 +27,13 @@ describe("local model settings", () => {
     expect(html).toContain("วิดีโอ / Video")
     expect(html).toContain("ถอดเสียง / Speech to text")
     expect(html).toContain("โคลนเสียง / Voice clone")
-    expect(html).toContain("Not available in this build")
     const offered = renderToStaticMarkup(createElement(LocalModelsCard, {
       initial: snapshot,
       canInstall: true,
       asr: { offered: true, installed: false },
     }))
     expect(offered).toContain("whisper.cpp")
-    expect(offered).toContain("ไม่ต้องติดตั้ง Whisper Desktop")
-    expect(offered).toContain("ภาษาไทย")
+    expect(offered).toContain("ถอดเสียงบนเครื่องนี้")
     expect(offered).not.toContain("data-modality=\"asr\" class=\"rounded-md border border-dashed")
     expect(html).not.toContain("x/flux2-klein:4b")
     expect(html).not.toContain(">phonon<")

@@ -99,7 +99,7 @@ export function LocalBackupCard() {
   return (
     <div className="space-y-4">
       <p className="text-sm text-muted-foreground">
-        สำรองฐานข้อมูลบนเครื่องนี้ / Export writes a Postgres dump and a checksum into a folder you choose. Restore checks the checksum before it replaces this install&apos;s database. It does not upload the file anywhere.
+        สำรองฐานข้อมูลลงโฟลเดอร์ที่เลือก ตรวจ checksum ก่อนกู้คืน ไม่อัปโหลดที่ไหน
       </p>
       <Button type="button" disabled={pending} onClick={() => void exportBackup()}>
         {pending ? "Working…" : "Export backup"}

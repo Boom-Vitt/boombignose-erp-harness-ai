@@ -37,8 +37,8 @@ export const CATALOG: Entry[] = [
     name: "BoomBigNose ERP MCP",
     category: "erp",
     description: {
-      th: "เซิร์ฟเวอร์ MCP แบบอ่านอย่างเดียวในเครื่อง ให้ผู้ช่วย AI ดูข้อมูล ERP ของคุณ",
-      en: "A read-only MCP server on this computer so an AI assistant can look at your ERP data.",
+      th: "MCP แบบอ่านอย่างเดียว ให้ AI ดูข้อมูล ERP",
+      en: "Read-only MCP so an AI can view ERP data.",
     },
     href: "/assistant#assistant-mcp",
     cta: { th: "เปิดแผง MCP", en: "Open MCP panel" },
@@ -48,8 +48,8 @@ export const CATALOG: Entry[] = [
     name: "Local AI / Ollama",
     category: "productivity",
     description: {
-      th: "โมเดล AI ที่รันบนเครื่องนี้เท่านั้น ข้อมูลไม่ออกนอกเครื่อง",
-      en: "AI models that run only on this computer. Your data stays here.",
+      th: "โมเดล AI บนเครื่องนี้ ข้อมูลไม่ออกนอกเครื่อง",
+      en: "AI models on this computer. Data stays here.",
     },
     href: "/settings#local-models",
     cta: { th: "จัดการโมเดล", en: "Manage models" },
@@ -59,17 +59,17 @@ export const CATALOG: Entry[] = [
     name: "FlowAccount",
     category: "finance",
     description: {
-      th: "ส่งออกใบแจ้งหนี้ที่ออกแล้วไป FlowAccount ไม่ยื่นภาษีและไม่แทนนักบัญชี",
-      en: "Export issued invoices to FlowAccount. It does not file tax or replace an accountant.",
+      th: "ส่งออกใบแจ้งหนี้ไป FlowAccount ไม่ใช่การยื่นภาษี",
+      en: "Export invoices to FlowAccount. Not a tax filing.",
     },
     href: "/settings/accounting",
   },
   ...(
     [
-      ["gmail", "Gmail", "communication", { th: "อ่านและร่างอีเมลจากใน ERP", en: "Read and draft email from inside the ERP." }],
-      ["slack", "Slack", "communication", { th: "ส่งการแจ้งเตือนเข้าช่อง Slack", en: "Send notifications to a Slack channel." }],
-      ["google-drive", "Google Drive", "productivity", { th: "แนบไฟล์จาก Drive เข้ากับเอกสาร", en: "Attach Drive files to documents." }],
-      ["notion", "Notion", "productivity", { th: "ซิงก์บันทึกและโน้ตกับ Notion", en: "Sync notes and pages with Notion." }],
+      ["gmail", "Gmail", "communication", { th: "อ่านและร่างอีเมลใน ERP", en: "Read and draft email in ERP." }],
+      ["slack", "Slack", "communication", { th: "ส่งแจ้งเตือนเข้า Slack", en: "Send alerts to Slack." }],
+      ["google-drive", "Google Drive", "productivity", { th: "แนบไฟล์จาก Drive", en: "Attach Drive files." }],
+      ["notion", "Notion", "productivity", { th: "ซิงก์โน้ตกับ Notion", en: "Sync notes with Notion." }],
     ] as [string, string, Category, Text][]
   ).map(([id, name, category, description]): Entry => ({ id, name, category, description })),
 ]

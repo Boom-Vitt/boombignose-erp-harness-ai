@@ -32,7 +32,7 @@ function useLocale(profileLocale: Locale): [Locale, (l: Locale) => void] {
 
 const UI = {
   title: { th: "เชื่อมต่อแอป", en: "Connect apps" },
-  subtitle: { th: "เลือกแอปที่ต้องการเชื่อมกับ BoomBigNose ทุกอย่างทำงานในเครื่องนี้", en: "Pick the apps you want to link to BoomBigNose. Everything runs on this computer." },
+  subtitle: { th: "เลือกแอปที่จะเชื่อม", en: "Pick apps to link." },
   search: { th: "ค้นหาแอป", en: "Search apps" },
   all: { th: "ทั้งหมด", en: "All" },
   connect: { th: "เชื่อมต่อ", en: "Connect" },
