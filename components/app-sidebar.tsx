@@ -56,7 +56,7 @@ export function AppSidebar({
           render={<Link href={item.href} prefetch={false} />}
         >
           <Icon />
-          <span>{item.title}</span>
+          <span>{item.title}{item.th ? <span className="text-muted-foreground ml-1.5 text-xs">{item.th}</span> : null}</span>
         </SidebarMenuButton>
       </SidebarMenuItem>
     )

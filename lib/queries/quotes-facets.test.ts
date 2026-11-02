@@ -6,16 +6,16 @@ const state = vi.hoisted(() => ({ rows: [] as unknown[], orders: [] as string[] 
 vi.mock("next/navigation", () => ({ usePathname: () => "/quotes" }))
 vi.mock("@/lib/auth", () => ({ requireOrgContext: async () => ({ orgId: "org", userId: "me" }) }))
 vi.mock("@/lib/queries/saved-views", () => ({ getFacetSavedViews: async () => [] }))
-vi.mock("@/lib/supabase/server", () => ({ createClient: async () => ({ from: () => {
+vi.mock("@/lib/supabase/server", () => ({ createClient: async () => ({ from: (table: string) => {
   let [from, to] = [0, 999]
   const query = {
     select: () => query,
-    eq: () => query,
-    order: (column: string) => { state.orders.push(column); return query },
+    eq: () => query, not: () => query, neq: () => query, in: () => query, maybeSingle: async () => ({ data: null, error: null }),
+    order: (column: string) => { if (table === "quotes") state.orders.push(column); return query },
     range: (start: number, end: number) => { [from, to] = [start, end]; return query },
     // Like PostgREST, never return more than 1,000 rows per request.
     then: (resolve: (result: unknown) => unknown) =>
-      resolve({ data: state.rows.slice(from, Math.min(to, from + 999) + 1), error: null }),
+      resolve({ data: table === "quotes" ? state.rows.slice(from, Math.min(to, from + 999) + 1) : [], error: null }),
   }
   return query
 } }) }))

@@ -23,7 +23,7 @@ vi.mock("@/lib/supabase/server", () => ({
       range: () => chain,
       select: () => chain,
       eq: (column: string, value: unknown) => { query.filters.push([column, value]); return chain },
-      in: () => chain,
+      in: () => chain, not: () => chain, neq: () => chain,
       order: () => chain,
       limit: () => chain,
       maybeSingle: async () => ({ data: rows[table]?.[0] ?? null, error: null }),

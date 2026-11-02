@@ -28,6 +28,8 @@ import { PublicReferenceSlot } from "@/components/documents/public-reference-slo
 import { EmptyState } from "@/components/empty-state"
 import { InvoiceStatusBadge } from "@/components/status-badge"
 import { StatusBar } from "@/components/record/status-bar"
+import { SalesChainBar } from "@/components/documents/sales-chain-bar"
+import { salesChain } from "@/lib/documents/sales-chain"
 import { RequireSaved } from "@/components/record/record-guard"
 import { SmartButtons } from "@/components/record/smart-buttons"
 import { Button } from "@/components/ui/button"
@@ -156,6 +158,17 @@ export default async function InvoiceDetailPage({
   const outstanding = outstandingSatang(invoice.amount_satang, paid, credited)
   const effectiveStatus = deriveInvoiceStatus({ ...invoice, credited_satang: credited }, paid, today)
 
+  const sourceQuote = invoice.source_quote_id
+    ? await supabase.from("quotes").select("status").eq("org_id", ctx.orgId).eq("id", invoice.source_quote_id).maybeSingle()
+    : null
+  if (sourceQuote?.error) throw new Error("Source quote unavailable")
+  const chain = salesChain({
+    quoteStatus: sourceQuote?.data?.status,
+    invoice: { status: effectiveStatus, issued: !!invoice.issued_snapshot_id, outstandingSatang: outstanding },
+    vatRegistered: !!settingsRes.data?.vat_registered,
+  })
+  const chainAnchor = !canFinance ? undefined : chain.next?.command === "pay" ? "#payment-claims" : chain.next?.command === "issue" ? "#issue-invoice" : undefined
+
   const clients: Option[] = (clientsRes.data ?? []).map((c) => ({
     value: c.id,
     label: c.name,
@@ -237,6 +250,7 @@ export default async function InvoiceDetailPage({
           },
         ]}
       />
+      {invoice.status !== "cancelled" ? <Card><CardContent className="pt-4"><SalesChainBar chain={chain} nextHref={chainAnchor} /></CardContent></Card> : null}
       <StatusBar
         label="Invoice status"
         flow={INVOICE_FLOW}
