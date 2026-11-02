@@ -54,7 +54,7 @@ export function PageHeader({
         ) : null}
         <h1 className="bbn-title text-3xl leading-tight font-bold break-words sm:text-4xl">{title}</h1>
         {description ? (
-          <p className="text-muted-foreground max-w-prose text-sm">{description}</p>
+          <p className="text-muted-foreground max-w-prose text-sm break-words">{description}</p>
         ) : null}
       </div>
       {children ? <div className="flex min-w-0 flex-wrap items-center gap-2">{children}</div> : null}

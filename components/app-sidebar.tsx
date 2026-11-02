@@ -6,6 +6,7 @@ import { LogOut, Pin } from "lucide-react"
 
 import { NAV_GROUPS, NAV_ITEMS, showNavItem, type NavItem } from "@/components/nav"
 import { useMode } from "@/components/mode-switch"
+import { useLang } from "@/components/lang-scope"
 import { MODE_COPY, orderForMode } from "@/lib/mode"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
@@ -37,6 +38,7 @@ export function AppSidebar({
 
   const visible = NAV_ITEMS.filter((item) => showNavItem(role, item))
   // Mode-first: the current mode's starter pages lead the rail; the rest sit in their sections.
+  const lang = useLang()
   const ordered = orderForMode(visible, mode)
   const starters = ordered.filter((item) => MODE_COPY[mode].first.includes(item.href))
   const sections = NAV_GROUPS.map((g) => ({
@@ -51,12 +53,12 @@ export function AppSidebar({
       <SidebarMenuItem key={item.href}>
         <SidebarMenuButton
           isActive={active}
-          tooltip={item.title}
+          tooltip={lang === "th" && item.th ? item.th : item.title}
           className="bbn-nav-link"
           render={<Link href={item.href} prefetch={false} />}
         >
           <Icon />
-          <span>{item.title}{item.th ? <span className="text-muted-foreground ml-1.5 text-xs">{item.th}</span> : null}</span>
+          <span className="min-w-0 truncate">{lang === "th" && item.th ? item.th : item.title}</span>
         </SidebarMenuButton>
       </SidebarMenuItem>
     )
@@ -72,7 +74,7 @@ export function AppSidebar({
         <SidebarGroup>
           <SidebarGroupLabel data-start="true" className="bbn-nav-label h-auto! rounded-full!">
             <Pin className="size-3" aria-hidden />
-            เริ่มที่นี่ / Start here
+            {lang === "th" ? "เริ่มที่นี่" : "Start here"}
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>{starters.map(renderItem)}</SidebarMenu>
@@ -80,7 +82,7 @@ export function AppSidebar({
         </SidebarGroup>
         {sections.map((section) => (
           <SidebarGroup key={section.id}>
-            <SidebarGroupLabel className="bbn-nav-label h-auto! rounded-full!">{section.label}</SidebarGroupLabel>
+            <SidebarGroupLabel className="bbn-nav-label h-auto! rounded-full!">{lang === "th" ? section.th : section.label}</SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>{section.items.map(renderItem)}</SidebarMenu>
             </SidebarGroupContent>

@@ -76,7 +76,7 @@ export function ConnectionsCatalog({ probes, profileLocale }: { probes: Probes; 
       </div>
 
       {shown.length === 0 ? <p className="text-muted-foreground text-sm">{t(UI.empty)}</p> : (
-        <ul className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+        <ul className="grid min-w-0 gap-4 sm:grid-cols-2 xl:grid-cols-3 [&>li]:min-w-0">
           {shown.map((e) => {
             const status = statusOf(e, probes)
             const Icon = ICON[e.id] ?? Plug
@@ -84,9 +84,9 @@ export function ConnectionsCatalog({ probes, profileLocale }: { probes: Probes; 
               <li key={e.id}>
                 <Card className="bbn-deck-panel h-full border-0" data-testid={`connection-${e.id}`} data-status={status}>
                   <CardHeader>
-                    <CardTitle className="flex items-center gap-2 text-base">
-                      <Icon className="text-primary size-4" aria-hidden />{e.name}
-                      <span className="bbn-chip ml-auto">{t(STATUS_LABEL[status])}</span>
+                    <CardTitle className="flex min-w-0 items-center gap-2 text-base">
+                      <Icon className="text-primary size-4 shrink-0" aria-hidden /><span className="min-w-0 truncate" title={e.name}>{e.name}</span>
+                      <span className="bbn-chip ml-auto shrink-0">{t(STATUS_LABEL[status])}</span>
                     </CardTitle>
                     <CardDescription>{t(e.description)}</CardDescription>
                   </CardHeader>
