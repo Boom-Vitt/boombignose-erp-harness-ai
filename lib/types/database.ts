@@ -1401,6 +1401,13 @@ isOneToOne: false
         Relationships: []
       }
 
+      purchase_withholdings: {
+        Row: { id: string; org_id: string; cost_id: string; paid_on: string; form: string; income_type: string; rate_bps: number; base_satang: number; wht_satang: number; certificate_year: number; certificate_seq: number; certificate_no: string; created_by: string | null; created_at: string }
+        Insert: never
+        Update: never
+        Relationships: []
+      }
+
       record_attachments: {
         Row: { id: string; org_id: string; record_type: Database["public"]["Enums"]["record_type"]; record_id: string; path: string; filename: string; size: number; content_type: string; uploaded_by: string; created_at: string }
         Insert: { id?: string; org_id: string; record_type: Database["public"]["Enums"]["record_type"]; record_id: string; path: string; filename: string; size: number; content_type: string; uploaded_by: string; created_at?: string }
@@ -1560,6 +1567,7 @@ isOneToOne: false
             cancel_draft_invoice: { Args: { p_org_id: string; p_invoice_id: string }; Returns: undefined }
             update_finance_lock_date: { Args: { p_org_id: string; p_lock_date: string | null }; Returns: undefined }
             close_completed_month: { Args: { p_org_id: string; p_month: string }; Returns: string }
+            record_purchase_withholding: { Args: { p_org_id: string; p_cost_id: string; p_paid_on: string; p_form: string; p_income_type: string; p_rate_bps: number }; Returns: string }
             record_support_export: { Args: { p_org_id: string; p_kind: string; p_period: string; p_sha256: string; p_bytes: number }; Returns: undefined }
             propose_finance_lock: { Args: { p_org_id: string; p_lock_date: string | null; p_reason: string | null }; Returns: Json }
             confirm_finance_lock_reopen: { Args: { p_org_id: string; p_request_id: string }; Returns: Json }

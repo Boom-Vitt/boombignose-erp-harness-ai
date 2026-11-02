@@ -18,8 +18,8 @@ export function PageHeader({
   children,
   className,
 }: {
-  title: string
-  description?: string
+  title: React.ReactNode
+  description?: React.ReactNode
   /** Ancestor pages, root first; the title closes the trail. */
   breadcrumbs?: { label: string; href: string }[]
   children?: React.ReactNode

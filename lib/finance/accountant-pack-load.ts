@@ -9,6 +9,7 @@ import {
   type AccountantPack,
   type PackCreditRow,
   type PackInvoiceRow,
+  type PackPurchaseWht,
   type PackPurchaseLine,
 } from "@/lib/finance/accountant-pack"
 
@@ -43,7 +44,7 @@ export async function loadAccountantPack(month: string): Promise<PackLoad> {
   if (!parsed) return { ok: false, status: 400, message: "Choose a month as YYYY-MM." }
   try {
     const supabase = await createClient()
-    const [invoicesRes, creditsRes, costsRes, vatRes] = await Promise.all([
+    const [invoicesRes, creditsRes, costsRes, vatRes, whtRes] = await Promise.all([
       readAll((from, to) => supabase.from("invoices")
         .select("id, number, status, issue_date, client_id, total_satang, vat_satang, wht_satang, clients(name, tax_id)")
         .eq("org_id", ctx.orgId)
@@ -72,8 +73,15 @@ export async function loadAccountantPack(month: string): Promise<PackLoad> {
         .eq("month", parsed.from)
         .order("month")
         .range(from, to)),
+      readAll((from, to) => supabase.from("purchase_withholdings")
+        .select("id, cost_id, certificate_no, paid_on, form, income_type, rate_bps, base_satang, wht_satang")
+        .eq("org_id", ctx.orgId)
+        .gte("paid_on", parsed.from)
+        .lt("paid_on", parsed.toExclusive)
+        .order("id")
+        .range(from, to)),
     ])
-    if (invoicesRes.error || creditsRes.error || costsRes.error || vatRes.error) {
+    if (invoicesRes.error || creditsRes.error || costsRes.error || vatRes.error || whtRes.error) {
       return { ok: false, status: 503, message: "Accountant pack unavailable. Reload before relying on totals." }
     }
     const invoices = (invoicesRes.data ?? []) as InvoiceSource[]
@@ -103,6 +111,7 @@ export async function loadAccountantPack(month: string): Promise<PackLoad> {
       if (vendorRes.error) return { ok: false, status: 503, message: "Accountant pack unavailable. Reload before relying on totals." }
       for (const row of vendorRes.data ?? []) vendors.set(row.id, { name: row.name, tax_id: row.tax_id })
     }
+    const whtPayees = await loadWhtPayees(supabase, ctx.orgId, whtRes.data ?? [])
     const pack = assembleAccountantPack({
       orgName: ctx.orgName,
       month: parsed.month,
@@ -111,6 +120,7 @@ export async function loadAccountantPack(month: string): Promise<PackLoad> {
       purchaseLines: (costsRes.data ?? [])
         .filter((row) => row.vendor_bill_match_id != null && inSpan(row.bill_date, parsed))
         .map((row) => toPurchase(row, vendors)),
+      purchaseWithholdings: (whtRes.data ?? []).map((row) => toPurchaseWht(row, whtPayees)),
       purchaseVat: (vatRes.data ?? []).map((row) => ({ month: row.month, baseSatang: row.base_satang, inputVatSatang: row.input_vat_satang })),
     })
     return { ok: true, pack }
@@ -181,6 +191,58 @@ function toPurchase(row: {
     inputVatSatang: row.input_vat_satang,
     matched: row.vendor_bill_match_id != null,
   }
+}
+
+type WhtSource = {
+  id: string
+  cost_id: string
+  certificate_no: string
+  paid_on: string
+  form: string
+  income_type: string
+  rate_bps: number
+  base_satang: number
+  wht_satang: number
+}
+
+function toPurchaseWht(row: WhtSource, payees: Map<string, { name: string; taxId: string | null }>): PackPurchaseWht {
+  const payee = payees.get(row.cost_id)
+  return {
+    id: row.id,
+    costId: row.cost_id,
+    certificateNo: row.certificate_no,
+    paidOn: row.paid_on,
+    form: row.form === "pnd3" ? "pnd3" : "pnd53",
+    incomeType: row.income_type,
+    rateBps: row.rate_bps,
+    vendorName: payee?.name || "Unassigned vendor",
+    vendorTaxId: payee?.taxId ?? null,
+    baseSatang: row.base_satang,
+    whtSatang: row.wht_satang,
+  }
+}
+
+/** Payee name and tax ID for each withheld cost: the linked vendor, else the free-text vendor on the cost. */
+async function loadWhtPayees(supabase: Awaited<ReturnType<typeof createClient>>, orgId: string, rows: readonly WhtSource[]) {
+  const payees = new Map<string, { name: string; taxId: string | null }>()
+  const costIds = [...new Set(rows.map((row) => row.cost_id))]
+  for (let index = 0; index < costIds.length; index += 100) {
+    const ids = costIds.slice(index, index + 100)
+    const costs = await readAll((from, to) => supabase.from("costs").select("id, vendor, vendor_id").eq("org_id", orgId).in("id", ids).order("id").range(from, to))
+    if (costs.error) throw new Error("Accountant pack unavailable. Reload before relying on totals.")
+    const vendorIds = [...new Set((costs.data ?? []).map((row) => row.vendor_id).filter((id): id is string => !!id))]
+    const vendors = new Map<string, { name: string; tax_id: string | null }>()
+    if (vendorIds.length > 0) {
+      const found = await readAll((from, to) => supabase.from("vendors").select("id, name, tax_id").eq("org_id", orgId).in("id", vendorIds).order("id").range(from, to))
+      if (found.error) throw new Error("Accountant pack unavailable. Reload before relying on totals.")
+      for (const row of found.data ?? []) vendors.set(row.id, { name: row.name, tax_id: row.tax_id })
+    }
+    for (const cost of costs.data ?? []) {
+      const vendor = cost.vendor_id ? vendors.get(cost.vendor_id) : undefined
+      payees.set(cost.id, { name: vendor?.name || cost.vendor?.trim() || "", taxId: vendor?.tax_id?.trim() || null })
+    }
+  }
+  return payees
 }
 
 function embeddedClient(value: ClientEmbed | undefined): { name: string; taxId: string | null } {

@@ -1,7 +1,7 @@
 import { createHash } from "node:crypto"
 
 /** Support files a signed-in finance role can download. Not a filing. */
-export const SUPPORT_EXPORT_KINDS = ["accountant_pack_csv", "accountant_pack_print", "outstanding_pack_csv", "close_activity_csv"] as const
+export const SUPPORT_EXPORT_KINDS = ["accountant_pack_csv", "accountant_pack_print", "outstanding_pack_csv", "close_activity_csv", "vat_support_csv", "wht_support_csv"] as const
 
 export type SupportExportKind = (typeof SUPPORT_EXPORT_KINDS)[number]
 
