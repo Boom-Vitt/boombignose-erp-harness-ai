@@ -14,110 +14,10 @@
   <meta property="og:description" content="เดสก์ท็อปบนเครื่องคุณ ไม่เรียก AI บนคลาวด์" />
   <meta property="og:image" content="https://boom-vitt.github.io/boombignose-erp-harness-ai/assets/og.png" />
   <meta property="og:type" content="website" />
-  <style>
-    :root {
-      --paper: #0b0d12;
-      --surface: #12151c;
-      --line: #232733;
-      --text: #e8eaf0;
-      --muted: #9aa1b2;
-      --accent: #ff7a45;
-      --on-accent: #0b0d12;
-    }
-    * { box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
-    body {
-      margin: 0;
-      background: var(--paper);
-      color: var(--text);
-      font-family: "IBM Plex Sans Thai", Inter, "Noto Sans Thai", Anuphan, Sarabun, system-ui, sans-serif;
-      line-height: 1.6;
-    }
-    a { color: var(--accent); }
-    :focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
-    .skip {
-      position: absolute; left: 16px; top: -48px; background: var(--accent); color: var(--on-accent);
-      padding: 8px 12px; border-radius: 8px; font-weight: 700; z-index: 20;
-    }
-    .skip:focus { top: 12px; }
-    .wrap { max-width: 1040px; margin: 0 auto; padding: 0 20px; }
-    header.nav {
-      position: sticky; top: 0; z-index: 10;
-      background: rgb(11 13 18 / .92);
-      border-bottom: 1px solid var(--line);
-    }
-    .nav .wrap { display: flex; align-items: center; justify-content: space-between; min-height: 72px; gap: 16px; flex-wrap: wrap; }
-    .nav-links { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
-    .nav-links a:not(.btn) { color: var(--text); text-decoration: none; font-weight: 600; min-height: 44px; display: inline-flex; align-items: center; }
-    .chip {
-      display: inline-block; margin-left: 8px; border: 1px solid var(--accent); color: var(--accent);
-      border-radius: 999px; padding: 2px 8px; font-size: 12px; font-weight: 700; vertical-align: middle;
-    }
-    .chip[hidden] { display: none !important; }
-    .card.is-this { border-color: var(--accent); }
-    .brand { display: flex; align-items: center; gap: 10px; color: var(--text); text-decoration: none; font-weight: 700; }
-    .brand img, .lockup img { width: 36px; height: 36px; }
-    .btn {
-      display: inline-flex; align-items: center; justify-content: center;
-      background: var(--accent); color: var(--on-accent); text-decoration: none;
-      font-weight: 700; border-radius: 999px; padding: 10px 18px; min-height: 44px;
-      transition: filter .15s ease;
-    }
-    .btn:hover { filter: brightness(1.06); }
-    .hero { padding: 72px 0 32px; }
-    .lockup { display: flex; align-items: center; gap: 12px; color: var(--text); font-weight: 700; font-size: 20px; }
-    h1 {
-      font-size: clamp(40px, 6vw, 60px); line-height: 1.15; letter-spacing: -0.03em;
-      margin: 20px 0 12px; max-width: 14ch; font-weight: 700;
-    }
-    .lead { font-size: 20px; margin: 0 0 8px; }
-    .en { color: var(--muted); font-family: Inter, "IBM Plex Sans Thai", sans-serif; font-size: 16px; margin: 0 0 20px; }
-    .meta { color: var(--muted); font-size: 14px; margin: 10px 0 0; }
-    h2 { font-size: clamp(28px, 3vw, 36px); line-height: 1.2; margin: 0 0 8px; }
-    .sub { color: var(--muted); margin: 0 0 20px; }
-    section { padding: 64px 0; }
-    .badges, .grid, .os-grid, .steps { display: grid; gap: 16px; }
-    .badges { grid-template-columns: repeat(4, 1fr); }
-    .grid { grid-template-columns: repeat(4, 1fr); }
-    .os-grid, .steps { grid-template-columns: repeat(3, 1fr); }
-    .card {
-      background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 20px;
-    }
-    .card h3 { margin: 0 0 8px; font-size: 18px; }
-    .card p, .card li { margin: 0; color: var(--muted); }
-    .card ol { margin: 8px 0 0; padding-left: 1.2rem; }
-    .card li { margin: 6px 0; }
-    .os { display: flex; flex-direction: column; gap: 10px; text-decoration: none; color: var(--text); min-height: 100%; }
-    .os a { color: inherit; text-decoration: none; }
-    .os a + a { color: var(--accent); font-weight: 700; }
-    .os strong { font-size: 22px; }
-    .mono { font-family: "JetBrains Mono", ui-monospace, monospace; font-size: 12px; color: var(--muted); word-break: break-all; }
-    .window { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; overflow: hidden; margin-top: 28px; }
-    .chrome { display: flex; gap: 6px; align-items: center; padding: 12px 14px; border-bottom: 1px solid var(--line); }
-    .chrome i { width: 10px; height: 10px; border-radius: 50%; background: var(--line); display: block; }
-    .chrome span { margin-left: 8px; color: var(--muted); font-size: 13px; }
-    .panes { display: grid; grid-template-columns: 180px 1fr; min-height: 200px; }
-    .side { padding: 16px; border-right: 1px solid var(--line); display: flex; flex-direction: column; gap: 10px; }
-    .side b { border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; font-weight: 600; }
-    .pane { padding: 16px; display: grid; gap: 12px; align-content: start; }
-    .bar { height: 12px; border-radius: 6px; background: var(--paper); border: 1px solid var(--line); }
-    .bar.short { width: 46%; }
-    .ph { color: var(--muted); font-size: 14px; margin: 8px 0 0; }
-    footer { border-top: 1px solid var(--line); padding: 28px 0 48px; }
-    footer .wrap { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; align-items: center; }
-    @media (max-width: 800px) {
-      section { padding: 40px 0; }
-      .badges, .grid, .os-grid, .steps, .panes { grid-template-columns: 1fr; }
-      .side { border-right: 0; border-bottom: 1px solid var(--line); }
-      h1 { max-width: none; }
-    }
-    @media (prefers-reduced-motion: reduce) {
-      html { scroll-behavior: auto; }
-      .btn { transition: none; }
-    }
-  </style>
+  <link rel="stylesheet" href="assets/site.css" />
+  <meta name="theme-color" content="#0B1222" />
 </head>
-<body>
+<body class="home">
   <a class="skip" href="#content">ข้ามไปเนื้อหา</a>
   <header class="nav">
     <div class="wrap">
@@ -126,6 +26,7 @@
         <span>BoomBigNose</span>
       </a>
       <div class="nav-links">
+        <a href="#showcase">ภาพจากแอป</a>
         <a href="install.html">วิธีติดตั้ง</a>
         <a href="first-run.html">ครั้งแรกที่เปิด</a>
         <a href="guide.html">วิธีใช้</a>
@@ -135,24 +36,64 @@
   </header>
   <main id="content">
     <div class="wrap hero">
-      <div class="lockup">
-        <img src="assets/brandmark.png" width="36" height="36" alt="" />
-        <span>BoomBigNose</span>
+      <div class="hero-text">
+        <span class="eyebrow">Local-first · Desktop ERP</span>
+        <h1>BoomBigNose <span class="grad">ERP Harness AI</span></h1>
+        <p class="lead">เดสก์ท็อปบนเครื่องคุณ ไม่เรียก AI บนคลาวด์</p>
+        <p class="en">Fully local. No cloud AI at runtime.</p>
+        <div class="cta-row">
+          <a class="btn lg" id="primary-download" href="#download">ดาวน์โหลด <span data-release="tag">boombignose-v0.3.0</span></a>
+          <a class="btn secondary lg" href="#showcase">ดูภาพจากแอป</a>
+        </div>
+        <p class="meta" id="primary-meta">หน้าต่างแอป ไม่ใช่แค่คำสั่ง harness ถ้าเบราว์เซอร์ไม่บอกระบบ ให้เลือกการ์ดด้านล่าง ขนาดเป็นจำนวนไบต์จริงจาก Release</p>
       </div>
-      <h1>BoomBigNose ERP Harness AI</h1>
-      <p class="lead">เดสก์ท็อปบนเครื่องคุณ ไม่เรียก AI บนคลาวด์</p>
-      <p class="en">Fully local. No cloud AI at runtime.</p>
-      <a class="btn" id="primary-download" href="#download">ดาวน์โหลด <span data-release="tag">boombignose-v0.3.0</span></a>
-      <p class="meta" id="primary-meta">หน้าต่างแอป ไม่ใช่แค่คำสั่ง harness ถ้าเบราว์เซอร์ไม่บอกระบบ ให้เลือกการ์ดด้านล่าง ขนาดเป็นจำนวนไบต์จริงจาก Release</p>
-      <div class="window" role="img" aria-label="ภาพจำลองกรอบหน้าต่าง ไม่ใช่ภาพจับจากโปรแกรม">
-        <div class="chrome"><i></i><i></i><i></i><span>BoomBigNose ERP Harness AI</span></div>
-        <div class="panes">
-          <div class="side"><b>แดชบอร์ด</b><b>ลูกค้า</b><b>โปรเจกต์</b></div>
-          <div class="pane"><div class="bar"></div><div class="bar short"></div><div class="bar"></div></div>
+      <div class="hero-shot">
+        <figure class="shot">
+          <div class="appwin">
+            <div class="appbar"><i></i><i></i><i></i><span>BoomBigNose · Campus 3D</span></div>
+            <img src="assets/shots/campus-3d-warehouse.jpg" width="1600" height="1000" fetchpriority="high" decoding="async" alt="หน้า Campus 3D ของ BoomBigNose แสดงคลังสินค้า ออฟฟิศ รถยก และแถบติดตามการจัดส่งบนแผนที่สามมิติเดียว" />
+          </div>
+          <figcaption>Campus 3D · คลังสินค้า ออฟฟิศ รถยก และสถานะการจัดส่งบนแผนที่เดียว ภาพหน้าจอจากแอป</figcaption>
+        </figure>
+      </div>
+    </div>
+
+    <section id="showcase">
+      <div class="wrap">
+        <h2>ภาพจากแอป</h2>
+        <p class="sub">ภาพหน้าจอของแอปบนเครื่อง ไม่ใช่ภาพจำลอง แต่ละภาพอธิบายตามสิ่งที่เห็นในหน้าจอ</p>
+        <div class="showcase">
+          <figure class="shot">
+            <div class="appwin">
+              <div class="appbar"><i></i><i></i><i></i><span>แดชบอร์ด · Dashboard</span></div>
+              <img src="assets/shots/3d-base-dashboard-individual.jpg" width="1600" height="1000" loading="lazy" decoding="async" alt="แดชบอร์ดโหมดบุคคลธรรมดา แสดงเงินสด รายได้เดือนนี้ ไปป์ไลน์ ใบแจ้งหนี้ค้างชำระ และรายได้ 6 เดือนล่าสุด" />
+            </div>
+            <figcaption><b>แดชบอร์ด · Dashboard</b>เงินสด รายได้ ไปป์ไลน์ และสิ่งที่ต้องดูวันนี้ รวมอยู่หน้าเดียว</figcaption>
+          </figure>
+          <figure class="shot">
+            <div class="appwin">
+              <div class="appbar"><i></i><i></i><i></i><span>ดีล · Deal detail</span></div>
+              <img src="assets/shots/3d-base-deal-detail.jpg" width="1600" height="1000" loading="lazy" decoding="async" alt="หน้ารายละเอียดดีล แสดงขั้นของดีลตั้งแต่ Lead ถึง Won มูลค่า ความน่าจะเป็น และช่องบันทึกกิจกรรมติดตามผล" />
+            </div>
+            <figcaption><b>ลูกค้าและดีล · Deal detail</b>ขั้นของดีล มูลค่า ความน่าจะเป็น และบันทึกกิจกรรมติดตามผล</figcaption>
+          </figure>
+          <figure class="shot">
+            <div class="appwin">
+              <div class="appbar"><i></i><i></i><i></i><span>ผู้ช่วยส่วนตัว · Personal assistant</span></div>
+              <img src="assets/shots/modern-ui-v2-personal-ai.jpg" width="1600" height="1000" loading="lazy" decoding="async" alt="แดชบอร์ดพร้อมผู้ช่วยส่วนตัว ช่องวางโน้ตให้ AI สรุป ป้าย AI บนเครื่อง และเมนูด้านข้างของระบบ" />
+            </div>
+            <figcaption><b>ผู้ช่วยส่วนตัว · Personal assistant</b>วางโน้ตหรือรายการงานให้ AI สรุป ป้ายกำกับระบุว่าเป็น AI บนเครื่อง</figcaption>
+          </figure>
+          <figure class="shot">
+            <div class="appwin">
+              <div class="appbar"><i></i><i></i><i></i><span>เข้าสู่ระบบ · Sign in</span></div>
+              <img src="assets/shots/3d-base-settings-local-models.jpg" width="1600" height="1000" loading="lazy" decoding="async" alt="หน้าเข้าสู่ระบบ BoomBigNose ERP เลือกโหมดธุรกิจ SME สตาร์ทอัพ หรือบุคคลธรรมดา พร้อมข้อความว่า AI ทำงานบนเครื่องคุณ" />
+            </div>
+            <figcaption><b>เข้าสู่ระบบ · Sign in</b>เลือกเริ่มจากโหมดธุรกิจ SME สตาร์ทอัพ หรือบุคคลธรรมดา ข้อความในภาพบอกว่า AI ทำงานบนเครื่องคุณ</figcaption>
+          </figure>
         </div>
       </div>
-      <p class="ph">กรอบนี้วาดด้วย CSS ไม่มีภาพโปสเตอร์และไม่มีภาพจับจากแอป</p>
-    </div>
+    </section>
 
     <section>
       <div class="wrap">
