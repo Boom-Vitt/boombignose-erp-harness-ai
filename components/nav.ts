@@ -38,6 +38,8 @@ export type NavItem = {
   group: NavGroup
   href: string
   icon: LucideIcon
+  /** Thai label shown beside the English title (FlowAccount wording). */
+  th?: string
   /** Hide from staff members. Accountants still see the audit log. */
   ownerAdminOnly?: boolean
 }
@@ -60,10 +62,10 @@ export const NAV_ITEMS: NavItem[] = [
   { title: "Inventory", group: "operate", href: "/inventory", icon: Package },
   { title: "Purchases", group: "operate", href: "/purchases", icon: Receipt },
   { title: "Vendors", group: "operate", href: "/vendors", icon: Users },
-  { title: "Quotes", group: "sell", href: "/quotes", icon: FileText },
+  { title: "Quotes", th: "ใบเสนอราคา", group: "sell", href: "/quotes", icon: FileText },
   { title: "Projects", group: "operate", href: "/projects", icon: FolderKanban },
   { title: "Timesheets", group: "operate", href: "/timesheets", icon: Clock },
-  { title: "Finance", group: "money", href: "/finance", icon: Receipt },
+  { title: "Finance", th: "ใบแจ้งหนี้ / ใบเสร็จ", group: "money", href: "/finance", icon: Receipt },
   { title: "Expenses", group: "money", href: "/expenses", icon: Wallet },
   { title: "Reports", group: "money", href: "/reports", icon: BarChart3 },
   { title: "Calendar", group: "operate", href: "/calendar", icon: CalendarDays },

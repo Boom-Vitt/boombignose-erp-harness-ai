@@ -24,6 +24,12 @@ import {
   TableCell,
 } from "@/components/ui/table"
 
+import { SalesChainBar } from "@/components/documents/sales-chain-bar"
+import { salesChain } from "@/lib/documents/sales-chain"
+import { quoteInvoices } from "@/lib/documents/sales-chain-query"
+import { can } from "@/lib/permissions"
+
+import { ConvertQuoteButton } from "./_components/convert-quote-button"
 import { QuoteStatusBadge } from "./_components/quote-status-badge"
 
 export const dynamic = "force-dynamic"
@@ -43,6 +49,12 @@ export default async function QuotesPage({ searchParams }: { searchParams: Promi
     .order("issue_date", { ascending: false }).order("id").range(from, to))
 
   if (error) throw new Error("Quotes unavailable. Please reload.")
+  const [invoiceByQuote, settings] = await Promise.all([
+    quoteInvoices(supabase, ctx.orgId),
+    supabase.from("org_settings").select("vat_registered").eq("org_id", ctx.orgId).maybeSingle(),
+  ])
+  if (settings.error) throw new Error("Quotes unavailable. Please reload.")
+  const canConvert = can(ctx.role, "quote:convert")
   const quotes = (data ?? []).filter((q) => matchesFacets(config, {
     text: `${q.number} ${q.clients?.name ?? ""}`, status: q.status, date: q.issue_date, owner: q.owner,
   }, ctx.userId, now))
@@ -86,15 +98,19 @@ export default async function QuotesPage({ searchParams }: { searchParams: Promi
                   <TableHead>Status</TableHead>
                   <TableHead className="text-right">Total</TableHead>
                   <TableHead>Valid until</TableHead>
+                  <TableHead>Chain / ลำดับเอกสาร</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                <GroupedTableRows rows={quotes} colSpan={5} amount={(q) => q.total_satang}
+                <GroupedTableRows rows={quotes} colSpan={6} amount={(q) => q.total_satang}
                   group={config.groupBy ? (q) => config.groupBy === "client"
                     ? { key: q.client_id, label: q.clients?.name ?? "Unassigned" }
                     : config.groupBy === "month" ? { key: monthKey(q.issue_date), label: monthKey(q.issue_date) }
                     : { key: q.status, label: facetLabel(q.status) } : undefined}>
-                {(q) => (
+                {(q) => {
+                  const invoice = invoiceByQuote.get(q.id)
+                  const chain = salesChain({ quoteStatus: q.status, invoice, vatRegistered: !!settings.data?.vat_registered })
+                  return (
                   <TableRow key={q.id}>
                     <TableCell className="font-medium">
                       <Link
@@ -114,8 +130,17 @@ export default async function QuotesPage({ searchParams }: { searchParams: Promi
                     <TableCell className="text-muted-foreground">
                       {q.valid_until ?? "—"}
                     </TableCell>
+                    <TableCell className="space-y-1">
+                      <SalesChainBar chain={chain} compact />
+                      {chain.next?.command === "convert" && canConvert ? (
+                        <ConvertQuoteButton quoteId={q.id} orgId={ctx.orgId} label={`${chain.next.th} / ${chain.next.en}`} variant="outline" />
+                      ) : invoice ? (
+                        <Link className="text-xs underline" href={`/finance/invoices/${invoice.id}`}>{invoice.number}{chain.next ? ` → ${chain.next.th}` : ""}</Link>
+                      ) : chain.next ? <Link className="text-xs underline" href={`/quotes/${q.id}`}>{chain.next.th}</Link> : null}
+                    </TableCell>
                   </TableRow>
-                )}</GroupedTableRows>
+                  )
+                }}</GroupedTableRows>
               </TableBody>
             </Table>
           )}

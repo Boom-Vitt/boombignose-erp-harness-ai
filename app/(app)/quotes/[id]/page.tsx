@@ -17,6 +17,8 @@ import type { Enums } from "@/lib/types/database"
 
 import { PageHeader } from "@/components/page-header"
 import { PublicReferenceSlot } from "@/components/documents/public-reference-slot"
+import { SalesChainBar } from "@/components/documents/sales-chain-bar"
+import { salesChain } from "@/lib/documents/sales-chain"
 import { QuoteStatusBadge } from "@/components/status-badge"
 import { StatusBar } from "@/components/record/status-bar"
 import { SmartButtons, recordHref } from "@/components/record/smart-buttons"
@@ -76,7 +78,7 @@ export default async function QuoteDetailPage({
     readAll((from, to) => supabase.from("clients").select("id, name").eq("org_id", ctx.orgId).order("name").order("id").range(from, to)),
     readAll((from, to) => supabase.from("projects").select("id, name").eq("org_id", ctx.orgId).order("name").order("id").range(from, to)),
     readAll((from, to) => supabase.from("invoices")
-      .select("id, number, status, quote_invoice_kind, quote_deposit_satang, total_satang")
+      .select("id, number, status, quote_invoice_kind, quote_deposit_satang, total_satang, issued_snapshot_id")
       .eq("org_id", ctx.orgId).eq("source_quote_id", id)
       .order("created_at").order("id").range(from, to)),
     supabase.from("org_settings").select("vat_registered, vat_rate_bps").eq("org_id", ctx.orgId).maybeSingle(),
@@ -111,6 +113,14 @@ export default async function QuoteDetailPage({
       converted: { primary: { label: "Create draft invoice", command: "convert" as const } },
     },
   }
+  const latest = invoices.filter((invoice) => invoice.status !== "cancelled").at(-1)
+  const balance = latest?.issued_snapshot_id
+    ? (await supabase.from("invoice_balances").select("outstanding_satang").eq("org_id", ctx.orgId).eq("invoice_id", latest.id).maybeSingle()).data
+    : null
+  // A missing balance row reads as fully outstanding, so the next step stays "record payment".
+  const liveInvoice = latest && { id: latest.id, status: latest.status, issued: !!latest.issued_snapshot_id, outstandingSatang: balance?.outstanding_satang ?? latest.total_satang }
+  const chain = salesChain({ quoteStatus: quote.status, invoice: liveInvoice, vatRegistered: !!settingsRes.data?.vat_registered })
+  const nextAnchor = chain.next?.command === "pay" ? "#payment-claims" : chain.next?.command === "issue" ? "#issue-invoice" : null
   const editable = quoteIsEditable(quote.status)
   const vatRate = settingsRes.data?.vat_registered ? settingsRes.data.vat_rate_bps : 0
   const linkedProject = (projectsRes.data ?? []).find((p) => p.id === quote.project_id)
@@ -197,6 +207,7 @@ export default async function QuoteDetailPage({
             : {}
         }
       />
+      <Card><CardContent className="pt-4"><SalesChainBar chain={chain} nextHref={liveInvoice && nextAnchor && canAccept ? `/finance/invoices/${liveInvoice.id}${nextAnchor}` : undefined} /></CardContent></Card>
       <DealWonOffer quoteId={quote.id} />
 
       <Card>

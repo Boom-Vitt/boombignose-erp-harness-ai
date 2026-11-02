@@ -2,6 +2,7 @@ import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
 import { STATUS_DISPLAY, type RecordStatus, type Tone } from "@/lib/record/status"
 import type { Enums } from "@/lib/types/database"
+import { INVOICE_STATUS_TH, QUOTE_STATUS_TH } from "@/lib/documents/sales-chain"
 
 const TONE: Record<Tone, string> = {
   neutral: "bg-slate-400/10 text-slate-300 border-transparent [--dot:#94a3b8]",
@@ -11,12 +12,13 @@ const TONE: Record<Tone, string> = {
   danger: "bg-rose-400/10 text-rose-300 border-transparent [--dot:#fb7185]",
 }
 
-export function StatusBadge({ status }: { status: RecordStatus }) {
+export function StatusBadge({ status, th }: { status: RecordStatus; th?: string }) {
   const { label, tone } = STATUS_DISPLAY[status]
   return (
     <Badge variant="outline" className={cn("font-medium", TONE[tone])}>
       <span aria-hidden className="size-1.5 rounded-full bg-(--dot)" />
       {label}
+      {th ? <span className="opacity-70">· {th}</span> : null}
     </Badge>
   )
 }
@@ -30,7 +32,7 @@ export function ProjectStatusBadge({ status }: { status: Enums<"project_status">
 }
 
 export function InvoiceStatusBadge({ status }: { status: Enums<"invoice_status"> }) {
-  return <StatusBadge status={status} />
+  return <StatusBadge status={status} th={INVOICE_STATUS_TH[status]} />
 }
 
 export function TaskStatusBadge({ status }: { status: Enums<"task_status"> }) {
@@ -38,7 +40,7 @@ export function TaskStatusBadge({ status }: { status: Enums<"task_status"> }) {
 }
 
 export function QuoteStatusBadge({ status }: { status: Enums<"quote_status"> }) {
-  return <StatusBadge status={status} />
+  return <StatusBadge status={status} th={QUOTE_STATUS_TH[status]} />
 }
 
 export function SubscriptionStatusBadge({ status }: { status: Enums<"subscription_status"> }) {
