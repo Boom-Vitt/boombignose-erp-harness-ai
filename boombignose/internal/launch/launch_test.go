@@ -200,7 +200,7 @@ func TestEnsureKeepsAHealthyERP(t *testing.T) {
 			return
 		}
 		w.Header().Set("Content-Type", "application/json")
-		_, _ = w.Write([]byte(`{"ok":true}`))
+		_, _ = w.Write([]byte(`{"ok":true,"app":"boombignose-erp"}`))
 	}))
 	defer srv.Close()
 	called := false
@@ -221,7 +221,7 @@ func TestReadyRetriesASlowServer(t *testing.T) {
 			http.Error(w, "compiling", http.StatusServiceUnavailable)
 			return
 		}
-		_, _ = w.Write([]byte(`{"ok":true}`))
+		_, _ = w.Write([]byte(`{"ok":true,"app":"boombignose-erp"}`))
 	}))
 	defer srv.Close()
 	ok, err := Ready(context.Background(), srv.URL)
@@ -241,5 +241,20 @@ func TestReadyGivesUpOnAForeignServer(t *testing.T) {
 	ok, err := Ready(ctx, srv.URL)
 	if err != nil || ok || time.Since(start) > 2*time.Second {
 		t.Fatalf("ok=%v err=%v after %s", ok, err, time.Since(start))
+	}
+}
+
+func TestEnsureRefusesAnotherServerThatAnswersOK(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		_, _ = w.Write([]byte(`{"ok":true}`))
+	}))
+	defer srv.Close()
+	called := false
+	err := Ensure(context.Background(), "", "node", srv.URL, func(string, []string, string) (func() error, func(), error) {
+		called = true
+		return func() error { return nil }, func() {}, nil
+	})
+	if err == nil || called || !strings.Contains(err.Error(), "ถูกโปรแกรมอื่นใช้อยู่") {
+		t.Fatalf("err=%v called=%v", err, called)
 	}
 }

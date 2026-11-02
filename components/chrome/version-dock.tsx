@@ -36,7 +36,8 @@ export function VersionDock({ canUpdate }: { canUpdate: boolean }) {
           {result?.state === "available" && result.capability === "deferred" ? <p>{DEFERRED_MESSAGE}</p> : null}
           {result?.state === "available" && result.capability === "needs-window" ? <p>{WINDOW_MESSAGE}</p> : null}
           {result?.state === "available" && result.capability === "apply" && !canUpdate ? <p>เฉพาะเจ้าของหรือผู้ดูแลติดตั้งอัปเดตได้ / Only an owner or admin can install an update.</p> : null}
-          {showInstall ? <Button type="button" size="sm" disabled={installing} onClick={() => void install()}>{installing ? "กำลังติดตั้ง…" : "ดาวน์โหลดและติดตั้ง / Download and install"}</Button> : null}
+          {showInstall ? <Button type="button" size="sm" disabled={installing} onClick={() => void install()}>{installing ? "กำลังอัปเดต…" : "อัปเดตทั้งหมด / Update everything"}</Button> : null}
+          {showInstall ? <p className="text-muted-foreground text-xs">อัปเดตแอป เซิร์ฟเวอร์ และฐานข้อมูลในเครื่อง ไม่ต้องใช้ Docker / Updates the app, server and local database. No Docker.</p> : null}
           {progress ? <p className="tabular-nums" aria-live="polite">{progress}</p> : null}
           {error ? <p role="alert">{error}</p> : null}
         </PopoverContent>

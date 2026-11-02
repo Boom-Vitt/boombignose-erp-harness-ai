@@ -1,4 +1,6 @@
 import { requireOrgContext } from "@/lib/auth"
+import { readLang } from "@/lib/lang"
+import { LangShell, LangToggle } from "@/components/lang-scope"
 import { WorkspaceHeader } from "@edition"
 import { AppSidebar } from "@/components/app-sidebar"
 import {
@@ -23,6 +25,7 @@ export default async function AppLayout({
   children: React.ReactNode
 }) {
   const ctx = await requireOrgContext()
+  const lang = await readLang()
 
   return (
     <>
@@ -34,6 +37,7 @@ export default async function AppLayout({
       </a>
       {/* The 3D base: one persistent full-bleed stage behind every page (layouts don't remount on navigation). */}
       <StageBackdrop />
+      <LangShell initial={lang}>
       <SidebarProvider className="relative z-10">
         <AppSidebar
           email={ctx.email}
@@ -47,6 +51,7 @@ export default async function AppLayout({
             <Separator orientation="vertical" className="mr-1 hidden h-5 sm:block" />
             <div className="min-w-0 flex-1 basis-0"><span className="bbn-chip max-w-full truncate">{ctx.orgName}</span></div>
             <CommandPalette role={ctx.role} orgId={ctx.orgId} />
+            <LangToggle />
             <ModeSwitch />
             <ActivityCounter />
           </header>
@@ -54,6 +59,7 @@ export default async function AppLayout({
         </SidebarInset>
       </SidebarProvider>
       <VersionDock canUpdate={ctx.role === "owner" || ctx.role === "admin"} />
+      </LangShell>
     </>
   )
 }

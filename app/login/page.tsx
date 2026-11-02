@@ -1,6 +1,6 @@
 "use client"
 
-import { Suspense, useState } from "react"
+import { Suspense, useState, useSyncExternalStore } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { useSearchParams } from "next/navigation"
@@ -22,6 +22,13 @@ import { StageBackdrop } from "@/components/three/stage-backdrop"
 const DEMO_EMAIL = process.env.NEXT_PUBLIC_DEMO_LOGIN_EMAIL
 const DEMO_PASSWORD = process.env.NEXT_PUBLIC_DEMO_LOGIN_PASSWORD
 
+type Lang = "th" | "en"
+const LANG_KEY = "bbn-lang"
+const COPY = {
+  th: { sub: "เข้าสู่ระบบพื้นที่ทำงานของคุณ", email: "อีเมล", password: "รหัสผ่าน", signIn: "เข้าสู่ระบบ", demo: "ใช้บัญชีทดลอง", failed: "เข้าสู่ระบบไม่สำเร็จ", noAccount: "ยังไม่มีบัญชี?", signUp: "สมัครใช้งาน", toggle: "สลับ ENG", toggleLabel: "Switch to English" },
+  en: { sub: "Sign in to your workspace.", email: "Email", password: "Password", signIn: "Sign in", demo: "Use demo account", failed: "Sign in failed", noAccount: "No account yet?", signUp: "Sign up", toggle: "สลับ ไทย", toggleLabel: "สลับเป็นภาษาไทย" },
+} as const
+
 function LoginForm() {
   const params = useSearchParams()
   const redirectTo = safeReturnPath(params.get("redirect"))
@@ -29,6 +36,16 @@ function LoginForm() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [loading, setLoading] = useState(false)
+  // Thai by default; an explicit choice is kept in localStorage until the profile can hold it.
+  const stored = useSyncExternalStore(() => () => {}, () => localStorage.getItem(LANG_KEY), () => null)
+  const [picked, setPicked] = useState<Lang | null>(null)
+  const lang: Lang = picked ?? (stored === "en" ? "en" : "th")
+  const t = COPY[lang]
+  function toggleLang() {
+    const next: Lang = lang === "th" ? "en" : "th"
+    setPicked(next)
+    localStorage.setItem(LANG_KEY, next)
+  }
 
   async function signIn(em: string, pw: string) {
     setLoading(true)
@@ -36,8 +53,17 @@ function LoginForm() {
     const { error } = await supabase.auth.signInWithPassword({ email: em, password: pw })
     if (error) {
       setLoading(false)
-      toast.error("Sign in failed", { description: error.message })
+      toast.error(t.failed, { description: error.message })
       return
+    }
+    // A choice made on this screen becomes the profile language; otherwise profiles.locale rules.
+    const chosen = localStorage.getItem(LANG_KEY)
+    if (chosen === "th" || chosen === "en") {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (user) {
+        await supabase.from("profiles").update({ locale: chosen }).eq("id", user.id)
+        localStorage.removeItem(LANG_KEY)
+      }
     }
     const level = await supabase.auth.mfa.getAuthenticatorAssuranceLevel()
     if (!level.error && level.data) {
@@ -96,10 +122,13 @@ function LoginForm() {
         </section>
 
         <section className="bbn-glass w-full space-y-6 p-6 sm:p-8">
+          <div className="flex justify-end">
+            <Button type="button" variant="outline" size="sm" aria-label={t.toggleLabel} onClick={toggleLang}>{t.toggle}</Button>
+          </div>
           <div className="space-y-2">
             <Image src="/icon.png" alt="" width={32} height={32} className="bbn-rough-sm lg:hidden" priority />
             <h1 className="bbn-title text-3xl font-bold">BoomBigNose ERP</h1>
-            <p className="text-muted-foreground text-sm">Sign in to your workspace.</p>
+            <p className="text-muted-foreground text-sm">{t.sub}</p>
             {params.get("error") ? <p role="alert" className="text-destructive text-sm">{params.get("error")}</p> : null}
           </div>
           <form
@@ -110,7 +139,7 @@ function LoginForm() {
             }}
           >
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">{t.email}</Label>
               <Input
                 id="email"
                 type="email"
@@ -122,7 +151,7 @@ function LoginForm() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password">{t.password}</Label>
               <Input
                 id="password"
                 type="password"
@@ -134,7 +163,7 @@ function LoginForm() {
             </div>
             <div className="space-y-3 pt-1">
               <Button type="submit" size="lg" className="w-full" disabled={loading}>
-                {loading ? <Loader2 className="size-4 animate-spin" /> : "Sign in"}
+                {loading ? <Loader2 className="size-4 animate-spin" /> : t.signIn}
               </Button>
               {DEMO_EMAIL && DEMO_PASSWORD ? (
                 <Button
@@ -145,15 +174,15 @@ function LoginForm() {
                   disabled={loading}
                   onClick={() => void signIn(DEMO_EMAIL, DEMO_PASSWORD)}
                 >
-                  Use demo account
+                  {t.demo}
                 </Button>
               ) : null}
             </div>
           </form>
           <p className="text-muted-foreground border-t pt-4 text-sm">
-            No account yet?{" "}
+            {t.noAccount}{" "}
             <Link href="/signup" className="text-primary underline underline-offset-4">
-              Sign up
+              {t.signUp}
             </Link>
           </p>
         </section>

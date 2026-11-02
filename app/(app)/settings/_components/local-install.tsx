@@ -24,7 +24,7 @@ export function UpdateCheckButton({ canUpdate = false }: { canUpdate?: boolean }
     {result?.state === "available" && result.capability === "deferred" ? <p className="text-sm">{DEFERRED_MESSAGE}</p> : null}
     {result?.state === "available" && result.capability === "needs-window" ? <p className="text-sm">{WINDOW_MESSAGE}</p> : null}
     {result?.state === "available" && result.capability === "apply" && !canUpdate ? <p className="text-sm">เฉพาะเจ้าของหรือผู้ดูแลติดตั้งอัปเดตได้ / Only an owner or admin can install an update.</p> : null}
-    {showInstall ? <Button type="button" disabled={installing} onClick={() => void install()}>{installing ? "กำลังติดตั้ง…" : "ดาวน์โหลดและติดตั้ง / Download and install"}</Button> : null}
+    {showInstall ? <Button type="button" disabled={installing} onClick={() => void install()}>{installing ? "กำลังอัปเดต…" : "อัปเดตทั้งหมด / Update everything"}</Button> : null}
     {progress ? <p className="text-sm tabular-nums">{progress}</p> : null}
     {error ? <p role="alert" className="text-sm">{error}</p> : null}
   </div>

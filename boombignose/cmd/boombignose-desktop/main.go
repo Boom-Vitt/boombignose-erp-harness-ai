@@ -146,7 +146,7 @@ func (a *App) startup(ctx context.Context) {
 	})
 }
 
-// ERPReady reports whether the ERP health check answers {"ok":true}. The
+// ERPReady reports whether the ERP health check answers {"ok":true} with the ERP fingerprint. The
 // splash polls it, so a lost one-shot navigation never strands the user.
 func (a *App) ERPReady() bool {
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
