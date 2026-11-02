@@ -5,163 +5,81 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>BoomBigNose ERP Harness AI</title>
   <meta name="description" content="BoomBigNose เป็นแอปเดสก์ท็อปบนเครื่องคุณ ไม่เรียก AI บนคลาวด์ ตัวติดตั้งพกเซิร์ฟเวอร์, Postgres, Auth และ Ollama ไว้ในไฟล์ Node เป็นรันไทม์ข้างใน ไม่ใช่ชื่อแอป ยังไม่ถูกคลิกทดสอบบนเครื่องจริง" />
+  <meta name="theme-color" content="#0b0d12" />
   <link rel="icon" href="assets/brandmark.png" type="image/png" />
   <link rel="apple-touch-icon" href="assets/apple-touch-icon.png" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/site.css" />
   <meta property="og:title" content="BoomBigNose ERP Harness AI" />
   <meta property="og:description" content="เดสก์ท็อปบนเครื่องคุณ ไม่เรียก AI บนคลาวด์" />
   <meta property="og:image" content="https://boom-vitt.github.io/boombignose-erp-harness-ai/assets/og.png" />
   <meta property="og:type" content="website" />
-  <style>
-    :root {
-      --paper: #0b0d12;
-      --surface: #12151c;
-      --line: #232733;
-      --text: #e8eaf0;
-      --muted: #9aa1b2;
-      --accent: #ff7a45;
-      --on-accent: #0b0d12;
-    }
-    * { box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
-    body {
-      margin: 0;
-      background: var(--paper);
-      color: var(--text);
-      font-family: "IBM Plex Sans Thai", Inter, "Noto Sans Thai", Anuphan, Sarabun, system-ui, sans-serif;
-      line-height: 1.6;
-    }
-    a { color: var(--accent); }
-    :focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
-    .skip {
-      position: absolute; left: 16px; top: -48px; background: var(--accent); color: var(--on-accent);
-      padding: 8px 12px; border-radius: 8px; font-weight: 700; z-index: 20;
-    }
-    .skip:focus { top: 12px; }
-    .wrap { max-width: 1040px; margin: 0 auto; padding: 0 20px; }
-    header.nav {
-      position: sticky; top: 0; z-index: 10;
-      background: rgb(11 13 18 / .92);
-      border-bottom: 1px solid var(--line);
-    }
-    .nav .wrap { display: flex; align-items: center; justify-content: space-between; min-height: 72px; gap: 16px; flex-wrap: wrap; }
-    .nav-links { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
-    .nav-links a:not(.btn) { color: var(--text); text-decoration: none; font-weight: 600; min-height: 44px; display: inline-flex; align-items: center; }
-    .chip {
-      display: inline-block; margin-left: 8px; border: 1px solid var(--accent); color: var(--accent);
-      border-radius: 999px; padding: 2px 8px; font-size: 12px; font-weight: 700; vertical-align: middle;
-    }
-    .chip[hidden] { display: none !important; }
-    .card.is-this { border-color: var(--accent); }
-    .brand { display: flex; align-items: center; gap: 10px; color: var(--text); text-decoration: none; font-weight: 700; }
-    .brand img, .lockup img { width: 36px; height: 36px; }
-    .btn {
-      display: inline-flex; align-items: center; justify-content: center;
-      background: var(--accent); color: var(--on-accent); text-decoration: none;
-      font-weight: 700; border-radius: 999px; padding: 10px 18px; min-height: 44px;
-      transition: filter .15s ease;
-    }
-    .btn:hover { filter: brightness(1.06); }
-    .hero { padding: 72px 0 32px; }
-    .lockup { display: flex; align-items: center; gap: 12px; color: var(--text); font-weight: 700; font-size: 20px; }
-    h1 {
-      font-size: clamp(40px, 6vw, 60px); line-height: 1.15; letter-spacing: -0.03em;
-      margin: 20px 0 12px; max-width: 14ch; font-weight: 700;
-    }
-    .lead { font-size: 20px; margin: 0 0 8px; }
-    .en { color: var(--muted); font-family: Inter, "IBM Plex Sans Thai", sans-serif; font-size: 16px; margin: 0 0 20px; }
-    .meta { color: var(--muted); font-size: 14px; margin: 10px 0 0; }
-    h2 { font-size: clamp(28px, 3vw, 36px); line-height: 1.2; margin: 0 0 8px; }
-    .sub { color: var(--muted); margin: 0 0 20px; }
-    section { padding: 64px 0; }
-    .badges, .grid, .os-grid, .steps { display: grid; gap: 16px; }
-    .badges { grid-template-columns: repeat(4, 1fr); }
-    .grid { grid-template-columns: repeat(4, 1fr); }
-    .os-grid, .steps { grid-template-columns: repeat(3, 1fr); }
-    .card {
-      background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 20px;
-    }
-    .card h3 { margin: 0 0 8px; font-size: 18px; }
-    .card p, .card li { margin: 0; color: var(--muted); }
-    .card ol { margin: 8px 0 0; padding-left: 1.2rem; }
-    .card li { margin: 6px 0; }
-    .os { display: flex; flex-direction: column; gap: 10px; text-decoration: none; color: var(--text); min-height: 100%; }
-    .os a { color: inherit; text-decoration: none; }
-    .os a + a { color: var(--accent); font-weight: 700; }
-    .os strong { font-size: 22px; }
-    .mono { font-family: "JetBrains Mono", ui-monospace, monospace; font-size: 12px; color: var(--muted); word-break: break-all; }
-    .window { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; overflow: hidden; margin-top: 28px; }
-    .chrome { display: flex; gap: 6px; align-items: center; padding: 12px 14px; border-bottom: 1px solid var(--line); }
-    .chrome i { width: 10px; height: 10px; border-radius: 50%; background: var(--line); display: block; }
-    .chrome span { margin-left: 8px; color: var(--muted); font-size: 13px; }
-    .panes { display: grid; grid-template-columns: 180px 1fr; min-height: 200px; }
-    .side { padding: 16px; border-right: 1px solid var(--line); display: flex; flex-direction: column; gap: 10px; }
-    .side b { border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; font-weight: 600; }
-    .pane { padding: 16px; display: grid; gap: 12px; align-content: start; }
-    .bar { height: 12px; border-radius: 6px; background: var(--paper); border: 1px solid var(--line); }
-    .bar.short { width: 46%; }
-    .ph { color: var(--muted); font-size: 14px; margin: 8px 0 0; }
-    footer { border-top: 1px solid var(--line); padding: 28px 0 48px; }
-    footer .wrap { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; align-items: center; }
-    @media (max-width: 800px) {
-      section { padding: 40px 0; }
-      .badges, .grid, .os-grid, .steps, .panes { grid-template-columns: 1fr; }
-      .side { border-right: 0; border-bottom: 1px solid var(--line); }
-      h1 { max-width: none; }
-    }
-    @media (prefers-reduced-motion: reduce) {
-      html { scroll-behavior: auto; }
-      .btn { transition: none; }
-    }
-  </style>
 </head>
-<body>
+<body class="wide">
   <a class="skip" href="#content">ข้ามไปเนื้อหา</a>
   <header class="nav">
     <div class="wrap">
       <a class="brand" href="#content">
-        <img src="assets/brandmark.png" width="36" height="36" alt="" />
+        <img src="assets/brandmark.png" width="34" height="34" alt="" />
         <span>BoomBigNose</span>
       </a>
-      <div class="nav-links">
+      <nav class="nav-links" aria-label="หลัก">
         <a href="install.html">วิธีติดตั้ง</a>
         <a href="first-run.html">ครั้งแรกที่เปิด</a>
         <a href="guide.html">วิธีใช้</a>
         <a class="btn" href="#download">ดาวน์โหลด</a>
-      </div>
+      </nav>
     </div>
   </header>
   <main id="content">
-    <div class="wrap hero">
-      <div class="lockup">
-        <img src="assets/brandmark.png" width="36" height="36" alt="" />
-        <span>BoomBigNose</span>
-      </div>
-      <h1>BoomBigNose ERP Harness AI</h1>
-      <p class="lead">เดสก์ท็อปบนเครื่องคุณ ไม่เรียก AI บนคลาวด์</p>
-      <p class="en">Fully local. No cloud AI at runtime.</p>
-      <a class="btn" id="primary-download" href="#download">ดาวน์โหลด <span data-release="tag">boombignose-v0.3.0</span></a>
-      <p class="meta" id="primary-meta">หน้าต่างแอป ไม่ใช่แค่คำสั่ง harness ถ้าเบราว์เซอร์ไม่บอกระบบ ให้เลือกการ์ดด้านล่าง ขนาดเป็นจำนวนไบต์จริงจาก Release</p>
-      <div class="window" role="img" aria-label="ภาพจำลองกรอบหน้าต่าง ไม่ใช่ภาพจับจากโปรแกรม">
-        <div class="chrome"><i></i><i></i><i></i><span>BoomBigNose ERP Harness AI</span></div>
-        <div class="panes">
-          <div class="side"><b>แดชบอร์ด</b><b>ลูกค้า</b><b>โปรเจกต์</b></div>
-          <div class="pane"><div class="bar"></div><div class="bar short"></div><div class="bar"></div></div>
+    <div class="hero-band">
+      <div class="wrap hero hero-grid">
+        <div class="hero-copy">
+          <p class="eyebrow">เดสก์ท็อป · ทำงานในเครื่อง · AGPL-3.0</p>
+          <h1>BoomBigNose <span class="grad">ERP Harness AI</span></h1>
+          <p class="lead">เดสก์ท็อปบนเครื่องคุณ ไม่เรียก AI บนคลาวด์</p>
+          <p class="en">Fully local. No cloud AI at runtime.</p>
+          <div>
+            <a class="btn lg" id="primary-download" href="#download">ดาวน์โหลด <span data-release="tag">boombignose-v0.3.0</span></a>
+            <p class="meta" id="primary-meta">หน้าต่างแอป ไม่ใช่แค่คำสั่ง harness ถ้าเบราว์เซอร์ไม่บอกระบบ ให้เลือกการ์ดด้านล่าง ขนาดเป็นจำนวนไบต์จริงจาก Release</p>
+          </div>
+        </div>
+        <div class="hero-visual">
+          <div class="window" role="img" aria-label="ภาพจำลองกรอบหน้าต่าง ไม่ใช่ภาพจับจากโปรแกรม">
+            <div class="chrome"><i></i><i></i><i></i><span>BoomBigNose ERP Harness AI</span></div>
+            <div class="panes">
+              <div class="side"><b>แดชบอร์ด</b><b>ลูกค้า</b><b>โปรเจกต์</b></div>
+              <div class="pane">
+                <div class="tiles"><i></i><i></i><i></i></div>
+                <div class="bar"></div><div class="bar mid"></div><div class="bar short"></div>
+              </div>
+            </div>
+          </div>
+          <p class="ph">กรอบนี้วาดด้วย CSS ไม่มีภาพโปสเตอร์และไม่มีภาพจับจากแอป</p>
         </div>
       </div>
-      <p class="ph">กรอบนี้วาดด้วย CSS ไม่มีภาพโปสเตอร์และไม่มีภาพจับจากแอป</p>
     </div>
 
     <section>
       <div class="wrap">
         <h2>สิ่งที่ยืนยันได้</h2>
+        <p class="sub">Statements you can check in the repository.</p>
         <div class="badges">
-          <article class="card"><h3>เฉพาะในเครื่อง</h3><p>ที่อยู่ที่อนุญาตคือ loopback เท่านั้น</p></article>
-          <article class="card"><h3>ไม่มี AI บนคลาวด์</h3><p>ตัวตรวจปฏิเสธคีย์ของบริการโมเดล</p></article>
-          <article class="card"><h3>AGPL-3.0</h3><p>รีโประบุ AGPL-3.0-only หรือสัญญาเชิงพาณิชย์ อ่านที่ <a href="https://github.com/Boom-Vitt/boombignose-erp-harness-ai/blob/main/LICENSE">LICENSE</a></p></article>
-          <article class="card"><h3>ข้อมูลอยู่กับคุณ</h3><p>เป้าหมายคือข้อมูลลูกค้าบนเครื่องที่เปิดโปรแกรม หน้านี้ไม่ได้รับรอง PDPA ทั้งฉบับ</p></article>
+          <article class="card lift">
+            <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg></span>
+            <h3>เฉพาะในเครื่อง</h3><p>ที่อยู่ที่อนุญาตคือ loopback เท่านั้น</p>
+          </article>
+          <article class="card lift">
+            <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 18h10a4 4 0 0 0 .6-7.95A6 6 0 0 0 6.2 9.1 4.5 4.5 0 0 0 7 18z"/><path d="M4 4l16 16"/></svg></span>
+            <h3>ไม่มี AI บนคลาวด์</h3><p>ตัวตรวจปฏิเสธคีย์ของบริการโมเดล</p>
+          </article>
+          <article class="card lift">
+            <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></svg></span>
+            <h3>AGPL-3.0</h3><p>รีโประบุ AGPL-3.0-only หรือสัญญาเชิงพาณิชย์ อ่านที่ <a href="https://github.com/Boom-Vitt/boombignose-erp-harness-ai/blob/main/LICENSE">LICENSE</a></p>
+          </article>
+          <article class="card lift">
+            <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v12c0 1.7 3.1 3 7 3s7-1.3 7-3V6M5 12c0 1.7 3.1 3 7 3s7-1.3 7-3"/></svg></span>
+            <h3>ข้อมูลอยู่กับคุณ</h3><p>เป้าหมายคือข้อมูลลูกค้าบนเครื่องที่เปิดโปรแกรม หน้านี้ไม่ได้รับรอง PDPA ทั้งฉบับ</p>
+          </article>
         </div>
       </div>
     </section>
@@ -171,10 +89,22 @@
         <h2>ส่วนของ ERP</h2>
         <p class="sub">รายการนี้มีในโปรเจกต์ หน้านี้ไม่โฆษณาซื้อของหรือสต็อก</p>
         <div class="grid">
-          <article class="card"><h3>ลูกค้าและดีล</h3><p>รายชื่อและขั้นของดีลอยู่ในโปรแกรม</p></article>
-          <article class="card"><h3>โปรเจกต์</h3><p>งานอยู่บนฐานเดียวกับลูกค้า</p></article>
-          <article class="card"><h3>การเงินบนเอกสาร</h3><p>ใบเสนอราคาและใบแจ้งหนี้ ยอดเป็นสตางค์จำนวนเต็ม ไม่ได้บอกว่าเป็นสมุดบัญชีตามกฎหมาย</p></article>
-          <article class="card"><h3>แดชบอร์ด</h3><p>สรุปจากข้อมูลในเครื่อง ไม่ได้ส่งตารางให้บริการแชท</p></article>
+          <article class="card lift">
+            <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0M16 4.5a3.5 3.5 0 0 1 0 7M18 14a6 6 0 0 1 3.5 6"/></svg></span>
+            <h3>ลูกค้าและดีล</h3><p>รายชื่อและขั้นของดีลอยู่ในโปรแกรม</p>
+          </article>
+          <article class="card lift">
+            <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16M15 4v16"/></svg></span>
+            <h3>โปรเจกต์</h3><p>งานอยู่บนฐานเดียวกับลูกค้า</p>
+          </article>
+          <article class="card lift">
+            <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6M9 12h6"/></svg></span>
+            <h3>การเงินบนเอกสาร</h3><p>ใบเสนอราคาและใบแจ้งหนี้ ยอดเป็นสตางค์จำนวนเต็ม ไม่ได้บอกว่าเป็นสมุดบัญชีตามกฎหมาย</p>
+          </article>
+          <article class="card lift">
+            <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V11M10 20V5M16 20v-7M2 20h20"/></svg></span>
+            <h3>แดชบอร์ด</h3><p>สรุปจากข้อมูลในเครื่อง ไม่ได้ส่งตารางให้บริการแชท</p>
+          </article>
         </div>
       </div>
     </section>
@@ -182,10 +112,11 @@
     <section>
       <div class="wrap">
         <h2>สามขั้น</h2>
+        <p class="sub">Three steps from download to a running window.</p>
         <div class="steps">
-          <article class="card"><h3>1. เลือกไฟล์ของระบบ</h3><p>เวอร์ชัน <span data-release="tag">boombignose-v0.3.0</span> มีตัวติดตั้งสำหรับ macOS arm64, Windows x64 และ Linux amd64 พร้อม Node, server.js, Postgres, Auth, PostgREST และ Ollama ในไฟล์เดียวกัน ไม่รวมน้ำหนักโมเดล qwen2.5:3b ขั้นตอนเปิดไฟล์อยู่ที่ <a href="install.html">วิธีติดตั้ง</a></p></article>
-          <article class="card"><h3>2. ยอมรับคำเตือนของระบบ</h3><p>ไม่มีใบรับรองที่ซื้อจากร้านค้า macOS ใช้ Open Anyway Windows ใช้ More info แล้ว Run anyway Smart App Control อาจยังบล็อก</p></article>
-          <article class="card"><h3>3. เปิดหน้าต่าง</h3><p>โปรแกรมที่ติดตั้งชื่อ BoomBigNose และเปิดเป็นหน้าต่าง ชุดนี้สตาร์ท ERP ในเครื่องที่ 127.0.0.1:3100 ไม่รวม Docker และไม่ดาวน์โหลดโมเดลเอง การดึง qwen2.5:3b เกิดเมื่อผู้ใช้กดปุ่มหรือรัน boombignose pull-model เท่านั้น ยังไม่ถูกคลิกทดสอบบนเครื่องจริง</p></article>
+          <article class="card"><span class="num">1</span><h3>เลือกไฟล์ของระบบ</h3><p>เวอร์ชัน <span data-release="tag">boombignose-v0.3.0</span> มีตัวติดตั้งสำหรับ macOS arm64, Windows x64 และ Linux amd64 พร้อม Node, server.js, Postgres, Auth, PostgREST และ Ollama ในไฟล์เดียวกัน ไม่รวมน้ำหนักโมเดล qwen2.5:3b ขั้นตอนเปิดไฟล์อยู่ที่ <a href="install.html">วิธีติดตั้ง</a></p></article>
+          <article class="card"><span class="num">2</span><h3>ยอมรับคำเตือนของระบบ</h3><p>ไม่มีใบรับรองที่ซื้อจากร้านค้า macOS ใช้ Open Anyway Windows ใช้ More info แล้ว Run anyway Smart App Control อาจยังบล็อก</p></article>
+          <article class="card"><span class="num">3</span><h3>เปิดหน้าต่าง</h3><p>โปรแกรมที่ติดตั้งชื่อ BoomBigNose และเปิดเป็นหน้าต่าง ชุดนี้สตาร์ท ERP ในเครื่องที่ 127.0.0.1:3100 ไม่รวม Docker และไม่ดาวน์โหลดโมเดลเอง การดึง qwen2.5:3b เกิดเมื่อผู้ใช้กดปุ่มหรือรัน boombignose pull-model เท่านั้น ยังไม่ถูกคลิกทดสอบบนเครื่องจริง</p></article>
         </div>
       </div>
     </section>
@@ -200,12 +131,14 @@
             <span data-release="line-macos">arm64 · boombignose-v0.3.0 · 505,963,961 ไบต์</span>
             <span class="mono" data-release="sha-macos">59ab51d7490cbe357360de9ed1b43236fbfb57324f98bf449e1f8f3a1e85cad3</span>
             <span class="mono" data-release="name-macos">BoomBigNose-macos-arm64.dmg</span>
+            <span class="go" aria-hidden="true">ดาวน์โหลด .dmg →</span>
           </a>
           <a class="card os" id="card-win" data-os="windows" data-release-href="windows" href="https://github.com/Boom-Vitt/boombignose-erp-harness-ai/releases/download/boombignose-v0.3.0/BoomBigNose-windows-x64-setup.exe">
             <strong>Windows <span class="chip" data-chip hidden>เครื่องนี้</span></strong>
             <span data-release="line-windows">x64 · boombignose-v0.3.0 · 507,445,373 ไบต์</span>
             <span class="mono" data-release="sha-windows">645250da05694ed762a590d2e7c1f6d2b39ad0a4475ab3786ad239874b60f9ca</span>
             <span class="mono" data-release="name-windows">BoomBigNose-windows-x64-setup.exe</span>
+            <span class="go" aria-hidden="true">ดาวน์โหลด .exe →</span>
           </a>
           <article class="card os" id="card-linux" data-os="linux">
             <a data-release-href="linux" href="https://github.com/Boom-Vitt/boombignose-erp-harness-ai/releases/download/boombignose-v0.3.0/BoomBigNose-linux-amd64.tar.gz"><strong>Linux <span class="chip" data-chip hidden>เครื่องนี้</span></strong></a>
@@ -223,6 +156,7 @@
     <section>
       <div class="wrap">
         <h2>เปิดไฟล์ที่ไม่ได้ลงชื่อ</h2>
+        <p class="sub">The installers are not signed with a purchased certificate, so your OS will warn first.</p>
         <div class="steps">
           <article class="card">
             <h3>macOS</h3>
@@ -258,7 +192,7 @@
       <div class="wrap">
         <h2>ความเป็นส่วนตัว</h2>
         <div class="card">
-          <p>ผลิตภัณฑ์ตั้งใจไม่เรียกโมเดลบนอินเทอร์เน็ตตอนทำงาน และไม่ส่งตารางลูกค้าออกไป หน้าเว็บนี้เป็นไฟล์นิ่ง ไม่มีตัววัดผู้ชม ฟอนต์โหลดจาก Google Fonts เพื่อตัวอักษรไทยและละติน การโหลดฟอนต์นั้นเป็นการขอไฟล์จากภายนอกเฉพาะหน้านี้</p>
+          <p>ผลิตภัณฑ์ตั้งใจไม่เรียกโมเดลบนอินเทอร์เน็ตตอนทำงาน และไม่ส่งตารางลูกค้าออกไป หน้าเว็บนี้เป็นไฟล์นิ่ง ไม่มีตัววัดผู้ชม ตัวอักษรใช้ฟอนต์ที่มีอยู่ในเครื่องของคุณ หน้านี้ไม่โหลดฟอนต์หรือสคริปต์จากบริการภายนอก ไฟล์ทั้งหมดของหน้ามาจาก GitHub Pages ที่โฮสต์หน้านี้</p>
         </div>
       </div>
     </section>
@@ -281,8 +215,12 @@
         <span>BoomBigNose</span>
       </a>
       <span>BoomBigNose ERP Harness AI</span>
-      <a href="install.html">วิธีติดตั้ง</a>
-      <a href="https://github.com/Boom-Vitt/boombignose-erp-harness-ai">ซอร์สโค้ด</a>
+      <div class="links">
+        <a href="install.html">วิธีติดตั้ง</a>
+        <a href="first-run.html">ครั้งแรกที่เปิด</a>
+        <a href="guide.html">วิธีใช้</a>
+        <a href="https://github.com/Boom-Vitt/boombignose-erp-harness-ai">ซอร์สโค้ด</a>
+      </div>
     </div>
   </footer>
   <script id="bbn-release" type="application/json">{
