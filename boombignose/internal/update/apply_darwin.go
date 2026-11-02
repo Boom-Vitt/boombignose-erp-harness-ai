@@ -43,7 +43,7 @@ func defaultApply(ctx context.Context, dmgPath, updatesDir string) error {
 	}
 	defer detachDMG(mount)
 	appSrc := filepath.Join(mount, "BoomBigNose.app")
-	bundleSrc := filepath.Join(mount, "bundle")
+	bundleSrc := filepath.Join(appSrc, "Contents", "MacOS", "bundle")
 	if err := needFile(filepath.Join(appSrc, "Contents", "MacOS", "BoomBigNose")); err != nil {
 		return err
 	}
@@ -56,7 +56,9 @@ func defaultApply(ctx context.Context, dmgPath, updatesDir string) error {
 	if err := ditto(ctx, appSrc, filepath.Join(payload, "BoomBigNose.app")); err != nil {
 		return err
 	}
-	if err := ditto(ctx, bundleSrc, filepath.Join(payload, "bundle")); err != nil {
+	// The image carries bundle/ inside the app; stage it beside the app so the
+	// script copies it once, after the app, to Contents/MacOS/bundle.
+	if err := os.Rename(filepath.Join(payload, "BoomBigNose.app", "Contents", "MacOS", "bundle"), filepath.Join(payload, "bundle")); err != nil {
 		return err
 	}
 	script := filepath.Join(updatesDir, "relaunch.sh")

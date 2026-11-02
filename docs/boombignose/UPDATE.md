@@ -19,7 +19,7 @@ On Windows and Linux the same check shows that automatic replace is not in this 
 1. The desktop process listens on `127.0.0.1` and a random port. It passes that URL and a random token to the bundled ERP process. The browser does not receive the token.
 2. The ERP downloads `SHA256SUMS` and `BoomBigNose-macos-arm64.dmg` from `https://github.com/Boom-Vitt/boombignose-erp-harness-ai/releases/download/boombignose-vX.Y.Z/`. Redirects are limited to GitHub's release hosts. The file is hashed while it is written under `~/.local/share/boombignose/updates` and kept only when the hash matches `SHA256SUMS`.
 3. The helper reads that file again, fetches `SHA256SUMS` itself, and refuses the file when the hash differs or the version is not newer than the helper's `AppVersion`.
-4. It mounts the disk image read-only, copies `BoomBigNose.app` and `bundle/` to a payload folder, detaches the image, and starts `relaunch.sh` in its own session.
-5. The script waits until the desktop process has exited, moves the old app and `bundle/` aside, copies the new tree into place, and runs `open` on `BoomBigNose.app`. If the copy fails, it moves the previous tree back. It does not delete the Postgres data directory.
+4. It mounts the disk image read-only, copies `BoomBigNose.app` to a payload folder and moves its `Contents/MacOS/bundle/` out beside it, detaches the image, and starts `relaunch.sh` in its own session.
+5. The script waits until the desktop process has exited, moves the old app (with its `Contents/MacOS/bundle/`) aside, copies the new app into place, copies the new `bundle/` to `BoomBigNose.app/Contents/MacOS/bundle` (the path the window reads), and runs `open` on `BoomBigNose.app`. If the copy fails, it moves the previous tree back. It does not delete the Postgres data directory.
 
 A failed checksum leaves the running app in place. The partial download is removed.
