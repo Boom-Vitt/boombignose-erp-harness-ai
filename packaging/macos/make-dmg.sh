@@ -1,5 +1,8 @@
 #!/bin/sh
 # Build an ad-hoc-signed disk image of the BoomBigNose window and dist/bundle.
+# bundle/ is copied to BoomBigNose.app/Contents/MacOS/bundle, beside the
+# executable, because the window reads Dir(exe)/bundle. The app is signed
+# before bundle/ goes in: codesign refuses unsigned files under Contents/MacOS.
 # Run on a macOS arm64 runner after `go build` produces ./dist/boombignose-desktop.
 # codesign --sign - is not a paid Developer ID signature. Opening can require Open Anyway.
 # The mounted check looks for the files. The smoke copies them off the image
@@ -20,14 +23,12 @@ test -s "$bundle/ollama/ollama"
 test -s "$bundle/ollama/OLLAMA_LICENSE.txt"
 stage=$(mktemp -d)
 trap 'rm -rf "$stage"' EXIT
-cp "$bin" "$stage/BoomBigNose"
-chmod 755 "$stage/BoomBigNose"
-codesign --force --sign - "$stage/BoomBigNose"
 icon=$root/packaging/macos/icon.icns
 test -s "$icon"
 app="$stage/BoomBigNose.app/Contents"
 mkdir -p "$app/MacOS" "$app/Resources"
-cp "$stage/BoomBigNose" "$app/MacOS/BoomBigNose"
+cp "$bin" "$app/MacOS/BoomBigNose"
+chmod 755 "$app/MacOS/BoomBigNose"
 cp "$icon" "$app/Resources/icon.icns"
 cp "$icon" "$stage/icon.icns"
 cp "$icon" "$stage/.VolumeIcon.icns"
@@ -54,15 +55,15 @@ codesign --force --sign - "$stage/BoomBigNose.app"
 if command -v SetFile >/dev/null 2>&1; then
   SetFile -a C "$stage" || true
 fi
-cp -a "$bundle" "$stage/bundle"
+cp -a "$bundle" "$app/MacOS/bundle"
 chmod 755 \
-  "$stage/bundle/node" \
-  "$stage/bundle/postgres/bin/initdb" \
-  "$stage/bundle/postgres/bin/pg_ctl" \
-  "$stage/bundle/postgres/bin/postgres" \
-  "$stage/bundle/auth/auth" \
-  "$stage/bundle/postgrest/postgrest" \
-  "$stage/bundle/ollama/ollama"
+  "$app/MacOS/bundle/node" \
+  "$app/MacOS/bundle/postgres/bin/initdb" \
+  "$app/MacOS/bundle/postgres/bin/pg_ctl" \
+  "$app/MacOS/bundle/postgres/bin/postgres" \
+  "$app/MacOS/bundle/auth/auth" \
+  "$app/MacOS/bundle/postgrest/postgrest" \
+  "$app/MacOS/bundle/ollama/ollama"
 dmg=$root/dist/BoomBigNose-macos-arm64.dmg
 attempt=1
 while [ "$attempt" -le 3 ]; do
@@ -109,7 +110,8 @@ if [ -z "$mount" ] || [ ! -d "$mount" ]; then
   exit 1
 fi
 echo "mounted $mount"
-ls -la "$mount" "$mount/bundle/node" "$mount/bundle/ollama/ollama"
+inapp=BoomBigNose.app/Contents/MacOS/bundle
+ls -la "$mount" "$mount/$inapp/node" "$mount/$inapp/ollama/ollama"
 copy=$(mktemp -d)
 cleanup_mount() {
   hdiutil detach "$mount" >/dev/null 2>&1 || hdiutil detach -force "$mount" >/dev/null 2>&1 || true
@@ -117,17 +119,16 @@ cleanup_mount() {
 }
 trap cleanup_mount EXIT
 for rel in \
-  BoomBigNose \
   icon.icns \
   BoomBigNose.app/Contents/MacOS/BoomBigNose \
   BoomBigNose.app/Contents/Resources/icon.icns \
-  bundle/node \
-  bundle/erp/server.js \
-  bundle/postgres/bin/postgres \
-  bundle/auth/auth \
-  bundle/postgrest/postgrest \
-  bundle/ollama/ollama \
-  bundle/ollama/OLLAMA_LICENSE.txt
+  BoomBigNose.app/Contents/MacOS/bundle/node \
+  BoomBigNose.app/Contents/MacOS/bundle/erp/server.js \
+  BoomBigNose.app/Contents/MacOS/bundle/postgres/bin/postgres \
+  BoomBigNose.app/Contents/MacOS/bundle/auth/auth \
+  BoomBigNose.app/Contents/MacOS/bundle/postgrest/postgrest \
+  BoomBigNose.app/Contents/MacOS/bundle/ollama/ollama \
+  BoomBigNose.app/Contents/MacOS/bundle/ollama/OLLAMA_LICENSE.txt
 do
   if [ ! -s "$mount/$rel" ]; then
     echo "mounted image missing $rel" >&2
@@ -135,24 +136,23 @@ do
     exit 1
   fi
 done
-if [ ! -d "$mount/bundle/erp/.next/static" ]; then
-  echo "mounted image missing bundle/erp/.next/static" >&2
+if [ ! -d "$mount/$inapp/erp/.next/static" ]; then
+  echo "mounted image missing $inapp/erp/.next/static" >&2
   exit 1
 fi
-if [ -d "$mount/bundle/ollama/lib/ollama/cuda_v12" ] || [ -d "$mount/bundle/ollama/lib/ollama/cuda_v13" ]; then
+if [ -d "$mount/$inapp/ollama/lib/ollama/cuda_v12" ] || [ -d "$mount/$inapp/ollama/lib/ollama/cuda_v13" ]; then
   echo "cuda runner was packed" >&2
   exit 1
 fi
 cp -a "$mount/." "$copy/"
 chmod 755 \
-  "$copy/BoomBigNose" \
   "$copy/BoomBigNose.app/Contents/MacOS/BoomBigNose" \
-  "$copy/bundle/node" \
-  "$copy/bundle/postgres/bin/initdb" \
-  "$copy/bundle/postgres/bin/pg_ctl" \
-  "$copy/bundle/postgres/bin/postgres" \
-  "$copy/bundle/auth/auth" \
-  "$copy/bundle/postgrest/postgrest" \
-  "$copy/bundle/ollama/ollama"
-BOOMBIGNOSE_SMOKE_BUNDLE="$copy/bundle" sh "$root/packaging/linux/smoke-bundle.sh"
+  "$copy/$inapp/node" \
+  "$copy/$inapp/postgres/bin/initdb" \
+  "$copy/$inapp/postgres/bin/pg_ctl" \
+  "$copy/$inapp/postgres/bin/postgres" \
+  "$copy/$inapp/auth/auth" \
+  "$copy/$inapp/postgrest/postgrest" \
+  "$copy/$inapp/ollama/ollama"
+BOOMBIGNOSE_SMOKE_BUNDLE="$copy/$inapp" sh "$root/packaging/linux/smoke-bundle.sh"
 echo "wrote $dmg"

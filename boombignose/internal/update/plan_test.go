@@ -5,6 +5,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"runtime"
+	"strconv"
 	"strings"
 	"testing"
 )
@@ -89,5 +90,64 @@ func TestRelaunchScriptRejectsTheFilesystemRoot(t *testing.T) {
 	}
 	if !strings.Contains(RelaunchScript, `open "$root/BoomBigNose.app"`) || strings.Contains(RelaunchScript, "PG_VERSION") {
 		t.Fatal("script contract")
+	}
+}
+
+func TestRelaunchScriptInstallsBundleBesideTheExecutable(t *testing.T) {
+	if runtime.GOOS == "windows" {
+		t.Skip("shell script")
+	}
+	// Not t.TempDir: on macOS that is under /var, which the script refuses.
+	dir, err := os.MkdirTemp("/tmp", "relaunch")
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() { os.RemoveAll(dir) })
+	write := func(path, body string, mode os.FileMode) {
+		t.Helper()
+		if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
+			t.Fatal(err)
+		}
+		if err := os.WriteFile(path, []byte(body), mode); err != nil {
+			t.Fatal(err)
+		}
+	}
+	// Stand-ins for the macOS-only ditto and open.
+	tools := filepath.Join(dir, "tools")
+	write(filepath.Join(tools, "ditto"), "#!/bin/sh\nmkdir -p \"$2\" && cp -R \"$1\"/. \"$2\"/\n", 0o755)
+	write(filepath.Join(tools, "open"), "#!/bin/sh\n:\n", 0o755)
+	root := filepath.Join(dir, "Applications")
+	app := filepath.Join(root, "BoomBigNose.app", "Contents", "MacOS")
+	write(filepath.Join(app, "BoomBigNose"), "old", 0o755)
+	write(filepath.Join(app, "bundle", "node"), "old", 0o755)
+	write(filepath.Join(root, "bundle", "keep"), "legacy sibling", 0o644)
+	newApp := filepath.Join(dir, "payload", "BoomBigNose.app")
+	write(filepath.Join(newApp, "Contents", "MacOS", "BoomBigNose"), "new", 0o755)
+	newBundle := filepath.Join(dir, "payload", "bundle")
+	write(filepath.Join(newBundle, "node"), "new", 0o755)
+	script := filepath.Join(dir, "relaunch.sh")
+	write(script, RelaunchScript, 0o700)
+	done := exec.Command("/bin/sh", "-c", "exit 0")
+	if err := done.Run(); err != nil {
+		t.Fatal(err)
+	}
+	cmd := exec.Command("/bin/sh", script, strconv.Itoa(done.Process.Pid), newApp, newBundle, root)
+	cmd.Env = append(os.Environ(), "PATH="+tools+":"+os.Getenv("PATH"))
+	if out, err := cmd.CombinedOutput(); err != nil {
+		t.Fatalf("script: %v %s", err, out)
+	}
+	// The new bundle lands where the desktop reads it: Dir(exe)/bundle.
+	got, err := os.ReadFile(filepath.Join(app, "bundle", "node"))
+	if err != nil || string(got) != "new" {
+		t.Fatalf("bundle not installed beside the executable: %q %v", got, err)
+	}
+	if got, err := os.ReadFile(filepath.Join(app, "BoomBigNose")); err != nil || string(got) != "new" {
+		t.Fatalf("app not replaced: %q %v", got, err)
+	}
+	if _, err := os.Stat(filepath.Join(root, "bundle", "node")); err == nil {
+		t.Fatal("script wrote $root/bundle")
+	}
+	if _, err := os.Stat(filepath.Join(root, "bundle", "keep")); err != nil {
+		t.Fatal("script touched a sibling bundle it did not create")
 	}
 }
