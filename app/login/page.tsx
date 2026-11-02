@@ -56,14 +56,10 @@ function LoginForm() {
       toast.error(t.failed, { description: error.message })
       return
     }
-    // A choice made on this screen becomes the profile language; otherwise profiles.locale rules.
-    const chosen = localStorage.getItem(LANG_KEY)
-    if (chosen === "th" || chosen === "en") {
+    // Toggled on this screen: that choice becomes the profile language. Otherwise profiles.locale rules.
+    if (picked) {
       const { data: { user } } = await supabase.auth.getUser()
-      if (user) {
-        await supabase.from("profiles").update({ locale: chosen }).eq("id", user.id)
-        localStorage.removeItem(LANG_KEY)
-      }
+      if (user) await supabase.from("profiles").update({ locale: picked }).eq("id", user.id)
     }
     const level = await supabase.auth.mfa.getAuthenticatorAssuranceLevel()
     if (!level.error && level.data) {

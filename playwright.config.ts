@@ -26,6 +26,8 @@ export default defineConfig({
   reporter: "list",
   use: {
     baseURL,
+    // Specs drive the login form by its English labels; this keeps the screen English without touching profiles.locale.
+    storageState: { cookies: [], origins: [{ origin: baseURL, localStorage: [{ name: "bbn-lang", value: "en" }] }] },
     trace: process.env.ERP_E2E_CORE === "1" ? "retain-on-failure" : "on-first-retry",
     launchOptions: { executablePath: process.env.ERP_PLAYWRIGHT_EXECUTABLE_PATH },
   },
