@@ -157,7 +157,7 @@ async function requireInstalled(model: string, fetchImpl: typeof fetch): Promise
 const VISION_TYPES = new Set(["image/jpeg", "image/png", "image/webp"])
 
 export async function describeLocalImage(
-  input: { mediaType: string; imageBase64: string },
+  input: { mediaType: string; imageBase64: string; prompt?: string },
   host: Host,
   fetchImpl: typeof fetch = fetch,
 ): Promise<{ text: string } | { error: string; status: number }> {
@@ -176,7 +176,7 @@ export async function describeLocalImage(
     res = await fetchImpl(`${where.origin}/api/chat`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(visionChatBody(image)),
+      body: JSON.stringify(visionChatBody(image, input.prompt)),
       signal: AbortSignal.timeout(120_000),
       redirect: "error",
     })
