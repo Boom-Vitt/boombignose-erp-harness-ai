@@ -8,9 +8,12 @@ package main
 import (
 	"context"
 	"embed"
+	"errors"
 	"fmt"
 	"os"
+	"os/exec"
 	"path/filepath"
+	"sync"
 	"time"
 
 	"github.com/Boom-Vitt/boombignose-erp-harness-ai/boombignose/internal/bundle"
@@ -70,6 +73,8 @@ func run() error {
 	if err != nil {
 		return err
 	}
+	app.target, app.script = target, script
+	var firstLoad sync.Once
 	return wails.Run(&options.App{
 		Title:            "BoomBigNose ERP Harness AI",
 		Width:            1280,
@@ -85,20 +90,24 @@ func run() error {
 			app,
 		},
 		OnStartup: app.startup,
+		// Once: the ERP page also fires DOM ready and must not be re-navigated.
+		// If this path is lost, the splash polls ERPReady and calls OpenERP.
 		OnDomReady: func(ctx context.Context) {
-			go func() {
-				wait, cancel := context.WithTimeout(context.Background(), 3*time.Minute)
-				defer cancel()
-				err := startLocal(wait, target)
-				if err != nil {
-					fmt.Fprintf(os.Stderr, "boombignose: %s\n", err.Error())
-					if failure, scriptErr := nav.BootFailure(err.Error()); scriptErr == nil {
-						runtime.WindowExecJS(ctx, failure)
+			firstLoad.Do(func() {
+				go func() {
+					wait, cancel := context.WithTimeout(context.Background(), 3*time.Minute)
+					defer cancel()
+					err := startLocal(wait, target)
+					if err != nil {
+						fmt.Fprintf(os.Stderr, "boombignose: %s\n", err.Error())
+						if failure, scriptErr := nav.BootFailure(err.Error()); scriptErr == nil {
+							runtime.WindowExecJS(ctx, failure)
+						}
+						return
 					}
-					return
-				}
-				runtime.WindowExecJS(ctx, script)
-			}()
+					runtime.WindowExecJS(ctx, script)
+				}()
+			})
 		},
 		OnShutdown: func(context.Context) {
 			bundle.StopRunning()
@@ -114,17 +123,42 @@ func run() error {
 // App exposes the explicit model download. Startup does not call it.
 type App struct {
 	helper *update.Helper
+	ctx    context.Context
+	target string
+	script string
 }
 
 func (a *App) startup(ctx context.Context) {
+	a.ctx = ctx
 	if a.helper == nil {
 		return
 	}
 	a.helper.SetQuit(func() { runtime.Quit(ctx) })
 }
 
-// PullLocalModel runs `ollama pull qwen2.5:3b` on loopback. The splash button
-// is the only caller. A cloud host is refused and is not included in the error.
+// ERPReady reports whether the ERP health check answers {"ok":true}. The
+// splash polls it, so a lost one-shot navigation never strands the user.
+func (a *App) ERPReady() bool {
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	defer cancel()
+	ok, _ := launch.Ready(ctx, a.target)
+	return ok
+}
+
+// ERPTarget is the ERP URL the splash falls back to when OpenERP is lost.
+func (a *App) ERPTarget() string { return a.target }
+
+// OpenERP navigates the window to the ERP with the same script as startup.
+func (a *App) OpenERP() {
+	if a.ctx != nil && a.script != "" {
+		runtime.WindowExecJS(a.ctx, a.script)
+	}
+}
+
+// PullLocalModel runs `ollama pull qwen2.5:3b` on loopback, starting the ollama
+// daemon first. The splash button is the only caller. A cloud host is refused
+// and is not included in the error. Errors start with a class the splash maps
+// to Thai text: "ollama", "network", "timeout" or "other", then ": detail".
 func (a *App) PullLocalModel() error {
 	if err := policy.CheckEnv(os.Getenv); err != nil {
 		return err
@@ -145,7 +179,31 @@ func (a *App) PullLocalModel() error {
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), 45*time.Minute)
 	defer cancel()
-	return bundle.PullModel(ctx, layout, os.Getenv("OLLAMA_HOST"), os.Environ())
+	upCtx, upCancel := context.WithTimeout(ctx, 20*time.Second)
+	err := bundle.EnsureOllama(upCtx, layout, os.Getenv("OLLAMA_HOST"), nil, nil)
+	upCancel()
+	if err != nil {
+		return pullError(err, true)
+	}
+	return pullError(bundle.PullModel(ctx, layout, os.Getenv("OLLAMA_HOST"), os.Environ()), false)
+}
+
+// pullError prefixes err with the class the splash reads. A failed pull that
+// exited non-zero after the daemon started is most often a network failure.
+func pullError(err error, starting bool) error {
+	switch {
+	case err == nil:
+		return nil
+	case errors.Is(err, bundle.ErrNoOllama) || starting:
+		return fmt.Errorf("ollama: %w", err)
+	case errors.Is(err, context.DeadlineExceeded):
+		return fmt.Errorf("timeout: %w", err)
+	}
+	var exit *exec.ExitError
+	if errors.As(err, &exit) {
+		return fmt.Errorf("network: %w", err)
+	}
+	return fmt.Errorf("other: %w", err)
 }
 
 func startLocal(ctx context.Context, target string) error {

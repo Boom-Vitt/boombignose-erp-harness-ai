@@ -34,7 +34,7 @@ func TestBootFailureStaysOnTheSplash(t *testing.T) {
 	if strings.Contains(got, "location.replace") || strings.Contains(got, "<script>") {
 		t.Fatalf("script = %s", got)
 	}
-	if !strings.Contains(got, "boot-status") || !strings.Contains(got, "เปิด ERP ไม่สำเร็จ") || !strings.Contains(got, "already in use") {
+	if !strings.Contains(got, "boot-status") || !strings.Contains(got, "เปิด ERP ไม่สำเร็จ") || !strings.Contains(got, "already in use") || !strings.Contains(got, "ลองใหม่") {
 		t.Fatalf("script = %s", got)
 	}
 }
