@@ -35,6 +35,7 @@ type Helper struct {
 	apply     func(ctx context.Context, dmgPath, updatesDir string) error
 	mu        sync.Mutex
 	quit      func()
+	window    Window
 	quitDelay time.Duration
 	busy      sync.Mutex
 	server    *http.Server
@@ -72,6 +73,7 @@ func Start(dir string) (*Helper, error) {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/v1/status", helper.status)
 	mux.HandleFunc("/v1/apply", helper.applyRequest)
+	mux.HandleFunc("/v1/fullscreen", helper.fullscreen)
 	helper.server = &http.Server{
 		Handler:           mux,
 		ReadHeaderTimeout: 5 * time.Second,
@@ -85,6 +87,46 @@ func (h *Helper) SetQuit(fn func()) {
 	h.mu.Lock()
 	h.quit = fn
 	h.mu.Unlock()
+}
+
+// Window is the desktop window the version strip toggles. The ERP page cannot
+// reach the Wails runtime from a loopback origin, so it asks through the ERP server.
+type Window struct {
+	IsFullscreen  func() bool
+	SetFullscreen func(on bool)
+}
+
+// SetWindow wires the fullscreen route. Without it the route answers 404 and the page falls back to the browser API.
+func (h *Helper) SetWindow(w Window) {
+	h.mu.Lock()
+	h.window = w
+	h.mu.Unlock()
+}
+
+// fullscreen: GET reports {"fullscreen":bool}. POST {"fullscreen":bool} sets it, then reports.
+func (h *Helper) fullscreen(w http.ResponseWriter, r *http.Request) {
+	if (r.Method != http.MethodGet && r.Method != http.MethodPost) || !h.authorized(r) {
+		writeJSON(w, http.StatusUnauthorized, map[string]string{"error": "unauthorized"})
+		return
+	}
+	h.mu.Lock()
+	win := h.window
+	h.mu.Unlock()
+	if win.IsFullscreen == nil || win.SetFullscreen == nil {
+		writeJSON(w, http.StatusNotFound, map[string]string{"error": "no window"})
+		return
+	}
+	if r.Method == http.MethodPost {
+		var body struct {
+			Fullscreen bool `json:"fullscreen"`
+		}
+		if err := json.NewDecoder(io.LimitReader(r.Body, 1<<10)).Decode(&body); err != nil {
+			writeJSON(w, http.StatusBadRequest, map[string]string{"error": "bad request"})
+			return
+		}
+		win.SetFullscreen(body.Fullscreen)
+	}
+	_ = json.NewEncoder(w).Encode(map[string]bool{"fullscreen": win.IsFullscreen()})
 }
 
 func newToken() (string, error) {

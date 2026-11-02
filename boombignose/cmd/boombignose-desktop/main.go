@@ -134,6 +134,16 @@ func (a *App) startup(ctx context.Context) {
 		return
 	}
 	a.helper.SetQuit(func() { runtime.Quit(ctx) })
+	a.helper.SetWindow(update.Window{
+		IsFullscreen: func() bool { return runtime.WindowIsFullscreen(ctx) },
+		SetFullscreen: func(on bool) {
+			if on {
+				runtime.WindowFullscreen(ctx)
+			} else {
+				runtime.WindowUnfullscreen(ctx)
+			}
+		},
+	})
 }
 
 // ERPReady reports whether the ERP health check answers {"ok":true}. The

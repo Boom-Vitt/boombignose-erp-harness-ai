@@ -10,6 +10,7 @@ import { Separator } from "@/components/ui/separator"
 import { ActivityCounter } from "@/components/record/activity-counter"
 import { ModeSwitch, ModeTip } from "@/components/mode-switch"
 import { CommandPalette } from "@/components/command-palette/command-palette"
+import { VersionDock } from "@/components/chrome/version-dock"
 import { StageBackdrop } from "@/components/three/stage-backdrop"
 
 // Authenticated pages read the session cookie. A build without one must not
@@ -52,6 +53,7 @@ export default async function AppLayout({
           <div id="content" tabIndex={-1} className="mx-auto flex w-full max-w-[1480px] min-w-0 flex-1 flex-col gap-5 p-4 outline-none sm:p-5 lg:px-7 lg:py-6 [&>*]:min-w-0"><ModeTip />{children}</div>
         </SidebarInset>
       </SidebarProvider>
+      <VersionDock canUpdate={ctx.role === "owner" || ctx.role === "admin"} />
     </>
   )
 }

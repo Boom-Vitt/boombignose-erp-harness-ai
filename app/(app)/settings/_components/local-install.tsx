@@ -5,56 +5,11 @@ import { START_LOGS } from "@/lib/install/log-names"
 import { APP_VERSION } from "@/lib/release/version"
 import { DEFERRED_MESSAGE, WINDOW_MESSAGE } from "@/lib/release/update-plan"
 import { Button } from "@/components/ui/button"
-import { checkForUpdate, readLocalLog, type UpdateStatus } from "../local-actions"
+import { useUpdate } from "@/components/chrome/use-update"
+import { readLocalLog } from "../local-actions"
 
 export function UpdateCheckButton({ canUpdate = false }: { canUpdate?: boolean }) {
-  const [pending, start] = useTransition()
-  const [installing, setInstalling] = useState(false)
-  const [result, setResult] = useState<UpdateStatus | null>(null)
-  const [progress, setProgress] = useState("")
-  const [error, setError] = useState("")
-
-  async function install() {
-    setError("")
-    setInstalling(true)
-    setProgress("กำลังดาวน์โหลด / Downloading…")
-    let sawRestart = false
-    try {
-      const response = await fetch("/api/desktop-update", { method: "POST" })
-      if (!response.ok || !response.body) {
-        const data = (await response.json().catch(() => null)) as { error?: string } | null
-        setError(data?.error || "ติดตั้งไม่สำเร็จ / The update did not install.")
-        return
-      }
-      const reader = response.body.getReader()
-      const decoder = new TextDecoder()
-      let pendingText = ""
-      for (;;) {
-        const step = await reader.read()
-        if (step.done) break
-        pendingText += decoder.decode(step.value, { stream: true })
-        const lines = pendingText.split("\n")
-        pendingText = lines.pop() ?? ""
-        for (const line of lines) {
-          if (!line.trim()) continue
-          const event = JSON.parse(line) as { phase?: string; message?: string; received?: number; total?: number | null }
-          if (event.phase === "error") setError(event.message || "ติดตั้งไม่สำเร็จ / The update did not install.")
-          if (event.phase === "download" && event.total) setProgress(`${Math.min(100, Math.round(((event.received ?? 0) / event.total) * 100))}%`)
-          if (event.phase === "sums" || event.phase === "verify") setProgress("กำลังตรวจ SHA256 / Checking SHA256…")
-          if (event.phase === "restart" || event.phase === "apply") {
-            sawRestart = true
-            setProgress("กำลังเปิดใหม่ / Restarting…")
-          }
-        }
-      }
-    } catch {
-      if (!sawRestart) setError("ติดตั้งไม่สำเร็จ / The update did not install.")
-    } finally {
-      setInstalling(false)
-    }
-  }
-
-  const showInstall = result?.state === "available" && result.capability === "apply" && canUpdate
+  const { checking: pending, installing, result, progress, error, showInstall, check, install } = useUpdate(canUpdate)
   return <div id="app-update" className="bbn-sketch space-y-3">
     <ol className="bbn-sketch-steps" aria-label="ขั้นตอนอัปเดต / Update steps">
       <li><span className="bbn-step-pill">1</span><span>ตรวจเวอร์ชัน / Check the version</span></li>
@@ -62,7 +17,7 @@ export function UpdateCheckButton({ canUpdate = false }: { canUpdate?: boolean }
       <li><span className="bbn-step-pill">3</span><span>ติดตั้งแล้วเปิดใหม่ / Install and reopen</span></li>
     </ol>
     <p className="text-sm text-muted-foreground">ติดตั้งอยู่รุ่น {APP_VERSION}. กดตรวจเมื่อต้องการ. บน macOS Apple Silicon แอปดาวน์โหลด ตรวจ SHA256 แล้วติดตั้งให้. บน Windows และ Linux รุ่นนี้ยังติดตั้งทับให้อัตโนมัติไม่ได้ / Installed version {APP_VERSION}. The check runs when you ask. On macOS Apple Silicon this app downloads, checks SHA256, and installs. On Windows and Linux this version does not replace the app automatically.</p>
-    <Button type="button" disabled={pending || installing} onClick={() => start(async () => { setError(""); setResult(await checkForUpdate()) })}>{pending ? "กำลังตรวจ…" : "ตรวจอัปเดต / Check for updates"}</Button>
+    <Button type="button" disabled={pending || installing} onClick={check}>{pending ? "กำลังตรวจ…" : "ตรวจอัปเดต / Check for updates"}</Button>
     {result?.state === "available" ? <aside className="bbn-sticky text-sm">รุ่น {result.version} พร้อมแล้ว / Version {result.version} is published. <a className="underline" href={result.url} target="_blank" rel="noopener noreferrer">เปิดหน้า release / Open the release page</a></aside> : null}
     {result?.state === "current" ? <p className="text-sm">รุ่นนี้ตรงกับที่เผยแพร่ / This install matches the published release. <a className="underline" href={result.url} target="_blank" rel="noopener noreferrer">เปิดหน้า release / Open the release page</a></p> : null}
     {result?.state === "unavailable" ? <p role="alert" className="text-sm">{result.message}</p> : null}
