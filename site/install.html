@@ -3,146 +3,38 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#0b0d12" />
   <title>ติดตั้ง BoomBigNose</title>
   <meta name="description" content="ดาวน์โหลดตัวติดตั้ง BoomBigNose โดยตรงสำหรับ Windows, macOS และ Linux ไม่มี App Store, Play Store หรือ Microsoft Store ค่าแฮชมาจาก Release ที่เผยแพร่" />
   <link rel="icon" href="assets/brandmark.png" type="image/png" />
   <link rel="apple-touch-icon" href="assets/apple-touch-icon.png" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/site.css" />
   <meta property="og:title" content="ติดตั้ง BoomBigNose บนเดสก์ท็อป" />
   <meta property="og:description" content="ดาวน์โหลดตรง ตรวจ SHA-256 แล้วเปิดแอปที่ไม่ได้ลงชื่อด้วยใบรับรองร้านค้า" />
   <meta property="og:image" content="https://boom-vitt.github.io/boombignose-erp-harness-ai/assets/brandmark.png" />
   <meta property="og:type" content="website" />
-  <style>
-    :root {
-      --paper: #0b0d12;
-      --surface: #12151c;
-      --line: #232733;
-      --text: #e8eaf0;
-      --muted: #9aa1b2;
-      --accent: #ff7a45;
-      --on-accent: #0b0d12;
-    }
-    * { box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
-    body {
-      margin: 0;
-      background: var(--paper);
-      color: var(--text);
-      font-family: "IBM Plex Sans Thai", Inter, "Noto Sans Thai", Anuphan, Sarabun, system-ui, sans-serif;
-      line-height: 1.6;
-    }
-    a { color: var(--accent); }
-    :focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
-    .skip {
-      position: absolute; left: 16px; top: -48px; background: var(--accent); color: var(--on-accent);
-      padding: 8px 12px; border-radius: 8px; font-weight: 700; z-index: 20;
-    }
-    .skip:focus { top: 12px; }
-    .wrap { max-width: 1040px; margin: 0 auto; padding: 0 20px; }
-    header.nav {
-      position: sticky; top: 0; z-index: 10;
-      background: rgb(11 13 18 / .92);
-      border-bottom: 1px solid var(--line);
-    }
-    .nav .wrap { display: flex; align-items: center; justify-content: space-between; min-height: 72px; gap: 16px; flex-wrap: wrap; padding-top: 8px; padding-bottom: 8px; }
-    .brand { display: flex; align-items: center; gap: 10px; color: var(--text); text-decoration: none; font-weight: 700; }
-    .brand img { width: 36px; height: 36px; border-radius: 12px; }
-    .nav-links { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
-    .nav-links a:not(.btn) { color: var(--text); text-decoration: none; font-weight: 600; min-height: 44px; display: inline-flex; align-items: center; }
-    .btn {
-      display: inline-flex; align-items: center; justify-content: center; text-align: center;
-      background: var(--accent); color: var(--on-accent); text-decoration: none;
-      font-weight: 700; border-radius: 999px; padding: 10px 18px; min-height: 44px;
-      border: 1px solid var(--accent); cursor: pointer;
-      font-family: inherit; font-size: 16px;
-      transition: filter .15s ease;
-    }
-    .btn:hover { filter: brightness(1.06); }
-    .btn.secondary { background: transparent; color: var(--text); border-color: var(--line); }
-    .hero { padding: 72px 0 16px; }
-    h1 {
-      font-size: clamp(36px, 6vw, 60px); line-height: 1.15; letter-spacing: -0.03em;
-      margin: 16px 0 12px; max-width: 16ch; font-weight: 700;
-    }
-    .lead { font-size: 20px; margin: 0 0 8px; }
-    .en { color: var(--muted); font-family: Inter, "IBM Plex Sans Thai", sans-serif; font-size: 16px; margin: 0 0 20px; }
-    .meta { color: var(--muted); font-size: 14px; margin: 12px 0 0; }
-    h2 { font-size: clamp(28px, 3vw, 36px); line-height: 1.2; margin: 0 0 8px; }
-    h3 { margin: 0 0 8px; font-size: 18px; }
-    .sub { color: var(--muted); margin: 0 0 20px; }
-    section { padding: 64px 0; }
-    .grid, .steps { display: grid; gap: 16px; }
-    .grid { grid-template-columns: repeat(2, 1fr); }
-    .steps { grid-template-columns: repeat(3, 1fr); }
-    .card {
-      background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 20px;
-    }
-    .card p, .card li { margin: 0; color: var(--muted); }
-    .card ol, .card ul { margin: 8px 0 0; padding-left: 1.2rem; }
-    .card li { margin: 6px 0; }
-    .card.is-this { border-color: var(--accent); }
-    .chip {
-      display: inline-block; margin-left: 8px; border: 1px solid var(--accent); color: var(--accent);
-      border-radius: 999px; padding: 2px 8px; font-size: 12px; font-weight: 700; vertical-align: middle;
-    }
-    .chip[hidden] { display: none !important; }
-    .btn:not(.secondary) .chip { color: var(--on-accent); border-color: var(--on-accent); }
-    .actions { display: flex; flex-direction: column; align-items: stretch; gap: 12px; margin-top: 20px; max-width: 640px; }
-    .actions .btn { width: 100%; }
-    .mono, pre {
-      font-family: "JetBrains Mono", ui-monospace, monospace; font-size: 13px; color: var(--muted);
-      overflow-wrap: anywhere; word-break: break-word;
-    }
-    pre {
-      margin: 12px 0; padding: 12px 14px; background: var(--paper); border: 1px solid var(--line);
-      border-radius: 12px; white-space: pre-wrap;
-    }
-    .hashrow { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-top: 8px; }
-    .hashrow .mono { flex: 1 1 220px; }
-    .fileline { color: var(--text); font-weight: 600; }
-    details.card { padding: 0; }
-    details.card summary {
-      min-height: 44px; padding: 16px 20px; cursor: pointer; font-weight: 700; list-style: none;
-    }
-    details.card summary::-webkit-details-marker { display: none; }
-    details.card .answer { padding: 0 20px 16px; }
-    footer { border-top: 1px solid var(--line); padding: 28px 0 48px; }
-    footer .wrap { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; align-items: center; }
-    .links { display: flex; gap: 16px; flex-wrap: wrap; }
-    #copy-status { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); border: 0; }
-    @media (max-width: 800px) {
-      section { padding: 40px 0; }
-      .grid, .steps { grid-template-columns: 1fr; }
-      h1 { max-width: none; }
-      .hashrow .btn { flex-basis: 100%; width: 100%; }
-    }
-    @media (prefers-reduced-motion: reduce) {
-      html { scroll-behavior: auto; }
-      .btn { transition: none; }
-    }
-  </style>
 </head>
-<body>
+<body class="wide">
   <a class="skip" href="#content">ข้ามไปเนื้อหา</a>
   <p id="copy-status" role="status" aria-live="polite"></p>
   <header class="nav">
     <div class="wrap">
       <a class="brand" href="index.html">
-        <img src="assets/brandmark.png" width="36" height="36" alt="" />
+        <img src="assets/brandmark.png" width="34" height="34" alt="" />
         <span>BoomBigNose</span>
       </a>
-      <div class="nav-links">
+      <nav class="nav-links" aria-label="หลัก">
         <a href="index.html">หน้าแรก</a>
         <a href="guide.html">วิธีใช้</a>
         <a class="btn" href="#download">ดาวน์โหลด</a>
-      </div>
+      </nav>
     </div>
   </header>
   <main id="content">
-    <div class="wrap hero">
-      <h1>ติดตั้ง BoomBigNose</h1>
+    <div class="hero-band">
+    <div class="wrap page-hero hero-copy">
+      <p class="eyebrow">ดาวน์โหลดตรงจาก GitHub Release</p>
+      <h1>ติดตั้ง <span class="grad">BoomBigNose</span></h1>
       <p class="lead">แอปเดสก์ท็อปชื่อ BoomBigNose ดาวน์โหลดไฟล์ตรงจาก Release</p>
       <p class="en">The desktop app is named BoomBigNose. Direct download only. No Apple App Store, Google Play, or Microsoft Store.</p>
       <p class="meta" id="primary-meta">รุ่น <span data-release="tag">boombignose-v0.3.0</span> ปุ่มหลักจะตรงกับ Windows, macOS หรือ Linux เมื่อเบราว์เซอร์บอกระบบได้</p>
@@ -153,6 +45,7 @@
         <a class="btn secondary" data-os="appimage" data-release-href="appimage" href="https://github.com/Boom-Vitt/boombignose-erp-harness-ai/releases/download/boombignose-v0.3.0/BoomBigNose-linux-amd64.AppImage">AppImage · <span data-release="size-appimage">138,394,104 ไบต์</span></a>
       </div>
       <p class="meta">ไฟล์หลักของลินุกซ์คือ tar.gz AppImage เป็นทางเลือก ขนาดเป็นจำนวนไบต์จาก Release <span data-release="tag">boombignose-v0.3.0</span></p>
+    </div>
     </div>
 
     <section>
@@ -247,7 +140,7 @@
     <section>
       <div class="wrap">
         <h2>เครื่องที่รองรับ</h2>
-        <div class="grid">
+        <div class="grid two">
           <article class="card">
             <h3>ระบบปฏิบัติการ</h3>
             <ul>
@@ -268,7 +161,7 @@
       <div class="wrap">
         <h2>สิ่งที่อยู่ในไฟล์</h2>
         <p class="sub">รุ่น <span data-release="tag">boombignose-v0.3.0</span> รวมของเหล่านี้ไว้ในตัวติดตั้ง ไม่มี Docker</p>
-        <div class="grid">
+        <div class="grid two">
           <article class="card"><h3>BoomBigNose</h3><p>โปรแกรมที่เปิดชื่อ BoomBigNose และเป็นหน้าต่างที่ <code>127.0.0.1:3100</code> ไฟล์พก Node 22 กับ <code>server.js</code> ไว้ข้างใน เพื่อไม่ต้องลง Node แยก Node เป็นรันไทม์ในไฟล์ ไม่ใช่ชื่อแอป</p></article>
           <article class="card"><h3>Postgres</h3><p>Postgres 16.10.0 แบบพกพา ฟังที่ <code>127.0.0.1:54329</code> ผู้ใช้ <code>boombignose</code> แบบ trust โฟลเดอร์ข้อมูลที่มีช่องว่างจะถูกปฏิเสธ</p></article>
           <article class="card"><h3>Auth</h3><p>Auth v2.197.0 และ PostgREST v16.5 พร็อกซีที่ <code>127.0.0.1:54321</code> ส่ง <code>/auth/v1</code> ไปพอร์ต 54323 และ <code>/rest/v1</code> ไปพอร์ต 54324</p></article>
@@ -315,7 +208,7 @@
     <section>
       <div class="wrap">
         <h2>เมื่อเปิดไม่ได้</h2>
-        <div class="grid">
+        <div class="grid two">
           <article class="card"><h3>SmartScreen หรือ Gatekeeper</h3><p>Windows ใช้ More info แล้ว Run anyway macOS ใช้ Open Anyway ใน System Settings &gt; Privacy &amp; Security Smart App Control อาจบล็อกต่อไป ไม่มีใบรับรองที่ซื้อมาให้ข้ามขั้นตอนนี้</p></article>
           <article class="card"><h3>สิทธิ์รันบน macOS หรือ Linux</h3><p>หลังคัดลอกจากแผ่นหรือหลังดาวน์โหลด ให้ <code>chmod +x</code> โปรแกรมหรือ AppImage ก่อนเปิด</p></article>
           <article class="card"><h3>พอร์ตถูกใช้แล้ว</h3><p>ERP ใช้ <code>127.0.0.1:3100</code> และ Postgres ใช้ <code>127.0.0.1:54329</code> ถ้าโปรแกรมอื่นจับพอร์ตอยู่ หน้าต่างจะค้างที่ข้อความเปิดไม่สำเร็จ และจะไม่เข้าไปใช้พอร์ตนั้น ปิดโปรแกรมนั้นก่อน หรือตั้ง <code>BOOMBIGNOSE_PG_PORT</code> ข้อมูลจาก v0.3 อยู่ในโฟลเดอร์เดิม บันทึกของ Postgres คือ <code>server.log</code> ในโฟลเดอร์นั้น การถอนการติดตั้งไม่ลบโฟลเดอร์ข้อมูล</p></article>
@@ -327,7 +220,7 @@
     <section id="faq">
       <div class="wrap">
         <h2>คำถาม</h2>
-        <div class="grid">
+        <div class="grid two">
           <details class="card">
             <summary>มีใน App Store หรือไม่</summary>
             <div class="answer"><p>ไม่มี หน้านี้ให้ดาวน์โหลดไฟล์ตรงเท่านั้น ไม่ได้ส่งแอปเข้า Apple App Store, Google Play หรือ Microsoft Store</p></div>
@@ -346,7 +239,7 @@
           </details>
           <details class="card">
             <summary>หน้าเว็บวัดผู้ชมหรือไม่</summary>
-            <div class="answer"><p>ไม่มีตัววัดและไม่มีตัวตาม ฟอนต์โหลดจาก Google Fonts เพื่อตัวอักษรไทยกับละติน การโหลดนั้นเป็นการขอไฟล์ฟอนต์เท่านั้น</p></div>
+            <div class="answer"><p>ไม่มีตัววัดและไม่มีตัวตาม ตัวอักษรใช้ฟอนต์ที่มีอยู่ในเครื่องของคุณ หน้านี้ไม่โหลดฟอนต์หรือสคริปต์จากบริการภายนอก</p></div>
           </details>
           <details class="card">
             <summary>ซอร์สกับบันทึกของรุ่นอยู่ที่ไหน</summary>
