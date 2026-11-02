@@ -128,7 +128,7 @@ export function CampusApp() {
 
       {/* ---------------------------------------------------------------- compact bar (phones) */}
       <header className={cn(SHELL, "absolute inset-x-0 top-0 z-20 flex h-12 items-center gap-2 border-x-0 border-t-0 px-3 md:hidden")}>
-        <IconBtn label="Open campus index" onClick={() => setRailOpen((v) => !v)}>
+        <IconBtn label="Open organization index" onClick={() => setRailOpen((v) => !v)}>
           <ListTree />
         </IconBtn>
         <Wordmark />
@@ -140,7 +140,7 @@ export function CampusApp() {
 
       {/* ---------------------------------------------------------------- index rail */}
       <nav
-        aria-label="Campus index"
+        aria-label="Organization index"
         className={cn(
           SHELL,
           "absolute inset-y-0 left-0 z-30 flex w-[19rem] max-w-[88vw] flex-col border-y-0 border-l-0 border-r-[#f5b941]/20 transition-transform duration-300 md:translate-x-0",
@@ -278,7 +278,7 @@ export function CampusApp() {
       {/* ---------------------------------------------------------------- ledger dock */}
       {snap && (
         <section
-          aria-label="Campus ledger"
+          aria-label="Organization ledger"
           className={cn(SHELL, "absolute right-2 bottom-2 left-2 z-10 md:right-4 md:bottom-4 md:left-[19.75rem]", current && "hidden md:block")}
         >
           <Ticks />
@@ -317,7 +317,7 @@ function Wordmark() {
         <circle cx="21.5" cy="12" r="1.4" fill="#f5b941" />
       </svg>
       <div>
-        <div className="font-mono text-xs font-semibold tracking-[0.3em] text-white">CAMPUS</div>
+        <div className="font-mono text-xs font-semibold tracking-[0.3em] text-white">ORG</div>
         <div className="mt-1 text-[10px] text-slate-400">BoomBigNose</div>
       </div>
     </div>
