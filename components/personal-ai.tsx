@@ -42,12 +42,12 @@ export function PersonalAssistant() {
       setCopied(true)
       setTimeout(() => setCopied(false), 1500)
     } catch {
-      toast.error("Could not copy — select the text and copy manually.")
+      toast.error("Could not copy. Select the text and copy manually.")
     }
   }
 
   return (
-    <Card className="bbn-deck-panel border-0" data-testid="personal-assistant">
+    <Card className="bbn-deck-panel bbn-hud-chat border-0" data-testid="personal-assistant">
       <CardHeader>
         <CardTitle className="flex flex-wrap items-center gap-2 text-base">
           <span className="bbn-rough-sm border-primary/60 bg-primary/10 text-primary flex size-7 items-center justify-center border">
@@ -58,7 +58,7 @@ export function PersonalAssistant() {
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="flex flex-wrap gap-2">
+        <div className="bbn-hud-tools flex flex-wrap gap-2">
           <Button variant="outline" render={<Link href="/intake" prefetch={false} />}>
             <NotebookPen className="size-3.5" aria-hidden />
             สรุปบันทึก / Summarize notes
@@ -77,7 +77,7 @@ export function PersonalAssistant() {
           </Button>
         </div>
 
-        <div className="space-y-2">
+        <div className="bbn-hud-composer space-y-2">
           <label htmlFor="personal-note" className="text-sm font-medium">
             จดอะไรสักอย่าง แล้วให้ AI สรุป / Jot something, let AI sum it up
           </label>
@@ -101,7 +101,7 @@ export function PersonalAssistant() {
         ) : null}
 
         {result.kind === "done" ? (
-          <div className="bbn-sketch-card space-y-3 p-4">
+          <div className="bbn-hud-reply space-y-3 p-4" role="log" aria-live="polite">
             <div className="flex items-center justify-between">
               <span className="text-muted-foreground text-xs font-medium">สรุป / Summary</span>
               <Button type="button" variant="ghost" size="xs" onClick={copy} aria-label="Copy to clipboard">
