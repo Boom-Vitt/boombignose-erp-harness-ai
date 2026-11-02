@@ -1,4 +1,4 @@
-import { chatLocal } from "@/lib/ai/assistant-chat"
+import { chatLocal, erpToolRunner } from "@/lib/ai/assistant-chat"
 import { parseChatRequest } from "@/lib/ai/chat-attachments"
 import { getOrgContext } from "@/lib/auth"
 
@@ -13,7 +13,9 @@ export async function POST(request: Request) {
   const body = await request.json().catch(() => null)
   const parsed = parseChatRequest(body)
   if ("error" in parsed) return Response.json({ error: parsed.error }, { status: 400 })
-  const result = await chatLocal(parsed.messages)
+  // Local Supabase may be down: the tools then answer with an error the model can relay; chat itself still works.
+  const tools = await erpToolRunner(ctx.orgId).catch(() => null)
+  const result = await chatLocal(parsed.messages, fetch, tools)
   if ("error" in result) return Response.json({ error: result.error }, { status: 502 })
   return Response.json(result)
 }
