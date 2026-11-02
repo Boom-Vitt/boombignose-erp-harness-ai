@@ -57,7 +57,7 @@ export async function provisionErp(api: Pick<Api, 'getSettings' | 'listAgents' |
   const found = (await api.listAgents()).agents.find((a) => a.name === ERP_AGENT);
   if (found) return found.id;
   const created = await api.createAgent({
-    name: ERP_AGENT, icon: '🧾', instructions: ERP_INSTRUCTIONS, provider: ERP_PROVIDER, model: ERP_MODEL,
+    name: ERP_AGENT, icon: 'i:receipt', instructions: ERP_INSTRUCTIONS, provider: ERP_PROVIDER, model: ERP_MODEL,
     connectors: [ERP_CONNECTOR], permissions: ERP_PERMISSIONS,
     maxTokens: 4096, // a local cap so one reply cannot fill the whole context
   });

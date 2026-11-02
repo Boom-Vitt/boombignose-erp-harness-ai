@@ -1,19 +1,15 @@
 // Contrast gate for tokens.css. Run: node contrast.mjs [path/to/style.css]   (exits 1 on any failure)
 // Checks every text pair the UI uses (WCAG AA 4.5:1), control borders, focus ring and graphics (3:1),
-// and that the two dark blocks (media query + [data-theme="dark"]) are identical.
+// on the single night-ledger theme (translucent glass surfaces are composited on --bg).
 import { readFileSync } from 'node:fs';
 
 const css = readFileSync(process.argv[2] ?? new URL('./tokens.css', import.meta.url), 'utf8');
 const vars = (body) => Object.fromEntries([...body.matchAll(/--([\w-]+):\s*([^;]+);/g)].map(m => [m[1], m[2].trim()]));
 const block = (re, label) => { const m = re.exec(css); if (!m) throw new Error(`missing ${label} block`); return vars(m[1]); };
-const light = block(/^:root \{([\s\S]*?)\n\}/m, 'light :root');
-const darkMedia = block(/:root:not\(\[data-theme="light"\]\) \{([\s\S]*?)\n {2}\}/, 'dark media');
-const darkAttr = block(/^:root\[data-theme="dark"\] \{([\s\S]*?)\n\}/m, 'dark [data-theme]');
+const night = block(/^:root \{([\s\S]*?)\n\}/m, 'night :root');
 
 let failed = 0;
 const fail = (msg) => { failed++; console.log(`FAIL ${msg}`); };
-for (const k of new Set([...Object.keys(darkMedia), ...Object.keys(darkAttr)]))
-  if (darkMedia[k] !== darkAttr[k]) fail(`dark blocks differ on --${k}: ${darkMedia[k]} vs ${darkAttr[k]}`);
 
 const parse = (c) => {
   const hex = /^#([0-9a-f]{6})$/i.exec(c);
@@ -43,7 +39,7 @@ const pairs = [
   ['bot-ink', 'bot-face', 3], ['bot-gear', 'bot-bg', 3],
 ];
 
-for (const [name, t] of Object.entries({ light, dark: { ...light, ...darkAttr } })) {
+for (const [name, t] of Object.entries({ night })) {
   const color = (key) => {
     const [k, base] = key.split('@');
     if (!(k in t)) throw new Error(`unknown token --${k}`);
@@ -58,5 +54,5 @@ for (const [name, t] of Object.entries({ light, dark: { ...light, ...darkAttr } 
   }
   console.log(`${name}: ${pairs.length} pairs, weakest ${worst[1]} = ${worst[0].toFixed(2)}`);
 }
-console.log(failed ? `${failed} failure(s)` : 'contrast: all pairs pass, dark blocks match');
+console.log(failed ? `${failed} failure(s)` : 'contrast: all pairs pass');
 process.exit(failed ? 1 : 0);

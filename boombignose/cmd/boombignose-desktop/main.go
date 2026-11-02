@@ -73,7 +73,7 @@ func run() error {
 		Title:            "BoomBigNose ERP Harness AI",
 		Width:            1280,
 		Height:           800,
-		BackgroundColour: options.NewRGB(0x0B, 0x1E, 0x3A),
+		BackgroundColour: options.NewRGB(0x0B, 0x12, 0x22),
 		AssetServer: &assetserver.Options{
 			Assets: assets,
 		},

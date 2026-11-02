@@ -1,12 +1,7 @@
-/* BigNose desktop UI: tokens, components, shell. Source: the final native-simple design (design-spec.md).
-   Rules: no inline styles in markup or script (Tauri CSP is style-src 'self'); orange only on primary actions, send,
-   focus, caret and the active tab; one quiet line per thing. `node scripts/contrast.mjs src/style.css` runs in the build. */
-
-/* BigNose final UI tokens ("native-simple", made quieter). Paste at the top of desktop/src/style.css,
-   replacing the old :root block.
-   Themes: light is the base. Dark follows the system (prefers-color-scheme) unless <html data-theme="light|dark">
-   forces one. The dark block is written twice (media query + attribute) because older WKWebView lacks
-   light-dark(). contrast.mjs fails if the two dark blocks drift apart, or if any text pair drops below AA. */
+/* BigNose desktop UI: tokens, components, shell. Campus 3D night-ledger: one dark theme (#0B1222), navy glass HUD panels
+   over the stage canvas (stage.ts), orange/gold accent. Rules: no inline styles in markup or script (Tauri CSP is
+   style-src 'self'); orange only on primary actions, send, focus, caret and the active tab; one quiet line per thing.
+   `node scripts/contrast.mjs src/style.css` runs in the build: every text pair stays AA on the glass surfaces. */
 
 /* Thai glyphs use Sukhumvit Set (ships with macOS; lighter and more even than the Thonburi fallback), about 6%
    larger so Thai sits level with SF. unicode-range keeps Latin on the system font. No font file is bundled. */
@@ -16,50 +11,51 @@
 @font-face { font-family: "BN Thai"; font-weight: 700; unicode-range: U+0E00-0E7F; size-adjust: 106%; src: local("SukhumvitSet-Bold"), local("Thonburi-Bold"); }
 
 :root {
-  color-scheme: light;
+  color-scheme: dark;
 
-  /* ---- surfaces */
-  --bg:           #ffffff;   /* content area */
-  --sidebar:      #f3f1ee;   /* quiet sidebar */
-  --surface:      #f7f5f3;   /* grouped lists (.card) */
-  --raised:       #ffffff;   /* composer, inputs, menus, approval card, save bar */
-  --bubble:       #f0ece8;   /* user turn */
-  --code-bg:      #f6f4f1;   /* code blocks, tool output */
-  --code-inline:  #efebe6;   /* inline code, badges, seg track, emoji avatar */
-  --hover:        rgb(28 25 31 / .05);
-  --select:       #e4dfda;   /* selected row, highlighted menu item; always paired with weight or aria state */
+  /* ---- surfaces: navy glass over the stage; translucent ones are composited on --bg by the contrast gate */
+  --bg:           #0b1222;   /* night-ledger base */
+  --sidebar:      rgb(13 22 42 / .74);
+  --surface:      rgb(18 30 56 / .66);   /* grouped lists (.card) */
+  --raised:       #14213e;   /* composer, inputs, menus, approval card, save bar */
+  --bubble:       #1a2a4d;   /* user turn */
+  --code-bg:      #080e1b;   /* code blocks, tool output */
+  --code-inline:  #1c2b4b;   /* inline code, badges, seg track, emoji avatar */
+  --hover:        rgb(255 255 255 / .06);
+  --select:       #22355e;   /* selected row, highlighted menu item; always paired with weight or aria state */
 
   /* ---- lines */
-  --line:         #e6e2dd;   /* dividers (decorative) */
-  --line-strong:  #8c8590;   /* control borders, >= 3:1 on bg/surface/raised */
+  --line:         #243556;   /* dividers (decorative) */
+  --line-strong:  #7388b0;   /* control borders, >= 3:1 on every surface */
 
   /* ---- text: three tones */
-  --text:         #1c191f;
-  --muted:        #5e5762;
-  --faint:        #675f6a;   /* meta, placeholders; >= 4.5:1 on every surface */
+  --text:         #eef2fb;
+  --muted:        #aab6cf;
+  --faint:        #98a5c2;   /* meta, placeholders; >= 4.5:1 on every surface */
 
-  /* ---- the one accent (BoomBigNose key-light orange). Only: primary button, send, focus ring, caret, active tab. */
-  --accent:       #b5501b;
-  --accent-hover: #a4471a;
-  --accent-press: #8f3d16;
-  --accent-ink:   #ffffff;   /* text on accent */
-  --accent-text:  #a04414;   /* accent as text: links, step numbers */
-  --accent-soft:  #fbeee6;   /* selected choice card, step number well */
+  /* ---- the one accent (orange/gold). Only: primary button, send, focus ring, caret, active tab. */
+  --accent:       #f59e42;
+  --accent-hover: #fbb35f;
+  --accent-press: #d9812a;
+  --accent-ink:   #1a1004;   /* text on accent */
+  --accent-text:  #f7b25c;   /* accent as text: links, step numbers */
+  --accent-soft:  #2d2415;   /* selected choice card, step number well */
 
   /* ---- status: text-safe colour + soft fill */
-  --ok:           #1e7a46;  --ok-soft:   #e8f5ed;
-  --warn:         #8a5800;  --warn-soft: #fbf3e2;
-  --bad:          #c0352c;  --bad-soft:  #fcecea;
+  --ok:           #5ccf8f;  --ok-soft:   #12281f;
+  --warn:         #f2c45a;  --warn-soft: #2a2414;
+  --bad:          #f2766f;  --bad-soft:  #2c1a1f;
 
   /* ---- default agent avatar: the headphone bot (graphic only, never an action colour) */
-  --bot-bg:       #f4d9c4;
-  --bot-face:     #ffffff;
-  --bot-ink:      #1c1820;
-  --bot-gear:     #2a2430;
-  --bot-nose:     #e8692c;
+  --bot-bg:       #3a2a1c;
+  --bot-face:     #eef2fb;
+  --bot-ink:      #0b1222;
+  --bot-gear:     #a3b1d0;
+  --bot-nose:     #f59e42;
 
-  --shadow-color: rgb(40 30 20 / .10);
-  --scrim:        rgb(28 25 31 / .25);
+  --shadow-color: rgb(0 0 0 / .5);
+  --scrim:        rgb(2 6 14 / .6);
+  --glass-blur:   blur(14px) saturate(1.2);
 
   /* ---- type: system stack, 5 sizes, 3 weights */
   --font: "BN Thai", -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", "Sukhumvit Set", "Thonburi", system-ui, sans-serif;
@@ -102,76 +98,6 @@
   --column-w: 720px;   /* chat reading column */
   --page-w: 680px;     /* Agents and Settings */
   --header-h: 52px;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    color-scheme: dark;
-    --bg:           #141216;
-    --sidebar:      #1b181e;
-    --surface:      #1d1a20;
-    --raised:       #242028;
-    --bubble:       #27232c;
-    --code-bg:      #0f0d11;
-    --code-inline:  #2a2630;
-    --hover:        rgb(255 255 255 / .05);
-    --select:       #2d2934;
-    --line:         #2c2830;
-    --line-strong:  #77707f;
-    --text:         #f4efea;
-    --muted:        #a9a0a9;
-    --faint:        #9b929c;
-    --accent:       #f1894f;
-    --accent-hover: #f79c69;
-    --accent-press: #cf6c37;
-    --accent-ink:   #1a0f08;
-    --accent-text:  #f29a66;
-    --accent-soft:  #2e1f17;
-    --ok:           #5ccf8f;  --ok-soft:   #15261c;
-    --warn:         #f2c45a;  --warn-soft: #2a2214;
-    --bad:          #f2766f;  --bad-soft:  #2c1719;
-    --bot-bg:       #3a2618;
-    --bot-face:     #f4efea;
-    --bot-ink:      #1c1820;
-    --bot-gear:     #a39aa3;
-    --bot-nose:     #f1894f;
-    --shadow-color: rgb(0 0 0 / .45);
-    --scrim:        rgb(0 0 0 / .5);
-  }
-}
-
-:root[data-theme="dark"] {
-    color-scheme: dark;
-    --bg:           #141216;
-    --sidebar:      #1b181e;
-    --surface:      #1d1a20;
-    --raised:       #242028;
-    --bubble:       #27232c;
-    --code-bg:      #0f0d11;
-    --code-inline:  #2a2630;
-    --hover:        rgb(255 255 255 / .05);
-    --select:       #2d2934;
-    --line:         #2c2830;
-    --line-strong:  #77707f;
-    --text:         #f4efea;
-    --muted:        #a9a0a9;
-    --faint:        #9b929c;
-    --accent:       #f1894f;
-    --accent-hover: #f79c69;
-    --accent-press: #cf6c37;
-    --accent-ink:   #1a0f08;
-    --accent-text:  #f29a66;
-    --accent-soft:  #2e1f17;
-    --ok:           #5ccf8f;  --ok-soft:   #15261c;
-    --warn:         #f2c45a;  --warn-soft: #2a2214;
-    --bad:          #f2766f;  --bad-soft:  #2c1719;
-    --bot-bg:       #3a2618;
-    --bot-face:     #f4efea;
-    --bot-ink:      #1c1820;
-    --bot-gear:     #a39aa3;
-    --bot-nose:     #f1894f;
-    --shadow-color: rgb(0 0 0 / .45);
-    --scrim:        rgb(0 0 0 / .5);
 }
 
 @media (max-width: 1000px) { :root { --sidebar-w: 216px; } }
@@ -224,7 +150,7 @@ input::placeholder, textarea::placeholder { color: var(--faint); }
 input:disabled, select:disabled, textarea:disabled { opacity: .6; cursor: default; }
 input[aria-invalid="true"], textarea[aria-invalid="true"] { border-color: var(--bad); }
 select { appearance: none; padding-right: 30px; cursor: pointer;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%23888290' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7 8l3-3 3 3M7 12l3 3 3-3'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%23aab6cf' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7 8l3-3 3 3M7 12l3 3 3-3'/%3E%3C/svg%3E");
   background-repeat: no-repeat; background-position: right 7px center; background-size: 16px; }
 input:focus-visible, select:focus-visible, textarea:focus-visible { outline-offset: 0; border-color: var(--accent); }
 .switch { appearance: none; width: 34px; height: 20px; margin: 0; border-radius: var(--r-full); background: var(--line-strong); position: relative; cursor: pointer; flex: none; transition: background var(--dur) var(--ease); }
@@ -252,6 +178,8 @@ input:focus-visible, select:focus-visible, textarea:focus-visible { outline-offs
 .avatar { width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; flex: none; overflow: hidden; background: var(--code-inline); font-size: 20px; line-height: 1; }
 .avatar.sm { width: 22px; height: 22px; font-size: 12px; }
 .avatar.bot { background: var(--bot-bg); }
+.avatar.sprite-icon { background: var(--accent-soft); color: var(--accent-text); }
+.avatar.sprite-icon .i { width: 55%; height: 55%; }
 .avatar svg { width: 100%; height: 100%; }
 .bot-face { fill: var(--bot-face); }
 .bot-ink { fill: var(--bot-ink); }
@@ -271,6 +199,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible { outline-offs
 
 /* ================= shell + quiet sidebar ================= */
 #app, .shell { height: 100%; }
+#app { position: relative; z-index: 1; }
 .shell { display: grid; grid-template-columns: var(--sidebar-w) minmax(0, 1fr); grid-template-rows: minmax(0, 1fr); }
 .nav { background: var(--sidebar); border-right: 1px solid var(--line); display: flex; flex-direction: column; min-height: 0; padding: var(--sp-3) var(--sp-2) var(--sp-2); }
 .agent-switch { position: relative; display: flex; align-items: center; height: 36px; margin-bottom: var(--sp-1); }
@@ -295,7 +224,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible { outline-offs
 .nav-conn { display: flex; align-items: center; gap: var(--sp-2); padding: var(--sp-1) var(--sp-2) 2px; font-size: var(--fs-xs); color: var(--faint); }
 .nav-conn::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--ok); }
 .nav-conn.down::before { background: var(--warn); }
-.main { min-width: 0; height: 100%; display: flex; flex-direction: column; background: var(--bg); }
+.main { min-width: 0; height: 100%; display: flex; flex-direction: column; background: transparent; }
 
 /* splash + startup failure */
 .splash { height: 100%; display: grid; place-content: center; justify-items: center; gap: var(--sp-3); text-align: center; }
@@ -649,3 +578,11 @@ pre.diag { margin: 0; padding: 10px var(--sp-4); max-height: 260px; overflow: au
 .toolbar .field > label { grid-template-columns: minmax(0, 1fr); gap: 4px; }
 .note { min-width: 0; }
 .note > .field { padding-bottom: 0; }
+
+/* ================= 3D stage + glass HUD ================= */
+/* stage.ts draws a slow perspective campus into this canvas; it never takes pointer input. */
+.stage { position: fixed; inset: 0; z-index: 0; width: 100%; height: 100%; pointer-events: none; }
+.nav, .card, .composer-box, .menu, .toast, .save-bar, dialog.confirm, .notice { -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur); }
+.nav { box-shadow: inset -1px 0 0 rgb(245 158 66 / .08); }
+.card, .composer-box { border-color: rgb(115 136 176 / .35); box-shadow: 0 8px 28px rgb(0 0 0 / .28); }
+.chat-head { background: rgb(11 18 34 / .55); -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur); }

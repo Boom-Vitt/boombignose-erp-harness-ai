@@ -8,6 +8,7 @@ import { provisionErp } from './os/erp-setup.ts';
 import type { OsInfo } from './os/erp-setup.ts';
 import { waitForReady, waitForStop } from './os/startup.ts';
 import { streamEvents } from './sse.ts';
+import { mountStage } from './stage.ts';
 import type { ApiEvent } from './types.ts';
 import { mountMemory } from './settings/memory.ts';
 import { mountMessaging } from './settings/messaging.ts';
@@ -37,6 +38,7 @@ const SECTIONS: { id: string; label: string; mount: (pane: HTMLElement, api: Api
 // Old settings routes land on the tab that holds their page now.
 const ALIASES: Record<string, string> = { general: 'model', providers: 'model', connectors: 'tools', hooks: 'tools', skills: 'tools', messaging: 'line' };
 
+mountStage();
 const app = document.getElementById('app') as HTMLElement;
 let events: AbortController | null = null;
 let launcherWatch: AbortController | null = null;

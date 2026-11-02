@@ -53,7 +53,7 @@ test('the LINE page says Connected, Needs setup or Off, shows the three steps, t
   assert.ok(badgeText(needs).includes('Needs setup'), 'a warning means it is not ready yet');
   assert.ok(needs.pane.textContent.includes(status.warnings[0]!));
   assert.ok(needs.pane.textContent.includes('Open https://tunnel.example/line/webhook/health in a browser to check your tunnel.'));
-  assert.deepEqual(needs.pane.querySelectorAll('.step').map(s => s.textContent), ['✓', '2', '3']);
+  assert.deepEqual(needs.pane.querySelectorAll('.step').map(s => `${s.className}:${s.textContent}`), ['step done:', 'step:2', 'step:3']);
   assert.equal(needs.pane.querySelectorAll('code').find(c => c.textContent === status.webhookUrl) !== undefined, true);
   assert.equal(button(needs.pane, 'Replace…').textContent, 'Replace…');
   assert.ok(needs.pane.textContent.includes('Both saved.'));
@@ -83,7 +83,7 @@ test('Connect displays both successful steps and bot identity using the authenti
   assert.equal(call.method, 'POST'); assert.deepEqual(call.body, {});
   assert.equal(call.headers.Authorization, 'Bearer test-token');
   assert.equal(h.calls.filter(c => c.path === '/api/line/status').length, 2);
-  assert.equal(h.pane.querySelectorAll('.step')[1]!.textContent, '✓', 'step 2 is done after a good Connect');
+  assert.equal(h.pane.querySelectorAll('.step')[1]!.className, 'step done', 'step 2 is done after a good Connect');
   h.api.lineStatus = async () => { throw new Error('Status unavailable'); };
   button(h.pane, 'Connect').fire('click'); await flush();
   assert.match(result.textContent, /Token: ok.*Webhook set/);

@@ -17,6 +17,8 @@ test('an agent with its own emoji gets it on a neutral circle; the default and a
   t.after(installDom());
   const emoji = avatar({ icon: '🔎' }, 'sm') as unknown as TestNode;
   assert.equal(emoji.className, 'avatar sm'); assert.equal(emoji.textContent, '🔎'); assert.equal(emoji.attrs['aria-hidden'], 'true');
+  const built = avatar({ icon: 'i:receipt' }) as unknown as TestNode;
+  assert.equal(built.className, 'avatar sprite-icon'); assert.equal(built.textContent, '');
   for (const none of ['🤖', '', '  ']) {
     const bot = avatar({ icon: none }) as unknown as TestNode;
     assert.equal(bot.className, 'avatar bot');
