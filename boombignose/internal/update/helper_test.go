@@ -160,3 +160,34 @@ func mustJSON(v any) []byte {
 	b, _ := json.Marshal(v)
 	return b
 }
+
+func TestFullscreenRouteNeedsTheTokenAndAWindow(t *testing.T) {
+	helper := testHelper(t)
+	call := func(method, token, body string) (*http.Response, string) {
+		req, _ := http.NewRequest(method, helper.BaseURL+"/v1/fullscreen", strings.NewReader(body))
+		if token != "" {
+			req.Header.Set("Authorization", "Bearer "+token)
+		}
+		res, err := http.DefaultClient.Do(req)
+		if err != nil {
+			t.Fatal(err)
+		}
+		defer res.Body.Close()
+		out, _ := io.ReadAll(res.Body)
+		return res, strings.TrimSpace(string(out))
+	}
+	if res, _ := call(http.MethodGet, "", ""); res.StatusCode != http.StatusUnauthorized {
+		t.Fatalf("no token: %d", res.StatusCode)
+	}
+	if res, _ := call(http.MethodGet, helper.Token, ""); res.StatusCode != http.StatusNotFound {
+		t.Fatalf("no window: %d", res.StatusCode)
+	}
+	on := false
+	helper.SetWindow(Window{IsFullscreen: func() bool { return on }, SetFullscreen: func(v bool) { on = v }})
+	if _, out := call(http.MethodPost, helper.Token, `{"fullscreen":true}`); out != `{"fullscreen":true}` || !on {
+		t.Fatalf("set: %s on=%v", out, on)
+	}
+	if res, _ := call(http.MethodPost, helper.Token, `nope`); res.StatusCode != http.StatusBadRequest {
+		t.Fatalf("bad body: %d", res.StatusCode)
+	}
+}
