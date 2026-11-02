@@ -37,7 +37,7 @@ export default async function AccountantPackPage({ searchParams }: { searchParam
     <div className="space-y-6">
       <PageHeader
         title="ชุดข้อมูลนักบัญชี / Accountant pack"
-        description="ข้อมูลประกอบสำหรับนักบัญชีภายนอก ไม่ใช่การยื่นแบบ ภ.พ.30 / Support data for your external accountant. This does not file ภ.พ.30."
+        description="ข้อมูลประกอบสำหรับนักบัญชี ไม่ใช่การยื่นแบบ ภ.พ.30"
         breadcrumbs={[{ label: "Reports", href: "/reports" }]}
       />
       <FilingResponsibility />

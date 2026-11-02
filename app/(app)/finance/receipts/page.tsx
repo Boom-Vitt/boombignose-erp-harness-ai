@@ -32,7 +32,7 @@ export default async function ReceiptsPage({ searchParams }: { searchParams: Pro
   ]) : [[], [], [], [], [], null]
   const open = invoices.map(i => ({ ...i, outstanding: balances.find(b => b.invoice_id === i.id)?.outstanding_satang ?? 0 })).filter(i => i.outstanding > 0)
   const reversed = new Set(receipts.map(r => r.reversal_of))
-  return <div className="space-y-6"><PageHeader title="Customer receipts" description="One verified receipt, several invoice allocations, and reusable customer credit." /><p className="text-sm"><Link className="underline" href="/finance/bank">Bank lines</Link></p>
+  return <div className="space-y-6"><PageHeader title="Customer receipts" description="Verified receipts and allocations." /><p className="text-sm"><Link className="underline" href="/finance/bank">Bank lines</Link></p>
     <form className="flex gap-3 items-end" method="get"><label>Customer<select className="block rounded border bg-background p-2" name="client" defaultValue={client?.id ?? ""}><option value="" disabled>Select customer</option>{clients.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}</select></label><Button type="submit">View customer receipts</Button></form>
     {client ? <><p><Link className="underline" href={`/clients/${client.id}`}>{client.name}</Link> · Open balance {formatTHB(customer?.outstanding_satang ?? 0)} · <strong>Customer credit {formatTHB(customer?.credit_satang ?? 0)}</strong></p>
       {manage ? <div className="grid gap-6 md:grid-cols-2"><Card><CardHeader><CardTitle>Report receipt</CardTitle></CardHeader><CardContent><CustomerReceiptForm orgId={ctx.orgId} clientId={client.id} invoices={open} mode="report" /></CardContent></Card>

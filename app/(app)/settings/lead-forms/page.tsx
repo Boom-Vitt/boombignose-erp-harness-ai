@@ -28,7 +28,7 @@ export default async function LeadFormsPage({ searchParams }: { searchParams: Pr
 
   return (
     <div className="space-y-6">
-      <PageHeader title="Lead forms" description="Capture website enquiries directly into your Lead pipeline." />
+      <PageHeader title="Lead forms" description="Website enquiries into Leads." />
       <Link href="/settings" className="text-sm underline">Back to settings</Link>
       {error ? <p role="alert" className="text-destructive">{error === "invalid" ? "Enter a form name, success message, and a team member as the default owner." : "Unable to save this form. Please try again."}</p> : null}
       <Card>

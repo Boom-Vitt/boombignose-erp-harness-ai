@@ -24,9 +24,7 @@ export function PublicReferenceSetting({ enabled, canEdit }: { enabled: boolean;
     <Card>
       <CardHeader>
         <CardTitle className="text-base">Public document references</CardTitle>
-        <CardDescription>
-          Optional codes with a type prefix and a checksum, so a purchase order is not confused with a customer quote or a delivery. Off leaves document numbers, tax IDs, and links unchanged.
-        </CardDescription>
+        <CardDescription>Optional typed codes on document references. Off leaves numbers unchanged.</CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={submit} className="space-y-3">

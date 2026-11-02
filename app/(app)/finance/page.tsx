@@ -156,7 +156,7 @@ export default async function FinancePage({
     <div className="space-y-6">
       <PageHeader
         title="Finance"
-        description="การเงิน / Verified receipts, receivables, and recorded operating costs."
+        description="ใบเสร็จ ลูกหนี้ และต้นทุน / Receipts, receivables, costs"
       >
         {canReviewMonthEndClose(ctx.role) ? <Button variant="outline" render={<Link href="/reports#month-end-close" />}>ปิดงบเดือน / Month-end close</Button> : null}
         <Button variant="outline" render={<Link href="/finance/receipts" />}>Customer receipts</Button>

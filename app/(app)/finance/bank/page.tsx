@@ -63,7 +63,7 @@ export default async function BankPage({ searchParams }: { searchParams: Promise
   const windowLabel = bankWindowLabel(through.periodEnd)
 
   return <div className="space-y-6">
-    <PageHeader title="รายการธนาคาร / Bank lines" description="จับคู่รายการเดินบัญชีกับใบเสร็จที่ยืนยันแล้วหนึ่งใบ หรือบันทึกว่าทำไมรายการนี้ไม่ใช่ใบเสร็จลูกค้า การจับคู่ไม่ได้แก้ใบเสร็จ การบันทึกไม่ได้ลงบัญชี / Match a statement line to one verified receipt, or note why it is not a customer receipt. A match does not change the receipt. A note does not post a journal." breadcrumbs={[{ label: "Finance", href: "/finance" }]} />
+    <PageHeader title="รายการธนาคาร / Bank lines" description="จับคู่รายการกับใบเสร็จที่ยืนยันแล้ว การบันทึกไม่ได้ลงบัญชี / A note does not post a journal." breadcrumbs={[{ label: "Finance", href: "/finance" }]} />
     <div className="flex flex-wrap items-end gap-3">
       <form method="get" className="flex flex-wrap items-end gap-3">
         <label className="text-sm">ถึงเดือน / Through month

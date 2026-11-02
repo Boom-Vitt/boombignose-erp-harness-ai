@@ -51,9 +51,8 @@ export function MobileLinkCard({ initial }: { initial: Device[] }) {
   return (
     <div className="space-y-4">
       <p className="text-muted-foreground text-sm">
-        เชื่อมโทรศัพท์ผ่าน Tailscale เท่านั้น / Your phone connects over Tailscale only. On this computer run{" "}
-        <code className="bg-muted rounded px-1">tailscale serve --bg 3100</code> once, then scan the code with the
-        BoomBigNose app. The code works once and expires in 5 minutes.
+        เชื่อมผ่าน Tailscale เท่านั้น รัน{" "}
+        <code className="bg-muted rounded px-1">tailscale serve --bg 3100</code> หนึ่งครั้ง แล้วสแกน QR (ใช้ได้ครั้งเดียว หมดอายุใน 5 นาที)
       </p>
       <div className="flex flex-wrap items-end gap-2">
         <label className="flex min-w-64 flex-1 flex-col gap-1 text-sm">

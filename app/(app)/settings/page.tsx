@@ -99,7 +99,7 @@ export default async function SettingsPage() {
     <div className="space-y-6">
       <PageHeader
         title="Settings"
-        description="Workspace finances and your team. Cash here drives the dashboard."
+        description="Workspace and team."
       />
       <PersonalAiCallout
         installed={localModels.rows.filter((r) => r.installed).length}
@@ -142,11 +142,7 @@ export default async function SettingsPage() {
         <Card>
           <CardHeader>
             <CardTitle className="text-base">Workspace</CardTitle>
-            <CardDescription>
-              {canEdit
-                ? "Update your workspace name and finances."
-                : "Financial settings (view only)."}
-            </CardDescription>
+            <CardDescription>{canEdit ? "Name and finances." : "View only."}</CardDescription>
           </CardHeader>
           <CardContent>
             {canEdit ? (
@@ -189,14 +185,14 @@ export default async function SettingsPage() {
         <Card>
           <CardHeader>
             <CardTitle className="text-base">Team</CardTitle>
-            <CardDescription>People with access to this workspace.</CardDescription>
+            <CardDescription>Who has access.</CardDescription>
           </CardHeader>
           <CardContent>
             {team.length === 0 ? (
               <EmptyState
                 icon={Users}
                 title="No team members"
-                description="Invitations will appear here once teammates join."
+                description="No invitations yet."
                 className="border-0 p-6"
               />
             ) : (
@@ -242,7 +238,7 @@ export default async function SettingsPage() {
       <Card id="local-models" className="bbn-deck-panel border-0">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-base"><Cpu className="text-primary size-4" aria-hidden />โมเดล AI บนเครื่องนี้ / Local AI models</CardTitle>
-          <CardDescription>ดาวน์โหลดในแอปนี้ ไม่ต้องเปิดโปรแกรม AI อื่น / Download inside this app. No separate AI program.</CardDescription>
+          <CardDescription>ดาวน์โหลดและใช้ในแอปนี้</CardDescription>
         </CardHeader>
         <CardContent>
           <LocalModelsCard initial={localModels} canInstall={canEdit} asr={asr} />
@@ -258,7 +254,7 @@ export default async function SettingsPage() {
       {canEdit ? <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-base"><Smartphone className="text-primary size-4" aria-hidden />เชื่อมมือถือ / Link mobile</CardTitle>
-          <CardDescription>Scan a one-time QR with the BoomBigNose iOS app. Devices can be revoked here.</CardDescription>
+          <CardDescription>สแกน QR ครั้งเดียวจากแอป iOS</CardDescription>
         </CardHeader>
         <CardContent><MobileLinkCard initial={mobileDevices} /></CardContent>
       </Card> : null}
@@ -266,7 +262,7 @@ export default async function SettingsPage() {
       {canEdit ? <Card>
         <CardHeader>
           <CardTitle className="text-base">Local backup</CardTitle>
-          <CardDescription>One folder on this computer. The checksum is checked before a restore.</CardDescription>
+          <CardDescription>โฟลเดอร์บนเครื่องนี้</CardDescription>
         </CardHeader>
         <CardContent><LocalBackupCard /></CardContent>
       </Card> : null}
@@ -275,14 +271,14 @@ export default async function SettingsPage() {
         <Card className="bbn-deck-panel border-0">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base"><Download className="text-primary size-4" aria-hidden />อัปเดตแอป / App update</CardTitle>
-            <CardDescription>ตรวจรุ่นที่เผยแพร่เมื่อกด บน macOS Apple Silicon ติดตั้งจากในแอปได้ / Check the published release when you ask. macOS Apple Silicon can install it here.</CardDescription>
+            <CardDescription>ตรวจรุ่นใหม่เมื่อกด</CardDescription>
           </CardHeader>
           <CardContent><UpdateCheckButton canUpdate={canEdit} /></CardContent>
         </Card>
         <Card>
           <CardHeader>
             <CardTitle className="text-base">Start logs</CardTitle>
-            <CardDescription>Local Postgres, auth, and API logs from this computer.</CardDescription>
+            <CardDescription>บันทึกการเริ่มระบบบนเครื่องนี้</CardDescription>
           </CardHeader>
           <CardContent><StartLogViewer /></CardContent>
         </Card>

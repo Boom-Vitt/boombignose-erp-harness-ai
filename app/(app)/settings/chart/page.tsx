@@ -16,7 +16,7 @@ export default async function ChartPage() {
   if (error) throw new Error("Chart of accounts unavailable")
   const accounts = data ?? []
   return <div className="space-y-6">
-    <PageHeader title="ผังบัญชี / Chart of accounts" description="A reference list for a Thai SME. A draft journal can post balanced lines into a closed period." breadcrumbs={[{ label: "Settings", href: "/settings" }]} />
+    <PageHeader title="ผังบัญชี / Chart of accounts" description="ผังบัญชีอ้างอิงสำหรับ SME ไทย" breadcrumbs={[{ label: "Settings", href: "/settings" }]} />
     <Card className="max-w-3xl"><CardContent className="space-y-4">
       <p className="text-sm text-muted-foreground">Adding the list inserts codes that are missing. It does not rename or delete a code you already saved. A balanced draft journal can use these codes. Those lines are not signed statutory books and not a tax filing.</p>
       {can(ctx.role, "settings:manage") ? <InstallChartButton /> : <p className="text-sm">Owners and admins can add the missing codes.</p>}

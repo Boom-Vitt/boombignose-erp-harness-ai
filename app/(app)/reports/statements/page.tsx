@@ -50,7 +50,7 @@ export default async function StatementsPage({ searchParams }: { searchParams: P
   const payableAging = aging(bounds.to, statementCosts.filter((row) => row.incurredOn <= bounds.to).map((row) => ({ dueDate: row.dueDate, amountSatang: row.payableSatang })))
 
   return <div className="space-y-6">
-    <PageHeader title="งบการเงินประกอบ / Support reports" description="ตัวเลขปฏิบัติการของหนึ่งเดือน ไม่ใช่งบการเงินตามมาตรฐานการบัญชี ไม่ใช่งบที่ปิดแล้ว และไม่ใช่การยื่นต่อกรมสรรพากร / Operational figures for one month. Not a TAS statement, a closed ledger, or a Revenue Department filing." breadcrumbs={[{ label: "Reports", href: "/reports" }]} />
+    <PageHeader title="งบการเงินประกอบ / Support reports" description="ตัวเลขปฏิบัติการรายเดือน ไม่ใช่งบการเงินและไม่ใช่การยื่นภาษี / Monthly figures, not a filing." breadcrumbs={[{ label: "Reports", href: "/reports" }]} />
     <form className="flex items-end gap-3">
       <label className="text-sm">เดือน / Month <input className="mt-1 block h-9 rounded-md border bg-background px-2" type="month" name="month" defaultValue={month} /></label>
       <Button type="submit" variant="outline">แสดง / Show</Button>
