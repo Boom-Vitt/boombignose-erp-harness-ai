@@ -79,7 +79,7 @@ export function ModeTip() {
         ) : null}
         <Link href="/warehouse" prefetch={false} className="bbn-chip no-underline" data-testid="open-campus-3d">
           <Boxes className="size-3" aria-hidden />
-          เปิด Campus 3D / Open Campus 3D
+          เปิดองค์กร / Open Organization
         </Link>
       </span>
     </p>

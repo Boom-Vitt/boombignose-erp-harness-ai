@@ -12,8 +12,8 @@ export const MODE_COPY: Record<Mode, { th: string; en: string; tipTh: string; ti
     first: ["/dashboard", "/quotes", "/purchases", "/inventory", "/finance", "/warehouse"],
   },
   startup: {
-    th: "สตาร์ทอัป",
-    en: "Startup",
+    th: "บริษัท",
+    en: "Company",
     tipTh: "เริ่มจากดีล โปรเจกต์ และรายงานการเติบโต",
     tipEn: "Start with deals, projects and growth reports.",
     first: ["/dashboard", "/deals", "/projects", "/reports", "/automation", "/warehouse"],
