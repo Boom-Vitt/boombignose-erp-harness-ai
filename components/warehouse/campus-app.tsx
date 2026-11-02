@@ -286,16 +286,18 @@ export function CampusApp() {
             <dl className="grid shrink-0 grid-cols-2 divide-x divide-white/10 border-b border-white/10 sm:grid-cols-4 xl:border-r xl:border-b-0">
               <Cell label="Stock on hand" value={snap.stock.toLocaleString()} unit="pallets" delta={snap.stockDelta} sub={`${Math.round((snap.stock / snap.stockCap) * 100)}% of vault`} />
               <Cell label="Freight at gates" value={String(docked.length)} unit="/2" sub={`${inbound.length} inbound en route`} />
-              <Cell label="On-time" value="96.6" unit="%" delta={0.4} sub="last 30 days" className="hidden sm:block" />
-              <Cell
-                label="Team at desks"
-                value={`${snap.people.filter((p) => p.presence === "desk").length}`}
-                unit={`/${snap.people.length}`}
-                sub={snap.zones.find((z) => z.id === "meeting")?.status ?? "Campus"}
-                className="hidden sm:block"
-              />
+              <Cell label="On-time" value="—" sub="no shipments yet" className="hidden sm:block" />
+              <Cell label="Districts" value="Ready" sub="no activity yet" className="hidden sm:block" />
             </dl>
-            <Shipment s={snap.shipment} sim={snap.sim} onOpen={() => select(snap.shipment.shuttleId)} />
+            {snap.shipment ? (
+              <Shipment s={snap.shipment} sim={snap.sim} onOpen={() => select(snap.shipment!.shuttleId)} />
+            ) : (
+              <div className="min-w-0 flex-1 px-4 py-3">
+                <h2 className="font-mono text-[10px] tracking-[0.16em] text-slate-400 uppercase">Shipment</h2>
+                <p className="mt-3 text-sm text-slate-300">No active shipment</p>
+                <p className="mt-0.5 text-[11px] text-slate-500">Confirmed orders will appear here.</p>
+              </div>
+            )}
           </div>
         </section>
       )}

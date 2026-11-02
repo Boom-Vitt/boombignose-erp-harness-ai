@@ -27,7 +27,7 @@ export interface ZoneInfo {
   links: [string, string][]
 }
 
-export type ShuttleState = "En route" | "Arriving" | "Loading" | "Unloading" | "Departing" | "Departed"
+export type ShuttleState = "En route" | "Arriving" | "Loading" | "Unloading" | "Departing" | "Departed" | "Idle"
 
 export interface StackerInfo {
   id: string
@@ -75,7 +75,8 @@ export interface Snapshot {
   people: PersonInfo[]
   stackers: StackerInfo[]
   shuttles: ShuttleInfo[]
-  shipment: ShipmentInfo
+  /** null while there is no active shipment. */
+  shipment: ShipmentInfo | null
   /** Simulated seconds since midnight. */
   sim: number
   stock: number

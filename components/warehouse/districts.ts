@@ -74,6 +74,9 @@ interface Person {
   speed: number
 }
 
+/** No ERP feed is wired into the sim yet: with LIVE off the crew stays seated and every counter reads zero. */
+const LIVE = false
+
 const MEETING_TITLES = ["Pipeline review", "Sprint planning", "Cash forecast", "Client kickoff"]
 
 export function buildDistricts(ctx: BuildCtx, simSpeed: number) {
@@ -429,18 +432,18 @@ export function buildDistricts(ctx: BuildCtx, simSpeed: number) {
 
   // ------------------------------------------------------------ simulated activity counters
   const stats = {
-    openDeals: 14,
-    pipeline: 4_820_000,
-    calls: 9,
-    tasks: 23,
-    hours: 41.5,
-    visitors: 6,
-    leads: 3,
-    autoRuns: 1284,
-    revenue: 1_830_000,
-    invoicesDue: 7,
-    paidToday: 214_000,
-    meetingsToday: 2,
+    openDeals: 0,
+    pipeline: 0,
+    calls: 0,
+    tasks: 0,
+    hours: 0,
+    visitors: 0,
+    leads: 0,
+    autoRuns: 0,
+    revenue: 0,
+    invoicesDue: 0,
+    paidToday: 0,
+    meetingsToday: 0,
     lastCron: 0,
   }
   let meetingTitle = ""
@@ -472,7 +475,7 @@ export function buildDistricts(ctx: BuildCtx, simSpeed: number) {
           p.info.presence = a.presence
           if (a === p.home) p.info.tasks += rand() > 0.6 ? 1 : 0
         }
-      } else {
+      } else if (LIVE) {
         p.timer -= dt
         if (p.timer <= 0) {
           const next = p.queue.shift()
@@ -498,7 +501,7 @@ export function buildDistricts(ctx: BuildCtx, simSpeed: number) {
     }
 
     // meetings
-    if (!meetingTitle && sim > nextMeeting) {
+    if (LIVE && !meetingTitle && sim > nextMeeting) {
       const pool = people.filter((p) => p.info.presence !== "meeting" && p.queue.length === 0)
       const crew = pool.sort(() => rand() - 0.5).slice(0, 5)
       if (crew.length >= 3) {
@@ -517,7 +520,7 @@ export function buildDistricts(ctx: BuildCtx, simSpeed: number) {
     if (tableMat) tableMat.opacity = THREE.MathUtils.lerp(tableMat.opacity, meetingTitle ? 0.75 : 0.18, 1 - Math.exp(-dt * 3))
 
     statT += dt
-    if (statT > 1) {
+    if (LIVE && statT > 1) {
       statT = 0
       if (rand() > 0.7) stats.openDeals += rand() > 0.5 ? 1 : -1
       stats.pipeline += Math.round((rand() - 0.4) * 40_000)
@@ -551,16 +554,16 @@ export function buildDistricts(ctx: BuildCtx, simSpeed: number) {
     const who = (zone: string) => people.find((p) => p.home.zone === zone)!.info.status
     const rows: Record<string, [string, string][]> = {
       sales: [["Open deals", String(stats.openDeals)], ["Pipeline", thb(stats.pipeline)], ["Calls today", String(stats.calls)], desks],
-      studio: [["Active projects", "6"], ["Tasks done today", String(stats.tasks)], ["Hours logged", stats.hours.toFixed(1)], desks],
+      studio: [["Active projects", "0"], ["Tasks done today", String(stats.tasks)], ["Hours logged", stats.hours.toFixed(1)], desks],
       reception: [["Visitors today", String(stats.visitors)], ["New intake leads", String(stats.leads)], ["Receptionist", who("reception")]],
-      servers: [["Automations run", Math.floor(stats.autoRuns).toLocaleString()], ["Webhooks", "Healthy"], ["Uptime", "99.98%"], ["Last cron", stats.lastCron ? hhmm(stats.lastCron) : "—"]],
-      meeting: [["Now", meetingTitle || "Free"], ["Seated", String(seated)], ["Meetings today", String(stats.meetingsToday)], ["Next", meetingTitle ? "After this one" : hhmm(nextMeeting)]],
-      founder: [["Revenue MTD", thb(stats.revenue)], ["Pipeline", thb(stats.pipeline)], ["Cash runway", "14 mo"], ["Founder", who("founder")]],
+      servers: [["Automations run", Math.floor(stats.autoRuns).toLocaleString()], ["Webhooks", "—"], ["Uptime", "—"], ["Last cron", stats.lastCron ? hhmm(stats.lastCron) : "—"]],
+      meeting: [["Now", meetingTitle || "Free"], ["Seated", String(seated)], ["Meetings today", String(stats.meetingsToday)], ["Next", meetingTitle ? "After this one" : LIVE ? hhmm(nextMeeting) : "—"]],
+      founder: [["Revenue MTD", thb(stats.revenue)], ["Pipeline", thb(stats.pipeline)], ["Cash runway", "—"], ["Founder", who("founder")]],
       finance: [["Invoices due", String(stats.invoicesDue)], ["Paid today", thb(stats.paidToday)], ["Revenue MTD", thb(stats.revenue)], desks],
     }
     const status =
-      z.id === "meeting" ? (meetingTitle ? `In use · ${meetingTitle}` : "Available") : z.id === "servers" ? "All systems normal" : z.id === "founder" ? "Dashboard live" : `${desks[1]} at desks`
-    return { id: z.id, kind: "zone", index, name: z.name, sub: z.sub, status, stats: rows[z.id], links: z.links }
+      z.id === "meeting" ? (meetingTitle ? `In use · ${meetingTitle}` : "Available") : LIVE ? (z.id === "servers" ? "All systems normal" : z.id === "founder" ? "Dashboard live" : `${desks[1]} at desks`) : "Ready"
+    return { id: z.id, kind: "zone", index, name: z.name, sub: z.sub, status, stats: LIVE ? rows[z.id] : rows[z.id].filter((r) => r !== desks), links: z.links }
   }
 
   // ------------------------------------------------------------ highlight + mode starters
