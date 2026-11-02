@@ -77,6 +77,7 @@ describe("renderDocumentHtml", () => {
     const html = renderDocumentHtml({
       ...doc,
       kind: "Tax Invoice / ใบกำกับภาษี",
+      taxInvoice: { docType: "TX", branchCode: "00000", copyLabel: "ต้นฉบับ" },
       sellerTaxId: "1234567890123",
       amountDueSatang: 104000,
     })

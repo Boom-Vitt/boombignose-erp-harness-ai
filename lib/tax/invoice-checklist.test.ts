@@ -13,6 +13,10 @@ describe("taxInvoiceChecklist", () => {
     expect(items.find(item => item.id === "statutory-name")?.detail).toContain("operational")
     expect(items.find(item => item.id === "registration")).toBeUndefined()
     expect(items.find(item => item.id === "buyer-name")?.state).toBe("per_document")
+    expect(items.find(item => item.id === "series")?.state).toBe("per_document")
+    expect(items.find(item => item.id === "branch-code")?.detail).toContain("Required to issue TX or ABB")
+    expect(items.find(item => item.id === "original-copy")?.state).toBe("gap")
+    expect(items.map(item => item.detail).join(" ")).not.toMatch(/filed successfully|ยื่นแบบสำเร็จ/)
   })
 
   it("reports a missing tax ID and an unregistered profile", () => {

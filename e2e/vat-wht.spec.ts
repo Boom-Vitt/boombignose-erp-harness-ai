@@ -79,7 +79,7 @@ test("VAT-registered invoice with WHT 3% freezes and presents the same totals", 
     const pdf = await page.request.get(`${invoiceUrl}/pdf`)
     expect(pdf.ok()).toBe(true)
     const html = await pdf.text()
-    for (const value of ["Tax Invoice / ใบกำกับภาษี", "VAT 7%", "WHT 3%", "1,040.00", "Head office", "Branch 001", "1234567890123", "9876543210123", "Consulting scope", "Pay in 30 days"]) expect(html).toContain(value)
+    for (const value of ["<h1>Invoice</h1>", "VAT 7%", "WHT 3%", "1,040.00", "Head office", "Branch 001", "1234567890123", "9876543210123", "Consulting scope", "Pay in 30 days"]) expect(html).toContain(value)
     // The client portal is Pro-only; community renders notFound() there.
     if (!community) {
       await page.goto(`/portal/${token}`)

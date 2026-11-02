@@ -55,6 +55,8 @@ export type PrintableDocument = {
   outstandingSatang?: Satang
   creditedSatang?: Satang
   notes?: string | null
+  /** Set only for an issued TX / ABB snapshot. Copy label is the frozen original label, or "สำเนา" for a reprint. */
+  taxInvoice?: { docType: "TX" | "ABB"; branchCode: string; copyLabel: string }
 }
 
 /** Escape the five HTML-significant characters. */
@@ -77,7 +79,7 @@ function displayDate(value: string | null | undefined): string | null | undefine
 }
 
 function promptPayBlock(doc: PrintableDocument): string {
-  if (doc.kind !== "Invoice" && doc.kind !== "Tax Invoice / ใบกำกับภาษี") return ""
+  if (doc.kind !== "Invoice" && !doc.taxInvoice) return ""
   const amount = bahtFromSatang(doc.amountDueSatang ?? doc.totalSatang)
   const payload = amount && doc.sellerTaxId ? promptPayPayload({ taxId: doc.sellerTaxId }, amount) : null
   if (!payload) return ""
@@ -126,6 +128,7 @@ export function renderDocumentHtml(doc: PrintableDocument): string {
   header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 32px; }
   h1 { font-size: 28px; margin: 0 0 4px; letter-spacing: -0.02em; }
   .org { font-size: 15px; font-weight: 600; }
+  .status.copy { margin-top: 6px; text-align: center; }
   .status { text-transform: uppercase; font-size: 11px; font-weight: 700; letter-spacing: 0.05em; color: #3f3f46; border: 1px solid #d4d4d8; border-radius: 999px; padding: 4px 10px; }
   .meta { margin-bottom: 24px; font-size: 13px; }
   .meta-row { display: flex; gap: 12px; padding: 2px 0; }
@@ -153,13 +156,17 @@ export function renderDocumentHtml(doc: PrintableDocument): string {
         <h1>${escapeHtml(doc.kind)}</h1>
         <div class="org">${escapeHtml(doc.orgName)}</div>
       </div>
-      <div class="status">${escapeHtml(doc.status)}</div>
+      <div>
+        <div class="status">${escapeHtml(doc.status)}</div>
+        ${doc.taxInvoice ? `<div class="status copy">${escapeHtml(doc.taxInvoice.copyLabel)}</div>` : ""}
+      </div>
     </header>
 
     <div class="meta">
       ${metaRow("ผู้ขาย / Seller address", doc.sellerAddress)}
       ${metaRow("เลขผู้เสียภาษีผู้ขาย / Seller tax ID", doc.sellerTaxId)}
       ${metaRow("Seller branch", doc.sellerBranch)}
+      ${metaRow("รหัสสาขา / Branch code", doc.taxInvoice?.branchCode)}
       ${metaRow("Buyer branch", doc.buyerBranch)}
       ${metaRow("เลขที่ / Number", doc.number)}
       ${metaRow("รหัสอ้างอิงสาธารณะ / Public reference", doc.publicReference)}
@@ -207,7 +214,9 @@ export function renderDocumentHtml(doc: PrintableDocument): string {
 
     ${promptPayBlock(doc)}
 
-    <footer>เอกสารเพื่อการดำเนินงาน · Operational document, not a legal tax invoice. VAT and withholding treatment require accountant review.</footer>
+    <footer>${doc.taxInvoice
+      ? "ออกจาก BoomBigNose · ไม่ใช่ e-Tax Invoice และไม่ใช่การยื่นต่อกรมสรรพากร · Issued from BoomBigNose. Not an e-Tax Invoice and not filed with the Revenue Department. VAT and withholding treatment require accountant review."
+      : "เอกสารเพื่อการดำเนินงาน · Operational document, not a legal tax invoice. VAT and withholding treatment require accountant review."}</footer>
   </div>
 </body>
 </html>`

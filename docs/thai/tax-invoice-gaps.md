@@ -1,34 +1,47 @@
-# Statutory tax invoice — what this app does not do
+# Statutory tax invoice — what this app does and does not do
 
-Operational invoices can show a seller, a buyer, lines, VAT, and withholding. That is a working document. It is not a statutory tax invoice (ใบกำกับภาษี), a tax filing, or an e-Tax Invoice. The close roadmap, including who files, is `docs/boombignose/LEGAL_CLOSE.md`.
+An owner or admin can issue an invoice as a full tax invoice (**TX**) or an abbreviated tax invoice (**ABB**). Those documents carry their own number series and frozen tax fields. They are still produced inside this app only. Nothing is sent to the Revenue Department, there is no e-Tax Invoice, and the app does not file anything. The close roadmap, including who files, is `docs/boombignose/LEGAL_CLOSE.md`.
 
-## Already stored when someone fills them
+A plain issue (**INV**) is still an operational invoice, even when the seller is VAT-registered. Its PDF says "Invoice", not ใบกำกับภาษี.
 
-- Seller legal name, address, 13-digit tax ID, and branch text
-- Buyer name, address, and tax ID, copied onto each issued invoice
-- Document number and issue date (Gregorian date plus the Buddhist-era label)
-- Lines with quantity and price
-- VAT when the business profile is registered, in THB
-- Withholding as a document calculation
+## What TX and ABB do
 
-## Optional template fields
+| Item | TX | ABB |
+| --- | --- | --- |
+| Number | `TX-YYYY-000001`, own series | `ABB-YYYY-000001`, own series |
+| Buyer name | Required | Required |
+| Buyer address | Required | Not printed, not frozen |
+| Buyer tax ID | Frozen when present, must be 13 digits | Not printed, not frozen |
+| Seller VAT registration and 13-digit tax ID | Required | Required |
+| Branch code (5 digits, `00000` head office) | Required, frozen | Required, frozen |
+| At least one VAT line | Required | Required |
+| Finance lock | Refused on a locked date | Refused on a locked date |
+| Original label | Frozen on issue (`ต้นฉบับ` unless the profile label says otherwise) | Same |
 
-These can be saved on the business profile. They are not copied into the issued invoice snapshot. Saving them does not make the document statutory.
-
-| Field | Limit |
-| --- | --- |
-| Seller phone | 40 characters |
-| Branch code | empty, or 5 digits |
-| Original/copy label | 40 characters, for example ต้นฉบับ or สำเนา |
+- **Gap-free.** The counter row moves in the same database transaction that writes the snapshot. A refusal (non-VAT seller, missing branch code, locked date, missing buyer address, a failed command) rolls it back, so the next issue takes the next number. Concurrent issues take consecutive numbers because the counter row is locked until commit. An issued number is never deleted or reused. A cancelled or credited document keeps its number.
+- **Snapshot.** The issued snapshot freezes seller, buyer, lines, totals, doc type, branch code, and the original label. It stays immutable.
+- **PDF.** `/finance/invoices/[id]/pdf` prints the frozen document. Add `?copy=1` to print a reprint labelled `สำเนา`. The footer says it is not an e-Tax Invoice and not filed.
+- **Retry.** The same key and doc type returns the same snapshot. The same key with the other doc type is an idempotency conflict.
 
 ## Still missing for a statutory tax invoice
 
-- The product will not call the document a statutory ใบกำกับภาษี
 - No submission to the Revenue Department and no e-Tax Invoice
-- No tax-invoice number series separate from the operational INV series
 - No authorized signature as a legal control
 - No cash-versus-credit classification
-- An original/copy label is not a legal control of which copy is the original
-- A profile that is not VAT-registered does not issue a tax invoice
+- Original versus copy is a printed label. The app does not count prints or control who holds the original.
+- No abbreviated-invoice eligibility check (for example retail-to-public). The issuer chooses ABB.
+- No tax-invoice cancellation or replacement flow. Corrections use credit notes.
+- A profile that is not VAT-registered cannot issue TX or ABB
+- Whether a document meets the Revenue Code for your business is an accountant's call. This list is the product boundary, not tax advice.
 
-Review any real filing with an accountant. This list is the product boundary, not tax advice.
+## Profile fields
+
+Saved on the business profile (`/finance/business-profile`):
+
+| Field | Limit | Used by |
+| --- | --- | --- |
+| Seller phone | 40 characters | Not printed on TX or ABB |
+| Branch code | empty, or 5 digits | Required to issue TX or ABB |
+| Original/copy label | 40 characters | Frozen as the original label on TX and ABB |
+
+Saving these fields issues nothing.

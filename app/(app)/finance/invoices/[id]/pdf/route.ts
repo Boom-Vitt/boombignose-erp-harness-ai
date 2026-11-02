@@ -24,7 +24,7 @@ import {
  * empty. The invoice amount_satang is collectible after WHT; total_satang is gross.
  */
 export async function GET(
-  _request: Request,
+  request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params
@@ -108,7 +108,7 @@ export async function GET(
   if (invoice.issued_snapshot_id) {
     const snapshotRes = await supabase.from("invoice_snapshots").select("snapshot").eq("org_id", ctx.orgId).eq("invoice_id", id).eq("id", invoice.issued_snapshot_id).maybeSingle()
     if (snapshotRes.error || !snapshotRes.data) return new Response("Issued document unavailable", { status: 503 })
-    try { doc = invoiceSnapshotDocument(snapshotRes.data.snapshot, deriveInvoiceStatus({ ...invoice, credited_satang: credited }, paid, todayISO()), paid, credited) }
+    try { doc = invoiceSnapshotDocument(snapshotRes.data.snapshot, deriveInvoiceStatus({ ...invoice, credited_satang: credited }, paid, todayISO()), paid, credited, { copy: new URL(request.url).searchParams.get("copy") === "1" }) }
     catch { return new Response("Issued document snapshot could not be validated", { status: 503 }) }
   }
   // Sections freeze with the issued lines, so they place among the snapshot's lines too.

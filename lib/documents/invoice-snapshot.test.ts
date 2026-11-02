@@ -48,7 +48,8 @@ it("prints VAT-registered issued totals, tax IDs, branches and the collectible b
     lines: [{ ...snapshot.lines[0], amountSatang: 100000, unitPriceSatang: 100000, taxRateBps: 700 }],
   }
   const doc = invoiceSnapshotDocument(issued, "partially_paid", 4000)
-  expect(doc.kind).toBe("Tax Invoice / ใบกำกับภาษี")
+  expect(doc.kind).toBe("Invoice") // VAT registration alone never makes an operational invoice a tax invoice
+  expect(doc.taxInvoice).toBeUndefined()
   expect(doc.outstandingSatang).toBe(100000)
   const html = renderDocumentHtml(doc)
   for (const text of ["VAT 7%", "WHT 3%", "Amount due", "Head office", "Branch 001", "1234567890123", "9876543210123", "1,040.00"]) expect(html).toContain(text)
@@ -103,4 +104,39 @@ it.each([
   { ...legacySnapshot, document: { ...legacySnapshot.document, vatByRate: {} } },
 ])("rejects unsafe or malformed adopted legacy money and tax breakdowns (%#)", (value) => {
   expect(() => invoiceSnapshotDocument(value, "sent", 0)).toThrow()
+})
+
+const taxIssued = {
+  ...snapshot,
+  seller: { ...snapshot.seller, vatRegistered: true, taxId: "1234567890123", branchLabel: "Head office" },
+  buyer: { ...snapshot.buyer, taxId: "9876543210123", address: "1 Buyer Road" },
+  document: { ...snapshot.document, number: "TX-2026-000001", subtotalSatang: 100000, discountSatang: 0, totalSatang: 107000, vatSatang: 7000, amountDueSatang: 107000 },
+  lines: [{ ...snapshot.lines[0], amountSatang: 100000, unitPriceSatang: 100000, taxRateBps: 700 }],
+  taxInvoice: { docType: "TX", branchCode: "00000", copyLabel: "ต้นฉบับ" },
+}
+
+it("prints a TX snapshot as a tax invoice with frozen branch code and original label, and a reprint as copy", () => {
+  const doc = invoiceSnapshotDocument(taxIssued, "sent", 0)
+  expect(doc.kind).toBe("Tax Invoice / ใบกำกับภาษี")
+  const html = renderDocumentHtml(doc)
+  for (const text of ["TX-2026-000001", "00000", "ต้นฉบับ", "9876543210123", "1 Buyer Road", "Not an e-Tax Invoice"]) expect(html).toContain(text)
+  expect(html).not.toContain("Operational document, not a legal tax invoice")
+  const copy = renderDocumentHtml(invoiceSnapshotDocument(taxIssued, "sent", 0, 0, { copy: true }))
+  expect(copy).toContain("สำเนา")
+  expect(copy).not.toContain("ต้นฉบับ")
+})
+
+it("prints an ABB snapshot as abbreviated and never prints the buyer tax ID or address, even if stored", () => {
+  const abb = { ...taxIssued, document: { ...taxIssued.document, number: "ABB-2026-000001" }, taxInvoice: { ...taxIssued.taxInvoice, docType: "ABB" } }
+  const doc = invoiceSnapshotDocument(abb, "sent", 0)
+  expect(doc.kind).toBe("Abbreviated Tax Invoice / ใบกำกับภาษีอย่างย่อ")
+  const html = renderDocumentHtml(doc)
+  expect(html).toContain("ABB-2026-000001")
+  expect(html).not.toContain("9876543210123")
+  expect(html).not.toContain("1 Buyer Road")
+})
+
+it("rejects a malformed tax-invoice block", () => {
+  for (const taxInvoice of [{ docType: "INV", branchCode: "00000", copyLabel: "x" }, { docType: "TX", branchCode: "12", copyLabel: "x" }, { docType: "TX", branchCode: "00000", copyLabel: "" }])
+    expect(() => invoiceSnapshotDocument({ ...taxIssued, taxInvoice }, "sent", 0)).toThrow()
 })

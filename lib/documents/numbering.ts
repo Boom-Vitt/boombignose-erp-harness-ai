@@ -46,6 +46,10 @@ export function invoiceDisplayNumber(invoice: { id: string; number: string; issu
   return invoice.issued_snapshot_id ? invoice.number : `DRAFT-${invoice.id.slice(0, 8)}`
 }
 
+/** INV (operational), TX (full tax invoice) and ABB (abbreviated tax invoice) numbers are all assigned only by issuing. */
 export function isIssuedInvoiceNumber(number: string): boolean {
-  return /^INV-[0-9]{4}-[0-9]+$/i.test(number.trim())
+  return /^(INV|TX|ABB)-[0-9]{4}-[0-9]+$/i.test(number.trim())
 }
+
+export const TAX_DOC_TYPES = ["TX", "ABB"] as const
+export type TaxDocType = (typeof TAX_DOC_TYPES)[number]

@@ -6,7 +6,7 @@ vi.mock("@/lib/supabase/server", () => ({ createClient: async () => ({ rpc, from
 vi.mock("@/lib/audit", () => ({ writeAudit: vi.fn() }))
 vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }))
 vi.mock("next/navigation", () => ({ redirect: vi.fn() }))
-import { adoptLegacyInvoice, issueInvoice, updateBusinessProfile, updateInvoiceWithholding } from "@/app/(app)/finance/actions"
+import { adoptLegacyInvoice, issueInvoice, issueTaxInvoice, updateBusinessProfile, updateInvoiceWithholding } from "@/app/(app)/finance/actions"
 const key = "00000000-0000-4000-8000-000000000002"
 const invoiceId = "00000000-0000-0000-0000-000000000001"
 beforeEach(() => { vi.clearAllMocks(); gate.mockImplementation(() => {}); rpc.mockResolvedValue({ data: "snapshot", error: null }) })
@@ -70,4 +70,18 @@ it("withholding reaches a draft invoice whose seeded id lacks RFC 9562 version b
 it.each(["registered", "not_registered", "unknown"] as const)("profile sends explicit %s status", async taxStatus => {
   expect(await updateBusinessProfile({ expectedOrgId: orgId, legalName: "Seller", address: "Address", taxId: "1234567890123", taxStatus })).toEqual({})
   expect(rpc).toHaveBeenCalledWith("update_tax_business_profile", expect.objectContaining({ p_tax_status: taxStatus }))
+})
+
+it.each(["TX", "ABB"] as const)("tax invoice issuance sends the %s doc type with the exact version and key", async docType => {
+  expect(await issueTaxInvoice({ invoiceId, expectedVersion: 4, key, docType })).toEqual({})
+  expect(rpc).toHaveBeenCalledExactlyOnceWith("issue_tax_invoice", { p_org_id: orgId, p_invoice_id: invoiceId, p_expected_version: 4, p_key: key, p_doc_type: docType })
+})
+it("tax invoice issuance rejects unknown types and nonstaff before dispatch, and surfaces refusals", async () => {
+  expect((await issueTaxInvoice({ invoiceId, expectedVersion: 4, key, docType: "INV" as never })).error).toBeTruthy()
+  gate.mockImplementation(() => { throw new Error("denied") })
+  expect((await issueTaxInvoice({ invoiceId, expectedVersion: 4, key, docType: "TX" })).error).toBeTruthy()
+  expect(rpc).not.toHaveBeenCalled()
+  gate.mockImplementation(() => {})
+  rpc.mockResolvedValue({ data: null, error: { message: "VAT registration and a 13-digit seller tax ID required for a tax invoice" } })
+  expect((await issueTaxInvoice({ invoiceId, expectedVersion: 4, key, docType: "TX" })).error).toContain("VAT registration")
 })
