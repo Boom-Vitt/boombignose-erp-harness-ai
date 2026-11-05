@@ -1,14 +1,17 @@
 #!/bin/sh
-# Build an ad-hoc-signed disk image of the BoomBigNose window and dist/bundle.
-# bundle/ is copied to BoomBigNose.app/Contents/MacOS/bundle, beside the
-# executable, because the window reads Dir(exe)/bundle. bundle/ is copied in
-# FIRST, then nested Mach-Os and the main binary are ad-hoc signed. The .app
-# itself is left unsigned: sealing the app over unsigned JS under MacOS/bundle
-# cannot succeed, and signing before the copy left a broken seal that Gatekeeper
-# reports as "damaged" when quarantine is set.
+# Build a disk image of the BoomBigNose window and dist/bundle.
+# bundle/ lives at BoomBigNose.app/Contents/MacOS/bundle beside the executable
+# because the window reads Dir(exe)/bundle. Nested Mach-Os under bundle/ are
+# ad-hoc signed. The main BoomBigNose binary and the .app are left unsigned:
+# codesign of a main executable under Contents/MacOS seals that directory, and
+# unsigned .sql/JS under MacOS/bundle then fails CI ("code object is not signed
+# at all" / "sealed resource is missing or invalid"). Signing the binary before
+# copying bundle/ also breaks once bundle/ appears. A broken app seal +
+# quarantine is Gatekeeper "damaged"; leaving the app unsigned surfaces Open
+# Anyway instead. Developer ID + notarize, or moving bundle/ to
+# Contents/Resources, is future work.
 # Run on a macOS arm64 runner after `go build` produces ./dist/boombignose-desktop.
-# codesign --sign - is not a paid Developer ID signature. Opening can require Open Anyway.
-# Notarization with a Developer ID is future work.
+# codesign --sign - is not a paid Developer ID signature.
 # The mounted check looks for the files. The smoke copies them off the image
 # first: a read-only UDZO mount can drop the executable bit, and the smoke
 # boots that copy. It does not pull a model.
@@ -69,21 +72,15 @@ chmod 755 \
   "$app/MacOS/bundle/ollama/llama-server" \
   "$app/MacOS/bundle/ollama/llama-quantize"
 # DMG mounts can drop +x; ensure llama helpers stay runnable for Local AI.
-# Sign nested Mach-Os and the main binary AFTER bundle/ is in place.
-# Do NOT codesign the .app itself: Contents/MacOS/bundle holds thousands of
-# unsigned JS/assets, and an app-level seal over those breaks ("a sealed
-# resource is missing or invalid"). A broken seal + quarantine shows
-# Gatekeeper "damaged and can't be opened". Leaving the app unsigned (with
-# ad-hoc signed Mach-Os) surfaces Open Anyway instead. Developer ID +
-# notarize (or moving bundle/ to Contents/Resources) is future work.
+# Ad-hoc sign nested Mach-Os only. Do NOT codesign BoomBigNose or the .app:
+# a main-executable signature under Contents/MacOS seals MacOS/*, and
+# MacOS/bundle contains unsigned .sql/JS that break that seal in CI.
 find "$app/MacOS/bundle" -type f \( -perm -u+x -o -name '*.dylib' -o -name '*.so' -o -name '*.node' \) |
   while IFS= read -r f; do
     if file -b "$f" | grep -q 'Mach-O'; then
       codesign --force --sign - "$f" || true
     fi
   done
-codesign --force --sign - "$app/MacOS/BoomBigNose"
-codesign --verify --verbose=2 "$app/MacOS/BoomBigNose"
 dmg=$root/dist/BoomBigNose-macos-arm64.dmg
 attempt=1
 while [ "$attempt" -le 3 ]; do
