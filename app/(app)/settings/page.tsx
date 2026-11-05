@@ -31,6 +31,8 @@ import { asrCard } from "@/lib/ai/asr-install"
 import { loadModelSettings } from "@/lib/ai/ollama-admin"
 import { updateOrgSettings } from "./actions"
 import { listDevices } from "@/lib/mobile/pairing"
+import { buildSnapshot } from "@/lib/ai/model-catalog"
+import { softLoad } from "@/lib/soft-load"
 import { createAdminClient } from "@/lib/supabase/admin"
 
 export const dynamic = "force-dynamic"
@@ -81,9 +83,16 @@ export default async function SettingsPage() {
     (profiles ?? []).map((p) => [p.id, p.full_name] as const)
   )
 
-  const mobileDevices = canEdit ? await listDevices(createAdminClient(), ctx.orgId) : []
-  const localModels = await loadModelSettings(currentModelHost())
-  const asr = await asrCard(process.platform, process.arch)
+  // Soft-load: a failing device/model/ASR read must never 500 the whole Settings page.
+  const mobileDevices = canEdit
+    ? await softLoad(() => listDevices(createAdminClient(), ctx.orgId), [])
+    : []
+  const modelHost = currentModelHost()
+  const localModels = await softLoad(
+    () => loadModelSettings(modelHost),
+    () => buildSnapshot(modelHost, [], { up: false }),
+  )
+  const asr = await softLoad(() => asrCard(process.platform, process.arch), { offered: false, installed: false })
 
   const team = (members ?? []).map((m) => ({
     userId: m.user_id,
