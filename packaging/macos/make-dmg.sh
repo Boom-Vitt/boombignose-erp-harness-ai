@@ -36,6 +36,10 @@ app="$stage/BoomBigNose.app/Contents"
 mkdir -p "$app/MacOS" "$app/Resources"
 cp "$bin" "$app/MacOS/BoomBigNose"
 chmod 755 "$app/MacOS/BoomBigNose"
+# Go/macOS may emit a linker-signed ad-hoc signature. That seal breaks once
+# MacOS/bundle appears beside the binary; strip it so Gatekeeper sees unsigned
+# (Open Anyway) instead of a damaged sealed resource.
+codesign --remove-signature "$app/MacOS/BoomBigNose" 2>/dev/null || true
 cp "$icon" "$app/Resources/icon.icns"
 cp "$icon" "$stage/icon.icns"
 cp "$icon" "$stage/.VolumeIcon.icns"
