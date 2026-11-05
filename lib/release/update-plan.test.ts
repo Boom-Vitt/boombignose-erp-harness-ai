@@ -32,7 +32,7 @@ describe("update plan", () => {
   it("locks the helper version to APP_VERSION", () => {
     const source = readFileSync(new URL("../../boombignose/internal/update/version.go", import.meta.url), "utf8")
     expect(source).toContain(`const AppVersion = "${APP_VERSION}"`)
-    expect(APP_VERSION).toBe("1.4.2")
+    expect(APP_VERSION).toBe("1.4.3")
   })
 
   it("builds only this repository's asset URL and ignores other hosts", () => {
