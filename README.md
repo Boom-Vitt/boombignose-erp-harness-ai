@@ -68,6 +68,7 @@
 - **รายงานและปิดงบเดือน** — VAT อายุลูกหนี้ ชุดข้อมูลนักบัญชี CSV · ไม่ใช่การยื่นภาษี
 - **อัตโนมัติ + AI** — n8n outbox/webhook · Ollama บนเครื่อง · Settings → โมเดล AI
 - **ทีม** — owner / admin / accountant / member · เชิญด้วยลิงก์
+- **เครือข่าย 3D** — owner/admin ดู ERP, Mac ที่ลงทะเบียน และปลายทาง TCP จาก Go collector พร้อม policy CIDR และสัญญาณ “รอคนตรวจ” · แยก SSH ตัวอย่างจากข้อมูลจริง · ไม่ใช่การรับรองว่าไม่มีข้อมูลรั่ว ดู [ข้อกำหนดและผลตรวจ](./acceptance.md) และ [วิธีใช้ collector](./boombignose/README.md#native-macos-network-collector)
 
 ## ⬇️ ดาวน์โหลดแอปเดสก์ท็อป
 

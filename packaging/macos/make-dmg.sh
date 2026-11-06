@@ -1,27 +1,19 @@
 #!/bin/sh
 # Build a disk image of the BoomBigNose window and dist/bundle.
-# bundle/ lives at BoomBigNose.app/Contents/MacOS/bundle beside the executable
-# because the window reads Dir(exe)/bundle. Nested Mach-Os under bundle/ are
-# ad-hoc signed. The main BoomBigNose binary and the .app are left unsigned:
-# codesign of a main executable under Contents/MacOS seals that directory, and
-# unsigned .sql/JS under MacOS/bundle then fails CI ("code object is not signed
-# at all" / "sealed resource is missing or invalid"). Signing the binary before
-# copying bundle/ also breaks once bundle/ appears. A broken app seal +
-# quarantine is Gatekeeper "damaged"; leaving the app unsigned surfaces Open
-# Anyway instead. Developer ID + notarize, or moving bundle/ to
-# Contents/Resources, is future work.
+# Runtime assets live under Contents/Resources/bundle, outside the signed
+# Contents/MacOS executable directory. Sign nested Mach-Os, then the main
+# executable and outer application; verify the completed immutable payload.
+# Signing is ad-hoc, not Developer ID or notarization.
 #
-# The DMG Finder window mirrors famous Mac apps: BoomBigNose.app on the left,
-# an Applications folder symlink on the right, and a dark-theme background with
-# a Thai+EN drag hint. Layout needs a read-write image (AppleScript + Finder),
-# then convert to UDZO. Do not reintroduce codesign of the main binary or .app
-# (see #149/#150: strip linker signature; sign nested Mach-Os only).
+# The DMG Finder window shows BoomBigNose.app beside an Applications symlink
+# and a dark-theme Thai+EN drag hint. Layout needs a read-write image
+# (AppleScript + Finder), then conversion to UDZO.
 #
 # Run on a macOS arm64 runner after `go build` produces ./dist/boombignose-desktop.
 # codesign --sign - is not a paid Developer ID signature.
-# The mounted check looks for the files. The smoke copies them off the image
-# first: a read-only UDZO mount can drop the executable bit, and the smoke
-# boots that copy. It does not pull a model.
+# The mounted check looks for files and verifies the signature. The smoke
+# copies the application off the image and verifies that immutable copy before
+# booting its bundled services. It does not pull a model.
 set -eu
 root=$(CDPATH= cd -- "$(dirname "$0")/../.." && pwd)
 bin=$root/dist/boombignose-desktop
@@ -47,10 +39,7 @@ app="$stage/BoomBigNose.app/Contents"
 mkdir -p "$app/MacOS" "$app/Resources" "$stage/.background"
 cp "$bin" "$app/MacOS/BoomBigNose"
 chmod 755 "$app/MacOS/BoomBigNose"
-# Go/macOS may emit a linker-signed ad-hoc signature. That seal breaks once
-# MacOS/bundle appears beside the binary; strip it so Gatekeeper sees unsigned
-# (Open Anyway) instead of a damaged sealed resource.
-codesign --remove-signature "$app/MacOS/BoomBigNose" 2>/dev/null || true
+# All executable permissions and payload copies must precede final signing.
 cp "$icon" "$app/Resources/icon.icns"
 cp "$icon" "$stage/icon.icns"
 cp "$icon" "$stage/.VolumeIcon.icns"
@@ -68,8 +57,8 @@ cat > "$app/Info.plist" << 'PLIST'
   <key>CFBundleIdentifier</key><string>ai.boombignose.harness</string>
   <key>CFBundleIconFile</key><string>icon</string>
   <key>CFBundlePackageType</key><string>APPL</string>
-  <key>CFBundleShortVersionString</key><string>1.4.3</string>
-  <key>CFBundleVersion</key><string>1.4.3</string>
+  <key>CFBundleShortVersionString</key><string>1.4.4</string>
+  <key>CFBundleVersion</key><string>1.4.4</string>
   <key>LSMinimumSystemVersion</key><string>12.0</string>
   <key>NSHighResolutionCapable</key><true/>
 </dict>
@@ -80,27 +69,29 @@ if command -v SetFile >/dev/null 2>&1; then
   SetFile -a V "$stage/icon.icns" || true
   SetFile -a V "$stage/.background" || true
 fi
-cp -a "$bundle" "$app/MacOS/bundle"
+cp -a "$bundle" "$app/Resources/bundle"
 chmod 755 \
-  "$app/MacOS/bundle/node" \
-  "$app/MacOS/bundle/postgres/bin/initdb" \
-  "$app/MacOS/bundle/postgres/bin/pg_ctl" \
-  "$app/MacOS/bundle/postgres/bin/postgres" \
-  "$app/MacOS/bundle/auth/auth" \
-  "$app/MacOS/bundle/postgrest/postgrest" \
-  "$app/MacOS/bundle/ollama/ollama" \
-  "$app/MacOS/bundle/ollama/llama-server" \
-  "$app/MacOS/bundle/ollama/llama-quantize"
+  "$app/Resources/bundle/node" \
+  "$app/Resources/bundle/postgres/bin/initdb" \
+  "$app/Resources/bundle/postgres/bin/pg_ctl" \
+  "$app/Resources/bundle/postgres/bin/postgres" \
+  "$app/Resources/bundle/auth/auth" \
+  "$app/Resources/bundle/postgrest/postgrest" \
+  "$app/Resources/bundle/ollama/ollama" \
+  "$app/Resources/bundle/ollama/llama-server" \
+  "$app/Resources/bundle/ollama/llama-quantize"
 # DMG mounts can drop +x; ensure llama helpers stay runnable for Local AI.
-# Ad-hoc sign nested Mach-Os only. Do NOT codesign BoomBigNose or the .app:
-# a main-executable signature under Contents/MacOS seals MacOS/*, and
-# MacOS/bundle contains unsigned .sql/JS that break that seal in CI.
-find "$app/MacOS/bundle" -type f \( -perm -u+x -o -name '*.dylib' -o -name '*.so' -o -name '*.node' \) |
+# Fail closed if any nested runtime cannot be signed. Seal the application last
+# and never mutate its contents afterward.
+find "$app/Resources/bundle" -type f \( -perm -u+x -o -name '*.dylib' -o -name '*.so' -o -name '*.node' \) |
   while IFS= read -r f; do
     if file -b "$f" | grep -q 'Mach-O'; then
-      codesign --force --sign - "$f" || true
+      codesign --force --sign - "$f"
     fi
   done
+codesign --force --sign - "$app/MacOS/BoomBigNose"
+codesign --force --sign - "$stage/BoomBigNose.app"
+codesign --verify --deep --strict "$stage/BoomBigNose.app"
 
 dmg=$root/dist/BoomBigNose-macos-arm64.dmg
 mkdir -p "$root/dist"
@@ -258,7 +249,7 @@ if [ -z "$mount" ] || [ ! -d "$mount" ]; then
 fi
 echo "mounted $mount"
 final_mount=$mount
-inapp=BoomBigNose.app/Contents/MacOS/bundle
+inapp=BoomBigNose.app/Contents/Resources/bundle
 ls -la "$mount" "$mount/$inapp/node" "$mount/$inapp/ollama/ollama"
 if [ ! -L "$mount/Applications" ]; then
   echo "mounted image missing Applications symlink" >&2
@@ -289,13 +280,13 @@ for rel in \
   icon.icns \
   BoomBigNose.app/Contents/MacOS/BoomBigNose \
   BoomBigNose.app/Contents/Resources/icon.icns \
-  BoomBigNose.app/Contents/MacOS/bundle/node \
-  BoomBigNose.app/Contents/MacOS/bundle/erp/server.js \
-  BoomBigNose.app/Contents/MacOS/bundle/postgres/bin/postgres \
-  BoomBigNose.app/Contents/MacOS/bundle/auth/auth \
-  BoomBigNose.app/Contents/MacOS/bundle/postgrest/postgrest \
-  BoomBigNose.app/Contents/MacOS/bundle/ollama/ollama \
-  BoomBigNose.app/Contents/MacOS/bundle/ollama/OLLAMA_LICENSE.txt
+  BoomBigNose.app/Contents/Resources/bundle/node \
+  BoomBigNose.app/Contents/Resources/bundle/erp/server.js \
+  BoomBigNose.app/Contents/Resources/bundle/postgres/bin/postgres \
+  BoomBigNose.app/Contents/Resources/bundle/auth/auth \
+  BoomBigNose.app/Contents/Resources/bundle/postgrest/postgrest \
+  BoomBigNose.app/Contents/Resources/bundle/ollama/ollama \
+  BoomBigNose.app/Contents/Resources/bundle/ollama/OLLAMA_LICENSE.txt
 do
   if [ ! -s "$mount/$rel" ]; then
     echo "mounted image missing $rel" >&2
@@ -311,15 +302,8 @@ if [ -d "$mount/$inapp/ollama/lib/ollama/cuda_v12" ] || [ -d "$mount/$inapp/olla
   echo "cuda runner was packed" >&2
   exit 1
 fi
+codesign --verify --deep --strict "$mount/BoomBigNose.app"
 cp -a "$mount/." "$copy/"
-chmod 755 \
-  "$copy/BoomBigNose.app/Contents/MacOS/BoomBigNose" \
-  "$copy/$inapp/node" \
-  "$copy/$inapp/postgres/bin/initdb" \
-  "$copy/$inapp/postgres/bin/pg_ctl" \
-  "$copy/$inapp/postgres/bin/postgres" \
-  "$copy/$inapp/auth/auth" \
-  "$copy/$inapp/postgrest/postgrest" \
-  "$copy/$inapp/ollama/ollama"
+codesign --verify --deep --strict "$copy/BoomBigNose.app"
 BOOMBIGNOSE_SMOKE_BUNDLE="$copy/$inapp" sh "$root/packaging/linux/smoke-bundle.sh"
 echo "wrote $dmg"

@@ -22,6 +22,7 @@ import {
   UserRound,
   Boxes,
   Bot,
+  Network,
 } from "lucide-react"
 
 export type NavGroup = "sell" | "operate" | "money" | "workspace"
@@ -77,6 +78,7 @@ export const NAV_ITEMS: NavItem[] = [
   { title: "Activity", th: "กิจกรรม", group: "workspace", href: "/audit", icon: ScrollText, ownerAdminOnly: true },
   { title: "Organization", th: "องค์กร", group: "workspace", href: "/warehouse", icon: Boxes },
   { title: "Blueprint", th: "บลูพริ้นท์", group: "workspace", href: "/blueprint", icon: Compass },
+  { title: "Network 3D", th: "เครือข่าย 3D", group: "workspace", href: "/network", icon: Network, ownerAdminOnly: true },
   { title: "Settings", th: "ตั้งค่า", group: "workspace", href: "/settings", icon: Settings },
   { title: "Products", th: "สินค้า", group: "operate", href: "/products", icon: Package },
 ]

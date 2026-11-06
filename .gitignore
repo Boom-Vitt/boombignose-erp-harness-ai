@@ -47,7 +47,7 @@ yarn-error.log*
 !/artifacts/moli/.gitkeep
 
 # Local assistant context stays out of the public repository.
-/.project-memory/
+.project-memory/
 /AGENTS.md
 /INSTRUCTIONS.md
 /agent.md

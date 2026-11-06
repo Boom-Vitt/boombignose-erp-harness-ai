@@ -24,6 +24,18 @@ export type Database = {
           }
         },"public": {
           Tables: {
+      network_devices: {
+        Row: { id: string; org_id: string; name: string; created_by: string | null; token_hash: string; created_at: string; revoked_at: string | null; last_received_at: string | null; latest_captured_at: string | null; latest_report: Json | null }
+        Insert: { org_id: string; name: string; created_by: string; token_hash: string }
+        Update: { revoked_at?: string | null }
+        Relationships: []
+      }
+      network_policy: {
+        Row: { org_id: string; allowed_cidrs: string[]; updated_by: string | null; updated_at: string }
+        Insert: { org_id: string; allowed_cidrs: string[]; updated_by: string; updated_at?: string }
+        Update: { allowed_cidrs?: string[]; updated_by?: string; updated_at?: string }
+        Relationships: []
+      }
       credit_notes: {
         Row: { id: string; org_id: string; invoice_id: string; number: string; issue_date: string; reason: string; amount_satang: number; snapshot: Json; issued_by: string; created_at: string }
         Insert: never
@@ -1480,6 +1492,8 @@ isOneToOne: false
             }
           }
           Functions: {
+      ingest_network_report: { Args: { p_device_id: string; p_org_id: string; p_token_hash: string; p_captured_at: string; p_report: Json }; Returns: string | null }
+      set_network_policy: { Args: { p_org_id: string; p_allowed_cidrs: string[] }; Returns: undefined }
 "cancel_quote_invoice": { Args: { p_org_id: string; p_invoice_id: string }; Returns: undefined },
 "save_document_lines": { Args: { p_document: "quote" | "invoice" | "purchase_order"; p_document_id: string; p_rows: Json; p_deleted: string[] }; Returns: undefined },
 "reserve_document_number": { Args: { p_org_id: string; p_kind: string; p_year: number }; Returns: string },

@@ -1,5 +1,5 @@
-// Package bundle starts a portable local stack from files beside the desktop
-// binary. It does not download Node, Postgres, or Ollama, and it does not call
+// Package bundle starts a portable local stack from application resources or
+// files beside the desktop binary. It does not download Node, Postgres, or Ollama, and it does not call
 // Docker. PullModel downloads an allowlisted model only when a caller asks. A missing
 // optional file is skipped. A cloud credential is not passed to the child.
 package bundle
@@ -27,6 +27,19 @@ const (
 	// LocalModel is the text model the ERP screens call. The window does not pull it at startup.
 	LocalModel = "qwen2.5:3b"
 )
+
+// DefaultRoot locates signed macOS application resources, or a portable sibling
+// bundle for executables outside a conventional macOS application.
+func DefaultRoot(executable string) string {
+	dir := filepath.Dir(executable)
+	contents := filepath.Dir(dir)
+	if runtime.GOOS == "darwin" && filepath.Base(dir) == "MacOS" &&
+		filepath.Base(contents) == "Contents" &&
+		strings.HasSuffix(filepath.Base(filepath.Dir(contents)), ".app") {
+		return filepath.Join(contents, "Resources", "bundle")
+	}
+	return filepath.Join(dir, "bundle")
+}
 
 // ErrIncomplete means the bundle has no portable Node and ERP server.
 var ErrIncomplete = errors.New("portable bundle is incomplete")
