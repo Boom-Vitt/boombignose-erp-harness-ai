@@ -1,8 +1,8 @@
 # In-app update
 
-The published installer stays on the previous tag until someone creates `boombignose-vX.Y.Z` and `.github/workflows/boombignose-release.yml` uploads the four installers plus `SHA256SUMS`. This tree's `APP_VERSION`, the macOS bundle version, and the Windows version resource are `1.4.0`. Creating the tag is a separate step after merge. The workflow does not create the tag.
+The published installer stays on the previous tag until someone creates `boombignose-vX.Y.Z` and `.github/workflows/boombignose-release.yml` uploads the four installers plus `SHA256SUMS`. This tree's `APP_VERSION`, Go desktop helper, macOS bundle version, and Windows version resource are `1.4.4`. Creating the tag is a separate step after merge. The workflow does not create the tag.
 
-The installers are unsigned. The macOS app is ad-hoc signed (`codesign --sign -`). That is the existing project norm. There is no Developer ID or Authenticode certificate in this flow.
+The installers are unsigned. macOS nested runtime binaries are ad-hoc signed; the main executable's linker signature is stripped and the outer app is left unsigned to avoid sealing the mutable `Contents/MacOS/bundle` tree. This is not a Developer ID signature or notarization. There is no Developer ID or Authenticode certificate in this flow.
 
 ## What the operator does
 

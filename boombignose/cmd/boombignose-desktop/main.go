@@ -18,6 +18,7 @@ import (
 
 	"github.com/Boom-Vitt/boombignose-erp-harness-ai/boombignose/internal/bundle"
 	"github.com/Boom-Vitt/boombignose-erp-harness-ai/boombignose/internal/launch"
+	"github.com/Boom-Vitt/boombignose-erp-harness-ai/boombignose/internal/networkcollector"
 	"github.com/Boom-Vitt/boombignose-erp-harness-ai/boombignose/internal/policy"
 	"github.com/Boom-Vitt/boombignose-erp-harness-ai/boombignose/internal/shell"
 	"github.com/Boom-Vitt/boombignose-erp-harness-ai/boombignose/internal/update"
@@ -48,6 +49,11 @@ func main() {
 }
 
 func run() error {
+	// Explicit opt-in headless mode uses the same native collector as the harness.
+	// It never launches the webview, local services, or an automatic collector.
+	if len(os.Args) > 1 && os.Args[1] == "--network-collector" {
+		return networkcollector.Execute(context.Background(), os.Args[2:], os.Stdout)
+	}
 	if err := policy.CheckEnv(os.Getenv); err != nil {
 		return err
 	}

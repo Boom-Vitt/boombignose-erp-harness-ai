@@ -17,11 +17,12 @@ import (
 
 	"github.com/Boom-Vitt/boombignose-erp-harness-ai/boombignose/internal/bundle"
 	"github.com/Boom-Vitt/boombignose-erp-harness-ai/boombignose/internal/cutover"
+	"github.com/Boom-Vitt/boombignose-erp-harness-ai/boombignose/internal/networkcollector"
 	"github.com/Boom-Vitt/boombignose-erp-harness-ai/boombignose/internal/policy"
 	"github.com/Boom-Vitt/boombignose-erp-harness-ai/boombignose/internal/shell"
 )
 
-const usage = "usage: boombignose check | boombignose cutover [plan|dry-run|apply|rollback] | boombignose backup [export|restore] | boombignose serve | boombignose stop | boombignose models | boombignose pull-model [name] | boombignose remove-model <name>"
+const usage = "usage: boombignose check | boombignose cutover [plan|dry-run|apply|rollback] | boombignose backup [export|restore] | boombignose serve | boombignose stop | boombignose models | boombignose pull-model [name] | boombignose remove-model <name> | boombignose network-collector --config ABS_PATH [--once]"
 
 func main() {
 	if err := run(os.Args[1:]); err != nil {
@@ -45,6 +46,11 @@ func run(args []string) error {
 	}
 	if args[0] == "remove-model" {
 		return runRemoveModel(args[1:])
+	}
+	if args[0] == "network-collector" {
+		ctx, cancel := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
+		defer cancel()
+		return networkcollector.Execute(ctx, args[1:], os.Stdout)
 	}
 	if len(args) != 1 {
 		return fmt.Errorf("%s", usage)

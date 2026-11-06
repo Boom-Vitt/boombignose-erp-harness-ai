@@ -11,12 +11,12 @@ UninstallIcon "icon.ico"
 ; does not spend the job on LZMA. The installer is therefore large.
 SetCompress off
 Name "BoomBigNose"
-VIProductVersion "1.4.3.0"
-VIFileVersion "1.4.3.0"
+VIProductVersion "1.4.4.0"
+VIFileVersion "1.4.4.0"
 VIAddVersionKey /LANG=1033 "ProductName" "BoomBigNose"
 VIAddVersionKey /LANG=1033 "FileDescription" "BoomBigNose ERP Harness AI"
-VIAddVersionKey /LANG=1033 "ProductVersion" "1.4.3"
-VIAddVersionKey /LANG=1033 "FileVersion" "1.4.3"
+VIAddVersionKey /LANG=1033 "ProductVersion" "1.4.4"
+VIAddVersionKey /LANG=1033 "FileVersion" "1.4.4"
 OutFile "BoomBigNose-windows-x64-setup.exe"
 InstallDir "$LOCALAPPDATA\BoomBigNose"
 RequestExecutionLevel user

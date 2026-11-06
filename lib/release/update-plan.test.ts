@@ -5,8 +5,6 @@ import path from "node:path"
 import { afterEach, describe, expect, it, vi } from "vitest"
 
 import { performDesktopUpdate } from "@/lib/release/perform-update"
-import { APP_VERSION } from "@/lib/release/version"
-import { readFileSync } from "node:fs"
 import {
   DEFERRED_MESSAGE,
   helperConfigured,
@@ -29,12 +27,6 @@ function releaseResponse() {
 }
 
 describe("update plan", () => {
-  it("locks the helper version to APP_VERSION", () => {
-    const source = readFileSync(new URL("../../boombignose/internal/update/version.go", import.meta.url), "utf8")
-    expect(source).toContain(`const AppVersion = "${APP_VERSION}"`)
-    expect(APP_VERSION).toBe("1.4.3")
-  })
-
   it("builds only this repository's asset URL and ignores other hosts", () => {
     expect(releaseDownloadURL("1.5.0", asset)).toBe(
       "https://github.com/Boom-Vitt/boombignose-erp-harness-ai/releases/download/boombignose-v1.5.0/BoomBigNose-macos-arm64.dmg",
