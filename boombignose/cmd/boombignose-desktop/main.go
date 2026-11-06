@@ -182,7 +182,7 @@ func (a *App) PullLocalModel() error {
 	root := os.Getenv("BOOMBIGNOSE_BUNDLE")
 	if root == "" {
 		if exe, err := os.Executable(); err == nil {
-			root = filepath.Join(filepath.Dir(exe), "bundle")
+			root = bundle.DefaultRoot(exe)
 		}
 	}
 	layout := bundle.Layout{}
@@ -226,7 +226,7 @@ func startLocal(ctx context.Context, target string) error {
 	root := os.Getenv("BOOMBIGNOSE_BUNDLE")
 	if root == "" {
 		if exe, err := os.Executable(); err == nil {
-			root = filepath.Join(filepath.Dir(exe), "bundle")
+			root = bundle.DefaultRoot(exe)
 		}
 	}
 	if bundle.Valid(root) {

@@ -43,7 +43,7 @@ func defaultApply(ctx context.Context, dmgPath, updatesDir string) error {
 	}
 	defer detachDMG(mount)
 	appSrc := filepath.Join(mount, "BoomBigNose.app")
-	bundleSrc := filepath.Join(appSrc, "Contents", "MacOS", "bundle")
+	bundleSrc := filepath.Join(appSrc, "Contents", "Resources", "bundle")
 	if err := needFile(filepath.Join(appSrc, "Contents", "MacOS", "BoomBigNose")); err != nil {
 		return err
 	}
@@ -53,12 +53,15 @@ func defaultApply(ctx context.Context, dmgPath, updatesDir string) error {
 	if err := needFile(filepath.Join(bundleSrc, "erp", "server.js")); err != nil {
 		return err
 	}
+	if err := verifyApp(ctx, appSrc); err != nil {
+		return err
+	}
 	if err := ditto(ctx, appSrc, filepath.Join(payload, "BoomBigNose.app")); err != nil {
 		return err
 	}
-	// The image carries bundle/ inside the app; stage it beside the app so the
-	// script copies it once, after the app, to Contents/MacOS/bundle.
-	if err := os.Rename(filepath.Join(payload, "BoomBigNose.app", "Contents", "MacOS", "bundle"), filepath.Join(payload, "bundle")); err != nil {
+	// Keep the signed application intact; moving or rewriting its resources
+	// invalidates its seal and can make the replacement unlaunchable.
+	if err := verifyApp(ctx, filepath.Join(payload, "BoomBigNose.app")); err != nil {
 		return err
 	}
 	script := filepath.Join(updatesDir, "relaunch.sh")
@@ -68,11 +71,17 @@ func defaultApply(ctx context.Context, dmgPath, updatesDir string) error {
 	cmd := exec.Command("/bin/sh", script,
 		strconv.Itoa(os.Getpid()),
 		filepath.Join(payload, "BoomBigNose.app"),
-		filepath.Join(payload, "bundle"),
 		root,
 	)
 	cmd.SysProcAttr = &syscall.SysProcAttr{Setsid: true}
 	return cmd.Start()
+}
+
+func verifyApp(ctx context.Context, app string) error {
+	if err := exec.CommandContext(ctx, "codesign", "--verify", "--deep", "--strict", app).Run(); err != nil {
+		return errors.New("disk image application signature is invalid")
+	}
+	return nil
 }
 
 func needFile(path string) error {

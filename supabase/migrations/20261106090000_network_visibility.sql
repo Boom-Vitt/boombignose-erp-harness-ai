@@ -40,6 +40,24 @@ create table public.network_policy (
   updated_at timestamptz not null default now()
 );
 
+-- Requires GoTrue's auth.mfa_factors(user_id, status) and request-aware auth.jwt().
+-- Only the definer reads factor enrollment; callers receive a staff-scoped boolean.
+-- Missing or unrecognized assurance levels fail closed, even without enrollment.
+create function private.network_staff_allowed(org uuid)
+returns boolean language sql stable security definer set search_path = '' as $$
+  select case
+    when not private.is_org_staff(org) then false
+    when (select auth.jwt() ->> 'aal') = 'aal2' then true
+    when (select auth.jwt() ->> 'aal') = 'aal1' then not exists (
+      select 1 from auth.mfa_factors as factor
+      where factor.user_id = (select auth.uid()) and factor.status = 'verified'
+    )
+    else false
+  end;
+$$;
+revoke all on function private.network_staff_allowed(uuid) from public, anon, service_role;
+grant execute on function private.network_staff_allowed(uuid) to authenticated;
+
 alter table public.network_devices enable row level security;
 alter table public.network_devices force row level security;
 alter table public.network_policy enable row level security;
@@ -53,29 +71,29 @@ grant select (id, org_id, name, created_by, created_at, revoked_at, last_receive
 grant insert (org_id, name, created_by, token_hash) on public.network_devices to authenticated;
 grant update (revoked_at) on public.network_devices to authenticated;
 create policy network_devices_read on public.network_devices for select to authenticated
-  using (private.is_org_staff(org_id));
+  using (private.network_staff_allowed(org_id));
 create policy network_devices_enroll on public.network_devices for insert to authenticated
-  with check (private.is_org_staff(org_id) and created_by = (select auth.uid()));
+  with check (private.network_staff_allowed(org_id) and created_by = (select auth.uid()));
 create policy network_devices_revoke on public.network_devices for update to authenticated
-  using (private.is_org_staff(org_id) and revoked_at is null)
-  with check (private.is_org_staff(org_id) and revoked_at is not null);
+  using (private.network_staff_allowed(org_id) and revoked_at is null)
+  with check (private.network_staff_allowed(org_id) and revoked_at is not null);
 
 grant select on public.network_policy to authenticated;
 grant insert (org_id, allowed_cidrs, updated_by), update (allowed_cidrs, updated_by, updated_at)
   on public.network_policy to authenticated;
 create policy network_policy_read on public.network_policy for select to authenticated
-  using (private.is_org_staff(org_id));
+  using (private.network_staff_allowed(org_id));
 create policy network_policy_insert on public.network_policy for insert to authenticated
-  with check (private.is_org_staff(org_id) and updated_by = (select auth.uid()));
+  with check (private.network_staff_allowed(org_id) and updated_by = (select auth.uid()));
 create policy network_policy_update on public.network_policy for update to authenticated
-  using (private.is_org_staff(org_id))
-  with check (private.is_org_staff(org_id) and updated_by = (select auth.uid()));
+  using (private.network_staff_allowed(org_id))
+  with check (private.network_staff_allowed(org_id) and updated_by = (select auth.uid()));
 
 -- Explicit conflict columns avoid granting UPDATE of the workspace identity.
 create function public.set_network_policy(p_org_id uuid, p_allowed_cidrs text[])
 returns void language plpgsql security invoker set search_path = '' as $$
 begin
-  if not private.is_org_staff(p_org_id) then raise exception 'Forbidden'; end if;
+  if not private.network_staff_allowed(p_org_id) then raise exception 'Forbidden'; end if;
   insert into public.network_policy(org_id, allowed_cidrs, updated_by)
     values(p_org_id, p_allowed_cidrs, (select auth.uid()))
     on conflict(org_id) do update set allowed_cidrs = excluded.allowed_cidrs,

@@ -83,17 +83,14 @@ func TestRelaunchScriptRejectsTheFilesystemRoot(t *testing.T) {
 	if err := syntax.Run(); err != nil {
 		t.Fatal(err)
 	}
-	cmd := exec.Command("/bin/sh", file, "1", "/tmp/BoomBigNose.app", "/tmp/bundle", "/")
+	cmd := exec.Command("/bin/sh", file, "1", "/tmp/BoomBigNose.app", "/")
 	err := cmd.Run()
 	if err == nil {
 		t.Fatal("root was not refused")
 	}
-	if !strings.Contains(RelaunchScript, `open "$root/BoomBigNose.app"`) || strings.Contains(RelaunchScript, "PG_VERSION") {
-		t.Fatal("script contract")
-	}
 }
 
-func TestRelaunchScriptInstallsBundleBesideTheExecutable(t *testing.T) {
+func TestRelaunchScriptPreservesResourceBundleAndRollsBackInvalidReplacement(t *testing.T) {
 	if runtime.GOOS == "windows" {
 		t.Skip("shell script")
 	}
@@ -112,10 +109,11 @@ func TestRelaunchScriptInstallsBundleBesideTheExecutable(t *testing.T) {
 			t.Fatal(err)
 		}
 	}
-	// Stand-ins for the macOS-only ditto and open.
+	// Stand-ins for platform commands; assertions exercise real replacement/rollback files.
 	tools := filepath.Join(dir, "tools")
 	write(filepath.Join(tools, "ditto"), "#!/bin/sh\nmkdir -p \"$2\" && cp -R \"$1\"/. \"$2\"/\n", 0o755)
 	write(filepath.Join(tools, "open"), "#!/bin/sh\n:\n", 0o755)
+	write(filepath.Join(tools, "codesign"), "#!/bin/sh\nexit 0\n", 0o755)
 	root := filepath.Join(dir, "Applications")
 	app := filepath.Join(root, "BoomBigNose.app", "Contents", "MacOS")
 	write(filepath.Join(app, "BoomBigNose"), "old", 0o755)
@@ -123,23 +121,25 @@ func TestRelaunchScriptInstallsBundleBesideTheExecutable(t *testing.T) {
 	write(filepath.Join(root, "bundle", "keep"), "legacy sibling", 0o644)
 	newApp := filepath.Join(dir, "payload", "BoomBigNose.app")
 	write(filepath.Join(newApp, "Contents", "MacOS", "BoomBigNose"), "new", 0o755)
-	newBundle := filepath.Join(dir, "payload", "bundle")
-	write(filepath.Join(newBundle, "node"), "new", 0o755)
+	write(filepath.Join(newApp, "Contents", "Resources", "bundle", "node"), "new", 0o755)
+	write(filepath.Join(newApp, "Contents", "Resources", "bundle", "erp", "server.js"), "new server", 0o644)
 	script := filepath.Join(dir, "relaunch.sh")
 	write(script, RelaunchScript, 0o700)
 	done := exec.Command("/bin/sh", "-c", "exit 0")
 	if err := done.Run(); err != nil {
 		t.Fatal(err)
 	}
-	cmd := exec.Command("/bin/sh", script, strconv.Itoa(done.Process.Pid), newApp, newBundle, root)
+	cmd := exec.Command("/bin/sh", script, strconv.Itoa(done.Process.Pid), newApp, root)
 	cmd.Env = append(os.Environ(), "PATH="+tools+":"+os.Getenv("PATH"))
 	if out, err := cmd.CombinedOutput(); err != nil {
 		t.Fatalf("script: %v %s", err, out)
 	}
-	// The new bundle lands where the desktop reads it: Dir(exe)/bundle.
-	got, err := os.ReadFile(filepath.Join(app, "bundle", "node"))
+	got, err := os.ReadFile(filepath.Join(root, "BoomBigNose.app", "Contents", "Resources", "bundle", "node"))
 	if err != nil || string(got) != "new" {
-		t.Fatalf("bundle not installed beside the executable: %q %v", got, err)
+		t.Fatalf("resource bundle is unavailable after replacement: %q %v", got, err)
+	}
+	if _, err := os.Stat(filepath.Join(app, "bundle")); !os.IsNotExist(err) {
+		t.Fatalf("obsolete executable-adjacent bundle survived: %v", err)
 	}
 	if got, err := os.ReadFile(filepath.Join(app, "BoomBigNose")); err != nil || string(got) != "new" {
 		t.Fatalf("app not replaced: %q %v", got, err)
@@ -149,5 +149,17 @@ func TestRelaunchScriptInstallsBundleBesideTheExecutable(t *testing.T) {
 	}
 	if _, err := os.Stat(filepath.Join(root, "bundle", "keep")); err != nil {
 		t.Fatal("script touched a sibling bundle it did not create")
+	}
+	// A replacement that fails its post-copy seal check must restore the
+	// previously working app instead of leaving an unlaunchable installation.
+	write(filepath.Join(newApp, "Contents", "MacOS", "BoomBigNose"), "invalid replacement", 0o755)
+	write(filepath.Join(tools, "codesign"), "#!/bin/sh\ncase \"$4\" in */Applications/*) exit 1 ;; esac\nexit 0\n", 0o755)
+	retry := exec.Command("/bin/sh", script, strconv.Itoa(done.Process.Pid), newApp, root)
+	retry.Env = append(os.Environ(), "PATH="+tools+":"+os.Getenv("PATH"))
+	if err := retry.Run(); err == nil {
+		t.Fatal("invalid replacement was accepted")
+	}
+	if got, err := os.ReadFile(filepath.Join(app, "BoomBigNose")); err != nil || string(got) != "new" {
+		t.Fatalf("working application was not restored: %q %v", got, err)
 	}
 }

@@ -12,6 +12,33 @@ import (
 	"time"
 )
 
+func TestDefaultRoot(t *testing.T) {
+	for _, tt := range []struct {
+		name       string
+		executable string
+		want       string
+	}{
+		{"portable", filepath.Join("opt", "BoomBigNose"), filepath.Join("opt", "bundle")},
+		{"not an app", filepath.Join("opt", "portable", "Contents", "MacOS", "BoomBigNose"), filepath.Join("opt", "portable", "Contents", "MacOS", "bundle")},
+		{"not MacOS", filepath.Join("opt", "BoomBigNose.app", "Contents", "bin", "BoomBigNose"), filepath.Join("opt", "BoomBigNose.app", "Contents", "bin", "bundle")},
+	} {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := DefaultRoot(tt.executable); got != tt.want {
+				t.Fatalf("DefaultRoot(%q) = %q, want %q", tt.executable, got, tt.want)
+			}
+		})
+	}
+	executable := filepath.Join(t.TempDir(), "BoomBigNose.app", "Contents", "MacOS", "BoomBigNose")
+	want := filepath.Join(filepath.Dir(executable), "bundle")
+	if runtime.GOOS == "darwin" {
+		want = filepath.Join(filepath.Dir(filepath.Dir(executable)), "Resources", "bundle")
+	}
+	layout := writeBundle(t, want, true)
+	if got := DefaultRoot(executable); got != layout.Root || !Valid(got) {
+		t.Fatalf("application bundle lookup = %q, want discoverable %q", got, layout.Root)
+	}
+}
+
 func writeBundle(t *testing.T, root string, withPostgres bool) Layout {
 	t.Helper()
 	if err := os.MkdirAll(filepath.Join(root, "erp"), 0o755); err != nil {
