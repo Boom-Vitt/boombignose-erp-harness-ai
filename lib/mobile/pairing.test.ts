@@ -108,10 +108,10 @@ describe("pairing tokens", () => {
 })
 
 describe("base url and QR payload", () => {
-  it("rejects loopback and non-http urls", () => {
+  it("accepts only bare private HTTPS .ts.net origins", () => {
     expect(normalizeBaseUrl("https://mac.tail1234.ts.net/")).toBe("https://mac.tail1234.ts.net")
-    expect(normalizeBaseUrl("http://100.101.102.103:3100/x")).toBe("http://100.101.102.103:3100")
-    for (const bad of ["http://localhost:3100", "http://127.0.0.1:3100", "ftp://a.b", "nope", ""]) {
+    expect(normalizeBaseUrl("https://mac.tail1234.ts.net:8443/")).toBe("https://mac.tail1234.ts.net:8443")
+    for (const bad of ["http://100.101.102.103:3100/x", "https://public.example", "https://mac.tail1234.ts.net.evil.test", "https://user:secret@mac.tail1234.ts.net", "https://mac.tail1234.ts.net:0", "https://mac.tail1234.ts.net:65536", "https://mac.tail1234.ts.net/path", "https://mac.tail1234.ts.net?x=1", "https://mac.tail1234.ts.net#fragment", "http://localhost:3100", "http://127.0.0.1:3100", "ftp://a.b", "nope", ""]) {
       expect(normalizeBaseUrl(bad)).toBeNull()
     }
   })

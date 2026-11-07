@@ -14,5 +14,5 @@
 <text class="th" x="52" y="166">ERP โอเพนซอร์สสำหรับธุรกิจทุกขนาด</text>
 <text class="en" x="52" y="198">Open-source ERP for businesses of every size (AGPL-3.0)</text>
 <rect x="52" y="226" width="138" height="34" rx="17" fill="#ffffff" fill-opacity=".06" stroke="#FBBF24" stroke-opacity=".45"/><text x="121" y="249" text-anchor="middle" class="c">Open source</text><rect x="199.5" y="226" width="127" height="34" rx="17" fill="#ffffff" fill-opacity=".06" stroke="#FBBF24" stroke-opacity=".45"/><text x="263" y="249" text-anchor="middle" class="c">Next.js 16</text><rect x="336.5" y="226" width="106" height="34" rx="17" fill="#ffffff" fill-opacity=".06" stroke="#FBBF24" stroke-opacity=".45"/><text x="390" y="249" text-anchor="middle" class="c">Supabase</text>
-<text class="u" x="1180" y="284" text-anchor="end">github.com/Boom-Vitt/boombignose-erp-harness-ai</text>
+<text class="u" x="1180" y="284" text-anchor="end">github.com/Boom-Vitt/nose-erp</text>
 </svg>

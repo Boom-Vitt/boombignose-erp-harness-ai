@@ -6,6 +6,7 @@ export const PUBLIC_ENV_SCRIPT_ID = "erp-public-env"
 export interface PublicSupabaseEnv {
   url: string
   anonKey: string
+  nativeAuthProxy?: boolean
 }
 
 export function serializePublicEnv(
@@ -14,11 +15,12 @@ export function serializePublicEnv(
   const payload: PublicSupabaseEnv = {
     url: env.NEXT_PUBLIC_SUPABASE_URL ?? "",
     anonKey: env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "",
+    ...(env.BOOMBIGNOSE_NATIVE === "1" ? { nativeAuthProxy: true } : {}),
   }
   return JSON.stringify(payload).replace(/</g, "\\u003c")
 }
 
-// Callers pass literal `process.env.NEXT_PUBLIC_*` reads: Next.js only inlines build-time values for literal references, never for an aliased `process.env`.
+// Client callers pass literal NEXT_PUBLIC reads only as build-time fallbacks; the injected data script takes precedence.
 export interface PublicEnvFallback {
   NEXT_PUBLIC_SUPABASE_URL?: string
   NEXT_PUBLIC_SUPABASE_ANON_KEY?: string
@@ -43,7 +45,7 @@ export function readPublicEnv(
         typeof parsed?.anonKey === "string" && parsed.anonKey
           ? parsed.anonKey
           : (env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "")
-      return { url, anonKey }
+      return { url, anonKey, ...(parsed.nativeAuthProxy === true ? { nativeAuthProxy: true } : {}) }
     } catch {
       // Fall back to process.env below
     }

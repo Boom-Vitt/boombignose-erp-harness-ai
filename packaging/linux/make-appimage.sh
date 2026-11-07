@@ -13,6 +13,9 @@ app=$stage/BoomBigNose.AppDir
 mkdir -p "$app/usr/bin"
 cp "$bin" "$app/usr/bin/BoomBigNose"
 chmod 755 "$app/usr/bin/BoomBigNose"
+test -s "$root/dist/boombignose"
+cp "$root/dist/boombignose" "$app/usr/bin/boombignose"
+chmod 755 "$app/usr/bin/boombignose"
 if [ -d "$root/dist/bundle" ]; then
   cp -a "$root/dist/bundle" "$app/usr/bin/bundle"
 fi

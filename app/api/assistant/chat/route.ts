@@ -1,21 +1,32 @@
-import { chatLocal, erpToolRunner } from "@/lib/ai/assistant-chat"
+import { chatLocal, erpToolRunner, type ToolRunner } from "@/lib/ai/assistant-chat"
 import { parseChatRequest } from "@/lib/ai/chat-attachments"
-import { getOrgContext } from "@/lib/auth"
+import { getVerifiedApiContext } from "@/lib/auth"
+import { readLimitedJson } from "@/lib/http/read-json"
+import { validateRaster, OcrError } from "@/lib/ocr/server"
 
 export const dynamic = "force-dynamic"
 
-const MAX_BODY = 14_000_000
-
 export async function POST(request: Request) {
-  const ctx = await getOrgContext()
-  if (!ctx) return Response.json({ error: "Sign in required." }, { status: 401 })
-  if (Number(request.headers.get("content-length") ?? 0) > MAX_BODY) return Response.json({ error: "That message is too large." }, { status: 413 })
-  const body = await request.json().catch(() => null)
-  const parsed = parseChatRequest(body)
+  const access = await getVerifiedApiContext(request, { mutation: true })
+  if ("response" in access) return access.response
+  const body = await readLimitedJson(request, 14_000_000)
+  if ("error" in body) return Response.json({ error: body.error }, { status: body.status })
+  const parsed = parseChatRequest(body.data)
   if ("error" in parsed) return Response.json({ error: parsed.error }, { status: 400 })
-  // Local Supabase may be down: the tools then answer with an error the model can relay; chat itself still works.
-  const tools = await erpToolRunner(ctx.orgId).catch(() => null)
-  const result = await chatLocal(parsed.messages, fetch, tools)
+  try {
+    for (const attachment of parsed.messages.at(-1)?.attachments ?? []) {
+      if (attachment.kind === "image") await validateRaster(Buffer.from(attachment.base64, "base64"), attachment.mediaType)
+    }
+  } catch (error) {
+    return Response.json({ error: error instanceof Error ? error.message : "Invalid image." }, { status: error instanceof OcrError ? error.status : 400 })
+  }
+  let tools: ToolRunner | undefined
+  if (parsed.dataScope === "erp") {
+    try { tools = await erpToolRunner(access.ctx, undefined, request.signal) } catch {
+      return Response.json({ error: "Authorized ERP data tools are unavailable. No ungrounded fallback was used." }, { status: 503 })
+    }
+  }
+  const result = await chatLocal(parsed.messages, fetch, tools, request.signal, parsed.dataScope)
   if ("error" in result) return Response.json({ error: result.error }, { status: 502 })
-  return Response.json(result)
+  return Response.json(result, { headers: { "Cache-Control": "private, no-store" } })
 }

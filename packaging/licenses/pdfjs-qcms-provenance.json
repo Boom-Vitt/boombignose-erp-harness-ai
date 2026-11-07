@@ -1,0 +1,610 @@
+{
+  "format": 1,
+  "owner": "pdfjs-dist@6.5.438",
+  "scope": "Only Rust runtime and wasm-bindgen incorporated into the unchanged browser wasm/qcms_bg.wasm; codec and PDF.js wrapper originals remain separately collected.",
+  "installedAsset": {
+    "path": "wasm/qcms_bg.wasm",
+    "sha256": "663d86126d5f5fcb1c61490f94353e2a8375660b8c5498ab3ebab5a34b08800e",
+    "bytes": 96589
+  },
+  "requiredGuards": {
+    "package": {
+      "name": "pdfjs-dist",
+      "version": "6.5.438"
+    },
+    "assetPath": "wasm/qcms_bg.wasm",
+    "assetSha256": "663d86126d5f5fcb1c61490f94353e2a8375660b8c5498ab3ebab5a34b08800e",
+    "noticeFiles": [
+      {
+        "file": "rust-1.97.1-compiler-builtins-LICENSE.txt",
+        "sha256": "ab6eec6caf0fa5775e411c7a8bc6a45c4ef2956b0980b157ab74fc5cd62a928b",
+        "bytes": 15078
+      },
+      {
+        "file": "rust-1.97.1-libm-LICENSE.txt",
+        "sha256": "3823dda7cf046602f4b4e77ec8e227863dc4736037cc85bb33d9f19febe16bb7",
+        "bytes": 14088
+      },
+      {
+        "file": "rust-1.97.1-libm-pow-NOTICE.txt",
+        "sha256": "603e6e96737605b0a0f38955dd07cba7b4dd8b5d6661924d539499b498654313",
+        "bytes": 373
+      },
+      {
+        "file": "rust-1.97.1-libm-powf-NOTICE.txt",
+        "sha256": "6082fa0a02b0148774d8740bf988cf5f3da117801db565f725269b047170c855",
+        "bytes": 516
+      }
+    ],
+    "onMismatch": "Fail collection and re-establish exact runtime provenance; do not silently skip notices or substitute current sources."
+  },
+  "producers": {
+    "rustc": "1.97.1 (8bab26f4f 2026-07-14)",
+    "wasm-bindgen": "0.2.126",
+    "walrus": "0.26.4",
+    "customSectionOffset": 96368
+  },
+  "rustSource": {
+    "version": "1.97.1",
+    "commit": "8bab26f4f68e0e26f0bb7960be334d5b520ea452",
+    "url": "https://github.com/rust-lang/rust/tree/8bab26f4f68e0e26f0bb7960be334d5b520ea452",
+    "installedOriginals": "Installed stable toolchain is Rust 1.99.0 (2026-10-01), without rust-src; it is not substituted for this binary. Exact immutable official Rust commit is used."
+  },
+  "wasmBindgenSource": {
+    "version": "0.2.126",
+    "commit": "21ac804a96c0c5c5d6459084686a9a17a8a3c865",
+    "tag": "0.2.126",
+    "url": "https://github.com/wasm-bindgen/wasm-bindgen/tree/21ac804a96c0c5c5d6459084686a9a17a8a3c865",
+    "installedOriginals": "Installed Cargo source is wasm-bindgen 0.2.129, not the incorporated 0.2.126; exact immutable official 0.2.126 sources are used."
+  },
+  "staticEvidence": {
+    "method": "Offline WASM section/LEB parsing, data-string inspection, and decoded f32.const/f64.const comparison with exact-source math coefficients; target never executed. Byte offsets are zero-based within the guarded WASM.",
+    "functionImports": [
+      {
+        "module": "./qcms_bg.js",
+        "name": "__wbg_copy_result_0d15f3bf9d9012ae",
+        "typeIndex": 1
+      },
+      {
+        "module": "./qcms_bg.js",
+        "name": "__wbg___wbindgen_throw_344f42d3211c4765",
+        "typeIndex": 1
+      },
+      {
+        "module": "./qcms_bg.js",
+        "name": "__wbindgen_init_externref_table",
+        "typeIndex": 8
+      }
+    ],
+    "sourcePaths": [
+      {
+        "component": "Rust std",
+        "text": "/rustc/8bab26f4f68e0e26f0bb7960be334d5b520ea452/library/std/src/sys/thread_local/no_threads.rs",
+        "offset": 91619
+      },
+      {
+        "component": "Rust alloc",
+        "text": "/rustc/8bab26f4f68e0e26f0bb7960be334d5b520ea452/library/alloc/src/raw_vec/mod.rs",
+        "offset": 92263
+      },
+      {
+        "component": "wasm-bindgen runtime",
+        "text": "/usr/local/cargo/registry/src/index.crates.io-1949cf8c6b5b557f/wasm-bindgen-0.2.126/src/externref.rs",
+        "offset": 92162
+      },
+      {
+        "component": "dlmalloc allocator",
+        "text": "/rust/deps/dlmalloc-0.2.13/src/dlmalloc.rs",
+        "offset": 92433
+      }
+    ],
+    "mathSourceMatches": [
+      {
+        "source": "https://raw.githubusercontent.com/rust-lang/rust/8bab26f4f68e0e26f0bb7960be334d5b520ea452/library/compiler-builtins/libm/src/math/pow.rs",
+        "functionIndex": 139,
+        "functionOffset": 86890,
+        "matchedConstants": [
+          {
+            "constant": "TWO53",
+            "type": "f64",
+            "value": 9007199254740992.0,
+            "offset": 87531
+          },
+          {
+            "constant": "HUGE",
+            "type": "f64",
+            "value": 1e+300,
+            "offset": 89030
+          },
+          {
+            "constant": "TINY",
+            "type": "f64",
+            "value": 1e-300,
+            "offset": 89005
+          },
+          {
+            "constant": "L1",
+            "type": "f64",
+            "value": 0.5999999999999946,
+            "offset": 87875
+          },
+          {
+            "constant": "L2",
+            "type": "f64",
+            "value": 0.4285714285785502,
+            "offset": 87864
+          },
+          {
+            "constant": "L3",
+            "type": "f64",
+            "value": 0.33333332981837743,
+            "offset": 87853
+          },
+          {
+            "constant": "L4",
+            "type": "f64",
+            "value": 0.272728123808534,
+            "offset": 87842
+          },
+          {
+            "constant": "L5",
+            "type": "f64",
+            "value": 0.23066074577556175,
+            "offset": 87831
+          },
+          {
+            "constant": "L6",
+            "type": "f64",
+            "value": 0.20697501780033842,
+            "offset": 87821
+          },
+          {
+            "constant": "P1",
+            "type": "f64",
+            "value": 0.16666666666666602,
+            "offset": 88649
+          },
+          {
+            "constant": "P2",
+            "type": "f64",
+            "value": -0.0027777777777015593,
+            "offset": 88638
+          },
+          {
+            "constant": "P3",
+            "type": "f64",
+            "value": 6.613756321437934e-05,
+            "offset": 88627
+          },
+          {
+            "constant": "P4",
+            "type": "f64",
+            "value": -1.6533902205465252e-06,
+            "offset": 88616
+          },
+          {
+            "constant": "P5",
+            "type": "f64",
+            "value": 4.1381367970572385e-08,
+            "offset": 88606
+          },
+          {
+            "constant": "LG2",
+            "type": "f64",
+            "value": 0.6931471805599453,
+            "offset": 88559
+          },
+          {
+            "constant": "LG2_H",
+            "type": "f64",
+            "value": 0.6931471824645996,
+            "offset": 88539
+          },
+          {
+            "constant": "LG2_L",
+            "type": "f64",
+            "value": -1.904654299957768e-09,
+            "offset": 88571
+          },
+          {
+            "constant": "OVT",
+            "type": "f64",
+            "value": 8.008566259537294e-17,
+            "offset": 88394
+          },
+          {
+            "constant": "CP",
+            "type": "f64",
+            "value": 0.9617966939259756,
+            "offset": 87951
+          },
+          {
+            "constant": "CP_H",
+            "type": "f64",
+            "value": 0.9617967009544373,
+            "offset": 87990
+          },
+          {
+            "constant": "CP_L",
+            "type": "f64",
+            "value": -7.028461650952758e-09,
+            "offset": 87963
+          },
+          {
+            "constant": "IVLN2_H",
+            "type": "f64",
+            "value": 1.4426950216293335,
+            "offset": 88155
+          },
+          {
+            "constant": "IVLN2_L",
+            "type": "f64",
+            "value": 1.9259629911266175e-08,
+            "offset": 88087
+          }
+        ],
+        "constantCount": 24,
+        "classification": "static-source-match",
+        "interpretation": "23 of 24 distinctive named scalar constants from this exact source are present at decoded float-constant instruction boundaries in this function; source math routing exposes this function on wasm32-unknown-unknown."
+      },
+      {
+        "source": "https://raw.githubusercontent.com/rust-lang/rust/8bab26f4f68e0e26f0bb7960be334d5b520ea452/library/compiler-builtins/libm/src/math/powf.rs",
+        "functionIndex": 140,
+        "functionOffset": 89054,
+        "matchedConstants": [
+          {
+            "constant": "TWO24",
+            "type": "f32",
+            "value": 16777216.0,
+            "offset": 89522
+          },
+          {
+            "constant": "HUGE",
+            "type": "f32",
+            "value": 1e+30,
+            "offset": 90657
+          },
+          {
+            "constant": "TINY",
+            "type": "f32",
+            "value": 1e-30,
+            "offset": 90674
+          },
+          {
+            "constant": "L1",
+            "type": "f32",
+            "value": 0.60000002384,
+            "offset": 89807
+          },
+          {
+            "constant": "L2",
+            "type": "f32",
+            "value": 0.42857143283,
+            "offset": 89800
+          },
+          {
+            "constant": "L3",
+            "type": "f32",
+            "value": 0.33333334327,
+            "offset": 89793
+          },
+          {
+            "constant": "L4",
+            "type": "f32",
+            "value": 0.27272811532,
+            "offset": 89786
+          },
+          {
+            "constant": "L5",
+            "type": "f32",
+            "value": 0.23066075146,
+            "offset": 89779
+          },
+          {
+            "constant": "L6",
+            "type": "f32",
+            "value": 0.20697501302,
+            "offset": 89773
+          },
+          {
+            "constant": "P1",
+            "type": "f32",
+            "value": 0.16666667163,
+            "offset": 90413
+          },
+          {
+            "constant": "P2",
+            "type": "f32",
+            "value": -0.002777777845,
+            "offset": 90406
+          },
+          {
+            "constant": "P3",
+            "type": "f32",
+            "value": 6.613755977e-05,
+            "offset": 90399
+          },
+          {
+            "constant": "P4",
+            "type": "f32",
+            "value": -1.6533901999e-06,
+            "offset": 90392
+          },
+          {
+            "constant": "P5",
+            "type": "f32",
+            "value": 4.1381369442e-08,
+            "offset": 90386
+          },
+          {
+            "constant": "LG2",
+            "type": "f32",
+            "value": 0.69314718246,
+            "offset": 90355
+          },
+          {
+            "constant": "LG2_H",
+            "type": "f32",
+            "value": 0.693145752,
+            "offset": 90331
+          },
+          {
+            "constant": "LG2_L",
+            "type": "f32",
+            "value": 1.42860654e-06,
+            "offset": 90341
+          },
+          {
+            "constant": "OVT",
+            "type": "f32",
+            "value": 4.2995665694e-08,
+            "offset": 90192
+          },
+          {
+            "constant": "CP",
+            "type": "f32",
+            "value": 0.96179670095,
+            "offset": 89869
+          },
+          {
+            "constant": "CP_H",
+            "type": "f32",
+            "value": 0.9619140625,
+            "offset": 89900
+          },
+          {
+            "constant": "CP_L",
+            "type": "f32",
+            "value": -0.00011736857402,
+            "offset": 89877
+          },
+          {
+            "constant": "IVLN2_H",
+            "type": "f32",
+            "value": 1.4426879883,
+            "offset": 90019
+          },
+          {
+            "constant": "IVLN2_L",
+            "type": "f32",
+            "value": 7.0526075433e-06,
+            "offset": 89971
+          }
+        ],
+        "constantCount": 24,
+        "classification": "static-source-match",
+        "interpretation": "23 of 24 distinctive named scalar constants from this exact source are present at decoded float-constant instruction boundaries in this function; source math routing exposes this function on wasm32-unknown-unknown."
+      }
+    ],
+    "nonAttribution": "exp shares five coefficients with pow but has no independent match; no separate exp implementation is attributed. No name section or linker map is present, so these findings do not claim a complete per-function dependency inventory."
+  },
+  "existingPackageTexts": [
+    {
+      "path": "LICENSE",
+      "sha256": "0d542e0c8804e39aa7f37eb00da5a762149dc682d7829451287e11b938e94594",
+      "bytes": 10174
+    },
+    {
+      "path": "wasm/LICENSE_QCMS",
+      "sha256": "36d847ae882f6574ebc72f56a4f354e4f104fde4a584373496482e97d52d31bc",
+      "bytes": 1121
+    },
+    {
+      "path": "wasm/LICENSE_PDFJS_QCMS",
+      "sha256": "508a77d2e7b51d98adeed32648ad124b7b30241a8e70b2e72c99f92d8e5874d1",
+      "bytes": 1036
+    }
+  ],
+  "components": [
+    {
+      "component": "Rust std/core/alloc and in-tree runtime",
+      "version": "1.97.1",
+      "sourceCommit": "8bab26f4f68e0e26f0bb7960be334d5b520ea452",
+      "license": "MIT OR Apache-2.0",
+      "selectedLicense": "Apache-2.0",
+      "coverage": "Existing pdfjs-dist/LICENSE already contains the complete Apache-2.0 terms, byte-content equivalent after whitespace normalization to exact Rust LICENSE-APACHE. Apache section 4(c) applies to distributed source, not this unchanged upstream object. No Rust root NOTICE is present in this exact source tree. Do not manufacture missing MIT-attribution duties after selecting the Apache alternative. Third-party runtime portions are addressed separately below.",
+      "newNoticeFiles": []
+    },
+    {
+      "component": "wasm-bindgen emitted Rust runtime",
+      "version": "0.2.126",
+      "sourceCommit": "21ac804a96c0c5c5d6459084686a9a17a8a3c865",
+      "license": "MIT OR Apache-2.0",
+      "selectedLicense": "Apache-2.0",
+      "evidence": "Producer and embedded externref.rs source path establish incorporated runtime, not merely use of a CLI transformer. Exact Cargo.toml confirms version and dual license. Its package include list contains build.rs, LICENSE-* and src, not a NOTICE.",
+      "coverage": "Existing pdfjs-dist/LICENSE Apache terms match the exact upstream Apache license through END OF TERMS AND CONDITIONS after whitespace normalization. Upstream appendix is application guidance with an unfilled copyright template, not an additional runtime attribution.",
+      "newNoticeFiles": []
+    },
+    {
+      "component": "dlmalloc Rust allocator",
+      "version": "0.2.13",
+      "sourceCommit": "fceade31bdd3d5d654d69b99fefeec0c3bbb4883",
+      "archive": {
+        "url": "https://static.crates.io/crates/dlmalloc/dlmalloc-0.2.13.crate",
+        "sha256": "9f5b01c17f85ee988d832c40e549a64bd89ab2c9f8d8a613bdf5122ae507e294",
+        "bytes": 27636
+      },
+      "license": "MIT OR Apache-2.0",
+      "selectedLicense": "Apache-2.0",
+      "evidence": "Embedded /rust/deps/dlmalloc-0.2.13/src/dlmalloc.rs plus exact Rust library/Cargo.lock entry; downloaded immutable crate SHA256 equals that lock checksum. Crate archive has LICENSE-MIT and LICENSE-APACHE and no NOTICE. Original dlmalloc.rs states Doug Lea original was public domain.",
+      "coverage": "Existing pdfjs-dist/LICENSE Apache terms match the exact crate LICENSE-APACHE through END OF TERMS AND CONDITIONS after whitespace normalization. No additional MIT notice is required under the selected Apache alternative.",
+      "newNoticeFiles": []
+    },
+    {
+      "component": "compiler_builtins runtime",
+      "sourceVersion": "0.1.160",
+      "sourceCommit": "8bab26f4f68e0e26f0bb7960be334d5b520ea452",
+      "license": "MIT AND Apache-2.0 WITH LLVM-exception AND (MIT OR Apache-2.0)",
+      "evidence": "Exact in-tree compiler-builtins manifest and math routing import bundled libm; decoded guarded binary contains the characteristic pow and powf coefficient sets. This is embedded runtime evidence, not a claim that the Rust compiler or all LLVM tools ship.",
+      "obligations": "Preserve exact original combined license and its copyright text. Its LLVM object-code exception waives Apache sections 4(a), 4(b), and 4(d) for embedded object portions; it does not erase the MIT and bundled libm notice requirements.",
+      "newNoticeFiles": [
+        "rust-1.97.1-compiler-builtins-LICENSE.txt"
+      ]
+    },
+    {
+      "component": "libm bundled through compiler-builtins",
+      "sourceVersion": "0.2.16",
+      "sourceCommit": "8bab26f4f68e0e26f0bb7960be334d5b520ea452",
+      "license": "MIT, with preserved per-file Sun notices for pow and powf",
+      "evidence": "The guarded binary has separate static-source matches for pow.rs (f64) and powf.rs (f32), 23 decoded characteristic float constants each. Exact module routing imports these from the bundled libm source; this is not an assertion that a separate libm Cargo package was linked.",
+      "obligations": "Preserve the complete original libm license including its original copyright material; also preserve the full original leading pow and powf notices, whose Sun permission is conditional on preservation. Existing PDF.js QCMS/MIT and package Apache texts lack these actual source notices.",
+      "newNoticeFiles": [
+        "rust-1.97.1-libm-LICENSE.txt",
+        "rust-1.97.1-libm-pow-NOTICE.txt",
+        "rust-1.97.1-libm-powf-NOTICE.txt"
+      ]
+    }
+  ],
+  "notices": [
+    {
+      "file": "rust-1.97.1-compiler-builtins-LICENSE.txt",
+      "sha256": "ab6eec6caf0fa5775e411c7a8bc6a45c4ef2956b0980b157ab74fc5cd62a928b",
+      "bytes": 15078,
+      "source": {
+        "url": "https://raw.githubusercontent.com/rust-lang/rust/8bab26f4f68e0e26f0bb7960be334d5b520ea452/library/compiler-builtins/LICENSE.txt",
+        "sha256": "ab6eec6caf0fa5775e411c7a8bc6a45c4ef2956b0980b157ab74fc5cd62a928b",
+        "bytes": 15078
+      },
+      "preservation": "complete original file"
+    },
+    {
+      "file": "rust-1.97.1-libm-LICENSE.txt",
+      "sha256": "3823dda7cf046602f4b4e77ec8e227863dc4736037cc85bb33d9f19febe16bb7",
+      "bytes": 14088,
+      "source": {
+        "url": "https://raw.githubusercontent.com/rust-lang/rust/8bab26f4f68e0e26f0bb7960be334d5b520ea452/library/compiler-builtins/libm/LICENSE.txt",
+        "sha256": "3823dda7cf046602f4b4e77ec8e227863dc4736037cc85bb33d9f19febe16bb7",
+        "bytes": 14088
+      },
+      "preservation": "complete original file"
+    },
+    {
+      "file": "rust-1.97.1-libm-pow-NOTICE.txt",
+      "sha256": "603e6e96737605b0a0f38955dd07cba7b4dd8b5d6661924d539499b498654313",
+      "bytes": 373,
+      "source": {
+        "url": "https://raw.githubusercontent.com/rust-lang/rust/8bab26f4f68e0e26f0bb7960be334d5b520ea452/library/compiler-builtins/libm/src/math/pow.rs",
+        "sha256": "581efb544966f82f440137757bbbdec99d873c3121efde0294493c4a9fc9d259",
+        "bytes": 21363,
+        "lines": [
+          1,
+          10
+        ]
+      },
+      "preservation": "complete original leading origin, attribution, copyright, and permission comment blocks"
+    },
+    {
+      "file": "rust-1.97.1-libm-powf-NOTICE.txt",
+      "sha256": "6082fa0a02b0148774d8740bf988cf5f3da117801db565f725269b047170c855",
+      "bytes": 516,
+      "source": {
+        "url": "https://raw.githubusercontent.com/rust-lang/rust/8bab26f4f68e0e26f0bb7960be334d5b520ea452/library/compiler-builtins/libm/src/math/powf.rs",
+        "sha256": "819971cb8e927d80113aded3cfe90dcd501c031e0eb1c562b58842fddd1751be",
+        "bytes": 10108,
+        "lines": [
+          1,
+          14
+        ]
+      },
+      "preservation": "complete original leading origin, attribution, copyright, and permission comment blocks"
+    }
+  ],
+  "sourcePins": {
+    "rustCopyright": {
+      "url": "https://raw.githubusercontent.com/rust-lang/rust/8bab26f4f68e0e26f0bb7960be334d5b520ea452/COPYRIGHT",
+      "sha256": "172020dbfd5b53a226dfde77616190a48dcff519b0bc0e6deb91a8450782c4af",
+      "bytes": 1571
+    },
+    "rustApacheLicense": {
+      "url": "https://raw.githubusercontent.com/rust-lang/rust/8bab26f4f68e0e26f0bb7960be334d5b520ea452/LICENSE-APACHE",
+      "sha256": "62c7a1e35f56406896d7aa7ca52d0cc0d272ac022b5d2796e7d6905db8a3636a",
+      "bytes": 9723
+    },
+    "rustOwnership": {
+      "url": "https://raw.githubusercontent.com/rust-lang/rust/8bab26f4f68e0e26f0bb7960be334d5b520ea452/REUSE.toml",
+      "sha256": "6d9f80349a29388841413ecb3d20473b6440768c2fdfa06d0456eb56d516daf3",
+      "bytes": 6219
+    },
+    "rustLibraryLock": {
+      "url": "https://raw.githubusercontent.com/rust-lang/rust/8bab26f4f68e0e26f0bb7960be334d5b520ea452/library/Cargo.lock",
+      "sha256": "02120dd57c4c5fd70c81fd92472681c8de5cc2dd78258276da37bb2253666061",
+      "bytes": 9834
+    },
+    "rustStdManifest": {
+      "url": "https://raw.githubusercontent.com/rust-lang/rust/8bab26f4f68e0e26f0bb7960be334d5b520ea452/library/std/Cargo.toml",
+      "sha256": "ff5272b18cb16a9e67256a1045dc35d9d08ae38916a218f684a2ae2f4360f078",
+      "bytes": 5587
+    },
+    "compilerBuiltinsManifest": {
+      "url": "https://raw.githubusercontent.com/rust-lang/rust/8bab26f4f68e0e26f0bb7960be334d5b520ea452/library/compiler-builtins/compiler-builtins/Cargo.toml",
+      "sha256": "d89e31fed70f2cad9c6e91b787bf4c0fb680c631196b2a7215c81745aaf7fb7e",
+      "bytes": 2005
+    },
+    "compilerBuiltinsMathRouting": {
+      "url": "https://raw.githubusercontent.com/rust-lang/rust/8bab26f4f68e0e26f0bb7960be334d5b520ea452/library/compiler-builtins/compiler-builtins/src/math/mod.rs",
+      "sha256": "a3ff615e04d9ae9a0bb36cfbfd9a0aaf183ab6e32ddfe836cdf4f243f97a401e",
+      "bytes": 7270
+    },
+    "libmManifest": {
+      "url": "https://raw.githubusercontent.com/rust-lang/rust/8bab26f4f68e0e26f0bb7960be334d5b520ea452/library/compiler-builtins/libm/Cargo.toml",
+      "sha256": "8448af22d4285030a2e79f825942e9b7b33dd5d1b16bc39dcf3ef7506f037f8d",
+      "bytes": 1456
+    },
+    "wasmBindgenManifest": {
+      "url": "https://raw.githubusercontent.com/wasm-bindgen/wasm-bindgen/21ac804a96c0c5c5d6459084686a9a17a8a3c865/Cargo.toml",
+      "sha256": "3e18862ec9ff0cf81583cf74fff44596a36a63e5a3a71cc048ee87a18a7b8fc0",
+      "bytes": 4318
+    },
+    "wasmBindgenApacheLicense": {
+      "url": "https://raw.githubusercontent.com/wasm-bindgen/wasm-bindgen/21ac804a96c0c5c5d6459084686a9a17a8a3c865/LICENSE-APACHE",
+      "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2",
+      "bytes": 10847
+    },
+    "wasmBindgenExternrefSource": {
+      "url": "https://raw.githubusercontent.com/wasm-bindgen/wasm-bindgen/21ac804a96c0c5c5d6459084686a9a17a8a3c865/src/externref.rs",
+      "sha256": "40d3a6011ff7341c9b1a4bcecc7ddc459f8bf9e7ba37e6a523bcfc66a3ba87d3",
+      "bytes": 5116
+    },
+    "dlmallocApacheLicense": {
+      "url": "https://static.crates.io/crates/dlmalloc/dlmalloc-0.2.13.crate#dlmalloc-0.2.13/LICENSE-APACHE",
+      "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2",
+      "bytes": 10847
+    },
+    "dlmallocManifest": {
+      "url": "https://static.crates.io/crates/dlmalloc/dlmalloc-0.2.13.crate#dlmalloc-0.2.13/Cargo.toml.orig",
+      "sha256": "80849fe80b73fd7679f23ff6213e5efd2ebdd7d7b993a01e1c414d92d0c699e5",
+      "bytes": 1588
+    },
+    "dlmallocVcs": {
+      "url": "https://static.crates.io/crates/dlmalloc/dlmalloc-0.2.13.crate#dlmalloc-0.2.13/.cargo_vcs_info.json",
+      "sha256": "93b70d8b4239bbea619465842d2d8c98c04608f22457c38ab110040675e4998c",
+      "bytes": 94
+    }
+  },
+  "exclusions": [
+    "Walrus 0.26.4 is a recorded build-time transformer; no embedded walrus runtime ownership was established, so no walrus notice is added.",
+    "No Rust compiler, rustc_driver, LLVM toolchain, Cargo, wasm-bindgen CLI/macro development dependency, or unrelated target-specific std component is presumed shipped.",
+    "No current-nearby Rust, wasm-bindgen, compiler-builtins, or libm source is substituted for the exact pinned runtime sources."
+  ],
+  "unresolvedExactSourcePrerequisites": []
+}

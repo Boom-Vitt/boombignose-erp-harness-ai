@@ -3,7 +3,7 @@ import { beforeEach, expect, it, vi } from "vitest"
 const state = vi.hoisted(() => ({ writes: [] as unknown[] }))
 vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }))
 vi.mock("next/navigation", () => ({ redirect: (href: string) => { throw new Error(`REDIRECT ${href}`) } }))
-vi.mock("@/lib/auth", () => ({ requireOrgContext: async () => ({ orgId: "org", userId: "me" }) }))
+vi.mock("@/lib/auth", () => ({ requireOrgContext: async () => ({ orgId: "org", userId: "me", role: "owner" }) }))
 vi.mock("@/lib/audit", () => ({ writeAudit: vi.fn() }))
 vi.mock("@/lib/supabase/server", () => ({ createClient: async () => ({ from: () => {
   const query = {

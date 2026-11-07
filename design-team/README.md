@@ -6,7 +6,7 @@ This folder is a set of roles and notes inside the BoomBigNose ERP repository. I
 
 Find modern, clean references and use them to redesign two surfaces:
 
-- The GitHub Pages download page in `site/`, published at https://boom-vitt.github.io/boombignose-erp-harness-ai/ . The previous Pages address is retired.
+- The GitHub Pages download page in `site/`, published at https://boom-vitt.github.io/nose-erp/ . The previous Pages address is retired.
 - The ERP web UI, only through tokens in `app/globals.css` unless a later pass says otherwise
 
 ## How to run a design pass

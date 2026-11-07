@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server"
 import { todayISO } from "@/lib/dates"
 import { readAllOrThrow } from "@/lib/supabase/read-all"
 import { notFound } from "next/navigation"
+import { z } from "zod"
 import type { ProductOption } from "@/lib/products/snapshot"
 
 export type PurchaseProduct = ProductOption & { cost_satang: number }
@@ -17,6 +18,7 @@ export async function purchaseOptions() {
 }
 
 export async function purchaseDetail(id: string) {
+  if (!z.guid().safeParse(id).success) notFound()
   const ctx = await requireOrgContext()
   const db = await createClient()
   const [order, lines, bills, settings, matches] = await Promise.all([
@@ -33,6 +35,7 @@ export async function purchaseDetail(id: string) {
 }
 
 export async function vendorDetail(id: string) {
+  if (!z.guid().safeParse(id).success) notFound()
   const ctx = await requireOrgContext()
   const db = await createClient()
   const [vendor, orders, bills] = await Promise.all([

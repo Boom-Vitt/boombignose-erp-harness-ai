@@ -53,7 +53,7 @@
     <div id="bar" class="bar" aria-hidden="true"><i></i></div>
     <div class="actions">
       <button id="open-erp" type="button" hidden>เปิด ERP</button>
-      <button id="pull-model" type="button"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V3" /><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><path d="m7 10 5 5 5-5" /></svg><span id="pull-label">ดาวน์โหลดโมเดล qwen2.5:3b</span></button>
+      <button id="pull-model" type="button"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V3" /><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><path d="m7 10 5 5 5-5" /></svg><span id="pull-label">ดาวน์โหลดโมเดล qwen3.5:4b</span></button>
     </div>
     <p id="pull-status">การเปิดโปรแกรมไม่ได้ดาวน์โหลดโมเดล หลังเข้า ERP แล้ว ติดตั้งโมเดลได้ที่ Settings โดยไม่ต้องลงแอป AI อื่น</p>
     <p id="pull-detail"></p>
@@ -167,7 +167,7 @@
       }
 
       var pullBtn = $("pull-model"), pullLabel = $("pull-label"), pullStatus = $("pull-status"), pullDetail = $("pull-detail");
-      var MODEL = "qwen2.5:3b";
+      var MODEL = "qwen3.5:4b";
       function pullMessage(raw) {
         var m = /^(ollama|network|timeout|other):\s*([\s\S]*)$/.exec(raw);
         var kind = m ? m[1] : "other", detail = m ? m[2] : raw;

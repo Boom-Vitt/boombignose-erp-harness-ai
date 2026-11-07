@@ -1,6 +1,7 @@
 import { afterEach, beforeAll, beforeEach, expect, it, vi } from "vitest"
 import { NextRequest } from "next/server"
 import { updateSession } from "./middleware"
+vi.mock("server-only", () => ({}))
 
 const url = "https://proxy-test.supabase.test"
 const kid = "proxy-test-key"
@@ -37,6 +38,7 @@ beforeAll(async () => {
 beforeEach(() => {
   vi.stubEnv("NEXT_PUBLIC_SUPABASE_URL", url)
   vi.stubEnv("NEXT_PUBLIC_SUPABASE_ANON_KEY", "anon")
+  vi.stubEnv("NEXT_PUBLIC_APP_URL", "https://app.example.test")
   calls = []
   auth = { "/auth/v1/.well-known/jwks.json": () => Response.json({ keys: [jwk] }) }
   vi.stubGlobal("fetch", vi.fn(async (input: RequestInfo | URL) => {

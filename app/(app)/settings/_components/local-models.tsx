@@ -261,17 +261,17 @@ export function LocalModelsCard({ initial, canInstall, asr = { offered: false, i
     }
   }
 
-  const text = snapshot.rows.find((row) => row.id === "qwen2.5:3b")
-  const vision = snapshot.rows.find((row) => row.id === "qwen2.5vl:3b")
-  const image = snapshot.rows.find((row) => row.id === "x/flux2-klein:4b")
+  const text = snapshot.rows.find((row) => row.modality === "text")
+  const vision = snapshot.rows.find((row) => row.modality === "vision")
+  const image = snapshot.rows.find((row) => row.modality === "image")
   const deck = [
-    { n: "1", step: "text", title: "ข้อความ qwen2.5:3b / Text", row: text, missing: "ติดตั้งจากปุ่มด้านล่าง / Install with the button below" },
-    { n: "2", step: "vision", title: "อ่านรูป qwen2.5vl:3b / Vision", row: vision, missing: "ติดตั้งจากปุ่มด้านล่าง / Install with the button below" },
-    { n: "3", step: "image", title: image ? "สร้างภาพ x/flux2-klein:4b / Image" : "สร้างภาพ / Image", row: image, missing: "ยังไม่มีบนระบบนี้ / Not on this operating system" },
+    { n: "1", step: "text", title: text ? `แชท ERP/ภาพ ${text.id} / ERP chat and images` : "แชท ERP/ภาพ / ERP chat and images", row: text, missing: "ติดตั้งจากปุ่มด้านล่าง / Install with the button below" },
+    { n: "2", step: "vision", title: vision ? `OCR ไทย/อังกฤษ ${vision.id} / Thai/English OCR` : "OCR ไทย/อังกฤษ / Thai/English OCR", row: vision, missing: "ติดตั้งจากปุ่มด้านล่าง / Install with the button below" },
+    { n: "3", step: "image", title: image ? `สร้างภาพ ${image.id} / Image` : "สร้างภาพ / Image", row: image, missing: "ยังไม่มีบนระบบนี้ / Not on this operating system" },
   ]
 
   return (
-    <div id="local-models" className="bbn-sketch space-y-4 scroll-mt-20">
+    <div className="bbn-sketch space-y-4">
       <ol className="bbn-sketch-steps" aria-label="ขั้นตอนติดตั้งโมเดล / Model install steps">
         {deck.map((item) => (
           <li key={item.step} data-step={item.step}>

@@ -1,3 +1,5 @@
+import { notFound } from "next/navigation"
+import { z } from "zod"
 import { requireOrgContext } from "@/lib/auth"
 import { renderDocumentHtml } from "@/lib/documents/printable"
 import { publicReferenceForDocument } from "@/lib/documents/public-reference-query"
@@ -10,6 +12,7 @@ import { documentSections } from "@/lib/line-grid/queries"
 export async function GET(_request: Request, { params }: { params: Promise<{ id: string }> }) {
   const ctx = await requireOrgContext()
   const { id } = await params
+  if (!z.guid().safeParse(id).success) notFound()
   const db = await createClient()
   const [{ order, lines }, sections, reference] = await Promise.all([
     purchaseDetail(id),

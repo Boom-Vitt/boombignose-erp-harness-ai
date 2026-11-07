@@ -1,6 +1,7 @@
 import Link from "next/link"
 import { notFound } from "next/navigation"
 import { ArrowLeft } from "lucide-react"
+import { z } from "zod"
 
 import { createClient } from "@/lib/supabase/server"
 import { requireOrgContext } from "@/lib/auth"
@@ -16,14 +17,16 @@ export default async function EditClientPage({
   params: Promise<{ id: string }>
 }) {
   const { id } = await params
+  if (!z.guid().safeParse(id).success) notFound()
   const ctx = await requireOrgContext()
   const supabase = await createClient()
-  const { data: client } = await supabase
+  const { data: client, error } = await supabase
     .from("clients")
     .select("id, name, industry, source, notes, tax_id, branch_label")
     .eq("org_id", ctx.orgId)
     .eq("id", id)
     .maybeSingle()
+  if (error) throw new Error("Client editor unavailable. Please reload.")
 
   if (!client) notFound()
 

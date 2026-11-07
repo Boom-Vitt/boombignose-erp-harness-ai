@@ -1,7 +1,7 @@
 blank_issues_enabled: false
 contact_links:
   - name: Report a security vulnerability
-    url: https://github.com/Boom-Vitt/boombignose-erp-harness-ai/security/advisories/new
+    url: https://github.com/Boom-Vitt/nose-erp/security/advisories/new
     about: Please report security issues privately, never as a public issue.
   - name: Contact BoomBigNose privately
     url: https://boombignose.org

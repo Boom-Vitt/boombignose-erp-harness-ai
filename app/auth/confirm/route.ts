@@ -3,6 +3,8 @@ import { NextResponse, type NextRequest } from "next/server"
 
 import { createClient } from "@/lib/supabase/server"
 import { loopbackRedirect } from "@/lib/supabase/auth-cookies"
+import { configuredOrigins } from "@/lib/supabase/trusted-origin"
+import { safeReturnPath } from "@/lib/supabase/redirect"
 
 /**
  * Email-confirmation callback for signups (and other email OTP links).
@@ -59,7 +61,8 @@ async function failureOrExistingSession(request: NextRequest, message: string) {
 }
 
 function appUrl(request: NextRequest, path: string): URL {
-  return loopbackRedirect(path, request, process.env.NEXT_PUBLIC_APP_URL || "http://127.0.0.1:3100")
+  if (path === "/dashboard") path = safeReturnPath(new URL(request.url).searchParams.get("redirect"))
+  return loopbackRedirect(path, request, configuredOrigins()[0] ?? "")
 }
 
 /** Redirect to /login with a human-readable error message in the query. */

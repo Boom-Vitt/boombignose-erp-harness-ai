@@ -2,11 +2,13 @@ import { clearAuthCookiesAtScopes, createServerClient, type CookieMethodsServer 
 import { NextResponse, type NextRequest } from "next/server"
 
 import { safeReturnPath } from "@/lib/supabase/redirect"
+import { runtimeSupabaseEnv } from "@/lib/supabase/runtime-env"
+import { trustedAppOrigin } from "@/lib/supabase/trusted-origin"
 
 import type { Database } from "@/lib/types/database"
 
 /** Public route prefixes that do not require an authenticated session. */
-const PUBLIC_PREFIXES = ["/login", "/signup", "/auth", "/api/webhooks", "/api/cron", "/portal", "/api/mobile/pair/redeem", "/api/mobile/session", "/api/mobile/status"]
+const PUBLIC_PREFIXES = ["/login", "/signup", "/auth", "/api/webhooks", "/api/cron", "/portal", "/api/mobile/pair/redeem", "/api/mobile/status"]
 
 function isPublic(pathname: string): boolean {
   if (pathname === "/" || pathname === "/blueprint-preview" || pathname === "/network-preview" || pathname === "/api/network/telemetry") return true
@@ -44,9 +46,10 @@ export async function updateSession(request: NextRequest) {
     },
   } satisfies CookieMethodsServer
 
+  const { url: supabaseUrl, anonKey } = runtimeSupabaseEnv()
   const supabase = createServerClient<Database>(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    supabaseUrl,
+    anonKey,
     { cookies }
   )
 
@@ -57,16 +60,20 @@ export async function updateSession(request: NextRequest) {
     // A session cookie that does not decode (say a JWT payload that is base64url but not JSON) makes getClaims throw.
     // Expire it locally and route as signed out; signOut would call the auth server and could revoke a valid session.
     // This is the default storage key supabase-js derives from the project URL, which server.ts and client.ts also use.
-    const storageKey = `sb-${new URL(process.env.NEXT_PUBLIC_SUPABASE_URL!).hostname.split(".")[0]}-auth-token`
+    const storageKey = `sb-${new URL(supabaseUrl).hostname.split(".")[0]}-auth-token`
     await clearAuthCookiesAtScopes({ ...cookies, storageKey, scopes: [{}] })
     return { data: null }
   })
   const user = data?.claims
 
   const { pathname } = request.nextUrl
+  // Audited JSON handlers own verified auth; retain middleware gates elsewhere.
+  if (["/api/mobile", "/api/assistant", "/api/ocr", "/api/attachments", "/api/local-models", "/api/local-asr", "/api/local-backup", "/api/desktop-update", "/api/desktop-window"]
+    .some((prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`))) return supabaseResponse
 
   // Redirects must carry token refreshes as well as the ordinary response.
   function redirectWithSession(url: URL) {
+    url = new URL(`${url.pathname}${url.search}${url.hash}`, trustedAppOrigin(request))
     const response = NextResponse.redirect(url)
     supabaseResponse.cookies.getAll().forEach((cookie) => response.cookies.set(cookie))
     return response

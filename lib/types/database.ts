@@ -1587,6 +1587,7 @@ isOneToOne: false
             confirm_finance_lock_reopen: { Args: { p_org_id: string; p_request_id: string }; Returns: Json }
             cancel_finance_lock_reopen: { Args: { p_org_id: string; p_request_id: string }; Returns: undefined }
             list_finance_lock_reopen_requests: { Args: { p_org_id: string }; Returns: Json }
+            assistant_workspace_profiles: { Args: { p_org_id: string }; Returns: { id: string; full_name: string | null; locale: string; created_at: string; updated_at: string }[] }
             find_support_export: { Args: { p_org_id: string; p_sha256: string }; Returns: Json }
             verify_close_activity_chain: { Args: { p_org_id: string }; Returns: Json }
             review_support_pack: { Args: { p_org_id: string; p_sha256: string }; Returns: Json }

@@ -15,14 +15,14 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/Boom-Vitt/boombignose-erp-harness-ai/boombignose/internal/bundle"
-	"github.com/Boom-Vitt/boombignose-erp-harness-ai/boombignose/internal/cutover"
-	"github.com/Boom-Vitt/boombignose-erp-harness-ai/boombignose/internal/networkcollector"
-	"github.com/Boom-Vitt/boombignose-erp-harness-ai/boombignose/internal/policy"
-	"github.com/Boom-Vitt/boombignose-erp-harness-ai/boombignose/internal/shell"
+	"github.com/Boom-Vitt/nose-erp/boombignose/internal/bundle"
+	"github.com/Boom-Vitt/nose-erp/boombignose/internal/cutover"
+	"github.com/Boom-Vitt/nose-erp/boombignose/internal/networkcollector"
+	"github.com/Boom-Vitt/nose-erp/boombignose/internal/policy"
+	"github.com/Boom-Vitt/nose-erp/boombignose/internal/shell"
 )
 
-const usage = "usage: boombignose check | boombignose cutover [plan|dry-run|apply|rollback] | boombignose backup [export|restore] | boombignose serve | boombignose stop | boombignose models | boombignose pull-model [name] | boombignose remove-model <name> | boombignose network-collector --config ABS_PATH [--once]"
+const usage = "usage: boombignose check | boombignose configure-public-origin <https-origin|off> | boombignose configure-operators <user-uuid> [user-uuid...] | boombignose configure-operators off | boombignose secure-db | boombignose cutover [plan|dry-run|apply|rollback] | boombignose backup [export|restore] | boombignose serve | boombignose stop | boombignose models | boombignose pull-model [name] | boombignose remove-model <name> | boombignose network-collector --config ABS_PATH [--once]"
 
 func main() {
 	if err := run(os.Args[1:]); err != nil {
@@ -34,6 +34,30 @@ func main() {
 func run(args []string) error {
 	if len(args) == 0 {
 		return fmt.Errorf("%s", usage)
+	}
+	if args[0] == "configure-public-origin" {
+		if len(args) != 2 {
+			return fmt.Errorf("%s", usage)
+		}
+		data, err := bundle.DataDir()
+		if err != nil {
+			return err
+		}
+		return bundle.ConfigurePublicOrigin(data, args[1])
+	}
+	if args[0] == "configure-operators" {
+		if len(args) < 2 {
+			return fmt.Errorf("%s", usage)
+		}
+		data, err := bundle.DataDir()
+		if err != nil {
+			return err
+		}
+		ids := args[1:]
+		if len(ids) == 1 && ids[0] == "off" {
+			ids = nil
+		}
+		return bundle.ConfigureOperators(data, ids)
 	}
 	if args[0] == "cutover" {
 		return runCutover(args[1:])
@@ -52,6 +76,9 @@ func run(args []string) error {
 		defer cancel()
 		return networkcollector.Execute(ctx, args[1:], os.Stdout)
 	}
+	if err := bundle.LoadRuntimeConfig(); err != nil {
+		return err
+	}
 	if len(args) != 1 {
 		return fmt.Errorf("%s", usage)
 	}
@@ -64,10 +91,25 @@ func run(args []string) error {
 		if err != nil {
 			return fmt.Errorf("BOOMBIGNOSE_ERP_URL: %w", err)
 		}
+		if _, err := bundle.ValidateConfig(url); err != nil {
+			return err
+		}
 		fmt.Printf("boombignose local-ok erp=%s\n", url)
 		return nil
 	case "serve":
 		return serveBundle()
+	case "secure-db":
+		layout, err := bundle.Discover(bundleRoot())
+		if err != nil {
+			return err
+		}
+		data, err := bundle.DataDir()
+		if err != nil {
+			return err
+		}
+		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Minute)
+		defer cancel()
+		return bundle.SecureDatabase(ctx, layout, data)
 	case "stop":
 		return stopBundle()
 	case "models":
@@ -88,7 +130,15 @@ func runBackup(args []string) error {
 	if err := policy.CheckEnv(os.Getenv); err != nil {
 		return err
 	}
-	return cutover.Backup(context.Background(), args, os.Stdout)
+	data, err := bundle.DataDir()
+	if err != nil {
+		return err
+	}
+	passwordFile, err := bundle.BackupPasswordFile(data)
+	if err != nil {
+		return err
+	}
+	return cutover.Backup(context.Background(), args, os.Stdout, passwordFile)
 }
 
 func runPullModel(args []string) error {
@@ -138,7 +188,7 @@ func pullNamed(model string) error {
 	if err := policy.CheckEnv(os.Getenv); err != nil {
 		return err
 	}
-	root := strings.TrimSpace(os.Getenv("BOOMBIGNOSE_BUNDLE"))
+	root := bundleRoot()
 	layout := bundle.Layout{}
 	if root != "" {
 		found, err := bundle.Discover(root)
@@ -158,7 +208,7 @@ func serveBundle() error {
 	if err := policy.CheckEnv(os.Getenv); err != nil {
 		return err
 	}
-	root := strings.TrimSpace(os.Getenv("BOOMBIGNOSE_BUNDLE"))
+	root := bundleRoot()
 	layout, err := bundle.Discover(root)
 	if err != nil {
 		return err
@@ -171,23 +221,19 @@ func serveBundle() error {
 	if err != nil {
 		return fmt.Errorf("BOOMBIGNOSE_ERP_URL: %w", err)
 	}
-	ctx, cancel := context.WithCancel(context.Background())
+	ctx, cancel := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	defer cancel()
+	defer bundle.StopRunning()
 	if err := bundle.StartStack(ctx, layout, data, target, os.Environ(), nil); err != nil {
-		bundle.StopRunning()
 		return err
 	}
 	fmt.Printf("ready %s\n", target)
-	sig := make(chan os.Signal, 1)
-	signal.Notify(sig, syscall.SIGINT, syscall.SIGTERM)
-	defer signal.Stop(sig)
-	<-sig
-	bundle.StopRunning()
+	<-ctx.Done()
 	return nil
 }
 
 func stopBundle() error {
-	root := strings.TrimSpace(os.Getenv("BOOMBIGNOSE_BUNDLE"))
+	root := bundleRoot()
 	layout := bundle.Layout{}
 	if root != "" {
 		found, err := bundle.Discover(root)
@@ -202,4 +248,15 @@ func stopBundle() error {
 		return err
 	}
 	return bundle.StopAt(layout, data)
+}
+
+func bundleRoot() string {
+	if root := strings.TrimSpace(os.Getenv("BOOMBIGNOSE_BUNDLE")); root != "" {
+		return root
+	}
+	executable, err := os.Executable()
+	if err != nil {
+		return ""
+	}
+	return bundle.DefaultRoot(executable)
 }

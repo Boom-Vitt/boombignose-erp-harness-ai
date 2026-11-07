@@ -3,14 +3,14 @@ import { deleteInstalledModel, loadModelSettings } from "@/lib/ai/ollama-admin"
 
 export const dynamic = "force-dynamic"
 
-export async function GET() {
-  const block = await localModelAccess(false)
+export async function GET(request: Request) {
+  const block = await localModelAccess(false, request)
   if (block) return block
   return Response.json(await loadModelSettings(currentModelHost()))
 }
 
 export async function DELETE(request: Request) {
-  const block = await localModelAccess(true)
+  const block = await localModelAccess(true, request)
   if (block) return block
   const body = await readJson(request)
   const model = typeof body?.model === "string" ? body.model : ""

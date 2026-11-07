@@ -34,13 +34,14 @@ export default async function SubscriptionsPage() {
   const ctx = await requireOrgContext()
   const supabase = await createClient()
 
-  const { data: subs } = await supabase
+  const { data: subs, error } = await supabase
     .from("subscriptions")
     .select(
       "id, name, amount_satang, interval, status, next_run_date, clients(name)"
     )
     .eq("org_id", ctx.orgId)
     .order("created_at", { ascending: false })
+  if (error) throw new Error("Subscriptions unavailable. Please reload.")
 
   const subscriptions = subs ?? []
 

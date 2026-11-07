@@ -1,0 +1,52 @@
+[
+  {
+    "file": "bricolage-grotesque-OFL.txt",
+    "url": "https://raw.githubusercontent.com/google/fonts/38411257417e616c5d4daa1b9e91a3dbcebe1c2e/ofl/bricolagegrotesque/OFL.txt",
+    "sha256": "4b5a7d8f37f5602621c8a8d7358a6a2e71317e6c231c661e15aef0275d3e07ba"
+  },
+  {
+    "file": "geist-mono-OFL.txt",
+    "url": "https://raw.githubusercontent.com/google/fonts/38411257417e616c5d4daa1b9e91a3dbcebe1c2e/ofl/geistmono/OFL.txt",
+    "sha256": "1781d2806a07d91c4edf4740b88449fab7d0eadad53f7c351b94cd4d4eb8c00f"
+  },
+  {
+    "file": "ibm-plex-sans-thai-OFL.txt",
+    "url": "https://raw.githubusercontent.com/google/fonts/38411257417e616c5d4daa1b9e91a3dbcebe1c2e/ofl/ibmplexsansthai/OFL.txt",
+    "sha256": "7e6b2818edbd8f6a01ae80641cc8f16a51080d08fb4e532be3a0b6f74adb07da"
+  },
+  {
+    "file": "react-three-fiber-9.8.2-LICENSE.txt",
+    "url": "https://raw.githubusercontent.com/pmndrs/react-three-fiber/d74622ea8ed717f7212d7e19d65ff3e325508389/LICENSE",
+    "sha256": "9c35b5de7b7493a707fffe4eb23bd2f7f449153c1911f7c6eefb4e591fd5349a"
+  },
+  {
+    "file": "draco3d-1.5.9-LICENSE.txt",
+    "url": "https://raw.githubusercontent.com/google/draco/554628821c3448319d7d4ae48db170b8c63e1aaf/LICENSE",
+    "sha256": "d3709b0fb4b8a94bbb1d02b8a2e484f258b0d9c5c5a01f940391f3fe662cd1a4"
+  },
+  {
+    "file": "react-markers-LICENSE.txt",
+    "url": "https://raw.githubusercontent.com/facebook/react/9e3b772b8cabbd8cadc7522ebe3dde3279e79d9e/LICENSE",
+    "sha256": "52412d7bc7ce4157ea628bbaacb8829e0a9cb3c58f57f99176126bc8cf2bfc85"
+  },
+  {
+    "file": "draco3d-1.5.9-AUTHORS.txt",
+    "url": "https://raw.githubusercontent.com/google/draco/554628821c3448319d7d4ae48db170b8c63e1aaf/AUTHORS",
+    "sha256": "7399754545fa82fbf402e3e91d50de0b63772870fd807c48dd9af25c042efb10"
+  },
+  {
+    "file": "react-remove-scroll-bar-LICENSE.txt",
+    "url": "https://raw.githubusercontent.com/theKashey/react-remove-scroll-bar/8ca9ba5ea52de03308fe8ced94f7b159a44d28ff/LICENSE",
+    "sha256": "a79aae0c0f21990d9d963bb3c5a79cdcea9a46f8523ba55c58d7fe776b6ebc84"
+  },
+  {
+    "file": "core-js-3.38.1-LICENSE.txt",
+    "url": "https://raw.githubusercontent.com/zloirock/core-js/d1e7889678f9d09ee4bb1d6bbd3184462567c730/LICENSE",
+    "sha256": "51aff0fa92ac49e01ce6ba0fed992b0a34f8afe15203dd5f38c43f9e88b0167b"
+  },
+  {
+    "file": "whatwg-fetch-3.0.0-LICENSE.txt",
+    "url": "https://raw.githubusercontent.com/github/fetch/cc84bc284bd2d8eeddaf1c6a68e02e5329482f97/LICENSE",
+    "sha256": "05a4adff1d99954f18ed2ef89d47b4567cdba599635ddbe9393a95b9d48b2643"
+  }
+]

@@ -88,5 +88,5 @@ export function buildConnections(events: readonly SshEvent[]): SshConnection[] {
   }
   return [...connections.values()]
 }
-export type TopologyNode = { id: string; label: string; kind: "erp" | "device" | "peer"; position: [number, number, number] }
+export type TopologyNode = { id: string; label: string; detail: string; kind: "erp" | "device" | "peer"; position: [number, number, number] }
 export type TopologyEdge = { id: string; source: string; target: string; kind: "report" | "enrollment" | "tcp" | "ssh"; review: boolean }

@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server"
+import { z } from "zod"
 import { requireOrgContext } from "@/lib/auth"
 import { invoiceSnapshotDocument, parseInvoiceSnapshot } from "@/lib/documents/invoice-snapshot"
 import { calculateTax } from "@/lib/tax/totals"
@@ -10,6 +11,7 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params
+  if (!z.guid().safeParse(id).success) return new Response("Invoice not found", { status: 404 })
   const ctx = await requireOrgContext()
   const supabase = await createClient()
   const invoice = await supabase.from("invoices").select("id, issued_snapshot_id").eq("org_id", ctx.orgId).eq("id", id).maybeSingle()

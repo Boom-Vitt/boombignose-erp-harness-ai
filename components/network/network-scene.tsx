@@ -2,10 +2,11 @@
 
 import { useEffect, useMemo, useRef, type ComponentRef } from "react"
 import { Canvas, useThree } from "@react-three/fiber"
-import { Edges, Html, Line, OrbitControls } from "@react-three/drei"
+import { Edges, Line, OrbitControls } from "@react-three/drei"
 import { PerspectiveCamera, Quaternion, Vector3 } from "three"
 
 import type { TopologyEdge, TopologyNode } from "@/lib/network/model"
+import { CanvasLabel } from "@/components/three/canvas-label"
 
 const GOLD = "#d5ad62"
 const BRIGHT = "#fff0c5"
@@ -139,20 +140,7 @@ function MachineNode({ node }: { node: TopologyNode }) {
           <Edges color={color} />
         </mesh>
       )}
-      <Html position={[0, 1.18, 0]} center style={{ pointerEvents: "none" }}>
-        <div style={{
-          color: "#f3e8cf", background: "rgba(13,16,23,0.92)",
-          border: "1px solid #625037", borderRadius: 5, padding: "5px 8px",
-          fontFamily: "system-ui, sans-serif", fontSize: 12, lineHeight: 1.35,
-          textAlign: "center", width: "max-content", maxWidth: 180,
-          overflowWrap: "anywhere", userSelect: "none",
-        }}>
-          <span style={{ display: "block", color: GOLD, fontSize: 9, letterSpacing: "0.1em" }}>
-            {node.kind === "erp" ? "ERP" : node.kind === "device" ? "REGISTERED DEVICE" : "NETWORK PEER"}
-          </span>
-          {node.label}
-        </div>
-      </Html>
+      <CanvasLabel title={node.label} detail={node.detail} width={2.8} position={[0, 1.4, 0]} />
     </group>
   )
 }

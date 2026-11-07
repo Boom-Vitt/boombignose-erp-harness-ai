@@ -80,17 +80,21 @@ jobs:
           corepack enable
           corepack prepare pnpm@10.33.4 --activate
           pnpm install --frozen-lockfile
+          pnpm build:raster
           pnpm test
 
   windows-bundle:
     needs: linux-bundle
     runs-on: windows-latest
-    timeout-minutes: 90
+    timeout-minutes: 180
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-go@v5
         with:
           go-version: "1.27.3"
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22.21.1
       - uses: actions/download-artifact@v4
         with:
           name: erp-standalone
@@ -122,9 +126,20 @@ jobs:
         with:
           name: auth-windows
           path: dist/auth-windows
-      - name: Assemble Windows node and postgres
-        shell: pwsh
-        run: ./packaging/windows/assemble-bundle.ps1
+      - uses: msys2/setup-msys2@v2
+        with:
+          msystem: MINGW64
+          update: true
+          path-type: inherit
+          install: mingw-w64-x86_64-gcc make perl curl tar bzip2 gzip unzip
+      - name: Build source-owned Windows PostgreSQL and portable PostgREST
+        shell: msys2 {0}
+        run: |
+          sh packaging/postgres/assemble-server.sh dist/postgres-server
+          node packaging/postgrest/build.mjs "$PWD/dist/postgrest-build"
+      - name: Assemble Windows runtime and original component notices
+        shell: msys2 {0}
+        run: pwsh -NoProfile -File packaging/windows/assemble-bundle.ps1
       - name: Smoke the bundled ERP
         shell: pwsh
         run: ./packaging/windows/smoke-bundle.ps1
@@ -180,6 +195,8 @@ jobs:
         run: |
           New-Item -ItemType Directory -Force -Path ..\packaging\windows | Out-Null
           go build -tags "desktop production" -ldflags "-H windowsgui" -o ..\packaging\windows\boombignose-desktop.exe ./cmd/boombignose-desktop
+          $env:CGO_ENABLED = "0"
+          go build -trimpath -buildvcs=false -o ..\packaging\windows\boombignose.exe ./cmd/boombignose
           if (-not (Test-Path ..\packaging\windows\boombignose-desktop.exe)) { throw "window binary missing" }
       - name: Install NSIS
         run: choco install nsis --no-progress -y
@@ -234,12 +251,15 @@ jobs:
   macos-bundle:
     needs: linux-bundle
     runs-on: macos-15
-    timeout-minutes: 90
+    timeout-minutes: 180
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-go@v5
         with:
           go-version: "1.27.3"
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22.21.1
       - uses: actions/download-artifact@v4
         with:
           name: erp-standalone
@@ -315,6 +335,7 @@ jobs:
           mkdir -p ../dist
           go build -tags "desktop production" -o ../dist/boombignose-desktop ./cmd/boombignose-desktop
           test -s ../dist/boombignose-desktop
+          CGO_ENABLED=0 go build -trimpath -buildvcs=false -o ../dist/boombignose ./cmd/boombignose
       - name: Ad-hoc sign and make DMG
         run: sh packaging/macos/make-dmg.sh
       - uses: actions/upload-artifact@v4
@@ -327,7 +348,7 @@ jobs:
     needs: gate
     if: needs.gate.outputs.build == 'true'
     runs-on: ubuntu-latest
-    timeout-minutes: 90
+    timeout-minutes: 180
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-go@v5
@@ -392,7 +413,7 @@ jobs:
           fi
           rm -rf dist/bundle
           cp -a "$src" dist/bundle
-          chmod 755 dist/bundle/node dist/bundle/postgres/bin/postgres dist/bundle/postgres/bin/initdb dist/bundle/postgres/bin/pg_ctl dist/bundle/auth/auth dist/bundle/postgrest/postgrest dist/bundle/ollama/bin/ollama
+          chmod 755 dist/bundle/node dist/bundle/erp/boombignose/bin/boombignose-image dist/bundle/postgres/bin/postgres dist/bundle/postgres/bin/initdb dist/bundle/postgres/bin/pg_ctl dist/bundle/auth/auth dist/bundle/postgrest/postgrest dist/bundle/ollama/bin/ollama
           test -s dist/bundle/erp/server.js
           test -d dist/bundle/erp/.next/static
           test -x dist/bundle/postgres/bin/postgres
@@ -407,13 +428,15 @@ jobs:
           mkdir -p ../dist/stage
           go build -tags "desktop production webkit2_41" -o ../dist/boombignose-desktop ./cmd/boombignose-desktop
           test -s ../dist/boombignose-desktop
+          CGO_ENABLED=0 go build -trimpath -buildvcs=false -o ../dist/boombignose ./cmd/boombignose
+          cp ../dist/boombignose ../dist/stage/boombignose
           cp ../dist/boombignose-desktop ../dist/stage/BoomBigNose
           cp -a ../dist/bundle ../dist/stage/bundle
           test -x ../dist/bundle/ollama/bin/ollama || { echo "dist/bundle has no ollama binary"; ls -la ../dist/bundle/ollama || true; exit 1; }
-          tar -C ../dist/stage -czf ../dist/BoomBigNose-linux-amd64.tar.gz BoomBigNose bundle
+          tar -C ../dist/stage -czf ../dist/BoomBigNose-linux-amd64.tar.gz BoomBigNose boombignose bundle
           list=$(mktemp)
           tar -tzf ../dist/BoomBigNose-linux-amd64.tar.gz > "$list"
-          for rel in bundle/node bundle/erp/server.js bundle/postgres/bin/postgres bundle/auth/auth bundle/postgrest/postgrest bundle/ollama/bin/ollama bundle/ollama/OLLAMA_LICENSE.txt; do
+          for rel in bundle/node bundle/erp/server.js bundle/erp/boombignose/bin/boombignose-image bundle/postgres/bin/postgres bundle/auth/auth bundle/postgrest/postgrest bundle/ollama/bin/ollama bundle/ollama/OLLAMA_LICENSE.txt; do
             if ! grep -qx "$rel" "$list"; then
               echo "tar missing $rel" >&2
               grep ollama "$list" | head >&2 || true
@@ -435,6 +458,7 @@ jobs:
           ( cd "$extract" && APPIMAGE_EXTRACT_AND_RUN=1 "$appimage" --appimage-extract )
           test -s "$extract/squashfs-root/usr/bin/bundle/node"
           test -s "$extract/squashfs-root/usr/bin/bundle/erp/server.js"
+          test -x "$extract/squashfs-root/usr/bin/bundle/erp/boombignose/bin/boombignose-image"
           test -s "$extract/squashfs-root/usr/bin/bundle/postgres/bin/postgres"
           test -s "$extract/squashfs-root/usr/bin/bundle/auth/auth"
           test -s "$extract/squashfs-root/usr/bin/bundle/postgrest/postgrest"

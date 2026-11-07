@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>ครั้งแรกที่เปิด BoomBigNose</title>
-  <meta name="description" content="โฟลเดอร์ข้อมูลของ BoomBigNose, การเปิดต่อจาก v0.3, บันทึก Postgres และสิ่งที่ถอนการติดตั้งไม่ลบ" />
+  <meta name="description" content="เริ่ม workspace โปรไฟล์งาน Local AI และ OCR พร้อมดูแลข้อมูล credentials การสำรองและการเข้าใช้ส่วนตัวของ BoomBigNose" />
   <link rel="icon" href="assets/brandmark.png" type="image/png" />
   <link rel="apple-touch-icon" href="assets/apple-touch-icon.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -12,7 +12,7 @@
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Prompt:wght@500;600;700;800&display=swap" rel="stylesheet" />
   <meta property="og:title" content="ครั้งแรกที่เปิด BoomBigNose" />
   <meta property="og:description" content="ข้อมูลอยู่บนเครื่องคุณ ถอนการติดตั้งไม่ลบโฟลเดอร์นั้น" />
-  <meta property="og:image" content="https://boom-vitt.github.io/boombignose-erp-harness-ai/assets/brandmark.png" />
+  <meta property="og:image" content="https://boom-vitt.github.io/nose-erp/assets/brandmark.png" />
   <meta property="og:type" content="website" />
   <link rel="stylesheet" href="assets/site.css" />
   <meta name="theme-color" content="#0B1222" />
@@ -35,65 +35,70 @@
   </header>
   <main id="content">
     <div class="wrap">
-      <h1>ครั้งแรกที่เปิด</h1>
-      <p class="lead">BoomBigNose เก็บข้อมูลบนเครื่องคุณ ไม่ได้ส่งบัญชีหรือฐานข้อมูลขึ้นคลาวด์ หน้านี้เป็นคำอธิบายของตัวติดตั้งที่เผยแพร่แล้ว ยังไม่ได้คลิกทดสอบบนเครื่องจริง</p>
+      <h1>เริ่มใช้อย่างรู้ขอบเขต</h1>
+      <p class="lead" data-integration-copy="first-run-status">เริ่มจากบัญชีและข้อมูลของคุณ แล้วค่อยเปิดโมเดลหรือ private remote access คู่มือนี้ตามซอร์สปัจจุบันที่ยังรอการรวมและตรวจ runtime บันทึก Release เป็นตัวบอกสิ่งที่อยู่ในไฟล์ดาวน์โหลด</p>
+      <nav class="doc-toc" aria-label="หัวข้อเริ่มต้น"><a href="#account">บัญชี</a><a href="#data">ข้อมูล</a><a href="#models">โมเดล</a><a href="#recovery">สำรอง</a><a href="#remote">Private access</a></nav>
     </div>
 
-    <section>
+    <section id="account">
       <div class="wrap card">
-        <h2>โฟลเดอร์ข้อมูล</h2>
+        <h2>สร้างพื้นที่ทำงาน แล้วเลือกงานเริ่มต้น</h2>
         <ol>
-          <li>ถ้าไม่ได้ตั้ง <code>BOOMBIGNOSE_DATA</code> ข้อมูลอยู่ที่ <code>~/.local/share/boombignose/pg</code></li>
-          <li>บน Windows โฟลเดอร์นั้นคือ <code>%USERPROFILE%\.local\share\boombignose\pg</code></li>
-          <li>เส้นทางที่มีช่องว่างใช้ไม่ได้ โปรแกรมจะไม่สร้างคลัสเตอร์ในโฟลเดอร์แบบนั้น</li>
-          <li>เปิดครั้งแรกจะสร้างคลัสเตอร์เมื่อยังไม่มีไฟล์ <code>PG_VERSION</code></li>
+          <li>ติดตั้งและตรวจ SHA-256 ตาม <a href="install.html">หน้าติดตั้ง</a> เปิด BoomBigNose เพื่อเริ่มบริการในเครื่อง หรือให้ผู้ดูแลเริ่ม headless server</li>
+          <li>ทำ local-only onboarding เพื่อสร้างบัญชี owner และ workspace แรก ไม่ใช้รหัสผ่านเริ่มต้นร่วมกัน ถ้าใช้เซิร์ฟเวอร์ระยะไกล ให้ผู้ดูแลทำขั้นตอนนี้ผ่าน SSH loopback forwarding ก่อนเปิด private HTTPS</li>
+          <li>เลือก Individual สำหรับงานส่วนตัว/ฟรีแลนซ์, SME สำหรับขาย/ซื้อ/สต็อก หรือ Organization สำหรับข้ามทีม เปลี่ยนโปรไฟล์ภายหลังได้ ข้อมูลและสิทธิ์ไม่เปลี่ยน</li>
+          <li>เชิญผู้ใช้ตามบทบาทและตั้ง MFA ตามนโยบายบัญชี การอยู่ใน tailnet ไม่ให้สิทธิ์ ERP และไม่ข้ามหน้าล็อกอิน</li>
         </ol>
       </div>
     </section>
 
-    <section>
+    <section id="data">
       <div class="wrap card">
-        <h2>อัปเกรดจาก v0.3</h2>
-        <p>ตัวติดตั้ง <code>boombignose-v0.3.0</code>, <code>boombignose-v0.3.1</code>, <code>boombignose-v1.0.0</code>, <code>boombignose-v1.1.0</code>, <code>boombignose-v1.2.0</code>, <code>boombignose-v1.3.0</code> และ <code>boombignose-v1.4.0</code> ใช้โฟลเดอร์เดียวกัน ถ้ามี <code>PG_VERSION</code> อยู่แล้ว โปรแกรมจะไม่รัน <code>initdb</code> ซ้ำ บัญชีและข้อมูลที่สร้างไว้จึงยังอยู่ในโฟลเดอร์นั้น</p>
-        <p>ถอนการติดตั้งแล้วติดตั้งรุ่นถัดไปในโฟลเดอร์โปรแกรมใหม่ ก็ยังอ่านโฟลเดอร์ข้อมูลเดิม อย่าลบโฟลเดอร์นั้นถ้าต้องการเก็บข้อมูล</p>
+        <h2>รู้ว่าอะไรอยู่ที่ไหน</h2>
+        <p>ค่าเริ่มต้นของ native data คือ <code>~/.local/share/boombignose/pg</code> หรือกำหนด <code>BOOMBIGNOSE_DATA</code> เป็นเส้นทาง absolute ที่ไม่มีช่องว่าง บน Windows ค่าเริ่มต้นอยู่ใต้ <code>%USERPROFILE%\.local\share\boombignose\pg</code> ข้อมูลธุรกิจไม่อยู่ในตัวติดตั้ง</p>
+        <ul>
+          <li>ฐานข้อมูล JWT state และไฟล์แนบ private อยู่กับ data profile; บันทึก Postgres คือ <code>server.log</code> ในโฟลเดอร์ข้อมูล</li>
+          <li>credentials ฐานข้อมูลอยู่ใน sibling <code>&lt;DATA&gt;.secrets</code> เช่น <code>pg.secrets/admin.password</code> พร้อม state ของ runtime ไม่ใช่รหัสผ่านล็อกอิน ERP ห้ามส่งไฟล์นี้หรือข้อความในไฟล์ให้ผู้อื่น</li>
+          <li>คลัสเตอร์ใหม่ใช้ SCRAM พร้อม credentials แยกของแต่ละบริการ ข้อมูลเก่าที่ใช้ trust ต้องทำ <code>secure-db</code> โดยเจ้าของเครื่องหลัง cold backup และหยุดคลัสเตอร์ของตนเอง ไม่ reset ฐานข้อมูลเพื่ออัปเกรด</li>
+          <li>ค่าพอร์ตต้องไม่ชนบริการเดิม ถ้าสตาร์ทไม่ได้ให้ตรวจ log แบบ private ไม่ปิด process ที่ไม่เกี่ยวข้อง และไม่เผยแพร่ log/environment ทั้งชุด</li>
+        </ul>
       </div>
     </section>
 
-    <section>
+    <section id="models">
       <div class="wrap card">
-        <h2>บันทึกของ Postgres</h2>
-        <p>เมื่อโปรแกรมเป็นฝ่ายสตาร์ท Postgres บันทึกถูกเขียนที่ <code>server.log</code> ในโฟลเดอร์ข้อมูล เช่น <code>~/.local/share/boombignose/pg/server.log</code></p>
-        <p>ตัวติดตั้ง <code>boombignose-v1.0.0</code> ถ้า <code>127.0.0.1:54329</code> มีโปรแกรมฟังอยู่แล้ว จะไม่สตาร์ท Postgres ซ้ำ และจะใช้ตัวที่ฟังอยู่ บันทึกของตัวนั้นอาจไม่ใช่ <code>server.log</code> ของโฟลเดอร์นี้</p>
-        <p>ตั้งแต่ <code>boombignose-v1.1.0</code> โปรแกรมไม่ใช้ตัวที่ฟังอยู่ถ้า <code>postmaster.pid</code> ไม่ใช่ของโฟลเดอร์ข้อมูลนี้ หน้าต่างค้างที่ข้อความที่ขึ้นต้นด้วย เปิด ERP ไม่สำเร็จ และบอก <code>server.log</code> กับ <code>BOOMBIGNOSE_PG_PORT</code> ถ้า <code>postmaster.pid</code> ตรงกับโฟลเดอร์นี้ โปรแกรมใช้คลัสเตอร์เดิม รวมข้อมูลที่ v0.3 สร้างไว้ ถ้า <code>127.0.0.1:3100</code> รับการเชื่อมต่อแล้ว แต่ <code>GET /api/health</code> ไม่ได้คืน <code>{"ok":true}</code> โปรแกรมจะไม่เปิดทับพอร์ตนั้น</p>
+        <h2>เลือกโมเดลเมื่อพร้อมใช้</h2>
+        <p>การเปิดแอปไม่ดึงน้ำหนักโมเดล ไป Settings → Local AI เพื่อตรวจบริการ รายการที่รองรับ ขนาดและสิทธิ์การจัดการ จากนั้นสั่งดาวน์โหลดอย่างชัดเจน ค่าเริ่มต้นในซอร์สแยกเป็น <code>qwen3.5:9b-q4_k_m</code> สำหรับแชท/ภาพของผู้ช่วย (GGUF 6,550,825,550 ไบต์) และ <code>qwen3.5:4b</code> สำหรับ OCR ไทย/อังกฤษ (3,973,305,013 ไบต์) ทั้งคู่ Apache-2.0 ไม่ได้แถมมากับตัวติดตั้ง การติดตั้ง/ลบผ่านเว็บต้องมีทั้งบทบาท owner/admin และสิทธิ์ผู้ดูแลเครื่องที่ลงทะเบียนจาก OS</p>
+        <p>CLI <code>boombignose pull-model</code> หรือ <code>boombignose pull-model qwen3.5:9b-q4_k_m</code> ดึงแชท; <code>boombignose pull-model qwen3.5:4b</code> ดึง OCR; <code>boombignose models</code> ดูที่ติดตั้ง การดาวน์โหลดใช้ registry/internet แต่ inference อยู่บนเครื่อง ERP ไม่มี cloud หรือ silent model fallback แชทต้องใช้ GGUF เพื่อจำกัด context และไม่ตัดข้อความ/context shift เงียบ ไม่ใช้ bare 9B ที่บน Mac อาจเป็น MLX แทน; OCR แยกยังใช้ local MLX ได้ เผื่อ RAM ทั้ง ERP+โมเดล 24 GB+ สำหรับแชท/12 GB สำหรับ OCR เป็นแนวทาง ไม่ใช่ผลวัดขั้นต่ำ ผลจริงมาจาก Apple Silicon 48 GiB ไม่รับรองเครื่องอื่นหรือคุณภาพ AI ครบชุด ไม่อนุมานว่าโมเดลใหญ่ดีกว่า</p>
+        <p>เริ่มทดสอบกับข้อมูลสังเคราะห์ ถาม Assistant แบบแคบแล้วตรวจที่มา ลอง OCR บิลตัวอย่างไทย/อังกฤษแล้วเทียบต้นฉบับ คำตอบและยอดที่อ่านได้ต้องผ่านการตรวจของมนุษย์ก่อนใช้จริง ดู <a href="guide.html#assistant">คู่มือ AI</a> และ <a href="guide.html#ocr">OCR</a></p>
       </div>
     </section>
 
-    <section>
+    <section id="recovery">
       <div class="wrap card">
-        <h2>พอร์ตบนเครื่องนี้</h2>
-        <p>ERP อยู่ที่ <code>127.0.0.1:3100</code> Postgres อยู่ที่ <code>127.0.0.1:54329</code> พร็อกซี Auth อยู่ที่ <code>127.0.0.1:54321</code> Ollama ถ้าเปิดใช้ จะอยู่ที่ <code>127.0.0.1:11434</code> ไม่มีพอร์ตเหล่านี้เปิดออกอินเทอร์เน็ตจากตัวโปรแกรม</p>
+        <h2>สำรองก่อนอัปเกรด และทดลองกู้คืนแยก</h2>
+        <ol>
+          <li>หยุดเฉพาะแอป/บริการที่เป็นเจ้าของ profile นี้ และยืนยันว่า Postgres ของ profile หยุดแล้ว ก่อนทำ physical cold backup</li>
+          <li>เก็บทั้ง <code>&lt;DATA&gt;</code> และ <code>&lt;DATA&gt;.secrets</code> พร้อม ownership/permissions, การตั้งค่า และรุ่นแอป/Postgres แบบ private dump ฐานข้อมูลอย่างเดียวไม่รวมไฟล์แนบและ state ทั้งหมด</li>
+          <li>เข้ารหัสสำเนานอกเครื่องและทดลองกู้คืนลง profile แยก/พอร์ตที่ว่าง ด้วย Postgres major ที่ตรงกัน ห้ามทับข้อมูลเดิมหรือสลับไบนารีเก่าย้อนฐานข้อมูลที่ migrate แล้ว</li>
+          <li>อ่านขั้นตอน native backup / secure-db / recovery ใน <a href="https://github.com/Boom-Vitt/nose-erp/blob/main/docs/boombignose/BUNDLE.md#backup-migration-and-recovery">คู่มือผู้ดูแลจากซอร์ส</a> คำสั่งที่มีผลกับข้อมูลต้องให้เจ้าของ profile ตรวจและอนุมัติ</li>
+        </ol>
+        <p>ถอนตัวโปรแกรมไม่ลบข้อมูลหรือโมเดลให้ อย่าลบโฟลเดอร์ข้อมูลเพียงเพราะติดตั้งรุ่นใหม่ บน macOS เก็บ/ย้ายทั้ง .app โดยไม่แก้ภายในแอปที่ลงชื่อแล้ว</p>
       </div>
     </section>
 
-    <section>
+    <section id="remote">
       <div class="wrap card">
-        <h2>ถอนการติดตั้ง</h2>
-        <p>บน Windows รัน <code>%LOCALAPPDATA%\BoomBigNose\uninstall.exe</code> สคริปต์ลบโปรแกรมและโฟลเดอร์ bundle ไม่ได้ลบโฟลเดอร์ข้อมูล</p>
-        <p>บน macOS ให้ลบโฟลเดอร์ที่คัดลอกจากแผ่น หรือลบ BoomBigNose.app บน Linux ให้ลบโฟลเดอร์ที่แตกจาก tar.gz หรือลบไฟล์ AppImage โฟลเดอร์ข้อมูลและไฟล์โมเดลที่ Ollama เก็บไว้ยังอยู่</p>
-      </div>
-    </section>
-
-    <section>
-      <div class="wrap card">
-        <h2>หน้า AI</h2>
-        <p>การเปิดโปรแกรมไม่ได้ดึงโมเดล ถ้าต้องการให้หน้า AI ตอบ ให้กดปุ่มดาวน์โหลด <code>qwen2.5:3b</code> บนสแปลช หรือรัน <code>boombignose pull-model</code> คำขอแชทไปที่ <code>127.0.0.1:11434</code> เท่านั้น โฮสต์คลาวด์ถูกปฏิเสธก่อนส่งคำขอ</p>
+        <h2>Private Tailscale ไม่ใช่ทางลัดผ่าน auth</h2>
+        <p>บริการ ERP และส่วนประกอบภายในใช้ loopback ค่าเริ่มต้น ERP คือ <code>127.0.0.1:3100</code> การใช้งานจากโทรศัพท์ต้องตั้ง exact HTTPS origin และ Tailscale Serve แบบ private โดยผู้ดูแลที่ได้รับสิทธิ์ก่อน ไม่มีการเปิด tunnel หรือลงทะเบียนอุปกรณ์ให้อัตโนมัติ</p>
+        <p>ใช้ tailnet ACL/การอนุมัติอุปกรณ์ และ login/MFA ของ ERP ตามปกติ ไม่เปิด Funnel หรือ forward Postgres/Auth/REST/API/Ollama ตรวจ mapping เดิมก่อนเปลี่ยน ดู <a href="install.html#server">ขั้นตอน native server</a> เมื่อใช้งาน OCR/AI จากมือถือ ข้อมูลที่ส่งจะไปประมวลผลบนเซิร์ฟเวอร์ ERP ของคุณ ไม่ใช่บนโทรศัพท์</p>
       </div>
     </section>
 
     <section>
       <div class="wrap">
-        <h2>รุ่นที่หน้านี้ตาม</h2>
-        <p>GitHub Pages เติมแท็กและค่าแฮชจาก Release ที่เผยแพร่แล้ว ตอนนี้คือ <span data-release="tag">boombignose-v0.3.0</span></p>
+        <h2>ตัวติดตั้งที่ลิงก์ดาวน์โหลดตาม</h2>
+        <p>Pages เติมแท็กและค่าแฮชจาก Release ที่เผยแพร่แล้ว: <span data-release="tag">boombignose-v0.3.0</span> ไม่ได้เปลี่ยนให้เป็นรุ่นของซอร์สที่ยังไม่เผยแพร่</p>
         <ul>
           <li>Windows <code data-release="sha-windows">645250da05694ed762a590d2e7c1f6d2b39ad0a4475ab3786ad239874b60f9ca</code></li>
           <li>macOS <code data-release="sha-macos">59ab51d7490cbe357360de9ed1b43236fbfb57324f98bf449e1f8f3a1e85cad3</code></li>
@@ -101,14 +106,14 @@
           <li>AppImage <code data-release="sha-appimage">cd04095ca8cc6478fea1a16f86cf5cf41592179945b15d5e9040726b2e646a62</code></li>
         </ul>
         <p>
-          <a data-release-href="sums" href="https://github.com/Boom-Vitt/boombignose-erp-harness-ai/releases/download/boombignose-v0.3.0/SHA256SUMS">SHA256SUMS</a>
-          · <a data-release-href="notes" href="https://github.com/Boom-Vitt/boombignose-erp-harness-ai/releases/tag/boombignose-v0.3.0">บันทึกของรุ่น</a>
-          · <a data-release-href="windows" href="https://github.com/Boom-Vitt/boombignose-erp-harness-ai/releases/download/boombignose-v0.3.0/BoomBigNose-windows-x64-setup.exe">Windows</a>
-          · <a data-release-href="macos" href="https://github.com/Boom-Vitt/boombignose-erp-harness-ai/releases/download/boombignose-v0.3.0/BoomBigNose-macos-arm64.dmg">macOS</a>
-          · <a data-release-href="linux" href="https://github.com/Boom-Vitt/boombignose-erp-harness-ai/releases/download/boombignose-v0.3.0/BoomBigNose-linux-amd64.tar.gz">Linux tar.gz</a>
-          · <a data-release-href="appimage" href="https://github.com/Boom-Vitt/boombignose-erp-harness-ai/releases/download/boombignose-v0.3.0/BoomBigNose-linux-amd64.AppImage">AppImage</a>
+          <a data-release-href="sums" href="https://github.com/Boom-Vitt/nose-erp/releases/download/boombignose-v0.3.0/SHA256SUMS">SHA256SUMS</a>
+          · <a data-release-href="notes" href="https://github.com/Boom-Vitt/nose-erp/releases/tag/boombignose-v0.3.0">บันทึกของรุ่น</a>
+          · <a data-release-href="windows" href="https://github.com/Boom-Vitt/nose-erp/releases/download/boombignose-v0.3.0/BoomBigNose-windows-x64-setup.exe">Windows</a>
+          · <a data-release-href="macos" href="https://github.com/Boom-Vitt/nose-erp/releases/download/boombignose-v0.3.0/BoomBigNose-macos-arm64.dmg">macOS</a>
+          · <a data-release-href="linux" href="https://github.com/Boom-Vitt/nose-erp/releases/download/boombignose-v0.3.0/BoomBigNose-linux-amd64.tar.gz">Linux tar.gz</a>
+          · <a data-release-href="appimage" href="https://github.com/Boom-Vitt/nose-erp/releases/download/boombignose-v0.3.0/BoomBigNose-linux-amd64.AppImage">AppImage</a>
         </p>
-        <p class="sub">ขั้นตอนดาวน์โหลด ตรวจ SHA-256 และเปิดแอปที่ไม่ได้ลงชื่อด้วยใบรับรองร้านค้า อยู่ที่ <a href="install.html">หน้าติดตั้ง</a> หน้านี้ยังไม่ได้คลิกทดสอบบนเครื่องจริง</p>
+        <p class="sub">ดู <a href="install.html">วิธีตรวจและเปิดไฟล์</a> การมีแฮชและลิงก์ไม่ได้รับรองคุณภาพโมเดล ความเข้ากันได้ของเครื่อง การกู้คืน หรือ compliance ของกิจการ</p>
       </div>
     </section>
   </main>

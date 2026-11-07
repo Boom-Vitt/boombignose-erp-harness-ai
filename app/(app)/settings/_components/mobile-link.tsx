@@ -36,6 +36,9 @@ export function MobileLinkCard({ initial }: { initial: Device[] }) {
       setPairing(body)
       if (!baseUrl) setBaseUrl(body.baseUrl)
       void load()
+    } catch {
+      setPairing(null)
+      setError("Could not reach the pairing service.")
     } finally {
       setPending(false)
     }
@@ -51,12 +54,16 @@ export function MobileLinkCard({ initial }: { initial: Device[] }) {
   return (
     <div className="space-y-4">
       <p className="text-muted-foreground text-sm">
-        เชื่อมผ่าน Tailscale เท่านั้น รัน{" "}
-        <code className="bg-muted rounded px-1">tailscale serve --bg 3100</code> หนึ่งครั้ง แล้วสแกน QR (ใช้ได้ครั้งเดียว หมดอายุใน 5 นาที)
+        เชื่อมต่อผ่าน Tailscale ส่วนตัวเท่านั้น ตั้งค่า HTTPS .ts.net และ Serve ให้ชี้ไปยังพอร์ต ERP จริง
+        แล้วสแกน QR (ใช้ครั้งเดียว หมดอายุใน 5 นาที) ระบบตรวจสอบ Serve mapping ไม่ใช่แค่ชื่อ DNS
+      </p>
+      <p className="text-muted-foreground text-sm">
+        Pairing is connection/status only. Open ERP with the phone user&apos;s own login and authenticator.
+        Unlinking does not sign out independent browser sessions; sign out in ERP separately.
       </p>
       <div className="flex flex-wrap items-end gap-2">
         <label className="flex min-w-64 flex-1 flex-col gap-1 text-sm">
-          Address of this computer (optional if Tailscale is detected)
+          Verified private .ts.net address (optional; must match this ERP&apos;s configured Serve mapping)
           <input
             className="border-input bg-background rounded-md border px-3 py-2"
             placeholder="https://my-mac.tailnet-name.ts.net"
@@ -91,7 +98,7 @@ export function MobileLinkCard({ initial }: { initial: Device[] }) {
                 </span>
               </span>
               <Button type="button" variant="outline" size="sm" onClick={() => revoke(d.id)}>
-                Revoke
+                Unlink
               </Button>
             </li>
           ))}

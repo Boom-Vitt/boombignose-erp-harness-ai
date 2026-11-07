@@ -1,0 +1,1154 @@
+{
+  "format": 1,
+  "owner": "pdfjs-dist@6.5.438",
+  "scope": "Installed OpenJPEG/JBIG2/QuickJS WASM, generated glue, and non-WASM fallbacks only; excludes qcms/Rust and unrelated build tools.",
+  "distributionBoundary": {
+    "installedInputsOnly": true,
+    "claimsCurrentStageEmission": false,
+    "rule": "Apply each family only when actual staged/emitted bytes match its asset guard, or when embedded generated glue is identified in an emitted bundle. Installed package presence alone must not trigger absent WASM/fallback families. Packaging integration and final emitted-bundle guards are owned by the integration collector."
+  },
+  "pdfjsSource": {
+    "revision": "0a4153349dc473ba950fc17941c5ca7eda43c1de",
+    "tag": "v6.5.438",
+    "tagReferenceUrl": "https://api.github.com/repos/mozilla/pdf.js/git/ref/tags/v6.5.438",
+    "assetCorrespondence": "All six standalone installed asset Git blob IDs match the immutable PDF.js release tree; both generated codec glue sources match installed source-map sourcesContent exactly."
+  },
+  "installedAssets": [
+    {
+      "path": "wasm/openjpeg.wasm",
+      "size": 220817,
+      "sha256": "7ea4b2b04613370ad4e9c1162da750cc88b4b176eac0d0c164b3caff23fc0a46",
+      "pdfjsGitBlob": "f88bf82205e826ee030fdb830bf7e05846ede5d2",
+      "originalSourceUrl": "https://raw.githubusercontent.com/mozilla/pdf.js/0a4153349dc473ba950fc17941c5ca7eda43c1de/external/openjpeg/openjpeg.wasm",
+      "customSections": []
+    },
+    {
+      "path": "wasm/jbig2.wasm",
+      "size": 103671,
+      "sha256": "466f45c2a61a698152fb5400c27e56ff2ceb73dcb71fde3fc366a502308eaab0",
+      "pdfjsGitBlob": "0f600760ccaa6e7cfee1ce406807a8c6f7a22cb9",
+      "originalSourceUrl": "https://raw.githubusercontent.com/mozilla/pdf.js/0a4153349dc473ba950fc17941c5ca7eda43c1de/external/jbig2/jbig2.wasm",
+      "customSections": []
+    },
+    {
+      "path": "wasm/quickjs-eval.wasm",
+      "size": 469105,
+      "sha256": "7bcacc9f22cacf7e9b23866d2a6d1639693d40c7f144e41b7c69ed37ba9cbe8f",
+      "pdfjsGitBlob": "42980e94aa4d7359e4113c968c67800b45462764",
+      "originalSourceUrl": "https://raw.githubusercontent.com/mozilla/pdf.js/0a4153349dc473ba950fc17941c5ca7eda43c1de/external/quickjs/quickjs-eval.wasm",
+      "customSections": []
+    },
+    {
+      "path": "wasm/openjpeg_nowasm_fallback.js",
+      "size": 338458,
+      "sha256": "2855f1590e7fd7abbbf204cd13a5c09d30c92fe2c9313fb72b64aa763fe8b4f3",
+      "pdfjsGitBlob": "230e31d1af73a70ad5a6e97bbf6b1abcb7d6dbcb",
+      "originalSourceUrl": "https://raw.githubusercontent.com/mozilla/pdf.js/0a4153349dc473ba950fc17941c5ca7eda43c1de/external/openjpeg/openjpeg_nowasm_fallback.js"
+    },
+    {
+      "path": "wasm/jbig2_nowasm_fallback.js",
+      "size": 132439,
+      "sha256": "70150223396487e1ccfef7eac61fc780074ad7fcc9e843b702a8a3bc23107494",
+      "pdfjsGitBlob": "6f11389f3da187cb65e13692d8fb661b6a912237",
+      "originalSourceUrl": "https://raw.githubusercontent.com/mozilla/pdf.js/0a4153349dc473ba950fc17941c5ca7eda43c1de/external/jbig2/jbig2_nowasm_fallback.js"
+    },
+    {
+      "path": "wasm/quickjs-eval.js",
+      "size": 6232,
+      "sha256": "fe7930418e869791ce892567dbd0bc4698152b7e550b5cefa553992c56ddc325",
+      "pdfjsGitBlob": "f087fb29602352e8be9a6e7f7d766ccdb0dda038",
+      "originalSourceUrl": "https://raw.githubusercontent.com/mozilla/pdf.js/0a4153349dc473ba950fc17941c5ca7eda43c1de/external/quickjs/quickjs-eval.js"
+    }
+  ],
+  "embeddedGeneratedGlue": [
+    {
+      "family": "openjpeg-glue",
+      "originalSource": {
+        "url": "https://raw.githubusercontent.com/mozilla/pdf.js/0a4153349dc473ba950fc17941c5ca7eda43c1de/external/openjpeg/openjpeg.js",
+        "sha256": "99e5441cd63a8cadf8e9f2e382e3ee3fe9440f3f4272c2dcc1f3f6727ac6af1b"
+      },
+      "sourceMapContentSha256": "99e5441cd63a8cadf8e9f2e382e3ee3fe9440f3f4272c2dcc1f3f6727ac6af1b",
+      "installedSourceMaps": [
+        "build/pdf.worker.mjs.map",
+        "image_decoders/pdf.image_decoders.mjs.map"
+      ],
+      "correspondence": "sourcesContent equals the pinned upstream generated glue byte-for-byte; final minified bundle hash is intentionally an integration-owner emission concern."
+    },
+    {
+      "family": "jbig2-glue",
+      "originalSource": {
+        "url": "https://raw.githubusercontent.com/mozilla/pdf.js/0a4153349dc473ba950fc17941c5ca7eda43c1de/external/jbig2/jbig2.js",
+        "sha256": "5ea1b9f03f236ed16bdec65d02010e40d800382d83e8c01d9fd6d8822410b954"
+      },
+      "sourceMapContentSha256": "5ea1b9f03f236ed16bdec65d02010e40d800382d83e8c01d9fd6d8822410b954",
+      "installedSourceMaps": [
+        "build/pdf.worker.mjs.map",
+        "image_decoders/pdf.image_decoders.mjs.map"
+      ],
+      "correspondence": "sourcesContent equals the pinned upstream generated glue byte-for-byte; final minified bundle hash is intentionally an integration-owner emission concern."
+    }
+  ],
+  "toolchainProvenance": {
+    "exactEmscriptenVersion": null,
+    "exactBinaryenVersion": null,
+    "limitation": "Upstream Dockerfiles use emscripten/emsdk:latest, and build.js reuses cached local image names. No immutable image digest, compiler invocation log, or compiler version was recovered. WASM has no custom sections, including no producers. No version is guessed.",
+    "reachablePrimaryMethods": [
+      "Immutable PDF.js release tree and codec asset update commits/PRs 22175, 21980, 21399.",
+      "Historical wrapper Dockerfile, compile.sh, and cached-image build.js sources.",
+      "Wrapper GitHub Actions and release inventories: no codec build artifacts/toolchain logs were located (OpenJPEG only unrelated Dependabot runs; JBIG2/QuickJS no runs/releases).",
+      "Static WASM section parsing; installed generated glue/source maps; corresponding original Emscripten and Binaryen source templates."
+    ],
+    "generationLowerBound": {
+      "source": {
+        "url": "https://raw.githubusercontent.com/emscripten-core/emscripten/4dac6d6d7689bb76899eebbc394eebd88f0fc67b/src/postamble_modularize.js",
+        "sha256": "728e6c19a53a1dd574170cc90c8455cb0d94b6fbb8a609fdca629f28406c8165"
+      },
+      "reason": "The preserved moduleRtn name was introduced with this 2024-04-17 generated-module change; the installed glue uses it. QuickJS additionally contains the runtimeInitialized/Module-or-new-Promise branch introduced by d98b029a1d96413f1a88073ccdb47a2b52346d7c on 2025-05-28. These are source-generation bounds, not exact release versions."
+    },
+    "recipes": [
+      {
+        "repository": "mozilla/pdf.js.openjpeg",
+        "revision": "d5f16ba380391d4e32b51834e2e0afa796e402d8",
+        "recordedBuildInvocation": false,
+        "files": [
+          {
+            "path": "Dockerfile",
+            "url": "https://raw.githubusercontent.com/mozilla/pdf.js.openjpeg/d5f16ba380391d4e32b51834e2e0afa796e402d8/Dockerfile",
+            "sha256": "23dc93a4b05fa96a3b8de208f05f46138c86a395bf89a30acc0411d80f35caa7"
+          },
+          {
+            "path": "compile.sh",
+            "url": "https://raw.githubusercontent.com/mozilla/pdf.js.openjpeg/d5f16ba380391d4e32b51834e2e0afa796e402d8/compile.sh",
+            "sha256": "b65e1dd7517ade03f756db9214cb7553a85b69881d4d5302c512f6190cde6a43"
+          },
+          {
+            "path": "build.js",
+            "url": "https://raw.githubusercontent.com/mozilla/pdf.js.openjpeg/d5f16ba380391d4e32b51834e2e0afa796e402d8/build.js",
+            "sha256": "f468c6b564f8cebcd0d1f1b1eff35aaf381e776f8a8590dd99acfce57b64af30"
+          }
+        ]
+      },
+      {
+        "repository": "mozilla/pdf.js.jbig2",
+        "revision": "d11108f08f8a979b3ff9cbc209783ab05927c37b",
+        "recordedBuildInvocation": false,
+        "files": [
+          {
+            "path": "Dockerfile",
+            "url": "https://raw.githubusercontent.com/mozilla/pdf.js.jbig2/d11108f08f8a979b3ff9cbc209783ab05927c37b/Dockerfile",
+            "sha256": "c5bae8b3e40e14511fc2099d3ce20c6b9b03d1f1e351cc81b84d153bd632c4e2"
+          },
+          {
+            "path": "compile.sh",
+            "url": "https://raw.githubusercontent.com/mozilla/pdf.js.jbig2/d11108f08f8a979b3ff9cbc209783ab05927c37b/compile.sh",
+            "sha256": "13c5586244f052538a973d2611965b593991d763ce7cd48bf0acdf50e31686ec"
+          },
+          {
+            "path": "build.js",
+            "url": "https://raw.githubusercontent.com/mozilla/pdf.js.jbig2/d11108f08f8a979b3ff9cbc209783ab05927c37b/build.js",
+            "sha256": "29cff54841fd028fc1c30466d4c548e5ca89708cca465c787eb0eb099a01bfb1"
+          }
+        ]
+      },
+      {
+        "repository": "mozilla/pdf.js.quickjs",
+        "revision": "1b37671f1b529f887673f33ba4c5f00981a8065b",
+        "recordedBuildInvocation": false,
+        "files": [
+          {
+            "path": "Dockerfile",
+            "url": "https://raw.githubusercontent.com/mozilla/pdf.js.quickjs/1b37671f1b529f887673f33ba4c5f00981a8065b/Dockerfile",
+            "sha256": "a940489952df70cb14710a1e0ff2d059344026e7ed5a17ed6c85a83bb8da406a"
+          },
+          {
+            "path": "compile.sh",
+            "url": "https://raw.githubusercontent.com/mozilla/pdf.js.quickjs/1b37671f1b529f887673f33ba4c5f00981a8065b/compile.sh",
+            "sha256": "d6dfaec2192f9f88df2a6e48d6887c3c60fe5719256b0331e7d0986648be5522"
+          },
+          {
+            "path": "build.js",
+            "url": "https://raw.githubusercontent.com/mozilla/pdf.js.quickjs/1b37671f1b529f887673f33ba4c5f00981a8065b/build.js",
+            "sha256": "393bd173003f4619a3516f794b9190287efdcdb046d578a23798e377bee826b9"
+          }
+        ]
+      }
+    ]
+  },
+  "noticeAssets": [
+    {
+      "file": "pdfjs-codec-emscripten-LICENSE.txt",
+      "sha256": "620a78084fc7ca97c0b5dea9abf891f3ffcadfdbf305276f099c9c4e12fc1d86",
+      "size": 5093
+    },
+    {
+      "file": "pdfjs-codec-musl-MIT.txt",
+      "sha256": "86a5bc945db25c969ac5abfaaa524937042d2d2e74bd747d1d9a25157299b7c4",
+      "size": 1281
+    },
+    {
+      "file": "pdfjs-codec-musl-math-notices.txt",
+      "sha256": "bebc4ea8f67e3e77b4a8f5c7525143bfdb0eb4089d665abede6264cef02a3c4f",
+      "size": 3257
+    },
+    {
+      "file": "pdfjs-codec-musl-qsort-notices.txt",
+      "sha256": "522df6ca32fe30e8815e97f2773a7935ceacfffc94a04d680b84ee75eefc3e15",
+      "size": 2233
+    },
+    {
+      "file": "pdfjs-codec-emscripten-glue-copyright.txt",
+      "sha256": "53855030ef1724626d23f6349cc3ed28a45e424d7c2be2e792639a13bcb13fa0",
+      "size": 93
+    },
+    {
+      "file": "pdfjs-codec-emmalloc-copyright.txt",
+      "sha256": "ac306db5a223685cd4e907f0b2c6ed2a538082eb6d5048e3de0b942427066905",
+      "size": 254
+    },
+    {
+      "file": "pdfjs-codec-binaryen-LICENSE.txt",
+      "sha256": "b40930bbcf80744c86c46a12bc9da056641d722716c378f5659b9e555ef833e1",
+      "size": 11357
+    },
+    {
+      "file": "pdfjs-codec-binaryen-helper-copyright.txt",
+      "sha256": "cb9d66fb2d4f068c0b71d9c5e0f5a5be2455cc11d2b5dffb802b2c1562eb8e76",
+      "size": 624
+    }
+  ],
+  "noticeEvidence": {
+    "emscriptenLicense": {
+      "file": "pdfjs-codec-emscripten-LICENSE.txt",
+      "original": {
+        "url": "https://raw.githubusercontent.com/emscripten-core/emscripten/9d21a55cd13c18299f18d8c3dc5a1cf165f64185/LICENSE",
+        "sha256": "620a78084fc7ca97c0b5dea9abf891f3ffcadfdbf305276f099c9c4e12fc1d86"
+      },
+      "unchangedEvidence": "LICENSE history has no subsequent change through 893b726a10ccdec91dfa7cbb2a5a79160071a995 (2026-11-06). The same full original bytes occur at the 2018 emmalloc introduction and current source. The root original includes its historical Node-path paragraph; this does not assert Node path runtime is embedded."
+    },
+    "emscriptenGlueCopyright": {
+      "file": "pdfjs-codec-emscripten-glue-copyright.txt",
+      "original": {
+        "url": "https://raw.githubusercontent.com/emscripten-core/emscripten/4dac6d6d7689bb76899eebbc394eebd88f0fc67b/src/preamble.js",
+        "sha256": "579b7003ac91b804b6e36bb10d1abfe539e9d2b9ac28b85c443ba40379b09997"
+      },
+      "extraction": "Complete initial copyright/license comment, verbatim, followed by newline. Full MIT text is provided by pdfjs-codec-emscripten-LICENSE.txt",
+      "sameNoticeAt": {
+        "url": "https://raw.githubusercontent.com/emscripten-core/emscripten/d98b029a1d96413f1a88073ccdb47a2b52346d7c/src/preamble.js",
+        "sha256": "8bdd0ba736405d152b4d70c72be989f46cc176a11410187a41c787002759b31e"
+      }
+    },
+    "emmallocCopyright": {
+      "file": "pdfjs-codec-emmalloc-copyright.txt",
+      "original": {
+        "url": "https://raw.githubusercontent.com/emscripten-core/emscripten/5187ea263120ff57424a184c1bc73259e24dc9a9/system/lib/emmalloc.cpp",
+        "sha256": "60e529ef39c53993f5e0c1759a4eae1ec69a941020ad559a7685ec5bd2be5efc"
+      },
+      "extraction": {
+        "lines": [
+          2,
+          5
+        ],
+        "sha256": "ac306db5a223685cd4e907f0b2c6ed2a538082eb6d5048e3de0b942427066905"
+      },
+      "fullLicense": "pdfjs-codec-emscripten-LICENSE.txt",
+      "unchangedEvidence": "Copyright/licensing lines match all 31 revisions of system/lib/emmalloc.c from its 2021 C rename through 2026-11-06. All three wrapper compile.sh files explicitly select MALLOC=emmalloc."
+    },
+    "muslMit": {
+      "file": "pdfjs-codec-musl-MIT.txt",
+      "original": {
+        "url": "https://raw.githubusercontent.com/emscripten-core/emscripten/e05e72d9c49fe15578e73934ce525a894d1b712a/system/lib/libc/musl/COPYRIGHT",
+        "sha256": "f9bc4423732350eb0b3f7ed7e91d530298476f8fec0c6c427a1c04ade22655af"
+      },
+      "comparisonOriginal": {
+        "url": "https://raw.githubusercontent.com/emscripten-core/emscripten/4bf5fb7a35c38935d20c6f8a7e3a3f1153932758/system/lib/libc/musl/COPYRIGHT",
+        "sha256": "b870108ec5e7790e9f9919064f1b9421d62d5f9b0e6c230c6adf7ea2da62e97b"
+      },
+      "extraction": "Verbatim prefix ending immediately before Authors/contributors include:, including the complete original copyright, MIT terms, and disclaimer. That prefix is byte-identical across both revisions. COPYRIGHT has no intermediate revision; later changes only rename the qsort contributor, separately preserved below. This is not an invented license or a claim that musl version is known."
+    },
+    "muslMath": {
+      "file": "pdfjs-codec-musl-math-notices.txt",
+      "fullMitLicense": "pdfjs-codec-musl-MIT.txt",
+      "extraction": "Distinct complete original copyright/license-bearing C comments, concatenated verbatim with blank lines. Sun comments contain their full permissive grant. Arm original copyright/SPDX comments are accompanied by the full musl MIT license, not shipped as SPDX-only substitutes.",
+      "reason": "Pinned QuickJS quickjs.c js_math_funcs exports the listed libm functions; its wrapper compiles that source with -lm. Internal helper/data sources follow those functions, not an audit of unused architecture-specific libc ports. OpenJPEG decoder also uses libm.",
+      "quickjsSource": {
+        "url": "https://raw.githubusercontent.com/bellard/quickjs/3d5e064e9dd67c70f7962836505a7fa067bf0a4e/quickjs.c",
+        "sha256": "a00762d2eee42316cecbc9c15efc4549b715ec500461845cd91b2a6c38190d08"
+      },
+      "entryFunctions": [
+        "acos",
+        "asin",
+        "atan",
+        "atan2",
+        "cos",
+        "exp",
+        "log",
+        "pow",
+        "sin",
+        "tan",
+        "cosh",
+        "sinh",
+        "tanh",
+        "acosh",
+        "asinh",
+        "atanh",
+        "expm1",
+        "log1p",
+        "log2",
+        "log10",
+        "cbrt",
+        "hypot",
+        "fmod"
+      ],
+      "sources": [
+        {
+          "path": "system/lib/libc/musl/src/internal/libm.h",
+          "source": {
+            "url": "https://raw.githubusercontent.com/emscripten-core/emscripten/e05e72d9c49fe15578e73934ce525a894d1b712a/system/lib/libc/musl/src/internal/libm.h",
+            "sha256": "8cb6cc4af4b96b92f5af9d4e20609c8b8456bded8908c3d58f5b8e8f37620f67"
+          },
+          "noticeSha256": [],
+          "sameNoticeAt": {
+            "url": "https://raw.githubusercontent.com/emscripten-core/emscripten/4bf5fb7a35c38935d20c6f8a7e3a3f1153932758/system/lib/libc/musl/src/internal/libm.h",
+            "sha256": "8cb6cc4af4b96b92f5af9d4e20609c8b8456bded8908c3d58f5b8e8f37620f67"
+          },
+          "subsequentSourceChanges": []
+        },
+        {
+          "path": "system/lib/libc/musl/src/math/__cos.c",
+          "source": {
+            "url": "https://raw.githubusercontent.com/emscripten-core/emscripten/e05e72d9c49fe15578e73934ce525a894d1b712a/system/lib/libc/musl/src/math/__cos.c",
+            "sha256": "3f0f774aab60a18d7ef935ffdf121bcda17cbadabff14096c614da22e31a42c1"
+          },
+          "noticeSha256": [
+            "74344ebf347f27ca446e00f1c1921f705546f4b20e0fb31c183cd2c8464b1bc5"
+          ],
+          "sameNoticeAt": {
+            "url": "https://raw.githubusercontent.com/emscripten-core/emscripten/4bf5fb7a35c38935d20c6f8a7e3a3f1153932758/system/lib/libc/musl/src/math/__cos.c",
+            "sha256": "3f0f774aab60a18d7ef935ffdf121bcda17cbadabff14096c614da22e31a42c1"
+          },
+          "subsequentSourceChanges": []
+        },
+        {
+          "path": "system/lib/libc/musl/src/math/__expo2.c",
+          "source": {
+            "url": "https://raw.githubusercontent.com/emscripten-core/emscripten/e05e72d9c49fe15578e73934ce525a894d1b712a/system/lib/libc/musl/src/math/__expo2.c",
+            "sha256": "29cc9dd6d656cd0fbf921a8a1aeee81b430558d880194832a8d44d82c8d37d94"
+          },
+          "noticeSha256": [],
+          "sameNoticeAt": {
+            "url": "https://raw.githubusercontent.com/emscripten-core/emscripten/4bf5fb7a35c38935d20c6f8a7e3a3f1153932758/system/lib/libc/musl/src/math/__expo2.c",
+            "sha256": "29cc9dd6d656cd0fbf921a8a1aeee81b430558d880194832a8d44d82c8d37d94"
+          },
+          "subsequentSourceChanges": []
+        },
+        {
+          "path": "system/lib/libc/musl/src/math/__math_divzero.c",
+          "source": {
+            "url": "https://raw.githubusercontent.com/emscripten-core/emscripten/e05e72d9c49fe15578e73934ce525a894d1b712a/system/lib/libc/musl/src/math/__math_divzero.c",
+            "sha256": "84aa910bdc5e7ccfed42098c37c44e278aa942d46e5a51d5ee8273336c79e719"
+          },
+          "noticeSha256": [],
+          "sameNoticeAt": {
+            "url": "https://raw.githubusercontent.com/emscripten-core/emscripten/4bf5fb7a35c38935d20c6f8a7e3a3f1153932758/system/lib/libc/musl/src/math/__math_divzero.c",
+            "sha256": "84aa910bdc5e7ccfed42098c37c44e278aa942d46e5a51d5ee8273336c79e719"
+          },
+          "subsequentSourceChanges": []
+        },
+        {
+          "path": "system/lib/libc/musl/src/math/__math_invalid.c",
+          "source": {
+            "url": "https://raw.githubusercontent.com/emscripten-core/emscripten/e05e72d9c49fe15578e73934ce525a894d1b712a/system/lib/libc/musl/src/math/__math_invalid.c",
+            "sha256": "b56440ed59fa1e1aaaf6bf8b672c8bb71eaf844457906f7773da1d67d7ef013b"
+          },
+          "noticeSha256": [],
+          "sameNoticeAt": {
+            "url": "https://raw.githubusercontent.com/emscripten-core/emscripten/4bf5fb7a35c38935d20c6f8a7e3a3f1153932758/system/lib/libc/musl/src/math/__math_invalid.c",
+            "sha256": "b56440ed59fa1e1aaaf6bf8b672c8bb71eaf844457906f7773da1d67d7ef013b"
+          },
+          "subsequentSourceChanges": []
+        },
+        {
+          "path": "system/lib/libc/musl/src/math/__math_oflow.c",
+          "source": {
+            "url": "https://raw.githubusercontent.com/emscripten-core/emscripten/e05e72d9c49fe15578e73934ce525a894d1b712a/system/lib/libc/musl/src/math/__math_oflow.c",
+            "sha256": "74669de53bc4b250183cfa262a8a03ee8106f33a83e3aca6b217bafc7363b83c"
+          },
+          "noticeSha256": [],
+          "sameNoticeAt": {
+            "url": "https://raw.githubusercontent.com/emscripten-core/emscripten/4bf5fb7a35c38935d20c6f8a7e3a3f1153932758/system/lib/libc/musl/src/math/__math_oflow.c",
+            "sha256": "74669de53bc4b250183cfa262a8a03ee8106f33a83e3aca6b217bafc7363b83c"
+          },
+          "subsequentSourceChanges": []
+        },
+        {
+          "path": "system/lib/libc/musl/src/math/__math_uflow.c",
+          "source": {
+            "url": "https://raw.githubusercontent.com/emscripten-core/emscripten/e05e72d9c49fe15578e73934ce525a894d1b712a/system/lib/libc/musl/src/math/__math_uflow.c",
+            "sha256": "9a841197bbe9ade9bbd684f8bc65424a97c481d37dabb9fa1790bafe7959034a"
+          },
+          "noticeSha256": [],
+          "sameNoticeAt": {
+            "url": "https://raw.githubusercontent.com/emscripten-core/emscripten/4bf5fb7a35c38935d20c6f8a7e3a3f1153932758/system/lib/libc/musl/src/math/__math_uflow.c",
+            "sha256": "9a841197bbe9ade9bbd684f8bc65424a97c481d37dabb9fa1790bafe7959034a"
+          },
+          "subsequentSourceChanges": []
+        },
+        {
+          "path": "system/lib/libc/musl/src/math/__math_xflow.c",
+          "source": {
+            "url": "https://raw.githubusercontent.com/emscripten-core/emscripten/e05e72d9c49fe15578e73934ce525a894d1b712a/system/lib/libc/musl/src/math/__math_xflow.c",
+            "sha256": "5feafe10347636884a071a5096f912d5ca4a0939844804ca09b88241405648ad"
+          },
+          "noticeSha256": [],
+          "sameNoticeAt": {
+            "url": "https://raw.githubusercontent.com/emscripten-core/emscripten/4bf5fb7a35c38935d20c6f8a7e3a3f1153932758/system/lib/libc/musl/src/math/__math_xflow.c",
+            "sha256": "5feafe10347636884a071a5096f912d5ca4a0939844804ca09b88241405648ad"
+          },
+          "subsequentSourceChanges": []
+        },
+        {
+          "path": "system/lib/libc/musl/src/math/__rem_pio2.c",
+          "source": {
+            "url": "https://raw.githubusercontent.com/emscripten-core/emscripten/e05e72d9c49fe15578e73934ce525a894d1b712a/system/lib/libc/musl/src/math/__rem_pio2.c",
+            "sha256": "938329e0939cd83ee2185a52154b41242f618d4a6df1b08395f344da33d4f1e6"
+          },
+          "noticeSha256": [
+            "c90662135910b0f0edd97131d0e116a027ec79e46b2785b7b596fa617cca78e3"
+          ],
+          "sameNoticeAt": {
+            "url": "https://raw.githubusercontent.com/emscripten-core/emscripten/4bf5fb7a35c38935d20c6f8a7e3a3f1153932758/system/lib/libc/musl/src/math/__rem_pio2.c",
+            "sha256": "938329e0939cd83ee2185a52154b41242f618d4a6df1b08395f344da33d4f1e6"
+          },
+          "subsequentSourceChanges": []
+        },
+        {
+          "path": "system/lib/libc/musl/src/math/__rem_pio2_large.c",
+          "source": {
+            "url": "https://raw.githubusercontent.com/emscripten-core/emscripten/e05e72d9c49fe15578e73934ce525a894d1b712a/system/lib/libc/musl/src/math/__rem_pio2_large.c",
+            "sha256": "b97f19fb5951c83a0c10506fab35646caefde13bd03100ad2af55ef00af0b9fb"
+          },
+          "noticeSha256": [
+            "74344ebf347f27ca446e00f1c1921f705546f4b20e0fb31c183cd2c8464b1bc5"
+          ],
+          "sameNoticeAt": {
+            "url": "https://raw.githubusercontent.com/emscripten-core/emscripten/4bf5fb7a35c38935d20c6f8a7e3a3f1153932758/system/lib/libc/musl/src/math/__rem_pio2_large.c",
+            "sha256": "b97f19fb5951c83a0c10506fab35646caefde13bd03100ad2af55ef00af0b9fb"
+          },
+          "subsequentSourceChanges": []
+        },
+        {
+          "path": "system/lib/libc/musl/src/math/__sin.c",
+          "source": {
+            "url": "https://raw.githubusercontent.com/emscripten-core/emscripten/e05e72d9c49fe15578e73934ce525a894d1b712a/system/lib/libc/musl/src/math/__sin.c",
+            "sha256": "f3a37ef9bcfb8a2f9c809d8c7f1aa2c17c8c3319ad7fb2fe7c0a6284ea8859d2"
+          },
+          "noticeSha256": [
+            "74344ebf347f27ca446e00f1c1921f705546f4b20e0fb31c183cd2c8464b1bc5"
+          ],
+          "sameNoticeAt": {
+            "url": "https://raw.githubusercontent.com/emscripten-core/emscripten/4bf5fb7a35c38935d20c6f8a7e3a3f1153932758/system/lib/libc/musl/src/math/__sin.c",
+            "sha256": "f3a37ef9bcfb8a2f9c809d8c7f1aa2c17c8c3319ad7fb2fe7c0a6284ea8859d2"
+          },
+          "subsequentSourceChanges": []
+        },
+        {
+          "path": "system/lib/libc/musl/src/math/__tan.c",
+          "source": {
+            "url": "https://raw.githubusercontent.com/emscripten-core/emscripten/e05e72d9c49fe15578e73934ce525a894d1b712a/system/lib/libc/musl/src/math/__tan.c",
+            "sha256": "e18b65b69fced8dbb2d3ed1a3dc6daea0e9f857f2762f274380bd89a6f89d2c4"
+          },
+          "noticeSha256": [
+            "5a534ed1f9266ed799e9f2e3f830f15411762021829da121b23df5edc498c6b6"
+          ],
+          "sameNoticeAt": {
+            "url": "https://raw.githubusercontent.com/emscripten-core/emscripten/4bf5fb7a35c38935d20c6f8a7e3a3f1153932758/system/lib/libc/musl/src/math/__tan.c",
+            "sha256": "e18b65b69fced8dbb2d3ed1a3dc6daea0e9f857f2762f274380bd89a6f89d2c4"
+          },
+          "subsequentSourceChanges": []
+        },
+        {
+          "path": "system/lib/libc/musl/src/math/acos.c",
+          "source": {
+            "url": "https://raw.githubusercontent.com/emscripten-core/emscripten/e05e72d9c49fe15578e73934ce525a894d1b712a/system/lib/libc/musl/src/math/acos.c",
+            "sha256": "cc6f9017e7e2e0ef01516fa12c68aa63865e6415c90dc039dfce9abffae09a4c"
+          },
+          "noticeSha256": [
+            "74344ebf347f27ca446e00f1c1921f705546f4b20e0fb31c183cd2c8464b1bc5"
+          ],
+          "sameNoticeAt": {
+            "url": "https://raw.githubusercontent.com/emscripten-core/emscripten/4bf5fb7a35c38935d20c6f8a7e3a3f1153932758/system/lib/libc/musl/src/math/acos.c",
+            "sha256": "cc6f9017e7e2e0ef01516fa12c68aa63865e6415c90dc039dfce9abffae09a4c"
+          },
+          "subsequentSourceChanges": []
+        },
+        {
+          "path": "system/lib/libc/musl/src/math/acosh.c",
+          "source": {
+            "url": "https://raw.githubusercontent.com/emscripten-core/emscripten/e05e72d9c49fe15578e73934ce525a894d1b712a/system/lib/libc/musl/src/math/acosh.c",
+            "sha256": "eef97dad984a78f7afabb0a62aee7b11113753984157cf44ffb8ac137697207c"
+          },
+          "noticeSha256": [],
+          "sameNoticeAt": {
+            "url": "https://raw.githubusercontent.com/emscripten-core/emscripten/4bf5fb7a35c38935d20c6f8a7e3a3f1153932758/system/lib/libc/musl/src/math/acosh.c",
+            "sha256": "eef97dad984a78f7afabb0a62aee7b11113753984157cf44ffb8ac137697207c"
+          },
+          "subsequentSourceChanges": []
+        },
+        {
+          "path": "system/lib/libc/musl/src/math/asin.c",
+          "source": {
+            "url": "https://raw.githubusercontent.com/emscripten-core/emscripten/e05e72d9c49fe15578e73934ce525a894d1b712a/system/lib/libc/musl/src/math/asin.c",
+            "sha256": "9302dd0b2f302f7b7decce82e737ed250bae1bcc65c19eaf3d7ec19010892e63"
+          },
+          "noticeSha256": [
+            "74344ebf347f27ca446e00f1c1921f705546f4b20e0fb31c183cd2c8464b1bc5"
+          ],
+          "sameNoticeAt": {
+            "url": "https://raw.githubusercontent.com/emscripten-core/emscripten/4bf5fb7a35c38935d20c6f8a7e3a3f1153932758/system/lib/libc/musl/src/math/asin.c",
+            "sha256": "9302dd0b2f302f7b7decce82e737ed250bae1bcc65c19eaf3d7ec19010892e63"
+          },
+          "subsequentSourceChanges": []
+        },
+        {
+          "path": "system/lib/libc/musl/src/math/asinh.c",
+          "source": {
+            "url": "https://raw.githubusercontent.com/emscripten-core/emscripten/e05e72d9c49fe15578e73934ce525a894d1b712a/system/lib/libc/musl/src/math/asinh.c",
+            "sha256": "a0a31b87d1f7b11c43500602fc537097c7f59a483c27a82513944df0b1d6c4f3"
+          },
+          "noticeSha256": [],
+          "sameNoticeAt": {
+            "url": "https://raw.githubusercontent.com/emscripten-core/emscripten/4bf5fb7a35c38935d20c6f8a7e3a3f1153932758/system/lib/libc/musl/src/math/asinh.c",
+            "sha256": "a0a31b87d1f7b11c43500602fc537097c7f59a483c27a82513944df0b1d6c4f3"
+          },
+          "subsequentSourceChanges": []
+        },
+        {
+          "path": "system/lib/libc/musl/src/math/atan.c",
+          "source": {
+            "url": "https://raw.githubusercontent.com/emscripten-core/emscripten/e05e72d9c49fe15578e73934ce525a894d1b712a/system/lib/libc/musl/src/math/atan.c",
+            "sha256": "1cffb67a65456ae0bc5f07a94df04a4f18ebc1ac0bffe3219250c4e0555ee01d"
+          },
+          "noticeSha256": [
+            "0c3d0381d2cd647be68590170490be5f624c962d9f95eb698489e578c1de8f05"
+          ],
+          "sameNoticeAt": {
+            "url": "https://raw.githubusercontent.com/emscripten-core/emscripten/4bf5fb7a35c38935d20c6f8a7e3a3f1153932758/system/lib/libc/musl/src/math/atan.c",
+            "sha256": "1cffb67a65456ae0bc5f07a94df04a4f18ebc1ac0bffe3219250c4e0555ee01d"
+          },
+          "subsequentSourceChanges": []
+        },
+        {
+          "path": "system/lib/libc/musl/src/math/atan2.c",
+          "source": {
+            "url": "https://raw.githubusercontent.com/emscripten-core/emscripten/e05e72d9c49fe15578e73934ce525a894d1b712a/system/lib/libc/musl/src/math/atan2.c",
+            "sha256": "a5f94b09b10b4e72bb15d94ae403c9dfd27d7ad881ecd729000004429acfca63"
+          },
+          "noticeSha256": [
+            "11f476f899dacfef801a097465ad0755ad4546afe03b02c9a17aa38e228344e1"
+          ],
+          "sameNoticeAt": {
+            "url": "https://raw.githubusercontent.com/emscripten-core/emscripten/4bf5fb7a35c38935d20c6f8a7e3a3f1153932758/system/lib/libc/musl/src/math/atan2.c",
+            "sha256": "a5f94b09b10b4e72bb15d94ae403c9dfd27d7ad881ecd729000004429acfca63"
+          },
+          "subsequentSourceChanges": []
+        },
+        {
+          "path": "system/lib/libc/musl/src/math/atanh.c",
+          "source": {
+            "url": "https://raw.githubusercontent.com/emscripten-core/emscripten/e05e72d9c49fe15578e73934ce525a894d1b712a/system/lib/libc/musl/src/math/atanh.c",
+            "sha256": "1bfda6f427e5cb7e350cfc2ab08e022968f5d13e9728d35cbe7d601e9977d44f"
+          },
+          "noticeSha256": [],
+          "sameNoticeAt": {
+            "url": "https://raw.githubusercontent.com/emscripten-core/emscripten/4bf5fb7a35c38935d20c6f8a7e3a3f1153932758/system/lib/libc/musl/src/math/atanh.c",
+            "sha256": "1bfda6f427e5cb7e350cfc2ab08e022968f5d13e9728d35cbe7d601e9977d44f"
+          },
+          "subsequentSourceChanges": []
+        },
+        {
+          "path": "system/lib/libc/musl/src/math/cbrt.c",
+          "source": {
+            "url": "https://raw.githubusercontent.com/emscripten-core/emscripten/e05e72d9c49fe15578e73934ce525a894d1b712a/system/lib/libc/musl/src/math/cbrt.c",
+            "sha256": "af442893d4048c0eb485b93b5628792fb796d45ffc0f88c682041366c7da611d"
+          },
+          "noticeSha256": [
+            "11a1dc1ce0b6b2879da93a266c5aebe81c4324e749c77a2ce3048b5b24ab58c0"
+          ],
+          "sameNoticeAt": {
+            "url": "https://raw.githubusercontent.com/emscripten-core/emscripten/4bf5fb7a35c38935d20c6f8a7e3a3f1153932758/system/lib/libc/musl/src/math/cbrt.c",
+            "sha256": "af442893d4048c0eb485b93b5628792fb796d45ffc0f88c682041366c7da611d"
+          },
+          "subsequentSourceChanges": []
+        },
+        {
+          "path": "system/lib/libc/musl/src/math/cos.c",
+          "source": {
+            "url": "https://raw.githubusercontent.com/emscripten-core/emscripten/e05e72d9c49fe15578e73934ce525a894d1b712a/system/lib/libc/musl/src/math/cos.c",
+            "sha256": "3a74e054057d636fa494bdd76a53a40db5cee618264f6ab31cb0538ba63c6bda"
+          },
+          "noticeSha256": [
+            "0c3d0381d2cd647be68590170490be5f624c962d9f95eb698489e578c1de8f05"
+          ],
+          "sameNoticeAt": {
+            "url": "https://raw.githubusercontent.com/emscripten-core/emscripten/4bf5fb7a35c38935d20c6f8a7e3a3f1153932758/system/lib/libc/musl/src/math/cos.c",
+            "sha256": "3a74e054057d636fa494bdd76a53a40db5cee618264f6ab31cb0538ba63c6bda"
+          },
+          "subsequentSourceChanges": []
+        },
+        {
+          "path": "system/lib/libc/musl/src/math/cosh.c",
+          "source": {
+            "url": "https://raw.githubusercontent.com/emscripten-core/emscripten/e05e72d9c49fe15578e73934ce525a894d1b712a/system/lib/libc/musl/src/math/cosh.c",
+            "sha256": "5e5ed87e1a80e68734f4c87a4907a55f50a54df58261698aa94d5cb3276a3d43"
+          },
+          "noticeSha256": [],
+          "sameNoticeAt": {
+            "url": "https://raw.githubusercontent.com/emscripten-core/emscripten/4bf5fb7a35c38935d20c6f8a7e3a3f1153932758/system/lib/libc/musl/src/math/cosh.c",
+            "sha256": "5e5ed87e1a80e68734f4c87a4907a55f50a54df58261698aa94d5cb3276a3d43"
+          },
+          "subsequentSourceChanges": []
+        },
+        {
+          "path": "system/lib/libc/musl/src/math/exp.c",
+          "source": {
+            "url": "https://raw.githubusercontent.com/emscripten-core/emscripten/e05e72d9c49fe15578e73934ce525a894d1b712a/system/lib/libc/musl/src/math/exp.c",
+            "sha256": "7db56f21ca9b8915d36dd5099b707aafeb6a736eae798e19b76b074764e75f34"
+          },
+          "noticeSha256": [
+            "7e52a70e5de1143e4fdb710116f76b27eced3e41be7ab70310138928a3b34e5e"
+          ],
+          "sameNoticeAt": {
+            "url": "https://raw.githubusercontent.com/emscripten-core/emscripten/4bf5fb7a35c38935d20c6f8a7e3a3f1153932758/system/lib/libc/musl/src/math/exp.c",
+            "sha256": "7db56f21ca9b8915d36dd5099b707aafeb6a736eae798e19b76b074764e75f34"
+          },
+          "subsequentSourceChanges": []
+        },
+        {
+          "path": "system/lib/libc/musl/src/math/exp_data.c",
+          "source": {
+            "url": "https://raw.githubusercontent.com/emscripten-core/emscripten/e05e72d9c49fe15578e73934ce525a894d1b712a/system/lib/libc/musl/src/math/exp_data.c",
+            "sha256": "c55dff64e369fe816cd8ce367064989bb119f85783599680d1a329031c660689"
+          },
+          "noticeSha256": [
+            "f6b5b71ae6dc49255b8982a8de10bb97d66035b0b6ad91843da71fcde64cf45f"
+          ],
+          "sameNoticeAt": {
+            "url": "https://raw.githubusercontent.com/emscripten-core/emscripten/4bf5fb7a35c38935d20c6f8a7e3a3f1153932758/system/lib/libc/musl/src/math/exp_data.c",
+            "sha256": "c55dff64e369fe816cd8ce367064989bb119f85783599680d1a329031c660689"
+          },
+          "subsequentSourceChanges": []
+        },
+        {
+          "path": "system/lib/libc/musl/src/math/exp_data.h",
+          "source": {
+            "url": "https://raw.githubusercontent.com/emscripten-core/emscripten/e05e72d9c49fe15578e73934ce525a894d1b712a/system/lib/libc/musl/src/math/exp_data.h",
+            "sha256": "df77fca837edd02b260dd09a2914202775909ae67a059218ae38cfab104e6d16"
+          },
+          "noticeSha256": [
+            "6ac2dcacfaa533da778dce54dac87709a1285f08d070d9d95790b50199f71486"
+          ],
+          "sameNoticeAt": {
+            "url": "https://raw.githubusercontent.com/emscripten-core/emscripten/4bf5fb7a35c38935d20c6f8a7e3a3f1153932758/system/lib/libc/musl/src/math/exp_data.h",
+            "sha256": "df77fca837edd02b260dd09a2914202775909ae67a059218ae38cfab104e6d16"
+          },
+          "subsequentSourceChanges": []
+        },
+        {
+          "path": "system/lib/libc/musl/src/math/expm1.c",
+          "source": {
+            "url": "https://raw.githubusercontent.com/emscripten-core/emscripten/e05e72d9c49fe15578e73934ce525a894d1b712a/system/lib/libc/musl/src/math/expm1.c",
+            "sha256": "c4764166cea03420f2dfc1840a6a7615934192d851b96d5d2dcc321cc1e39460"
+          },
+          "noticeSha256": [
+            "0c3d0381d2cd647be68590170490be5f624c962d9f95eb698489e578c1de8f05"
+          ],
+          "sameNoticeAt": {
+            "url": "https://raw.githubusercontent.com/emscripten-core/emscripten/4bf5fb7a35c38935d20c6f8a7e3a3f1153932758/system/lib/libc/musl/src/math/expm1.c",
+            "sha256": "c4764166cea03420f2dfc1840a6a7615934192d851b96d5d2dcc321cc1e39460"
+          },
+          "subsequentSourceChanges": []
+        },
+        {
+          "path": "system/lib/libc/musl/src/math/fabs.c",
+          "source": {
+            "url": "https://raw.githubusercontent.com/emscripten-core/emscripten/e05e72d9c49fe15578e73934ce525a894d1b712a/system/lib/libc/musl/src/math/fabs.c",
+            "sha256": "f6387612e1f879cac47fa71a808b584c76d78c23df4e44274ed9c7b1ddf24eff"
+          },
+          "noticeSha256": [],
+          "sameNoticeAt": {
+            "url": "https://raw.githubusercontent.com/emscripten-core/emscripten/4bf5fb7a35c38935d20c6f8a7e3a3f1153932758/system/lib/libc/musl/src/math/fabs.c",
+            "sha256": "f6387612e1f879cac47fa71a808b584c76d78c23df4e44274ed9c7b1ddf24eff"
+          },
+          "subsequentSourceChanges": []
+        },
+        {
+          "path": "system/lib/libc/musl/src/math/floor.c",
+          "source": {
+            "url": "https://raw.githubusercontent.com/emscripten-core/emscripten/e05e72d9c49fe15578e73934ce525a894d1b712a/system/lib/libc/musl/src/math/floor.c",
+            "sha256": "16b15cf815d4ab954a52038bd8a80cb3ca080d7c38c2bfe792e79f70a025968d"
+          },
+          "noticeSha256": [],
+          "sameNoticeAt": {
+            "url": "https://raw.githubusercontent.com/emscripten-core/emscripten/4bf5fb7a35c38935d20c6f8a7e3a3f1153932758/system/lib/libc/musl/src/math/floor.c",
+            "sha256": "c72285ce3c43df30ccc737a1a91d65144f28c7777cae23f1b526806fb1b1188a"
+          },
+          "subsequentSourceChanges": [
+            "fa10d78251ff1b7766988d0b76e1e80b01f4c326"
+          ]
+        },
+        {
+          "path": "system/lib/libc/musl/src/math/fmod.c",
+          "source": {
+            "url": "https://raw.githubusercontent.com/emscripten-core/emscripten/e05e72d9c49fe15578e73934ce525a894d1b712a/system/lib/libc/musl/src/math/fmod.c",
+            "sha256": "33fb61093e04783081b9e8f8a8a303456b2f919c215cd0c378c1ed0acf41934c"
+          },
+          "noticeSha256": [],
+          "sameNoticeAt": {
+            "url": "https://raw.githubusercontent.com/emscripten-core/emscripten/4bf5fb7a35c38935d20c6f8a7e3a3f1153932758/system/lib/libc/musl/src/math/fmod.c",
+            "sha256": "33fb61093e04783081b9e8f8a8a303456b2f919c215cd0c378c1ed0acf41934c"
+          },
+          "subsequentSourceChanges": []
+        },
+        {
+          "path": "system/lib/libc/musl/src/math/hypot.c",
+          "source": {
+            "url": "https://raw.githubusercontent.com/emscripten-core/emscripten/e05e72d9c49fe15578e73934ce525a894d1b712a/system/lib/libc/musl/src/math/hypot.c",
+            "sha256": "a5532b3328310bb3ac9f7cd9074fd26c5fe7288c719c907c5c03a615442f9e7e"
+          },
+          "noticeSha256": [],
+          "sameNoticeAt": {
+            "url": "https://raw.githubusercontent.com/emscripten-core/emscripten/4bf5fb7a35c38935d20c6f8a7e3a3f1153932758/system/lib/libc/musl/src/math/hypot.c",
+            "sha256": "a5532b3328310bb3ac9f7cd9074fd26c5fe7288c719c907c5c03a615442f9e7e"
+          },
+          "subsequentSourceChanges": []
+        },
+        {
+          "path": "system/lib/libc/musl/src/math/log.c",
+          "source": {
+            "url": "https://raw.githubusercontent.com/emscripten-core/emscripten/e05e72d9c49fe15578e73934ce525a894d1b712a/system/lib/libc/musl/src/math/log.c",
+            "sha256": "a0694d8587a0d145d0f8ae87cbffba014d7988bc2ebcbfad94cea73b394c9ecc"
+          },
+          "noticeSha256": [
+            "7d44f8a20ce2b9ab074ce883201b78815c98e669108b1dbdf3a699098444c326"
+          ],
+          "sameNoticeAt": {
+            "url": "https://raw.githubusercontent.com/emscripten-core/emscripten/4bf5fb7a35c38935d20c6f8a7e3a3f1153932758/system/lib/libc/musl/src/math/log.c",
+            "sha256": "a0694d8587a0d145d0f8ae87cbffba014d7988bc2ebcbfad94cea73b394c9ecc"
+          },
+          "subsequentSourceChanges": []
+        },
+        {
+          "path": "system/lib/libc/musl/src/math/log10.c",
+          "source": {
+            "url": "https://raw.githubusercontent.com/emscripten-core/emscripten/e05e72d9c49fe15578e73934ce525a894d1b712a/system/lib/libc/musl/src/math/log10.c",
+            "sha256": "ef9b4b1f0918cf1fcb797f9fa4d4ffe177bfa27f668d74a41d613bfbcd83850a"
+          },
+          "noticeSha256": [
+            "74344ebf347f27ca446e00f1c1921f705546f4b20e0fb31c183cd2c8464b1bc5"
+          ],
+          "sameNoticeAt": {
+            "url": "https://raw.githubusercontent.com/emscripten-core/emscripten/4bf5fb7a35c38935d20c6f8a7e3a3f1153932758/system/lib/libc/musl/src/math/log10.c",
+            "sha256": "ef9b4b1f0918cf1fcb797f9fa4d4ffe177bfa27f668d74a41d613bfbcd83850a"
+          },
+          "subsequentSourceChanges": []
+        },
+        {
+          "path": "system/lib/libc/musl/src/math/log1p.c",
+          "source": {
+            "url": "https://raw.githubusercontent.com/emscripten-core/emscripten/e05e72d9c49fe15578e73934ce525a894d1b712a/system/lib/libc/musl/src/math/log1p.c",
+            "sha256": "c76bbf714cd456a9f0de6e2c94853c27e7865581a2edfdef6d1f861739bbcb46"
+          },
+          "noticeSha256": [
+            "0c3d0381d2cd647be68590170490be5f624c962d9f95eb698489e578c1de8f05"
+          ],
+          "sameNoticeAt": {
+            "url": "https://raw.githubusercontent.com/emscripten-core/emscripten/4bf5fb7a35c38935d20c6f8a7e3a3f1153932758/system/lib/libc/musl/src/math/log1p.c",
+            "sha256": "c76bbf714cd456a9f0de6e2c94853c27e7865581a2edfdef6d1f861739bbcb46"
+          },
+          "subsequentSourceChanges": []
+        },
+        {
+          "path": "system/lib/libc/musl/src/math/log2.c",
+          "source": {
+            "url": "https://raw.githubusercontent.com/emscripten-core/emscripten/e05e72d9c49fe15578e73934ce525a894d1b712a/system/lib/libc/musl/src/math/log2.c",
+            "sha256": "281e4fc0f737419e245019d8bc8a8ca53032c2d88c31d08561e9e59dcb4b4640"
+          },
+          "noticeSha256": [
+            "c359dfaf15768892478461e9cb40da11d380123e47c50f29b3ede8207c04486d"
+          ],
+          "sameNoticeAt": {
+            "url": "https://raw.githubusercontent.com/emscripten-core/emscripten/4bf5fb7a35c38935d20c6f8a7e3a3f1153932758/system/lib/libc/musl/src/math/log2.c",
+            "sha256": "281e4fc0f737419e245019d8bc8a8ca53032c2d88c31d08561e9e59dcb4b4640"
+          },
+          "subsequentSourceChanges": []
+        },
+        {
+          "path": "system/lib/libc/musl/src/math/log2_data.c",
+          "source": {
+            "url": "https://raw.githubusercontent.com/emscripten-core/emscripten/e05e72d9c49fe15578e73934ce525a894d1b712a/system/lib/libc/musl/src/math/log2_data.c",
+            "sha256": "5a62bb213f19dc1364cddb612e3d13831e382f5ae6f7fafd7064362f53478dfb"
+          },
+          "noticeSha256": [
+            "74ae9464d17802e1e8394431844a842eb25efad729748a359a518d26685beedf"
+          ],
+          "sameNoticeAt": {
+            "url": "https://raw.githubusercontent.com/emscripten-core/emscripten/4bf5fb7a35c38935d20c6f8a7e3a3f1153932758/system/lib/libc/musl/src/math/log2_data.c",
+            "sha256": "5a62bb213f19dc1364cddb612e3d13831e382f5ae6f7fafd7064362f53478dfb"
+          },
+          "subsequentSourceChanges": []
+        },
+        {
+          "path": "system/lib/libc/musl/src/math/log2_data.h",
+          "source": {
+            "url": "https://raw.githubusercontent.com/emscripten-core/emscripten/e05e72d9c49fe15578e73934ce525a894d1b712a/system/lib/libc/musl/src/math/log2_data.h",
+            "sha256": "b56e1a56f73a8700caa9787cd399fecf7f96038af56c2a590aeb6f0f8662ea8e"
+          },
+          "noticeSha256": [
+            "6ac2dcacfaa533da778dce54dac87709a1285f08d070d9d95790b50199f71486"
+          ],
+          "sameNoticeAt": {
+            "url": "https://raw.githubusercontent.com/emscripten-core/emscripten/4bf5fb7a35c38935d20c6f8a7e3a3f1153932758/system/lib/libc/musl/src/math/log2_data.h",
+            "sha256": "b56e1a56f73a8700caa9787cd399fecf7f96038af56c2a590aeb6f0f8662ea8e"
+          },
+          "subsequentSourceChanges": []
+        },
+        {
+          "path": "system/lib/libc/musl/src/math/log_data.c",
+          "source": {
+            "url": "https://raw.githubusercontent.com/emscripten-core/emscripten/e05e72d9c49fe15578e73934ce525a894d1b712a/system/lib/libc/musl/src/math/log_data.c",
+            "sha256": "e96bcd99d88fc57e0f3686299014f4b949a6212603ce237f39e16cedc155617a"
+          },
+          "noticeSha256": [
+            "d22e34751c18a13e5cb7e974c1b94c2cc89caad9d2b4f2ef1c85994d32292805"
+          ],
+          "sameNoticeAt": {
+            "url": "https://raw.githubusercontent.com/emscripten-core/emscripten/4bf5fb7a35c38935d20c6f8a7e3a3f1153932758/system/lib/libc/musl/src/math/log_data.c",
+            "sha256": "e96bcd99d88fc57e0f3686299014f4b949a6212603ce237f39e16cedc155617a"
+          },
+          "subsequentSourceChanges": []
+        },
+        {
+          "path": "system/lib/libc/musl/src/math/log_data.h",
+          "source": {
+            "url": "https://raw.githubusercontent.com/emscripten-core/emscripten/e05e72d9c49fe15578e73934ce525a894d1b712a/system/lib/libc/musl/src/math/log_data.h",
+            "sha256": "a8dced6f0821f30cad040ba326b03e419fbe0a750ed8f3b0d7145992bee4bccc"
+          },
+          "noticeSha256": [
+            "6ac2dcacfaa533da778dce54dac87709a1285f08d070d9d95790b50199f71486"
+          ],
+          "sameNoticeAt": {
+            "url": "https://raw.githubusercontent.com/emscripten-core/emscripten/4bf5fb7a35c38935d20c6f8a7e3a3f1153932758/system/lib/libc/musl/src/math/log_data.h",
+            "sha256": "a8dced6f0821f30cad040ba326b03e419fbe0a750ed8f3b0d7145992bee4bccc"
+          },
+          "subsequentSourceChanges": []
+        },
+        {
+          "path": "system/lib/libc/musl/src/math/pow.c",
+          "source": {
+            "url": "https://raw.githubusercontent.com/emscripten-core/emscripten/e05e72d9c49fe15578e73934ce525a894d1b712a/system/lib/libc/musl/src/math/pow.c",
+            "sha256": "b06f0a08d74fcff8cced7afa2c0e47e301e3e8a19c0de5becdec28cd7b014027"
+          },
+          "noticeSha256": [
+            "5fa165f5ae7e7b676b5ea1e2ab501f258932355ebad0ffaa76865149b47cc00a"
+          ],
+          "sameNoticeAt": {
+            "url": "https://raw.githubusercontent.com/emscripten-core/emscripten/4bf5fb7a35c38935d20c6f8a7e3a3f1153932758/system/lib/libc/musl/src/math/pow.c",
+            "sha256": "b06f0a08d74fcff8cced7afa2c0e47e301e3e8a19c0de5becdec28cd7b014027"
+          },
+          "subsequentSourceChanges": []
+        },
+        {
+          "path": "system/lib/libc/musl/src/math/pow_data.c",
+          "source": {
+            "url": "https://raw.githubusercontent.com/emscripten-core/emscripten/e05e72d9c49fe15578e73934ce525a894d1b712a/system/lib/libc/musl/src/math/pow_data.c",
+            "sha256": "2052ec913f9b4a2170a98a6fcbcd7694f5dec220036b00c36106a2b4b65a4c55"
+          },
+          "noticeSha256": [
+            "8867dc852d8c09b25648ac08bb5e7d7effdbff03e10614f13f8e681774ec1414"
+          ],
+          "sameNoticeAt": {
+            "url": "https://raw.githubusercontent.com/emscripten-core/emscripten/4bf5fb7a35c38935d20c6f8a7e3a3f1153932758/system/lib/libc/musl/src/math/pow_data.c",
+            "sha256": "2052ec913f9b4a2170a98a6fcbcd7694f5dec220036b00c36106a2b4b65a4c55"
+          },
+          "subsequentSourceChanges": []
+        },
+        {
+          "path": "system/lib/libc/musl/src/math/pow_data.h",
+          "source": {
+            "url": "https://raw.githubusercontent.com/emscripten-core/emscripten/e05e72d9c49fe15578e73934ce525a894d1b712a/system/lib/libc/musl/src/math/pow_data.h",
+            "sha256": "5014345a7958adcf6ff835b5e96afa99dd5a98c40dfe968442288e002b8e01a3"
+          },
+          "noticeSha256": [
+            "6ac2dcacfaa533da778dce54dac87709a1285f08d070d9d95790b50199f71486"
+          ],
+          "sameNoticeAt": {
+            "url": "https://raw.githubusercontent.com/emscripten-core/emscripten/4bf5fb7a35c38935d20c6f8a7e3a3f1153932758/system/lib/libc/musl/src/math/pow_data.h",
+            "sha256": "5014345a7958adcf6ff835b5e96afa99dd5a98c40dfe968442288e002b8e01a3"
+          },
+          "subsequentSourceChanges": []
+        },
+        {
+          "path": "system/lib/libc/musl/src/math/scalbn.c",
+          "source": {
+            "url": "https://raw.githubusercontent.com/emscripten-core/emscripten/e05e72d9c49fe15578e73934ce525a894d1b712a/system/lib/libc/musl/src/math/scalbn.c",
+            "sha256": "a2e766283ed30c2b30c71e01dbdabef58faf92cc9aa84a01c1ce1069b6625696"
+          },
+          "noticeSha256": [],
+          "sameNoticeAt": {
+            "url": "https://raw.githubusercontent.com/emscripten-core/emscripten/4bf5fb7a35c38935d20c6f8a7e3a3f1153932758/system/lib/libc/musl/src/math/scalbn.c",
+            "sha256": "a2e766283ed30c2b30c71e01dbdabef58faf92cc9aa84a01c1ce1069b6625696"
+          },
+          "subsequentSourceChanges": []
+        },
+        {
+          "path": "system/lib/libc/musl/src/math/sin.c",
+          "source": {
+            "url": "https://raw.githubusercontent.com/emscripten-core/emscripten/e05e72d9c49fe15578e73934ce525a894d1b712a/system/lib/libc/musl/src/math/sin.c",
+            "sha256": "24e53a9d85f196f66919cc19247be5480bb607ef38844b1a24bc47c4fe4974ef"
+          },
+          "noticeSha256": [
+            "0c3d0381d2cd647be68590170490be5f624c962d9f95eb698489e578c1de8f05"
+          ],
+          "sameNoticeAt": {
+            "url": "https://raw.githubusercontent.com/emscripten-core/emscripten/4bf5fb7a35c38935d20c6f8a7e3a3f1153932758/system/lib/libc/musl/src/math/sin.c",
+            "sha256": "24e53a9d85f196f66919cc19247be5480bb607ef38844b1a24bc47c4fe4974ef"
+          },
+          "subsequentSourceChanges": []
+        },
+        {
+          "path": "system/lib/libc/musl/src/math/sinh.c",
+          "source": {
+            "url": "https://raw.githubusercontent.com/emscripten-core/emscripten/e05e72d9c49fe15578e73934ce525a894d1b712a/system/lib/libc/musl/src/math/sinh.c",
+            "sha256": "ab082814c4b1bbad8ea7dcfde1e36167cd72be5ef0e8b3ef3def0e052dd74261"
+          },
+          "noticeSha256": [],
+          "sameNoticeAt": {
+            "url": "https://raw.githubusercontent.com/emscripten-core/emscripten/4bf5fb7a35c38935d20c6f8a7e3a3f1153932758/system/lib/libc/musl/src/math/sinh.c",
+            "sha256": "ab082814c4b1bbad8ea7dcfde1e36167cd72be5ef0e8b3ef3def0e052dd74261"
+          },
+          "subsequentSourceChanges": []
+        },
+        {
+          "path": "system/lib/libc/musl/src/math/sqrt.c",
+          "source": {
+            "url": "https://raw.githubusercontent.com/emscripten-core/emscripten/e05e72d9c49fe15578e73934ce525a894d1b712a/system/lib/libc/musl/src/math/sqrt.c",
+            "sha256": "f6c0afcf727688d834b8ba892e7a5903a914682e62c3ad330842c5702b24f622"
+          },
+          "noticeSha256": [],
+          "sameNoticeAt": {
+            "url": "https://raw.githubusercontent.com/emscripten-core/emscripten/4bf5fb7a35c38935d20c6f8a7e3a3f1153932758/system/lib/libc/musl/src/math/sqrt.c",
+            "sha256": "320a4405c11e39024193c279f41d7c43d892a58ece2e0917343f40cd977279e0"
+          },
+          "subsequentSourceChanges": [
+            "fa10d78251ff1b7766988d0b76e1e80b01f4c326"
+          ]
+        },
+        {
+          "path": "system/lib/libc/musl/src/math/sqrt_data.h",
+          "source": {
+            "url": "https://raw.githubusercontent.com/emscripten-core/emscripten/e05e72d9c49fe15578e73934ce525a894d1b712a/system/lib/libc/musl/src/math/sqrt_data.h",
+            "sha256": "5fa47a8b8c1afbee4dcd10f71d2f6c433a24f9aa5ce7a90924cd1db236cbc03c"
+          },
+          "noticeSha256": [],
+          "sameNoticeAt": {
+            "url": "https://raw.githubusercontent.com/emscripten-core/emscripten/4bf5fb7a35c38935d20c6f8a7e3a3f1153932758/system/lib/libc/musl/src/math/sqrt_data.h",
+            "sha256": "5fa47a8b8c1afbee4dcd10f71d2f6c433a24f9aa5ce7a90924cd1db236cbc03c"
+          },
+          "subsequentSourceChanges": []
+        },
+        {
+          "path": "system/lib/libc/musl/src/math/tan.c",
+          "source": {
+            "url": "https://raw.githubusercontent.com/emscripten-core/emscripten/e05e72d9c49fe15578e73934ce525a894d1b712a/system/lib/libc/musl/src/math/tan.c",
+            "sha256": "422d411bac962a1077ae394d14e54313012a6faa3476c20b2a66d3fb3f7a923f"
+          },
+          "noticeSha256": [
+            "0c3d0381d2cd647be68590170490be5f624c962d9f95eb698489e578c1de8f05"
+          ],
+          "sameNoticeAt": {
+            "url": "https://raw.githubusercontent.com/emscripten-core/emscripten/4bf5fb7a35c38935d20c6f8a7e3a3f1153932758/system/lib/libc/musl/src/math/tan.c",
+            "sha256": "422d411bac962a1077ae394d14e54313012a6faa3476c20b2a66d3fb3f7a923f"
+          },
+          "subsequentSourceChanges": []
+        },
+        {
+          "path": "system/lib/libc/musl/src/math/tanh.c",
+          "source": {
+            "url": "https://raw.githubusercontent.com/emscripten-core/emscripten/e05e72d9c49fe15578e73934ce525a894d1b712a/system/lib/libc/musl/src/math/tanh.c",
+            "sha256": "7e290e86729cba6ccc8eb1f7db2452736daf1a2a8ce01b210db5787fee5cb762"
+          },
+          "noticeSha256": [],
+          "sameNoticeAt": {
+            "url": "https://raw.githubusercontent.com/emscripten-core/emscripten/4bf5fb7a35c38935d20c6f8a7e3a3f1153932758/system/lib/libc/musl/src/math/tanh.c",
+            "sha256": "7e290e86729cba6ccc8eb1f7db2452736daf1a2a8ce01b210db5787fee5cb762"
+          },
+          "subsequentSourceChanges": []
+        }
+      ],
+      "unchangedEvidence": "All retained legal comments are byte-identical at the 2021-11-09 and 2026-05-21 immutable source snapshots. Source-path commit histories through 2026-10-15 show only two intervening implementation edits (floor.c and sqrt.c, both fa10d78251ff1b7766988d0b76e1e80b01f4c326), with no legal comment changes; support headers have no intervening changes."
+    },
+    "muslQsort": {
+      "file": "pdfjs-codec-musl-qsort-notices.txt",
+      "reason": "Pinned OpenJPEG src/lib/openjp2/j2k.c opj_j2k_decode_tiles directly calls qsort. Both genuine-source original full MIT notice variants are retained, rather than guessing the cached toolchain source version. Upstream changes the copyright name from Valentin Ochs to Lynn Ochs in the 2026 musl update; no invented copyright or alternate exact-source claim is made.",
+      "callerSource": {
+        "url": "https://raw.githubusercontent.com/uclouvain/openjpeg/8314119b067c0fc77834731168daaebd379fdb12/src/lib/openjp2/j2k.c",
+        "sha256": "75f316231cfa13bc9a2353e9a2cb3c26e39b6dacc42305c09aa01db4ce2a98ad"
+      },
+      "sourceVariants": [
+        {
+          "revision": "97bc84a0eec97ef964a9cb56d8d674be93755287",
+          "url": "https://raw.githubusercontent.com/emscripten-core/emscripten/97bc84a0eec97ef964a9cb56d8d674be93755287/system/lib/libc/musl/src/stdlib/qsort.c",
+          "sha256": "abed1def27c0e44baa761e715ad0ad3e7b6802e739d7049f6048b7732a92741e",
+          "noticeSha256": "a2f67fe4a33ebc5c0ddd2aadf4de7e944653d0b8d7f0426db797a40baac0891d"
+        },
+        {
+          "revision": "4bf5fb7a35c38935d20c6f8a7e3a3f1153932758",
+          "url": "https://raw.githubusercontent.com/emscripten-core/emscripten/4bf5fb7a35c38935d20c6f8a7e3a3f1153932758/system/lib/libc/musl/src/stdlib/qsort.c",
+          "sha256": "dc9a8fd43bd2c98c437c05c214a8715df22ed746a2912969eb154fa9090213f4",
+          "noticeSha256": "a2f67fe4a33ebc5c0ddd2aadf4de7e944653d0b8d7f0426db797a40baac0891d"
+        },
+        {
+          "revision": "6a93f7db16cd8e5214b4c3c08a361ccab9ffc67e",
+          "url": "https://raw.githubusercontent.com/emscripten-core/emscripten/6a93f7db16cd8e5214b4c3c08a361ccab9ffc67e/system/lib/libc/musl/src/stdlib/qsort.c",
+          "sha256": "3a838cc7f83f4746df6063f567be1ebb2f7d204243342122acd43f44d2434ec6",
+          "noticeSha256": "87da201b9c63a4bbc969e88cc99c75b630749ffb45d9abc5b90c58f16e40e016"
+        }
+      ]
+    },
+    "binaryenFallbackHelpers": {
+      "licenseFile": "pdfjs-codec-binaryen-LICENSE.txt",
+      "copyrightFile": "pdfjs-codec-binaryen-helper-copyright.txt",
+      "originalLicense": {
+        "url": "https://raw.githubusercontent.com/WebAssembly/binaryen/7aae938750a981baf4f2d3ba3b47a7a98c4ea0c8/LICENSE",
+        "sha256": "b40930bbcf80744c86c46a12bc9da056641d722716c378f5659b9e555ef833e1"
+      },
+      "originalHelperSource": {
+        "url": "https://raw.githubusercontent.com/WebAssembly/binaryen/d8dc55ceafff2c3b92d7d3e6434d56d346f8913b/src/wasm2js.h",
+        "sha256": "c44154e27ba2bea840d38e6db348584aef10150ba061157b4a66f8f7608f3d77"
+      },
+      "comparisonHelperSource": {
+        "url": "https://raw.githubusercontent.com/WebAssembly/binaryen/29765863a6039991a7f94b2ea71d87400b39a2c4/src/wasm2js.h",
+        "sha256": "001adbc866d95c0264caa1bfaec81d900c68c4d371fc689e1e6d40f9fc432250"
+      },
+      "copyrightExtraction": "Complete initial original copyright/Apache notice comment.",
+      "unchangedEvidence": "Both installed fallbacks contain the minified base64 decoding and memory.fill/memory.copy helper templates, in addition to mechanically translated WASM code. Those helper source bodies and the copyright notice are byte-identical at the two immutable endpoints. LICENSE was unchanged from 2015 until the 2024-08-06 append of an FP16-library cross-reference; the full original Apache license bytes remain an unchanged prefix. FP16 is not claimed as embedded.",
+      "helperNames": [
+        "base64DecodeToExistingUint8Array",
+        "wasm2js_memory_fill",
+        "wasm2js_memory_copy"
+      ]
+    }
+  },
+  "compilerRuntimeExceptions": {
+    "reason": "Do not automatically attribute the compiler, libc++ headers, or compiler-rt merely because emcc/em++ built the files. The original LLVM object-embedding exception waives Apache sections 4(a), 4(b), and 4(d) for embedded compiled portions. No independent mandatory notice gap for these LLVM portions was established. This exception does not erase the separate Emscripten, musl, Sun, Arm, or Binaryen-template notices.",
+    "originalSources": [
+      {
+        "path": "system/lib/compiler-rt/LICENSE.TXT",
+        "url": "https://raw.githubusercontent.com/emscripten-core/emscripten/4dac6d6d7689bb76899eebbc394eebd88f0fc67b/system/lib/compiler-rt/LICENSE.TXT",
+        "sha256": "1a8f1058753f1ba890de984e48f0242a3a5c29a6a8f2ed9fd813f36985387e8d",
+        "objectEmbeddingException": "---- LLVM Exceptions to the Apache 2.0 License ----\n\nAs an exception, if, as a result of your compiling your source code, portions\nof this Software are embedded into an Object form of such source code, you\nmay redistribute such embedded portions in such Object form without complying\nwith the conditions of Sections 4(a), 4(b) and 4(d) of the License."
+      },
+      {
+        "path": "system/lib/libcxx/LICENSE.TXT",
+        "url": "https://raw.githubusercontent.com/emscripten-core/emscripten/4dac6d6d7689bb76899eebbc394eebd88f0fc67b/system/lib/libcxx/LICENSE.TXT",
+        "sha256": "539dd7aed86e8a4f12cbdd0e6c50c189c7d74847e4fecc64ce2c6ee3a01da38b",
+        "objectEmbeddingException": "---- LLVM Exceptions to the Apache 2.0 License ----\n\nAs an exception, if, as a result of your compiling your source code, portions\nof this Software are embedded into an Object form of such source code, you\nmay redistribute such embedded portions in such Object form without complying\nwith the conditions of Sections 4(a), 4(b) and 4(d) of the License."
+      },
+      {
+        "path": "system/lib/libcxxabi/LICENSE.TXT",
+        "url": "https://raw.githubusercontent.com/emscripten-core/emscripten/4dac6d6d7689bb76899eebbc394eebd88f0fc67b/system/lib/libcxxabi/LICENSE.TXT",
+        "sha256": "e2b35be49f7284a45b7baca8fc7b3ab7440e7902392b2528a457816b5bb2a15c",
+        "objectEmbeddingException": "---- LLVM Exceptions to the Apache 2.0 License ----\n\nAs an exception, if, as a result of your compiling your source code, portions\nof this Software are embedded into an Object form of such source code, you\nmay redistribute such embedded portions in such Object form without complying\nwith the conditions of Sections 4(a), 4(b) and 4(d) of the License."
+      }
+    ]
+  },
+  "existingOriginalPackageNotices": [
+    "wasm/LICENSE_OPENJPEG",
+    "wasm/LICENSE_PDFJS_OPENJPEG",
+    "wasm/LICENSE_JBIG2",
+    "wasm/LICENSE_PDFJS_JBIG2",
+    "wasm/LICENSE_QUICKJS",
+    "wasm/LICENSE_PDFJS_QUICKJS"
+  ],
+  "families": [
+    {
+      "id": "openjpeg-glue",
+      "sourceContentSha256": "99e5441cd63a8cadf8e9f2e382e3ee3fe9440f3f4272c2dcc1f3f6727ac6af1b",
+      "notices": [
+        "pdfjs-codec-emscripten-LICENSE.txt",
+        "pdfjs-codec-emscripten-glue-copyright.txt"
+      ]
+    },
+    {
+      "id": "jbig2-glue",
+      "sourceContentSha256": "5ea1b9f03f236ed16bdec65d02010e40d800382d83e8c01d9fd6d8822410b954",
+      "notices": [
+        "pdfjs-codec-emscripten-LICENSE.txt",
+        "pdfjs-codec-emscripten-glue-copyright.txt"
+      ]
+    },
+    {
+      "id": "quickjs-glue",
+      "asset": "wasm/quickjs-eval.js",
+      "notices": [
+        "pdfjs-codec-emscripten-LICENSE.txt",
+        "pdfjs-codec-emscripten-glue-copyright.txt"
+      ]
+    },
+    {
+      "id": "openjpeg-wasm",
+      "asset": "wasm/openjpeg.wasm",
+      "notices": [
+        "pdfjs-codec-emscripten-LICENSE.txt",
+        "pdfjs-codec-emmalloc-copyright.txt",
+        "pdfjs-codec-musl-MIT.txt",
+        "pdfjs-codec-musl-math-notices.txt",
+        "pdfjs-codec-musl-qsort-notices.txt"
+      ]
+    },
+    {
+      "id": "openjpeg-fallback",
+      "asset": "wasm/openjpeg_nowasm_fallback.js",
+      "notices": [
+        "pdfjs-codec-emscripten-LICENSE.txt",
+        "pdfjs-codec-emmalloc-copyright.txt",
+        "pdfjs-codec-musl-MIT.txt",
+        "pdfjs-codec-musl-math-notices.txt",
+        "pdfjs-codec-musl-qsort-notices.txt",
+        "pdfjs-codec-binaryen-LICENSE.txt",
+        "pdfjs-codec-binaryen-helper-copyright.txt"
+      ]
+    },
+    {
+      "id": "jbig2-wasm",
+      "asset": "wasm/jbig2.wasm",
+      "notices": [
+        "pdfjs-codec-emscripten-LICENSE.txt",
+        "pdfjs-codec-emmalloc-copyright.txt",
+        "pdfjs-codec-musl-MIT.txt"
+      ]
+    },
+    {
+      "id": "jbig2-fallback",
+      "asset": "wasm/jbig2_nowasm_fallback.js",
+      "notices": [
+        "pdfjs-codec-emscripten-LICENSE.txt",
+        "pdfjs-codec-emmalloc-copyright.txt",
+        "pdfjs-codec-musl-MIT.txt",
+        "pdfjs-codec-binaryen-LICENSE.txt",
+        "pdfjs-codec-binaryen-helper-copyright.txt"
+      ]
+    },
+    {
+      "id": "quickjs-wasm",
+      "asset": "wasm/quickjs-eval.wasm",
+      "notices": [
+        "pdfjs-codec-emscripten-LICENSE.txt",
+        "pdfjs-codec-emmalloc-copyright.txt",
+        "pdfjs-codec-musl-MIT.txt",
+        "pdfjs-codec-musl-math-notices.txt"
+      ]
+    }
+  ],
+  "verification": "Read-only installed notice/source inspection and static byte/hash/section comparison only; no application execution, ordinary build, tests, linter, or formatter. Collector/registry and Rust slice assets were not edited."
+}

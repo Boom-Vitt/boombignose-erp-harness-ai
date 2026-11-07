@@ -16,13 +16,13 @@ import (
 	"sync"
 	"time"
 
-	"github.com/Boom-Vitt/boombignose-erp-harness-ai/boombignose/internal/bundle"
-	"github.com/Boom-Vitt/boombignose-erp-harness-ai/boombignose/internal/launch"
-	"github.com/Boom-Vitt/boombignose-erp-harness-ai/boombignose/internal/networkcollector"
-	"github.com/Boom-Vitt/boombignose-erp-harness-ai/boombignose/internal/policy"
-	"github.com/Boom-Vitt/boombignose-erp-harness-ai/boombignose/internal/shell"
-	"github.com/Boom-Vitt/boombignose-erp-harness-ai/boombignose/internal/update"
-	"github.com/Boom-Vitt/boombignose-erp-harness-ai/boombignose/nav"
+	"github.com/Boom-Vitt/nose-erp/boombignose/internal/bundle"
+	"github.com/Boom-Vitt/nose-erp/boombignose/internal/launch"
+	"github.com/Boom-Vitt/nose-erp/boombignose/internal/networkcollector"
+	"github.com/Boom-Vitt/nose-erp/boombignose/internal/policy"
+	"github.com/Boom-Vitt/nose-erp/boombignose/internal/shell"
+	"github.com/Boom-Vitt/nose-erp/boombignose/internal/update"
+	"github.com/Boom-Vitt/nose-erp/boombignose/nav"
 	"github.com/wailsapp/wails/v2"
 	"github.com/wailsapp/wails/v2/pkg/menu"
 	"github.com/wailsapp/wails/v2/pkg/options"
@@ -53,6 +53,9 @@ func run() error {
 	// It never launches the webview, local services, or an automatic collector.
 	if len(os.Args) > 1 && os.Args[1] == "--network-collector" {
 		return networkcollector.Execute(context.Background(), os.Args[2:], os.Stdout)
+	}
+	if err := bundle.LoadRuntimeConfig(); err != nil {
+		return err
 	}
 	if err := policy.CheckEnv(os.Getenv); err != nil {
 		return err
@@ -171,7 +174,7 @@ func (a *App) OpenERP() {
 	}
 }
 
-// PullLocalModel runs `ollama pull qwen2.5:3b` on loopback, starting the ollama
+// PullLocalModel explicitly downloads the allowlisted default on loopback, starting the Ollama
 // daemon first. The splash button is the only caller. A cloud host is refused
 // and is not included in the error. Errors start with a class the splash maps
 // to Thai text: "ollama", "network", "timeout" or "other", then ": detail".
@@ -233,12 +236,6 @@ func startLocal(ctx context.Context, target string) error {
 		layout, err := bundle.Discover(root)
 		if err != nil {
 			return err
-		}
-		ollamaWait, cancel := context.WithTimeout(ctx, 5*time.Second)
-		err = bundle.EnsureOllama(ollamaWait, layout, os.Getenv("OLLAMA_HOST"), nil, nil)
-		cancel()
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "boombignose: ollama: %s\n", err.Error())
 		}
 		data, err := bundle.DataDir()
 		if err != nil {

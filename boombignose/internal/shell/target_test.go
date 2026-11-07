@@ -11,7 +11,7 @@ func TestERPURL(t *testing.T) {
 	if err != nil || got != "http://127.0.0.1:3100" {
 		t.Fatalf("loopback: %q %v", got, err)
 	}
-	if _, err := ERPURL("https://boom-vitt.github.io/boombignose-erp-harness-ai/"); err == nil {
+	if _, err := ERPURL("https://boom-vitt.github.io/nose-erp/"); err == nil {
 		t.Fatal("pages URL must not be a window target")
 	}
 }

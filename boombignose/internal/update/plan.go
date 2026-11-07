@@ -14,7 +14,7 @@ const (
 	MacOSAsset = "BoomBigNose-macos-arm64.dmg"
 	// SumsName is the checksum file published next to the installers.
 	SumsName    = "SHA256SUMS"
-	releaseRepo = "Boom-Vitt/boombignose-erp-harness-ai"
+	releaseRepo = "Boom-Vitt/nose-erp"
 )
 
 var (

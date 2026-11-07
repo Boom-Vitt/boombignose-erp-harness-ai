@@ -1,13 +1,19 @@
-# Mobile HANDOFF (2026-11-03)
+# Mobile security handoff
 
-Done in PR1: `mobile/` Flutter iOS app (scan QR → Keychain device token → web view), pairing API, Settings "Link mobile", tests, docs.
+## Current contract
 
-Open:
-- **TestFlight**: Apple team, bundle id `org.boombignose.bbnMobile`, signing, App Store Connect record, app icon.
-- **Native modules** beyond the web view (lists, receipts scan, offline).
-- **Android**: `flutter create --platforms android .` inside `mobile/`; needs Android SDK (missing on this Mac).
-- **Push notifications**: APNs key + a device-token column on `mobile_devices`.
-- **Revoke ends web sessions**: today revoke only blocks new sessions. Sign the user out server-side if that matters.
-- **Multi-org**: `/auth/confirm` lands on the user's default org; pass the paired org through to the active-org cookie.
-- **CI**: no workflow builds `mobile/` (no macOS runner configured). Add a `paths: mobile/**` macOS job running `flutter analyze && flutter test`.
-- **Physical device test over a real tailnet** was not done in this PR.
+The companion pairs a private Tailscale server/device for **connection/status only**. It opens normal `/login`; each phone user supplies their own account credentials and enrolled MFA. The former issuer-account magic-link `/api/mobile/session` endpoint is removed, with no compatibility shim. Historical pairing/device tables and rows remain.
+
+Unlinking pairing **does not sign out independent ERP browser sessions**, including old-release sessions. Sign out inside ERP or use normal account/session controls separately. No broader revocation guarantee is made.
+
+The native browser Auth relay is `/auth/local/<operation>`, fixed to the internal runtime Auth upstream and allowlisted Auth-only operations. It does not expose REST/admin/DB. Existing native session-cookie names are preserved. Shared JSON verified-context helper is `getVerifiedApiContext(request, {roles?, mutation?})` from `lib/auth.ts`; assurance lookup failures fail closed, and role-denied pages render `app/forbidden.tsx`.
+
+Private Serve discovery verifies Running/online state, HTTPS 443, exact root backend mapping and no Funnel, rather than trusting MagicDNS alone. QR issuance additionally requires the detected origin to be explicitly configured. Account/tailnet setup, ACL/OS consent and Serve configuration stay under user control.
+
+Remote native open signup is disabled. A targeted live invitation can register only its intended new recipient with that recipient's chosen password; it does not log anyone in or grant membership. Normal login and the atomic recipient-acceptance command remain required. Local-only fresh-owner signup and hosted Supabase confirmation remain available under their existing policies.
+
+## Evidence boundaries
+
+Behavioral tests cover Auth relay isolation/header/origin/body bounds, native browser/server cookie continuity at relocated ports, MFA failures, workspace isolation, targeted invitation signup, one-use/expiry/revocation pairing, Serve mapping and Dart navigation/status. No test/build/lint/formatter was run by the Auth/mobile implementation worker; the integration owner must execute applicable checks and record actual results.
+
+Physical iOS device reachability, signing/TestFlight/App Store availability and tailnet ACL acceptance require actual authorized devices/accounts. Do not infer these from source tests, MagicDNS or a running desktop Tailscale process. Android packaging, push notifications and non-WebView native business modules are not claimed by this implementation. See `docs/mobile/README.md` for the supported flow.

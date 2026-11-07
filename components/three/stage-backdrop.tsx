@@ -51,10 +51,10 @@ class Boundary extends Component<{ onFail: () => void; children: ReactNode }, { 
 }
 
 /**
- * The persistent 3D base behind every authenticated page (and the login). Full-bleed, never
- * takes pointer events, pauses when the tab is hidden, shows one still frame under reduced
- * motion, and falls back to the flat artwork (always painted underneath) when WebGL is
- * missing or the context is lost. Scene follows the operator mode and the current section.
+ * Organization-only ambient decoration; personal and SME task pages stay flat.
+ * Never takes pointer events, pauses when the tab is hidden, shows a still frame under
+ * reduced motion, and falls back to flat artwork when WebGL is unavailable or lost.
+ * Dedicated Organization, Blueprint and Network pages own their single relevant canvas.
  */
 export function StageBackdrop({ mode: forced, section: forcedSection }: { mode?: Mode; section?: Section }) {
   const current = useMode()
@@ -63,9 +63,11 @@ export function StageBackdrop({ mode: forced, section: forcedSection }: { mode?:
   const section = forcedSection ?? sectionOf(pathname)
   const [failed, setFailed] = useState(false)
   const onFail = useCallback(() => setFailed(true), [])
-  const gl = useSyncExternalStore(() => () => {}, hasWebGL, () => false)
+  const gl = useSyncExternalStore(() => () => {}, () => mode === "startup" && hasWebGL(), () => false)
   const still = useSyncExternalStore(subscribeMotion, () => window.matchMedia("(prefers-reduced-motion: reduce)").matches, () => false)
   const active = useSyncExternalStore(subscribeVisible, () => document.visibilityState === "visible", () => true)
+  // Dedicated 3D pages own their scene; never stack a decorative canvas beneath it.
+  if (pathname && ["/warehouse", "/blueprint", "/network"].some((route) => pathname === route || pathname.startsWith(`${route}/`))) return null
 
   return (
     <div aria-hidden className="bbn-stage" data-mode={mode} data-section={section} data-3d={gl && !failed ? "on" : "off"}>

@@ -8,6 +8,7 @@ import { performDesktopUpdate } from "@/lib/release/perform-update"
 import {
   DEFERRED_MESSAGE,
   helperConfigured,
+  initialDownloadURL,
   parseSHA256SUMS,
   redirectAllowed,
   releaseDownloadURL,
@@ -15,7 +16,7 @@ import {
   versionGreater,
 } from "@/lib/release/update-plan"
 
-const page = "https://github.com/Boom-Vitt/boombignose-erp-harness-ai/releases/tag/boombignose-v1.5.0"
+const page = "https://github.com/Boom-Vitt/nose-erp/releases/tag/boombignose-v1.5.0"
 const asset = "BoomBigNose-macos-arm64.dmg"
 
 function releaseResponse() {
@@ -29,10 +30,15 @@ function releaseResponse() {
 describe("update plan", () => {
   it("builds only this repository's asset URL and ignores other hosts", () => {
     expect(releaseDownloadURL("1.5.0", asset)).toBe(
-      "https://github.com/Boom-Vitt/boombignose-erp-harness-ai/releases/download/boombignose-v1.5.0/BoomBigNose-macos-arm64.dmg",
+      "https://github.com/Boom-Vitt/nose-erp/releases/download/boombignose-v1.5.0/BoomBigNose-macos-arm64.dmg",
     )
     expect(releaseDownloadURL("1.5.0/../x", asset)).toBeNull()
     expect(releaseDownloadURL("1.5.0", "../SHA256SUMS")).toBeNull()
+    const canonical = "https://github.com/Boom-Vitt/nose-erp/releases/download/boombignose-v1.5.0/SHA256SUMS"
+    expect(initialDownloadURL(canonical)).toBe(true)
+    expect(initialDownloadURL(canonical.replace("/nose-erp/", "/other-repository/"))).toBe(false)
+    expect(initialDownloadURL(canonical.replace("https:", "http:"))).toBe(false)
+    expect(initialDownloadURL(`${canonical}?redirect=elsewhere`)).toBe(false)
     expect(versionGreater("1.5.0", "1.4.0")).toBe(true)
     expect(versionGreater("1.4.0", "1.4.0")).toBe(false)
     expect(updateCapability("darwin", "arm64", true)).toBe("apply")
@@ -49,7 +55,7 @@ describe("update plan", () => {
     expect(parseSHA256SUMS(`${hash}  ${asset}\n`, asset)).toBe(hash)
     expect(parseSHA256SUMS(`${hash} *${asset}\ncd`.padEnd(0), asset)).toBeNull()
     expect(parseSHA256SUMS("not a sums file\n", asset)).toBeNull()
-    const current = new URL("https://github.com/Boom-Vitt/boombignose-erp-harness-ai/releases/download/boombignose-v1.5.0/SHA256SUMS")
+    const current = new URL("https://github.com/Boom-Vitt/nose-erp/releases/download/boombignose-v1.5.0/SHA256SUMS")
     expect(redirectAllowed(current, "https://objects.githubusercontent.com/pkg")?.hostname).toBe("objects.githubusercontent.com")
     expect(redirectAllowed(current, "https://evil.example/pkg")).toBeNull()
   })

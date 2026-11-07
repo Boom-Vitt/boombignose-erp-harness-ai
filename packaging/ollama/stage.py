@@ -9,8 +9,11 @@ CPU runners, Vulkan, and the macOS Metal runners stay. This script does
 not download a model and does not run ollama.
 """
 
+import hashlib
+import json
 import os
 import shutil
+import re
 import sys
 
 
@@ -45,11 +48,66 @@ def tree_root(binary):
     return parent
 
 
+def write_notice_inventory(root):
+    """Bind all original runtime notices, including incorporated native code."""
+    required = {
+        "GO_LICENSE", "LLAMA_CPP_LICENSE", "LLAMA_CPP_VENDORS_LICENSE",
+        "CPP_HTTPLIB_LICENSE", "FMT_LICENSE", "PICOJSON_LICENSE",
+    }
+    names = set()
+    notices = []
+    inspected = 0
+    total = 0
+    pattern = re.compile(r"(?:^|[._-])(?:licen[cs]es?|notices?|copying|copyright)(?:[._-]|$)", re.I)
+    for directory, directories, files in os.walk(root):
+        directories.sort()
+        for name in sorted(files):
+            inspected += 1
+            if inspected > 100000:
+                raise SystemExit("Ollama runtime notice traversal exceeded 100000 files")
+            if name == "RUNTIME_NOTICES.json":
+                continue
+            names.add(name)
+            if not pattern.search(name):
+                continue
+            path = os.path.join(directory, name)
+            if os.path.commonpath([os.path.realpath(root), os.path.realpath(path)]) != os.path.realpath(root):
+                raise SystemExit("Ollama notice symlink escapes staged runtime: " + name)
+            size = os.path.getsize(path)
+            total += size
+            if size <= 0 or size > 4 * 1024 * 1024 or total > 16 * 1024 * 1024:
+                raise SystemExit("empty or oversized original Ollama notice: " + name)
+            with open(path, "rb") as source:
+                digest = hashlib.sha256(source.read()).hexdigest()
+            notices.append({"path": os.path.relpath(path, root).replace(os.sep, "/"), "sha256": digest, "bytes": size})
+    if any("mlx" in name.lower() and not pattern.search(name) for name in names):
+        required.update({"MLX_LICENSE", "MLX_C_LICENSE", "DLPACK_LICENSE"})
+    if any("xgrammar" in name.lower() and not pattern.search(name) for name in names):
+        required.update({"XGRAMMAR_LICENSE", "XGRAMMAR_NOTICE"})
+    present = {notice["path"] for notice in notices}
+    missing = sorted(required - present)
+    if missing:
+        raise SystemExit("Ollama incorporated-code full notices missing: " + ", ".join(missing))
+    inventory = {
+        "format": 1,
+        "scope": "Original full notice files copied with the actual Ollama runtime; archive/source provenance remains separate, not inferred from SPDX.",
+        "required": sorted(required),
+        "files": sorted(notices, key=lambda entry: entry["path"]),
+    }
+    with open(os.path.join(root, "RUNTIME_NOTICES.json"), "w", encoding="utf-8", newline="\n") as destination:
+        json.dump(inventory, destination, ensure_ascii=False, indent=2)
+        destination.write("\n")
+    print("notice_files=" + str(len(notices)))
+
+
 def main():
-    if len(sys.argv) != 3:
-        raise SystemExit("usage: stage.py EXTRACTED_ROOT DEST")
+    if len(sys.argv) != 4:
+        raise SystemExit("usage: stage.py EXTRACTED_ROOT DEST ORIGINAL_OLLAMA_LICENSE")
     src = os.path.abspath(sys.argv[1])
     dest = os.path.abspath(sys.argv[2])
+    license_source = os.path.abspath(sys.argv[3])
+    if not os.path.isfile(license_source) or os.path.getsize(license_source) == 0:
+        raise SystemExit("original full Ollama license missing")
     binary = find_binary(src)
     root = tree_root(binary)
     omitted = []
@@ -74,6 +132,8 @@ def main():
         for name in dirnames:
             if name.startswith("cuda_"):
                 raise SystemExit("cuda runner was copied: " + name)
+    shutil.copyfile(license_source, os.path.join(dest, "OLLAMA_LICENSE.txt"))
+    write_notice_inventory(dest)
     names = sorted(set(omitted))
     if names:
         print("omitted=" + ",".join(names))

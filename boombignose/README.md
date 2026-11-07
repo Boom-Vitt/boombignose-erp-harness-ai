@@ -1,19 +1,27 @@
 # BoomBigNose ERP Harness AI
 
-Go harness and Wails desktop entrypoint. `check` is offline; explicit model/download, database, and network-collector commands perform only their documented operations.
+Go harness, Wails desktop and separate headless server entrypoint. **Current-source instructions:** the confirmed published release is [1.4.4 (`ddc5c11`)](https://github.com/Boom-Vitt/nose-erp/releases/tag/boombignose-v1.4.4); new headless/operator/secure-db/OCR features are not represented as shipped in that release. Do not run a data reset to upgrade.
+
+The Wails window remains the native desktop GUI (`cmd/boombignose-desktop`, `-tags desktop`), opening the bundled ERP at `http://127.0.0.1:3100` by default. Headless `cmd/boombignose` supervises the same stack without Wails/WebKit. The Next.js ERP is the application; `site/` is a static brochure, not a hosted ERP. Operational month-end close is separate from statutory/legal accounting; see [`LEGAL_CLOSE.md`](../docs/boombignose/LEGAL_CLOSE.md).
+
+Offline source entrypoint (Go toolchain pinned in `go.mod`):
 
 ```sh
 cd boombignose
-go test ./...
 go run ./cmd/boombignose check
 go run ./cmd/boombignose cutover
+CGO_ENABLED=0 go build -trimpath -buildvcs=false -o ../dist/boombignose ./cmd/boombignose
 ```
 
-`check` exits 0 when cloud credentials are unset and service URLs are empty or on loopback. `cutover` with no subcommand prints the switch plan and does not touch a database. `cutover dry-run`, `cutover apply`, and `cutover rollback` move rows only between two loopback databases. See `docs/boombignose/CUTOVER.md`.
+`check` validates local endpoint/port policy offline; it is not a service/AI/security test. `cutover` without a subcommand only prints a plan; `dry-run`, `apply` and `rollback` explicitly contact loopback databases. Building the CLI alone does not create its portable Node/ERP/PostgreSQL/Auth/Ollama bundle.
 
-Milestone 1 is `cmd/boombignose-desktop`, a Wails window built with `-tags desktop`. It runs the same gate, then navigates the window to `http://127.0.0.1:3100`. That origin is the product. Month-end close is used there: `/finance`, `/finance/bank`, `/finance/cash`, `/reports#month-end-close`, `/reports/statements`, and `/reports/accountant-pack`. That close is operational. The statutory close, and the risk-management track around it, are in `docs/boombignose/LEGAL_CLOSE.md`. The same window also reaches sheet import at `/import`, the local backup control, and local AI model install at `/settings#local-models`. Milestone 2 bundles the local stack. See `docs/boombignose/ARCHITECTURE_LOCAL.md`. The static brochure in `site/` only points at the installer. It does not host these screens.
+For a **current-source assembled** macOS app, the headless CLI is `/Applications/BoomBigNose.app/Contents/MacOS/boombignose` and resources are `Contents/Resources/bundle`; Linux tar.gz places `boombignose` beside `BoomBigNose` and `bundle/`; Windows installs `boombignose.exe` beside `BoomBigNose.exe`. Do not modify a signed app in place. Exact desktop/source assembly, server account/systemd setup, local-first onboarding, private Tailscale HTTPS and recovery commands are in [`BUNDLE.md`](../docs/boombignose/BUNDLE.md#headless-server-installation-and-private-access).
 
-`boombignose models` lists models the local Ollama already has. `boombignose pull-model` downloads `qwen2.5:3b`. `boombignose pull-model <name>` downloads another allowlisted model when this operating system can run it. `boombignose remove-model <name>` deletes one allowlisted model. A name outside the list is refused, and startup does not pull. Text and vision install on Linux, Windows, and macOS. Image generation installs on macOS. English speech installs on Apple Silicon. Speech to text on Linux and Windows downloads whisper.cpp `b5454` and `ggml-tiny.bin` from Settings. macOS has no `whisper-cli` in that release. Video and voice cloning are not in this build. Thai speech synthesis is not in this build. Weights are not in the repository. The Settings screen is the path inside the ERP, so the operator does not install Ollama Desktop or another AI app.
+`boombignose serve` runs in the foreground; Ctrl+C gracefully stops its owned children. `boombignose stop` targets the configured profile only, not every process with that name. Use a private absolute `BOOMBIGNOSE_DATA` and distinct ERP/API/Auth/REST/PG ports for parallel profiles. Settings persist in `BOOMBIGNOSE_DATA + ".secrets/runtime.json"`. Local accounts/workspaces must be created before remote HTTPS turns signup invitation-only; normal login/MFA uses the same-origin native Auth relay, not direct public Auth.
+
+`boombignose models` lists local weights; `boombignose pull-model` or `boombignose pull-model qwen3.5:9b-q4_k_m` explicitly installs chat/assistant-image default GGUF (6,550,825,550 bytes), while `boombignose pull-model qwen3.5:4b` installs separate OCR (3,973,305,013 bytes). Named pull/removal must be catalog/platform-allowed. Browser host mutations require owner/admin plus an OS-enrolled operator UUID; workspace ownership alone is insufficient. No startup weight pull, silent model fallback, prompt truncation or cloud fallback. Chat requires portable bounded-context GGUF, not the bare Mac 9B alias that may resolve to MLX; separate OCR may use local MLX. `OLLAMA_MODEL` and `OCR_MODEL` are separate selectors; restart after changing them. Plan 24 GB+ RAM for chat or 12 GB for OCR plus ERP, not cross-host measured minima. See the [catalog](./internal/bundle/ollama_models.json) and [measured quality/license boundaries](../README.en.md#local-models); no complete current AI quality acceptance has passed. Review original documents and explicit save actions.
+
+The [backup/migration runbook](../docs/boombignose/BUNDLE.md#backup-migration-and-recovery) covers `configure-operators USER_UUID [USER_UUID...]`, `configure-operators off`, offline `secure-db`, DB-only versus full cold backup, and administrator-SQL restore risk. Source implementation is not completed recovery/mobile/page acceptance proof.
 
 ## Native macOS network collector
 
@@ -22,7 +30,7 @@ Milestone 1 is `cmd/boombignose-desktop`, a Wails window built with `-tags deskt
 Apply `supabase/migrations/20261106090000_network_visibility.sql` through the normal migration process before opening the new page. Do not reset an existing database. Source changes do not update an already installed application.
 
 1. In **Network 3D → Live telemetry**, enroll each authorized Mac and download its private `bbn-collector.json`. The device credential is returned once, stored hashed, and excluded from graph/snapshot responses.
-2. Remote Macs need a reachable **HTTPS ERP origin**. The default desktop loopback URL is not remotely accessible. Configure a trusted HTTPS endpoint separately and set `NEXT_PUBLIC_APP_URL` to its origin; this feature does not expose the desktop server automatically. HTTP is permitted only on loopback for testing.
+2. Remote Macs need a reachable **HTTPS ERP origin**. The desktop loopback URL is not remotely accessible. Use the [private front-door runbook](../docs/boombignose/BUNDLE.md#private-tailscale-https-without-replacing-other-services) and `boombignose configure-public-origin https://EXACT_HOST:PORT` for native mode, then restart; do not expose Auth/REST/DB/model ports. A separately managed non-native server uses its reviewed `NEXT_PUBLIC_APP_URL`. HTTP is permitted only on loopback for testing.
 3. Build and run the native collector explicitly:
 
    ```sh

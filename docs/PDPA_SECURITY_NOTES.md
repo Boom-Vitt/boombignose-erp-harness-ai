@@ -1,60 +1,53 @@
 # Security & PDPA Notes
 
-> Summary of `docs/brainstorm/security-pdpa.md`. Practical, risk-ranked. **Not
-> legal advice.** Thai PDPA (B.E. 2562) applies the moment real people's data is
-> stored — including your own staff who log in.
+These notes describe the **current development source**, not a certification or a promise that the published [1.4.4 release](https://github.com/Boom-Vitt/nose-erp/releases/tag/boombignose-v1.4.4) contains the new controls. They replace earlier seed-only service-role and httpOnly-session claims. Integrated page, AI/OCR accuracy, recovery and real-phone evidence remains separate from implementation. **Not legal advice.**
 
-## Top risks (ranked)
+## Legal basis and controller responsibilities
 
-1. **Incomplete RLS** — a forgotten policy or the "single-org, skip it" shortcut
-   silently exposes cross-tenant data once a second org exists.
-2. **Service-role key in a request path or client bundle** — full RLS bypass.
-3. **Real staff PII treated as "just demo"** — employees who log in are real PDPA
-   data subjects today (lawful basis = employment, not consent).
-4. **Cross-border transfer** — Supabase has no Thailand region; real data likely
-   leaves Thailand (e.g. Singapore), triggering PDPA transfer rules.
-5. **Demo data that looks real** — a "fake" email/tax ID that turns out real.
-6. **Weak auth defaults** — unconfirmed emails, tokens in localStorage, open redirects.
+Primary references: [Thai Personal Data Protection Act B.E. 2562 (2019), PDPC English text](https://www.pdpc.or.th/wp-content/uploads/2023/12/2_Personal-Data-Protection-Act-2019.pdf) and [PDPC Security Measures of the Data Controller B.E. 2565 (2022)](https://www.pdpc.or.th/en/22758/). Confirm the applicable Thai text, subordinate regulations and current advice with qualified counsel.
 
-## Must-fix for V1 (done / enforced here)
+- Customer, employee, supplier/contact, receipt and enrolled-device metadata can identify people. Local storage is still processing personal data. A task profile labelled individual/SME/company is not a legal classification or exemption.
+- Document a purpose and appropriate lawful basis for each activity (including employee/device monitoring); employment is not a universal lawful basis and consent is not always the right basis. Provide notices, minimize collection, restrict access and define retention/deletion. Sensitive data needs a separate assessment.
+- Assess security measures and organizational controls under section 37; maintain records under section 39 where applicable, processor arrangements under section 40, and DPO duties where section 41 applies. Assign an actual incident owner. Section 37(4) includes notification to the regulator without delay and, where feasible, within 72 hours of awareness unless the statutory risk exception applies; high-risk breaches also require data-subject notice without delay. This is not an automated breach-notification service.
+- Handle access, correction, objection, erasure/restriction and portability requests as applicable, while considering accounting/legal retention. Removing an app record does not erase exports, dumps or third-party copies.
+- Local native mode does not require hosted Supabase storage. If you choose hosted infrastructure, cloud backups, email, webhooks or foreign processors, inventory actual regions/subprocessors and assess transfer safeguards under sections 28–29. Do not assume all Supabase deployments use one region or that local inference eliminates all transfers.
 
-- ✅ `.env.example` only; `.env*` git-ignored. Key taxonomy documented:
-  anon/publishable = client-safe; **service_role = server-only, seed-only, never
-  shipped to client**.
-- ✅ **RLS enabled + `force`d on every table** with an org-scoped policy via
-  `private.is_org_member()`; deny-by-default. Written org-scoped even though V1 is
-  single-org. (Verified: anonymous client sees 0 rows — `scripts/verify-seed.mjs`.)
-- ✅ Service role used **only** in the seed; all request traffic uses the
-  session-bound server client.
-- ✅ Defense-in-depth: server actions re-derive `org_id` from `requireOrgContext()`
-  and never trust a client-supplied org id.
-- ✅ Auth via `@supabase/ssr` httpOnly cookies (no tokens in localStorage).
-- ✅ Demo data is provably fake: `@boombignose.org` / `example.com`, fictional Thai
-  company names, placeholder phone numbers, no tax IDs.
-- ✅ Webhook secret compared in constant-time (`lib/webhooks/verify.ts`); reject on
-  missing/mismatch.
+## Identity, authorization and privileged exceptions
 
-### Recommended before real data
-- **Email confirmation** + the app's password policy (10+ chars, lower/upper/digit)
-  are on in `supabase/config.toml`; apply the same to the hosted project's Auth
-  settings, and lock the allowed redirect URLs.
-- Add a CI grep that fails the build if `SUPABASE_SERVICE_ROLE_KEY` appears under
-  `app/`, `components/`, or `lib/`.
+Source: [`lib/auth.ts`](../lib/auth.ts), [`lib/supabase/`](../lib/supabase/), [`lib/permissions.ts`](../lib/permissions.ts), and [`supabase/migrations/`](../supabase/migrations/).
 
-## Should-fix
+- Business operations derive workspace membership from a verified account and the selected workspace. Role/capability checks and database RLS remain the authorization boundary; changing a task profile only changes navigation/focus. Review new tables/RPCs individually rather than assuming every table has the same RLS shape.
+- Enrolled verified authenticators require AAL2 at shared page/API boundaries; missing/unknown assurance fails closed. This is **not mandatory MFA enrollment for every account**: an account without an enrolled factor can use AAL1. Enroll and verify TOTP before production use; native enrollment is explicitly gated by `LOCAL_TOTP_ENROLL`. Network staff access also enforces assurance in database policies. Do not assume every existing SQL policy independently enforces MFA.
+- `@supabase/ssr` browser authentication uses JavaScript-readable cookies, not a blanket httpOnly session design. Browser JS needs the token for login/refresh/MFA. The active-workspace selector is a separate httpOnly cookie. Cookie storage is not protection against XSS: audit script injection, dependency changes and browser extensions; do not log cookies/tokens. The original Supabase project URL remains the cookie namespace even when native Auth requests are relayed.
+- The service-role credential is server-only (`server-only` admin module) and bypasses RLS. It is **not seed-only**: cron jobs, invitation lookup/provisioning, public lead-form token paths, mobile connection records and network ingest use explicitly privileged flows. Each must authenticate its own secret/token/session and scope queries to the authorized workspace/device. Ordinary ERP reads/writes use the session-bound client. Never expose the service key in public env, browser bundles, QR codes, responses or logs.
+- Native browser Auth uses [`/auth/local/*`](../lib/supabase/native-auth-proxy.ts): same-origin/trusted-browser checks, fixed loopback upstream and an allowlist for login/refresh/logout/user/MFA. It is not a generic REST/storage/admin proxy and does not forward service credentials. Native server processes retain private loopback access for authenticated business queries.
+- Shared-host model/ASR installation/removal, desktop update, native host-window control and browser backup/restore additionally need owner/admin **and** an OS-enrolled machine-operator UUID. Workspace ownership alone is insufficient. Unauthorized window capability discovery reveals no helper state and returns `desktop:false`; mutations remain denied. A database backup spans **all workspaces**; see the [native recovery runbook](./boombignose/BUNDLE.md#backup-migration-and-recovery).
 
-- Lightweight **`audit_log`** for auth events and finance/CRM mutations (who, what,
-  when, which entity). Full history later.
-- Per-table policy review whenever a new table is added (keep org-scope drift at zero).
+## Local storage, transport and deployment
 
-## Later (gated on real customer data + legal sign-off)
+Source/runbook: [`docs/boombignose/BUNDLE.md`](./boombignose/BUNDLE.md#headless-server-installation-and-private-access).
 
-- Data-subject-rights workflow (access / rectification / erasure).
-- Consent records / ROPA, retention schedule, breach-response runbook.
-- Sub-processor DPA (Supabase) and a documented cross-border transfer safeguard,
-  or move to an acceptable data region.
+- Go/Wails desktop and the separate Go headless CLI supervise the same Node/Next, PostgreSQL, Auth, PostgREST and Ollama services. Native defaults bind loopback; remote access is a separately administered HTTPS front door to **ERP only**, not a LAN bind or direct Auth/REST/DB/model exposure.
+- New native databases use per-role random SCRAM credentials in private `BOOMBIGNOSE_DATA + ".secrets"` state. Existing trust clusters require the explicit, offline, backed-up `secure-db` migration; startup must not silently reset/replace records. Keep data, adjacent secrets and attachments under the owning OS account; Windows requires protected owner-only ACLs, not just chmod-style bits.
+- HTTPS/Tailscale encrypt transport. The loopback backend hop is HTTP and local PostgreSQL/libpq connections are not TLS. SCRAM authenticates passwords; it does not encrypt database files. The app does **not** provide transparent at-rest encryption for database files, attachments, session/JWT material, models or backup downloads. Use OS full-disk encryption and encrypted private off-device backups; protect keys separately. An authorized OS administrator or compromised process can read local state.
+- Do first-account/workspace onboarding locally before setting the public origin. A configured remote HTTPS origin forces invitation-only signup even when inherited environment asks for open signup. Invitations authorize only the named recipient's signup/acceptance; they do not transfer an owner's session. Local autoconfirm is not proof of mailbox ownership.
+- Private Tailscale Serve requires independently reviewed device authorization and least-privilege ACLs/grants; initial tailnet policies may allow all peers. Preserve existing Serve/Funnel mappings, use a separate unused HTTPS port, never enable Funnel for ERP. See official [Serve CLI](https://tailscale.com/kb/1242/tailscale-serve), [ACL semantics](https://tailscale.com/kb/1018/acls) and [HTTPS certificate transparency warning](https://tailscale.com/kb/1153/enabling-https).
+- Mobile QR/pairing is connection-only: phone users still sign in with their own membership and MFA. Unlinking its connection record does not sign out ordinary browser sessions. Tailnet removal prevents that transport path, not already downloaded data, alternate paths or browser sessions on other devices; revoke workspace/account sessions and devices separately as appropriate. Real-phone access is not established merely by configuring Serve.
 
-## Rule of thumb
+## Local AI, OCR and attachments
 
-Until the "before real data" items are done: **demo data only — do not enter real
-customer or employee personal data.**
+Source: [`lib/ocr/`](../lib/ocr/), [`lib/ai/local-runtime.ts`](../lib/ai/local-runtime.ts), and [curated model catalog](../boombignose/internal/bundle/ollama_models.json).
+
+- Chat/assistant images default to `qwen3.5:9b-q4_k_m` (GGUF, 6,550,825,550 bytes), OCR to separate `qwen3.5:4b` (3,973,305,013 bytes). Their upstream [4B](https://huggingface.co/Qwen/Qwen3.5-4B/resolve/main/LICENSE) and [9B](https://huggingface.co/Qwen/Qwen3.5-9B/resolve/main/LICENSE) texts are Apache-2.0, licensing weights—not personal data or accounting correctness. Chat requires portable bounded-context GGUF, truncation/context shift disabled and no silent fallback; bare Mac 9B may use MLX and accepted an oversized prompt that GGUF rejected. Separate OCR may use local MLX. [Measured synthetic host/task results](../README.en.md#local-models) include failures and no complete current AI quality acceptance; 24 GB+ chat/12 GB OCR RAM are planning guidance, not measured minima or universal accuracy/latency guarantees. Actual figures and coverage are server-owned; proposals require human review, never automatic creation, approval, payment or deletion.
+- Typhoon OCR is not the default: its model-card Apache label does not remove the need to review [Typhoon terms](https://opentyphoon.ai/tac), which restrict personal-data input, competitive benchmarking and similar services and purport to cover third-party/model access. Obtain clarification/legal review before use; these notes do not determine enforceability.
+- Explicit model pulls contact the registry; no weights are downloaded on startup. Chat/OCR require a loopback Ollama endpoint and inspect model metadata to reject remote/cloud-backed aliases before business bytes. Spawned Ollama uses `OLLAMA_NO_CLOUD=1`; an existing independently managed daemon must be secured by its owner. These controls trust the local daemon/OS; they do not sandbox hostile local software. No permanent cloud fallback is provided.
+- Assistant source access is explicit and server-validated. ERP scope requires current-turn authorized reads; guidance/document scope cannot invoke ERP tools. A scope change visibly starts a new thread. ERP prose is application-owned review text selected through bounded task codes, while numerical/descriptive facts and record links come from actual scoped reads. Reference absence means only “not returned in this read”; partial data is unknown, not proof of another tenant's record existence. Role-unavailable capabilities are reported by application policy, not invented technical instructions. Model schema/grammar is not trusted as enforcement: independent validation can reject an answer. Historical images are not resent; reattach them for a visual follow-up.
+- OCR supports JPEG/PNG/WebP/PDF, at most 20 MiB/source, 12 pages and 20 million source-image pixels. PDF.js renders in a locally shipped browser worker, not a CDN. Rasters are capped at 3 MiB, 4 million pixels and 2400 pixels/edge, then fully decoded by the bounded pure-Go server helper before local inference. Sharp/libvips/native canvas are excluded from runtime packaging. Dense, blurred, rotated or handwritten documents can fail; a real rotated-image test misread the month. Re-scan/split and review originals rather than assume completeness.
+- OCR output is unverified transcription, **not a confidence score**. Unknown/conflicting fields remain null, not zero. Compare every amount/date/vendor/document number with the original. Page previews, hashes and transcription exist in the in-memory review session; expense/purchase prefill copies selected fields only and does not retain originals, hashes or page references. Save an original separately through the supported attachment workflow if retention is required. Hashes identify bytes, not authenticity/tax validity. Extraction does not save, approve or post. Chat PDF extraction produces bounded attributed text and reports clipping; it is not guaranteed complete comprehension.
+- Native attachments are private local bytes under the supervisor's `BOOMBIGNOSE_FILES_ROOT` (normally `BOOMBIGNOSE_DATA/attachments`) with metadata and parent-record authorization; they are not automatically sent to hosted storage. Files, extracted text and prompts may contain sensitive data even if the model is local. Do not insert secrets or unnecessary personal data into prompts. Restrict exports, retain originals only as justified and cover them in the full recovery set.
+
+## Operational limits and evidence
+
+The organization 3D view is an authorized request-time workload snapshot with a DOM list fallback, not a simulated campus or security score. Network 3D sees only explicitly enrolled Macs' OS-visible established TCP snapshots; stale/missing/truncated coverage is unknown, CIDR matches are not a safety guarantee, and encryption prevents identifying ERP payloads. No packet interception, firewall enforcement or automatic blocking is claimed.
+
+Before real data: assign controller/operator responsibilities; review roles/RLS/privileged routes; enroll MFA; secure and patch hosts; restrict tailnet access; define retention/incident/rights procedures; encrypt off-device backups; and exercise recovery into an isolated profile. Database-only dumps exclude attachments, native secrets/config and models. A checksum is neither encryption nor provenance, and a trusted-source restore can execute administrator SQL affecting every workspace. Do not infer successful recovery, legal compliance, full-page quality or real-phone proof from health checks or this document.

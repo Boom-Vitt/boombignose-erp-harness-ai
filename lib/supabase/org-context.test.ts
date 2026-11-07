@@ -4,8 +4,8 @@ import { databaseFixture } from './__tests__/tenant-fixture'
 const state = vi.hoisted(() => ({ user: { id: 'user', email: 'owner@example.test' } as {id:string,email:string}|null, preferred: '', client: {} as unknown }))
 vi.mock('react', () => ({ cache: (fn: unknown) => fn }))
 vi.mock('next/headers', () => ({ cookies: async () => ({ get: () => ({ value: state.preferred }) }) }))
-vi.mock('next/navigation', () => ({ redirect: (path: string) => { throw new Error(`REDIRECT:${path}`) } }))
-vi.mock('@/lib/supabase/server', () => ({ createClient: async () => ({ ...(state.client as object), auth: { getUser: async () => ({ data: {user:state.user}, error:null }) } }) }))
+vi.mock('next/navigation', () => ({ redirect: (path: string) => { throw new Error(`REDIRECT:${path}`) }, forbidden: () => { throw new Error('FORBIDDEN') } }))
+vi.mock('@/lib/supabase/server', () => ({ createClient: async () => ({ ...(state.client as object), auth: { getUser: async () => ({ data: {user:state.user}, error:null }), getSession: async () => ({data:{session:state.user ? {access_token:'verified-fixture-token'} : null},error:null}), mfa: { getAuthenticatorAssuranceLevel: async () => ({data:{currentLevel:'aal1',nextLevel:'aal1'},error:null}) } } }) }))
 import { getOrgContext, requireOrgContext } from '@/lib/auth'
 
 beforeEach(() => {

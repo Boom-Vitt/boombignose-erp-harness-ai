@@ -4,7 +4,7 @@ import { speakLocalText } from "@/lib/ai/ollama-admin"
 export const dynamic = "force-dynamic"
 
 export async function POST(request: Request) {
-  const block = await localModelAccess(false)
+  const block = await localModelAccess(false, request)
   if (block) return block
   const body = await readJson(request)
   const text = typeof body?.text === "string" ? body.text : ""

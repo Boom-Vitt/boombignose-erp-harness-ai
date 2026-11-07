@@ -35,20 +35,20 @@ function time(value: string | null) {
 }
 
 function liveTopology(snapshot: NetworkSnapshot, signals: ReviewSignal[]) {
-  const nodes: TopologyNode[] = [{ id: "erp", label: "ERP · collector reports", kind: "erp", position: [0, 1, 0] }]
+  const nodes: TopologyNode[] = [{ id: "erp", label: "ERP", detail: "Collector reports", kind: "erp", position: [0, 1, 0] }]
   const edges: TopologyEdge[] = []
   const devices = snapshot.devices.filter((device) => !device.revokedAt)
   const flagged = new Set(signals.map((signal) => signal.connectionId))
   devices.forEach((device, index) => {
     const angle = index * Math.PI * 2 / Math.max(devices.length, 1)
-    nodes.push({ id: device.id, label: device.name, kind: "device", position: [Math.cos(angle) * 5, 0.5, Math.sin(angle) * 5] })
+    nodes.push({ id: device.id, label: device.name, detail: "", kind: "device", position: [Math.cos(angle) * 5, 0.5, Math.sin(angle) * 5] })
     edges.push({ id: connectionId(device.id, "erp"), source: device.id, target: "erp", kind: device.lastSeenAt ? "report" : "enrollment", review: flagged.has(connectionId(device.id, "erp")) })
     const peers = [...new Set((device.report?.observations ?? []).map((event) => event.remoteAddress))]
     peers.forEach((address, peerIndex) => {
       const peerAngle = angle + (peerIndex - (peers.length - 1) / 2) * Math.min(0.35, 2 / Math.max(peers.length, 1))
       const id = connectionId(device.id, address)
       const peerId = `peer:${id}`
-      nodes.push({ id: peerId, label: address, kind: "peer", position: [Math.cos(peerAngle) * (9 + peerIndex % 3), 1 + peerIndex % 4, Math.sin(peerAngle) * (9 + peerIndex % 3)] })
+      nodes.push({ id: peerId, label: address, detail: "", kind: "peer", position: [Math.cos(peerAngle) * (9 + peerIndex % 3), 1 + peerIndex % 4, Math.sin(peerAngle) * (9 + peerIndex % 3)] })
       edges.push({ id, source: device.id, target: peerId, kind: "tcp", review: flagged.has(id) })
     })
   })
@@ -102,11 +102,11 @@ export function NetworkExplorer({ initial = EMPTY, previewOnly = false, appOrigi
 
   const signals = useMemo(() => sample ? sampleSignals : evaluateNetworkSignals(snapshot, now), [sample, snapshot, now])
   const topology = useMemo(() => sample ? {
-    nodes: SAMPLE_MACHINES.map((machine): TopologyNode => ({ id: machine.id, label: `${machine.name} · ${machine.address}`, kind: "device", position: machine.position })),
+    nodes: SAMPLE_MACHINES.map((machine): TopologyNode => ({ id: machine.id, label: machine.name, detail: machine.address, kind: "device", position: machine.position })),
     edges: sampleConnections.map((connection): TopologyEdge => ({ id: connection.id, source: connection.source, target: connection.target, kind: "ssh", review: signals.some((signal) => signal.connectionId === connection.id) })),
   } : liveTopology(snapshot, signals), [sample, snapshot, signals])
   const selected = topology.edges.find((edge) => edge.id === selectedId)
-  const labels = new Map(topology.nodes.map((node) => [node.id, node.label]))
+  const labels = new Map(topology.nodes.map((node) => [node.id, node.detail ? `${node.label} · ${node.detail}` : node.label]))
   const selectedDevice = snapshot.devices.find((device) => device.id === selected?.source)
   const selectedEvents = sample ? sampleConnections.find((connection) => connection.id === selectedId)?.events ?? [] : []
   const selectedObservations = !sample && selected?.kind === "tcp" ? selectedDevice?.report?.observations.filter((event) => connectionId(selectedDevice.id, event.remoteAddress) === selectedId) ?? [] : []

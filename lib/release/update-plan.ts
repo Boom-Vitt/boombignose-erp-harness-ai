@@ -1,4 +1,4 @@
-export const RELEASE_REPO = "Boom-Vitt/boombignose-erp-harness-ai"
+export const RELEASE_REPO = "Boom-Vitt/nose-erp"
 export const MACOS_ARM64_ASSET = "BoomBigNose-macos-arm64.dmg"
 export const SHA256SUMS = "SHA256SUMS"
 
@@ -61,7 +61,7 @@ export function initialDownloadURL(value: string): boolean {
   }
   if (url.protocol !== "https:" || url.username || url.password || url.search || url.hash) return false
   if (url.hostname !== "github.com") return false
-  return /^\/Boom-Vitt\/boombignose-erp-harness-ai\/releases\/download\/boombignose-v\d+\.\d+\.\d+\/[^/]+$/.test(url.pathname)
+  return /^\/Boom-Vitt\/nose-erp\/releases\/download\/boombignose-v\d+\.\d+\.\d+\/[^/]+$/.test(url.pathname)
 }
 
 export function redirectAllowed(current: URL, location: string): URL | null {

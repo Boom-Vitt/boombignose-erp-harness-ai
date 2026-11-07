@@ -1,5 +1,5 @@
 import { renderToStaticMarkup } from "react-dom/server"
-import { describe, expect, it, vi } from "vitest"
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
 vi.mock("next/server", () => ({
   connection: vi.fn(async () => undefined),
@@ -11,6 +11,8 @@ import {
   readPublicEnv,
   serializePublicEnv,
 } from "./index"
+beforeEach(() => vi.stubEnv("BOOMBIGNOSE_NATIVE", "0"))
+afterEach(() => vi.unstubAllEnvs())
 
 describe("public-env", () => {
   it("renders only the Supabase URL and anon key, escaped", async () => {
@@ -93,5 +95,18 @@ describe("public-env", () => {
       url: "http://127.0.0.1:54321",
       anonKey: "build-anon",
     })
+  })
+
+  it("advertises native same-origin transport without changing the project identity", () => {
+    const serialized = serializePublicEnv({
+      NODE_ENV: "test", BOOMBIGNOSE_NATIVE: "1",
+      NEXT_PUBLIC_SUPABASE_URL: "http://127.0.0.1:57211",
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: "runtime-anon",
+      SUPABASE_SERVICE_ROLE_KEY: "private-hidden",
+    })
+    const payload = JSON.parse(serialized)
+    expect(payload).toEqual({ url: "http://127.0.0.1:57211", anonKey: "runtime-anon", nativeAuthProxy: true })
+    expect(serialized).not.toContain("private-hidden")
+    expect(readPublicEnv({ getElementById: () => ({ textContent: serialized }) })).toEqual(payload)
   })
 })

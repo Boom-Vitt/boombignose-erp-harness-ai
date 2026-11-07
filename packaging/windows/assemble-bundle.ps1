@@ -1,7 +1,7 @@
 # Add pinned Node and portable Postgres to an existing standalone server.
 # The Next.js server is built once on Linux and must already be at
-# dist/bundle/erp/server.js. This script does not run npm or next build,
-# and it does not delete that server.
+# dist/bundle/erp/server.js. Prepare the target-native Go decoder and prune
+# build-only image addons without replacing Next's shared dependency graph.
 $ErrorActionPreference = "Stop"
 $PSNativeCommandUseErrorActionPreference = $true
 
@@ -11,9 +11,6 @@ Set-Location $root
 $nodeVersion = "22.21.1"
 $nodeSha = "3c624e9fbe07e3217552ec52a0f84e2bdc2e6ffa7348f3fdfb9fbf8f42e23fcf"
 $nodeUrl = "https://nodejs.org/dist/v$nodeVersion/node-v$nodeVersion-win-x64.zip"
-$pgSha = "8fbb986005ed7cfe486d6626a7859235a9713fadd164aff0b0a37ce1b65857d4"
-$pgUrl = "https://repo1.maven.org/maven2/io/zonky/test/postgres/embedded-postgres-binaries-windows-amd64/16.10.0/embedded-postgres-binaries-windows-amd64-16.10.0.jar"
-$pgInner = "postgres-windows-x86_64.txz"
 
 $dist = Join-Path $root "dist\bundle"
 $server = Join-Path $dist "erp\server.js"
@@ -52,21 +49,12 @@ try {
   Copy-Item -LiteralPath $nodeExe -Destination (Join-Path $dist "node.exe")
   Copy-Item -LiteralPath (Join-Path $nodeHome "LICENSE") -Destination (Join-Path $dist "NODE_LICENSE")
 
-  $jar = Join-Path $tmp "pg.jar"
-  curl.exe -fsSL -o $jar $pgUrl
-  Assert-Sha256 $jar $pgSha
-  $jarDir = Join-Path $tmp "jar"
-  $jarZip = Join-Path $tmp "pg.zip"
-  Copy-Item -LiteralPath $jar -Destination $jarZip
-  Expand-Archive -LiteralPath $jarZip -DestinationPath $jarDir
-  $txz = Join-Path $jarDir $pgInner
-  if (-not (Test-Path -LiteralPath $txz)) {
-    Get-ChildItem -Recurse $jarDir | Select-Object -ExpandProperty FullName
-    throw "postgres archive missing from jar"
-  }
   $pgRoot = Join-Path $dist "postgres"
-  New-Item -ItemType Directory -Force -Path $pgRoot | Out-Null
-  tar.exe -xJf $txz -C $pgRoot
+  $pgSource = Join-Path $root "dist\postgres-server"
+  if (-not (Test-Path -LiteralPath (Join-Path $pgSource "SERVER_PROVENANCE.json") -PathType Leaf)) {
+    throw "source-owned PostgreSQL 16.15 missing; run assemble-server.sh in native MINGW64 first"
+  }
+  Copy-Item -LiteralPath $pgSource -Destination $pgRoot -Recurse
   foreach ($name in @("initdb.exe", "pg_ctl.exe", "postgres.exe")) {
     if (-not (Test-Path -LiteralPath (Join-Path $pgRoot "bin\$name"))) {
       throw "missing postgres\bin\$name"
@@ -75,12 +63,23 @@ try {
   if (-not (Test-Path -LiteralPath (Join-Path $pgRoot "share\postgresql.conf.sample"))) {
     throw "windows postgres share/ layout is missing"
   }
-  Copy-Item -LiteralPath (Join-Path $root "packaging\postgres\prelude.sql") -Destination (Join-Path $pgRoot "prelude.sql")
   Copy-Item -LiteralPath (Join-Path $root "packaging\postgres\prelude-after-auth.sql") -Destination (Join-Path $pgRoot "prelude-after-auth.sql")
-  Copy-Item -LiteralPath (Join-Path $root "packaging\postgres\POSTGRESQL_LICENSE.txt") -Destination (Join-Path $pgRoot "POSTGRESQL_LICENSE.txt")
   $migrations = Join-Path $pgRoot "migrations"
   New-Item -ItemType Directory -Force -Path $migrations | Out-Null
   Copy-Item -Path (Join-Path $root "supabase\migrations\*.sql") -Destination $migrations
+  # Source PostgREST and these matching clients share our exact pinned static
+  # libpq/zlib inputs. No foreign DLLs may enter the private server runtime.
+  $postgrestBuild = Join-Path $root "dist\postgrest-build"
+  $clients = Join-Path $postgrestBuild "clients"
+  foreach ($name in @("psql.exe", "pg_dump.exe", "pg_restore.exe")) {
+    $client = Join-Path $clients "bin\$name"
+    if (-not (Test-Path -LiteralPath $client -PathType Leaf)) { throw "source-built client missing: $client" }
+    Copy-Item -LiteralPath $client -Destination (Join-Path $pgRoot "bin\$name")
+  }
+  foreach ($name in @("CLIENT_PROVENANCE", "POSTGRESQL_CLIENT_LICENSE.txt", "ZLIB_LICENSE.txt")) {
+    Copy-Item -LiteralPath (Join-Path $clients $name) -Destination (Join-Path $pgRoot $name)
+  }
+  Copy-Item -LiteralPath (Join-Path $root "packaging\postgres\assemble-clients.sh") -Destination (Join-Path $pgRoot "build-provenance\assemble-clients.sh")
 
   $authSrc = $null
   foreach ($candidate in @(
@@ -96,20 +95,16 @@ try {
   Copy-Item -LiteralPath (Join-Path $authSrc "auth.exe") -Destination (Join-Path $authDest "auth.exe")
   Copy-Item -LiteralPath (Join-Path $authSrc "migrations") -Destination (Join-Path $authDest "migrations") -Recurse
   Copy-Item -LiteralPath (Join-Path $root "packaging\auth\AUTH_LICENSE.txt") -Destination (Join-Path $authDest "AUTH_LICENSE.txt")
+  Copy-Item -LiteralPath (Join-Path $authSrc "build-provenance.json") -Destination (Join-Path $authDest "build-provenance.json")
+  Copy-Item -LiteralPath (Join-Path $authSrc "third-party-notices") -Destination (Join-Path $authDest "third-party-notices") -Recurse
   if (-not (Test-Path -LiteralPath (Join-Path $authDest "migrations\00_init_auth_schema.up.sql"))) {
     throw "auth migrations were not copied"
   }
 
-  $pgrestSha = "17f595b0d8dd37473d0231417dea07c5ac9f791282ff5b017fae51ff29e5de2f"
-  $pgrestUrl = "https://github.com/PostgREST/postgrest/releases/download/v16.5/postgrest-v16.5-windows-x86-64.zip"
-  $pgrestZip = Join-Path $tmp "postgrest.zip"
-  curl.exe -fsSL -o $pgrestZip $pgrestUrl
-  Assert-Sha256 $pgrestZip $pgrestSha
-  $pgrestExtract = Join-Path $tmp "postgrest"
-  Expand-Archive -LiteralPath $pgrestZip -DestinationPath $pgrestExtract
-  $pgrestExe = Join-Path $pgrestExtract "postgrest.exe"
-  if (-not (Test-Path -LiteralPath $pgrestExe)) { throw "postgrest.exe missing in the archive" }
+  $pgrestExe = Join-Path $postgrestBuild "artifact\postgrest.exe"
+  if (-not (Test-Path -LiteralPath $pgrestExe -PathType Leaf)) { throw "native source-built PostgREST 16.5 missing" }
   $pgrestDest = Join-Path $dist "postgrest"
+  if (Test-Path -LiteralPath $pgrestDest) { Remove-Item -LiteralPath $pgrestDest -Recurse -Force }
   New-Item -ItemType Directory -Force -Path $pgrestDest | Out-Null
   Copy-Item -LiteralPath $pgrestExe -Destination (Join-Path $pgrestDest "postgrest.exe")
   Copy-Item -LiteralPath (Join-Path $root "packaging\postgrest\POSTGREST_LICENSE.txt") -Destination (Join-Path $pgrestDest "POSTGREST_LICENSE.txt")
@@ -130,17 +125,16 @@ try {
   Assert-Sha256 $ollamaZip $ollamaSha
   $ollamaSrc = Join-Path $tmp "ollama-src"
   New-Item -ItemType Directory -Force -Path $ollamaSrc | Out-Null
-  tar.exe -xf $ollamaZip -C $ollamaSrc
+  & (Join-Path $env:SystemRoot "System32\tar.exe") -xf $ollamaZip -C $ollamaSrc
   $ollamaDest = Join-Path $dist "ollama"
   if (Test-Path -LiteralPath $ollamaDest) { Remove-Item -LiteralPath $ollamaDest -Recurse -Force }
-  $stageOut = @(python packaging/ollama/stage.py $ollamaSrc $ollamaDest)
+  $stageOut = @(python packaging/ollama/stage.py $ollamaSrc $ollamaDest $license)
   $stageText = $stageOut -join "`n"
   Write-Host $stageText
   if ($stageText -notlike "*omitted=cuda_v12,cuda_v13*") { throw "windows ollama staging did not omit the CUDA runners" }
   foreach ($cuda in @("cuda_v12", "cuda_v13")) {
     if (Test-Path -LiteralPath (Join-Path $ollamaDest "lib\ollama\$cuda")) { throw "cuda runner was packed" }
   }
-  Copy-Item -LiteralPath $license -Destination (Join-Path $ollamaDest "OLLAMA_LICENSE.txt")
   $ollamaExe = Join-Path $ollamaDest "ollama.exe"
   if (-not (Test-Path -LiteralPath $ollamaExe)) { throw "ollama.exe missing after staging" }
   $version = & $ollamaExe --version 2>&1 | Out-String
@@ -151,21 +145,20 @@ try {
     "node=v$nodeVersion"
     "node_url=$nodeUrl"
     "node_sha256=$nodeSha"
-    "node_license=MIT (NODE_LICENSE)"
-    "postgres=16.10.0"
-    "postgres_url=$pgUrl"
-    "postgres_sha256=$pgSha"
-    "postgres_archive=$pgInner"
-    "postgres_license=PostgreSQL License (postgres/POSTGRESQL_LICENSE.txt)"
+    "node_license=MIT core and bundled third-party terms (NODE_LICENSE)"
+    "postgres=16.15"
+    "postgres_provenance=postgres/SERVER_PROVENANCE.json"
+    "openssl=3.5.9"
+    "postgres_license=postgres/POSTGRESQL_LICENSE.txt and postgres/third-party-notices/index.json"
     "erp=linux-built Next.js standalone server.js"
     "auth=v2.197.0"
     "auth_commit=4eee58f296d9698a1c2c0ae14d7a0b379c7622d3"
     "auth_note=built for windows/amd64 because upstream publishes no Windows archive"
-    "auth_license=MIT (auth/AUTH_LICENSE.txt)"
-    "postgrest=v16.5"
-    "postgrest_url=$pgrestUrl"
-    "postgrest_sha256=$pgrestSha"
-    "postgrest_license=MIT (postgrest/POSTGREST_LICENSE.txt)"
+    "auth_license=auth/AUTH_LICENSE.txt and auth/third-party-notices/index.json"
+    "postgrest=v16.5 (source build)"
+    "postgrest_source_commit=798523c910c09dc56d92ba2c42bcb78e5f59ecb3"
+    "postgrest_provenance=postgrest/third-party-notices/index.json"
+    "postgrest_license=postgrest/POSTGREST_LICENSE.txt and postgrest/third-party-notices/index.json"
     "ollama=v$ollamaVersion"
     "ollama_url=$ollamaUrl"
     "ollama_sha256=$ollamaSha"
@@ -173,6 +166,12 @@ try {
     "ollama_omitted=cuda_v12,cuda_v13"
     "ollama_note=CUDA runners are omitted so the installer stays under the 2 GiB GitHub asset limit. CPU and Vulkan runners stay. The model is not packed."
   ) | Set-Content -LiteralPath (Join-Path $dist "PROVENANCE") -Encoding ascii
+  & (Join-Path $dist "node.exe") packaging/erp-dependencies.mjs hydrate (Join-Path $dist "erp") win32-x64
+  if ($LASTEXITCODE -ne 0) { throw "target raster/runtime preparation failed: $LASTEXITCODE" }
+  & (Join-Path $dist "node.exe") packaging/collect-notices.mjs runtime $dist $postgrestBuild
+  if ($LASTEXITCODE -ne 0) { throw "native component source/notice collection failed: $LASTEXITCODE" }
+  & (Join-Path $dist "node.exe") packaging/collect-notices.mjs bundle $dist
+  if ($LASTEXITCODE -ne 0) { throw "redistribution notice stage proof failed: $LASTEXITCODE" }
 } finally {
   Remove-Item -LiteralPath $tmp -Recurse -Force -ErrorAction SilentlyContinue
 }

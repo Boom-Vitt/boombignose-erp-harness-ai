@@ -10,6 +10,9 @@ import { AttachmentInput, CompleteInput, NoteInput, RecordInput, ScheduleInput, 
 import { recordTimelinePage } from "./queries"
 import type { TimelinePage } from "./timeline"
 import { RECORD_TABLES, recordHref, type RecordRef, type RecordType } from "./model"
+import { attachmentBytes } from "@/lib/storage/attachment-content"
+import { NativeAttachmentStore, nativeAttachmentStorage } from "@/lib/storage/native-attachments"
+import { authorizedRecordAttachment } from "@/lib/storage/record-attachments"
 
 async function writableRecord(ref: RecordRef) {
   const ctx = await requireOrgContext()
@@ -118,16 +121,38 @@ export async function attachRecordFile(form: FormData): Promise<{ error?: string
   if (!valid.success) return { error: "Use a PDF, JPEG, PNG, WebP, text, or CSV file up to 10 MB with a valid filename." }
   const ref = parsed.data
   const { ctx, supabase } = await writableRecord(ref)
+  let bytes: Buffer
+  try { bytes = await attachmentBytes(file) } catch { return { error: "The file contents do not match a supported attachment type." } }
   const id = randomUUID()
   const path = `${ctx.orgId}/${ref.recordType}/${ref.recordId}/${id}`
-  const bucket = supabase.storage.from("record-attachments")
-  const { error: uploadError } = await bucket.upload(path, file, { contentType: file.type, upsert: false })
-  if (uploadError) return { error: "Unable to upload the file. Please try again." }
-  const { error } = await supabase.from("record_attachments").insert({ id, org_id: ctx.orgId, record_type: ref.recordType, record_id: ref.recordId, path, filename: valid.data.name, size: file.size, content_type: file.type, uploaded_by: ctx.userId })
-  if (error) {
-    const cleanup = await bucket.remove([path])
-    if (cleanup.error) console.error("Record attachment cleanup failed", cleanup.error.message)
-    return { error: "Unable to save the attachment. Please try again." }
+  let discardOrphan: () => Promise<void>
+  try {
+    if (nativeAttachmentStorage()) {
+      const published = await new NativeAttachmentStore().publish(id, bytes)
+      discardOrphan = published.discardOrphan
+    } else {
+      const bucket = supabase.storage.from("record-attachments")
+      const { error } = await bucket.upload(path, file, { contentType: file.type, upsert: false })
+      if (error) return { error: "Unable to upload the file. Please try again." }
+      discardOrphan = async () => {
+        const cleanup = await bucket.remove([path])
+        if (cleanup.error) throw new Error("Attachment cleanup failed.")
+      }
+    }
+  } catch { return { error: "Unable to upload the file. Please try again." } }
+  try {
+    const { error } = await supabase.from("record_attachments").insert({ id, org_id: ctx.orgId, record_type: ref.recordType, record_id: ref.recordId, path, filename: valid.data.name, size: file.size, content_type: file.type, uploaded_by: ctx.userId })
+    if (error) {
+      // Supabase can represent a lost HTTP response as an error with no SQL/PostgREST
+      // code. Only an explicit database rejection proves the published file is orphaned.
+      if (!/^(?:[0-9A-Z]{5}|PGRST[0-9]{3})$/.test(error.code ?? "")) return { error: "Unable to confirm the attachment was saved. Reload before trying again." }
+      try { await discardOrphan() } catch { console.error("Record attachment orphan cleanup failed.") }
+      return { error: "Unable to save the attachment. Please try again." }
+    }
+  } catch {
+    // A transport exception has an uncertain commit outcome: retain evidence rather than
+    // deleting an object whose metadata may have committed on the server.
+    return { error: "Unable to confirm the attachment was saved. Reload before trying again." }
   }
   await writeAudit(ctx, { entity: ref.recordType, entityId: ref.recordId, action: "file_attached", summary: `Attached ${valid.data.name}` })
   refresh(ref)
@@ -138,8 +163,9 @@ export async function recordAttachmentUrl(input: unknown): Promise<{ url?: strin
   if (!parsed.success) return { error: "Invalid attachment." }
   const ctx = await requireOrgContext()
   const supabase = await createClient()
-  const { data, error } = await supabase.from("record_attachments").select("path,filename").eq("org_id", ctx.orgId).eq("id", parsed.data).maybeSingle()
-  if (error || !data) return { error: "Attachment not found in the active workspace." }
+  const data = await authorizedRecordAttachment(supabase, ctx, parsed.data)
+  if (!data) return { error: "Attachment not found in the active workspace." }
+  if (nativeAttachmentStorage()) return { url: `/api/attachments/${parsed.data}` }
   const result = await supabase.storage.from("record-attachments").createSignedUrl(data.path, 60, { download: data.filename })
   if (result.error) return { error: "Unable to download the attachment." }
   return { url: result.data.signedUrl }

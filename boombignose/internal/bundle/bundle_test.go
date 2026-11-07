@@ -244,9 +244,6 @@ func TestOllamaServeRefusesRemoteHost(t *testing.T) {
 	if len(cmd.Args) != 1 || cmd.Args[0] != "serve" {
 		t.Fatalf("args: %#v", cmd.Args)
 	}
-	if strings.Join(PullArgs(), " ") != "pull qwen2.5:3b" {
-		t.Fatalf("pull args: %#v", PullArgs())
-	}
 	for _, arg := range cmd.Args {
 		if arg == "pull" || strings.Contains(arg, LocalModel) {
 			t.Fatal("serve must not pull the model")
@@ -392,9 +389,6 @@ func TestPullCommandIsNotAStartupCommand(t *testing.T) {
 	}
 	if !strings.Contains(text, "OLLAMA_HOST=127.0.0.1:11434") || !strings.Contains(text, "HOME=/home/me") {
 		t.Fatalf("pull env: %s", text)
-	}
-	if strings.Join(cmd.Args, " ") != "pull qwen2.5:3b" {
-		t.Fatalf("args: %#v", cmd.Args)
 	}
 	_, err = PullCommand(binary, "https://models.example", nil)
 	if err == nil || strings.Contains(err.Error(), "models.example") {

@@ -16,7 +16,7 @@ export default async function ConnectionsPage() {
   const supabase = await createClient()
 
   const [mcp, models, profile, accounting] = await Promise.all([
-    probeErpMcp().catch(() => ({ error: "unreachable" })),
+    probeErpMcp(ctx).catch(() => ({ error: "unreachable" })),
     loadModelSettings(currentModelHost()).catch(() => null),
     supabase.from("profiles").select("locale").eq("id", ctx.userId).maybeSingle(),
     // The accounting module only exists in the Pro edition; Community has no such route.

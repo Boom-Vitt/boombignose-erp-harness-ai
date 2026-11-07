@@ -17,12 +17,168 @@ Exceptions:
 - Third-party materials: their original licenses and notices control. Nothing
   in the company licenses or CLA relicenses third-party material.
 
-Bundled third-party license files (retained unchanged):
-- bignose/core/src/skills/bundled/reverse-engineer-anything/LICENSE
-  MIT License — see that file for its original copyright and full terms.
+LGPL combined-work rights:
+Third-party rights to modify and recombine LGPL components, and to reverse
+engineer a combined work for debugging modifications to those components,
+are not restricted by the company's licenses, commercial alternative or
+product policy. Complete original terms and the applicable corresponding
+source/recombination materials must accompany the actual distributed form.
+This preserves third-party rights; it does not expand the separate licenses
+for company-owned ee/ or bignose/ materials. See the modified-native-component
+installation instructions in docs/boombignose/BUNDLE.md. No publisher signing
+key, unchanged signature or notarization is needed or promised for a private
+modified runtime.
 
-Package-manager dependencies retain their respective licenses. This NOTICE
-lists bundled third-party license files; it is not a dependency license audit.
+Third-party runtime materials in current source (not a statement that the new
+dependencies shipped in published 1.4.4):
+
+- PDF.js / pdfjs-dist 6.5.438, Mozilla and contributors: Apache-2.0 core,
+  plus the original individual resource/runtime terms. Preserve
+  pdfjs-dist/LICENSE and copyright/license headers in pdf.mjs,
+  pdf.worker.mjs, WASM, CMaps/fonts and any other assets actually distributed.
+  The opaque emitted worker is matched byte-for-byte to its installed original;
+  its incorporated Emscripten glue keeps full original license/copyright texts.
+  Only actually distributed WASM/fallback families trigger the additional
+  Rust/compiler-builtins/libm, Emscripten/musl or Binaryen runtime originals.
+  Immutable source and byte correspondence are recorded in
+  pdfjs-codec-provenance.json and pdfjs-qcms-provenance.json; an absent runtime
+  is not inferred from installed dependency metadata. Upstream did not record
+  exact Emscripten/Binaryen compiler versions: unchanged original text and
+  both genuine historical/current musl qsort notices are preserved where
+  relevant, without inventing a compiler version.
+  Source: https://github.com/mozilla/pdf.js ; the package's LICENSE and
+  individual bundled asset notices govern, not this summary.
+- The raster validator is the separately compiled CGO-disabled
+  boombignose-image executable: Go standard image decoders and
+  golang.org/x/image, under their original Go BSD-style licenses and PATENTS.
+  Go/Wails desktop and headless modules (including pgx and their dependencies)
+  retain their individual full licenses, copyrights and notices. The pinned
+  toolchain is boombignose/go.mod; the collector copies original toolchain
+  and module-cache texts, not an SPDX-only summary.
+- Production JavaScript and browser/client dependencies retain their original
+  licenses. packaging/collect-notices.mjs collects originals for post-prune
+  staged server packages, exact emitted client source-map modules, byte-matched
+  opaque PDF resources and unconditional global stylesheet imports. It
+  includes Next's compiled dependency notices and the original applicable
+  PDF.js worker/WASM/CMaps/ICC/font/resource texts. Unused optional dependency
+  metadata is not evidence that its code is distributed. Embedded notices and
+  Go modules are conservative; actual staged resource/client bytes are hashed.
+- Next 16.4.3's shipped nomodule polyfill embeds core-js 3.38.1
+  (Denis Pushkarev), whatwg-fetch 3.0.0 (GitHub) and object-assign 4.1.1
+  (Sindre Sorhus), under their original MIT licenses. Retain their full
+  copyright/permission texts, not the core-js URL embedded in the JS alone.
+  next-polyfill-provenance.json ties the exact installed polyfill hash to the
+  pinned upstream manifest/imports identifying those incorporated packages.
+- Self-hosted Bricolage Grotesque, Geist Mono and IBM Plex Sans Thai use
+  SIL Open Font License 1.1. Full original family copyright/OFL texts are
+  preserved in packaging/licenses, with immutable upstream URLs and SHA-256
+  in sources.json. IBM reserves the font name Plex. font-metadata.json preserves
+  original name-table copyright/version/license strings from inspected font
+  binaries, keyed by SHA-256; changed uninspected font bytes fail collection.
+  The inspected IBM Plex Sans Thai 1.1 binaries additionally state Copyright
+  2019 IBM Corp. All rights reserved.; retain that original binary notice too.
+- Sharp remains a development/test fixture dependency only. Current-source
+  packaging removes sharp, @img/sharp*, libvips binaries and PDF.js's optional
+  @napi-rs/canvas* runtime packages; native-dependencies.json and the runtime
+  pruning/binary audit must prove this on each actual staged platform. This
+  is not a claim about the contents of published 1.4.4 or any uninspected app.
+- Source-owned PostgreSQL 16.15 server and matching psql/pg_dump/pg_restore/
+  libpq: PostgreSQL License. Retain the exact source COPYRIGHT, regex notices
+  and build/source provenance under postgres/third-party-notices.
+  Source: https://ftp.postgresql.org/pub/source/v16.15/postgresql-16.15.tar.bz2
+  SHA-256: c1575341fa7bd40f5274ea465b34390f4dc64cdd0770af327005caaeb9f6b7ed
+  The source build removes unrelated EDB plugins and unidentified vendor
+  dependencies; it preserves normal core/contrib including plpgsql/pgcrypto.
+  A historical EDB/Zonky binary is not covered by this new source-build proof.
+- OpenSSL 3.5.9, statically incorporated into the source-owned server/pgcrypto:
+  Apache-2.0. Preserve its original full license and source/build records.
+  Source: https://github.com/openssl/openssl/releases/download/openssl-3.5.9/openssl-3.5.9.tar.gz
+  SHA-256: 603f5602e2eef00d77fbd429d34dcd5822bb301757a1bc9cdb24c670f1eb859a
+  This is the supported OpenSSL major-3 LTS line, not an EOL 3.0 build.
+- zlib 1.3.1 statically linked into the source-owned PostgreSQL runtime/clients:
+  zlib License,
+  (C) 1995-2022 Jean-loup Gailly and Mark Adler. Retain postgres/ZLIB_LICENSE.txt.
+  Source: https://zlib.net/fossils/zlib-1.3.1.tar.gz
+  SHA-256: 9a93b2b7dfdac77ceba5a558a580e74667dd6fede4585b91eefb60f03b72df23
+  packaging/postgres/assemble-clients.sh records source/linkage/target in
+  postgres/CLIENT_PROVENANCE; these local-only SCRAM clients do not add TLS.
+- Existing bundled Node, Supabase Auth, PostgREST and Ollama retain their
+  respective shipped MIT/original third-party notices: NODE_LICENSE,
+  auth/AUTH_LICENSE.txt, postgrest/POSTGREST_LICENSE.txt and
+  ollama/OLLAMA_LICENSE.txt. Model weights are separate, not startup downloads;
+  the curated Qwen3.5 4B/9B checkpoints have their own Apache-2.0 licenses.
+- Supabase Auth v2.197.0 statically incorporates go-ethereum v1.17.0 under
+  LGPL-3.0-or-later; the complete Auth binary is not MIT-only. Its exact
+  application/library/fork/toolchain sources, original full LGPL/GPL and other
+  dependency notices, recombination recipe and product installation material
+  are collected under auth/third-party-notices. The locally replaced godotenv
+  fork is preserved from the matching upstream source, not replaced by a
+  similarly named package. A source URL or root AUTH_LICENSE alone is not
+  the complete combined-work source/relinking material.
+- Source-built PostgREST v16.5 retains its original MIT license and the full
+  original notices/source/recombination material for the actual realized
+  Haskell/C dependency plan, including incorporated GMP LGPL terms. A bare
+  POSTGREST_LICENSE file is not the complete static dependency/source offer.
+- Ollama v0.40.11 retains the full original runtime notice tree, including
+  GO_LICENSE, llama.cpp/vendor, MLX/MLX-C, DLPack, XGrammar LICENSE/NOTICE,
+  cpp-httplib, fmt and picojson as applicable to the actual target payload.
+  ollama/RUNTIME_NOTICES.json binds those original bytes; its MIT root text
+  alone is not a substitute for incorporated third-party terms.
+- bignose/core/src/skills/bundled/reverse-engineer-anything/LICENSE:
+  MIT License; retain its original copyright and full terms.
+
+Staging evidence and remaining redistribution prerequisites:
+
+The standalone source build writes erp/third-party-notices/index.json and
+copies the full original texts beside it. Its lockfile/module/toolchain
+provenance and per-text SHA-256 make the collection inspectable. The platform
+assemblers verify those bytes and the existing Node/Auth/PostgREST/Ollama/
+PostgreSQL license files before finishing. No runtime notice fetch occurs.
+Collection logs every missing full text; strict `audit`/`bundle` modes refuse
+unresolved entries rather than treating SPDX metadata or URLs as permission.
+
+Known upstream gaps found during source inspection: maath 0.10.8 and stats-gl
+2.4.2 omit full license texts both in their installed packages and in the
+inspected version-tag/gitHead source trees. MediaPipe tasks-vision 0.10.17
+omits a full license file; original declaration copyright headers are preserved,
+but they do not establish the complete bundled WASM third-party notice closure.
+These are findings about potential source packages,
+not proof each optional component survived the client build. They become release
+blockers only when their code or files are in the actual staged/server or emitted
+client-module set. Resolve exact original texts/notices for any such actual
+component before publishing; do not fabricate notices from author fields, assume
+a nearby version, or silently waive the gate.
+
+react-remove-scroll-bar 2.3.8 omits LICENSE and its npm gitHead was unreachable.
+Its full original MIT notice is nevertheless source-backed, not inferred from
+a nearby version: all 25 published code/declaration files are byte-identical
+to official npm 2.3.7 (gitHead 29e9fcd1eecf7d3b77a767941c4a57fe461fc1e4).
+Upstream commit 8ca9ba5ea52de03308fe8ced94f7b159a44d28ff adds only the
+maintainer-merged LICENSE to that unchanged source tree. The collector checks
+those exact installed code-file hashes before using the original full notice.
+Archive integrity, source comparison and file hashes accompany it in
+react-remove-scroll-bar-provenance.json; neither SPDX nor version proximity
+alone is used to establish the license.
+
+Sharp/libvips corresponding-source, relinking and installation duties are
+not prerequisites for a new artifact proven to exclude those libraries.
+If an actual artifact still includes them, this source cutover does not cure
+its obligations: retain full original transitive notices and provide the
+applicable complete corresponding source/build and replacement/installation
+materials before redistribution. URLs, this NOTICE and a core source tarball
+alone are not a complete combined-binary source offer. An ad-hoc macOS seal
+must be rebuilt/re-signed for a private modified copy; no Developer ID key
+or notarization is provided. See docs/boombignose/BUNDLE.md.
+
+No new installer should be published while any applicable exact-artifact
+redistribution prerequisite remains unresolved. A successful source build
+or text collection is not release/legal approval.
+
+Package-manager dependencies retain their respective licenses. This is a
+source-backed inventory of relevant additions, not a complete dependency
+license audit or legal/compliance certification. Original license/notice
+files must accompany the distributed material; this summary does not replace
+them or relicense third-party software.
 
 Optional typed public document references:
 - The checksum is the standard Bech32m construction from BIP-350

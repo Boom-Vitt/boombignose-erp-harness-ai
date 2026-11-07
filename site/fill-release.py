@@ -20,7 +20,7 @@ import sys
 import urllib.request
 from pathlib import Path
 
-REPO = "Boom-Vitt/boombignose-erp-harness-ai"
+REPO = "Boom-Vitt/nose-erp"
 API = f"https://api.github.com/repos/{REPO}/releases?per_page=20"
 TAG_RE = re.compile(r"^boombignose-v\d+\.\d+\.\d+$")
 SUM_RE = re.compile(r"^([a-f0-9]{64}) [ *](\S+)\s*$")
@@ -241,7 +241,7 @@ def self_test() -> None:
         "tag_name": "boombignose-v9.9.9",
         "draft": False,
         "prerelease": False,
-        "html_url": "https://github.com/Boom-Vitt/boombignose-erp-harness-ai/releases/tag/boombignose-v9.9.9",
+        "html_url": "https://github.com/Boom-Vitt/nose-erp/releases/tag/boombignose-v9.9.9",
         "assets": [
             {"name": name, "size": 2_000_000, "browser_download_url": f"https://github.com/{REPO}/releases/download/boombignose-v9.9.9/{name}"}
             for name in (*REQUIRED.values(), "SHA256SUMS")

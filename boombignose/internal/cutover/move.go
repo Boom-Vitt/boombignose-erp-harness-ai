@@ -15,8 +15,8 @@ import (
 
 const listTablesSQL = "SELECT table_schema || '.' || table_name FROM information_schema.tables WHERE table_schema NOT IN ('pg_catalog', 'information_schema') AND table_type = 'BASE TABLE' ORDER BY 1"
 
-// Command is one postgres tool invocation. The argument list is fixed by
-// dumpArgs, restoreArgs, or psqlArgs.
+// Command is one postgres tool invocation. allowExec accepts only the fixed
+// cutover, recovery, table-listing, or archive-listing command contracts.
 type Command struct {
 	Name string
 	Args []string
@@ -444,6 +444,8 @@ func psqlArgs(bin string, ep Endpoint) (Command, error) {
 	}}, nil
 }
 
+// Generic external cutover deliberately adopts the destination role and omits
+// source grants. Native recovery uses the separate owner/ACL-preserving contract.
 func dumpArgs(bin string, ep Endpoint, file string) (Command, error) {
 	if err := allowBin(bin, "pg_dump"); err != nil {
 		return Command{}, err
@@ -560,7 +562,10 @@ func allowExec(cmd Command) error {
 		if err != nil {
 			return err
 		}
-		return sameCommand(cmd, want)
+		if sameCommand(cmd, want) == nil {
+			return nil
+		}
+		return allowRecoveryRoleCommand(cmd, ep)
 	case "pg_dump":
 		file, ok := strings.CutPrefix(cmd.Args[len(cmd.Args)-1], "--file=")
 		if !ok {
@@ -574,14 +579,40 @@ func allowExec(cmd Command) error {
 		if err != nil {
 			return err
 		}
+		if sameCommand(cmd, want) == nil {
+			return nil
+		}
+		want, err = backupDumpArgs(cmd.Name, ep, file)
+		if err != nil {
+			return err
+		}
 		return sameCommand(cmd, want)
 	case "pg_restore":
 		file := cmd.Args[len(cmd.Args)-1]
+		if len(cmd.Args) == 2 && cmd.Args[0] == "--list" {
+			if err := allowBin(cmd.Name, "pg_restore"); err != nil {
+				return err
+			}
+			return safeDumpPath(file)
+		}
 		ep, err := endpointFromFlags(cmd.Args[:len(cmd.Args)-1])
 		if err != nil {
 			return err
 		}
 		want, err := restoreArgs(cmd.Name, ep, file)
+		if err != nil {
+			return err
+		}
+		if sameCommand(cmd, want) == nil {
+			return nil
+		}
+		var role string
+		for _, arg := range cmd.Args {
+			if value, ok := strings.CutPrefix(arg, "--role="); ok {
+				role = value
+			}
+		}
+		want, err = backupRestoreArgs(cmd.Name, ep, file, role)
 		if err != nil {
 			return err
 		}
@@ -630,12 +661,19 @@ func sameCommand(got, want Command) error {
 // RealRunner starts pg_dump, pg_restore, or psql after allowExec.
 // The child environment is PATH and LC_ALL only. A password is not forwarded.
 func RealRunner(ctx context.Context, cmd Command) ([]byte, error) {
+	return runTool(ctx, cmd, "")
+}
+
+func runTool(ctx context.Context, cmd Command, passwordFile string) ([]byte, error) {
 	if err := allowExec(cmd); err != nil {
 		return nil, err
 	}
 	// #nosec G204 -- allowExec allows only absolute pg_dump, pg_restore, or psql with a fixed argument list
 	proc := exec.CommandContext(ctx, cmd.Name, cmd.Args...)
 	proc.Env = []string{"LC_ALL=C", "PATH=" + os.Getenv("PATH")}
+	if passwordFile != "" {
+		proc.Env = append(proc.Env, "PGPASSFILE="+passwordFile)
+	}
 	out, err := proc.CombinedOutput()
 	if err != nil {
 		return out, fmt.Errorf("%s failed", strings.TrimSuffix(filepath.Base(cmd.Name), ".exe"))

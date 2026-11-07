@@ -1,6 +1,6 @@
 # Release assets for BoomBigNose ERP Harness AI
 
-Repository: https://github.com/Boom-Vitt/boombignose-erp-harness-ai
+Repository: https://github.com/Boom-Vitt/nose-erp
 
 `.github/workflows/boombignose-release.yml` builds the Wails window on GitHub-hosted runners:
 

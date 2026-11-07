@@ -1,4 +1,5 @@
 import { ACTIVE_ORG_COOKIE } from "@/lib/auth"
+import { trustedAppOrigin } from "@/lib/supabase/trusted-origin"
 
 /** Default storage key supabase-js derives from the project URL. */
 export function supabaseStorageKey(supabaseUrl: string): string {
@@ -6,33 +7,18 @@ export function supabaseStorageKey(supabaseUrl: string): string {
 }
 
 /**
- * Cookie names that hold the session, its chunks, the PKCE verifier, or the
- * active workspace. A sign-out that expires only the base name leaves `.0`
- * chunks in place, and the next sign-in is read back as the old session.
- */
-const LOOPBACK_HOST = /^(localhost|127\.0\.0\.1)(:\d+)?$/
-
-/**
- * Next's `request.url` can say `localhost` while the browser is on
- * `127.0.0.1`. Those are different cookie hosts. When both are loopback,
- * stay on the Host the browser sent. Otherwise stay on the request URL and
- * ignore a foreign Host header.
+ * Redirects use explicit configured public/local origins, not arbitrary Host,
+ * request URL, or forwarded host/proto values.
  */
 export function loopbackRedirect(path: string, request: Request, fallbackOrigin: string): URL {
-  let requestUrl: URL | null = null
-  try {
-    requestUrl = new URL(request.url)
-  } catch {
-    requestUrl = null
-  }
-  const host = request.headers.get("host") ?? ""
-  if (requestUrl && LOOPBACK_HOST.test(requestUrl.host) && LOOPBACK_HOST.test(host)) {
-    return new URL(path, `http://${host}`)
-  }
-  if (requestUrl && requestUrl.origin !== "null") return new URL(path, requestUrl.origin)
-  return new URL(path, fallbackOrigin)
+  const env = process.env
+  return new URL(path, trustedAppOrigin(request, {
+    NEXT_PUBLIC_APP_URL: env.NEXT_PUBLIC_APP_URL || fallbackOrigin,
+    BOOMBIGNOSE_LOCAL_ORIGIN: env.BOOMBIGNOSE_LOCAL_ORIGIN,
+  }))
 }
 
+/** Session chunks, PKCE verifiers and workspace scope must all expire on logout. */
 export function authCookieNames(cookieHeader: string, storageKey: string): string[] {
   const names: string[] = []
   for (const part of cookieHeader.split(";")) {

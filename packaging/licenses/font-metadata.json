@@ -1,0 +1,532 @@
+{
+  "format": 1,
+  "provenance": "Original OpenType name-table strings decoded without rewriting from the listed SHA-256 WOFF2 binaries in the existing private source build. Source identity is the binary digest, not the generated asset filename.",
+  "inspectionTool": "fonttools==4.61.1; brotli==1.2.0; TTFont name IDs 0,1,5,6,13,14; name.toUnicode()",
+  "fonts": [
+    {
+      "file": ".next/static/media/07a39a8a4660cc7c-s.p.0r6juujl39pe6.woff2",
+      "sha256": "5f3d6ad60f29d6cb708414ec6887163d63bf197377ef5417d2483ff31ace6c3b",
+      "names": {
+        "0": [
+          "Copyright 2024 The Geist Project Authors (https://github.com/vercel/geist-font.git)"
+        ],
+        "1": [
+          "Geist Mono"
+        ],
+        "5": [
+          "Version 1.701"
+        ],
+        "6": [
+          "GeistMono-Regular"
+        ],
+        "14": [
+          "https://openfontlicense.org"
+        ]
+      }
+    },
+    {
+      "file": ".next/static/media/087894984ee2963f-s.p.2_z8r5dfkst21.woff2",
+      "sha256": "6ab6c95ed3b372f79b60bf0966b4c635166d044d10b4aa2076752ceac0e3ef4c",
+      "names": {
+        "0": [
+          "Copyright 2019 IBM Corp. All rights reserved."
+        ],
+        "1": [
+          "IBM Plex Sans Thai"
+        ],
+        "5": [
+          "Version 1.1"
+        ],
+        "6": [
+          "IBMPlexSansThai-Bold"
+        ],
+        "14": [
+          "http://scripts.sil.org/OFL"
+        ]
+      }
+    },
+    {
+      "file": ".next/static/media/098adb8bb3c21377-s.p.09e83-4vqkr8v.woff2",
+      "sha256": "4a3c3b1a15d2d27a3382a9fa5d49d539757b7d1ff386041d0ed2e70001ad4d42",
+      "names": {
+        "0": [
+          "Copyright 2019 IBM Corp. All rights reserved."
+        ],
+        "1": [
+          "IBM Plex Sans Thai"
+        ],
+        "5": [
+          "Version 1.1"
+        ],
+        "6": [
+          "IBMPlexSansThai-Regular"
+        ],
+        "14": [
+          "http://scripts.sil.org/OFL"
+        ]
+      }
+    },
+    {
+      "file": ".next/static/media/0b317410534a54bf-s.p.0xwse1x-bzy3s.woff2",
+      "sha256": "4fba46b856402e41a0489770475fd4f4b240338f7ecd213e82d3dbc19cf33b24",
+      "names": {
+        "0": [
+          "Copyright 2019 IBM Corp. All rights reserved."
+        ],
+        "1": [
+          "IBM Plex Sans Thai SemiBold"
+        ],
+        "5": [
+          "Version 1.1"
+        ],
+        "6": [
+          "IBMPlexSansThai-SemiBold"
+        ],
+        "14": [
+          "http://scripts.sil.org/OFL"
+        ]
+      }
+    },
+    {
+      "file": ".next/static/media/0b60d5f95c5f3f76-s.2e115y8-hourl.woff2",
+      "sha256": "a22c997a894377f36d81c904163e0c05fbbcd32f0ca2e7beedb86b39be1296a1",
+      "names": {
+        "0": [
+          "Copyright 2022 The Bricolage Grotesque Project Authors (https://github.com/ateliertriay/bricolage)"
+        ],
+        "1": [
+          "Bricolage Grotesque 96pt ExtraBold"
+        ],
+        "5": [
+          "Version 1.001;gftools[0.9.33.dev8+g029e19f]"
+        ],
+        "6": [
+          "BricolageGrotesque96ptExtraBold-Regular"
+        ],
+        "14": [
+          "https://scripts.sil.org/OFL"
+        ]
+      }
+    },
+    {
+      "file": ".next/static/media/16cfcc00aea7f216-s.p.0oqt8towxai-k.woff2",
+      "sha256": "1063e051b945a2219581d31b4e765d97128269624df22c6c09e8309b5dd7743d",
+      "names": {
+        "0": [
+          "Copyright 2019 IBM Corp. All rights reserved."
+        ],
+        "1": [
+          "IBM Plex Sans Thai"
+        ],
+        "5": [
+          "Version 1.1"
+        ],
+        "6": [
+          "IBMPlexSansThai-Bold"
+        ],
+        "14": [
+          "http://scripts.sil.org/OFL"
+        ]
+      }
+    },
+    {
+      "file": ".next/static/media/1c119465040ff5bb-s.10770ssbdafq9.woff2",
+      "sha256": "ed0fdd020e5cd38698df1390225e957ae84db9c449f08e57852930e378ed0500",
+      "names": {
+        "0": [
+          "Copyright 2019 IBM Corp. All rights reserved."
+        ],
+        "1": [
+          "IBM Plex Sans Thai SemiBold"
+        ],
+        "5": [
+          "Version 1.1"
+        ],
+        "6": [
+          "IBMPlexSansThai-SemiBold"
+        ],
+        "14": [
+          "http://scripts.sil.org/OFL"
+        ]
+      }
+    },
+    {
+      "file": ".next/static/media/2a04751c893bf294-s.1rgnod-3esatf.woff2",
+      "sha256": "745994b5cd950ec201b66526375f057d540847cccfc70f4f24f5f571d26d3923",
+      "names": {
+        "0": [
+          "Copyright 2024 The Geist Project Authors (https://github.com/vercel/geist-font.git)"
+        ],
+        "1": [
+          "Geist Mono"
+        ],
+        "5": [
+          "Version 1.701"
+        ],
+        "6": [
+          "GeistMono-Regular"
+        ],
+        "14": [
+          "https://openfontlicense.org"
+        ]
+      }
+    },
+    {
+      "file": ".next/static/media/2bb852295097cd96-s.2dbetqa9o8jxf.woff2",
+      "sha256": "d67e4a94ba498635f764ddca7d1ec4271f5642f032eb24b426764480f66f8497",
+      "names": {
+        "0": [
+          "Copyright 2024 The Geist Project Authors (https://github.com/vercel/geist-font.git)"
+        ],
+        "1": [
+          "Geist Mono"
+        ],
+        "5": [
+          "Version 1.701"
+        ],
+        "6": [
+          "GeistMono-Regular"
+        ],
+        "14": [
+          "https://openfontlicense.org"
+        ]
+      }
+    },
+    {
+      "file": ".next/static/media/3b79255d0fc0c0d8-s.2taqxaqrv3ssw.woff2",
+      "sha256": "51492b4a9a82f3a6e2a0e8b4d582c221855d6d17ecf3f513f9d0540f7914e240",
+      "names": {
+        "0": [
+          "Copyright 2019 IBM Corp. All rights reserved."
+        ],
+        "1": [
+          "IBM Plex Sans Thai Medium"
+        ],
+        "5": [
+          "Version 1.1"
+        ],
+        "6": [
+          "IBMPlexSansThai-Medium"
+        ],
+        "14": [
+          "http://scripts.sil.org/OFL"
+        ]
+      }
+    },
+    {
+      "file": ".next/static/media/47a4972b6bd8620b-s.1nxoen_49_z0x.woff2",
+      "sha256": "f534cc5a83971f15ba73fea1136b8411358cacb0d421648e866f12be90574d1e",
+      "names": {
+        "0": [
+          "Copyright 2019 IBM Corp. All rights reserved."
+        ],
+        "1": [
+          "IBM Plex Sans Thai"
+        ],
+        "5": [
+          "Version 1.1"
+        ],
+        "6": [
+          "IBMPlexSansThai-Bold"
+        ],
+        "14": [
+          "http://scripts.sil.org/OFL"
+        ]
+      }
+    },
+    {
+      "file": ".next/static/media/6464db7ff35a62d3-s.1x31jf7v-_3a0.woff2",
+      "sha256": "3ee2efb5a3fde049a28367a2319f7aad1fd5adf9fc9aa458af3354ed416f7be2",
+      "names": {
+        "0": [
+          "Copyright 2019 IBM Corp. All rights reserved."
+        ],
+        "1": [
+          "IBM Plex Sans Thai Medium"
+        ],
+        "5": [
+          "Version 1.1"
+        ],
+        "6": [
+          "IBMPlexSansThai-Medium"
+        ],
+        "14": [
+          "http://scripts.sil.org/OFL"
+        ]
+      }
+    },
+    {
+      "file": ".next/static/media/661e8677aa162059-s.2m8zx_hq13x-4.woff2",
+      "sha256": "ccb46e94e728c5263f64111f4f7e2f1e43e07f6fd33cafd4a0ceb262956777ef",
+      "names": {
+        "0": [
+          "Copyright 2019 IBM Corp. All rights reserved."
+        ],
+        "1": [
+          "IBM Plex Sans Thai"
+        ],
+        "5": [
+          "Version 1.1"
+        ],
+        "6": [
+          "IBMPlexSansThai-Bold"
+        ],
+        "14": [
+          "http://scripts.sil.org/OFL"
+        ]
+      }
+    },
+    {
+      "file": ".next/static/media/6e342921ee4dcd9d-s.2tuy5pz7dlieh.woff2",
+      "sha256": "75b3bedbebc35f347c0ae3b416aa871941555357e7b0f83767eb5987875589ed",
+      "names": {
+        "0": [
+          "Copyright 2024 The Geist Project Authors (https://github.com/vercel/geist-font.git)"
+        ],
+        "1": [
+          "Geist Mono"
+        ],
+        "5": [
+          "Version 1.701"
+        ],
+        "6": [
+          "GeistMono-Regular"
+        ],
+        "14": [
+          "https://openfontlicense.org"
+        ]
+      }
+    },
+    {
+      "file": ".next/static/media/7a3b98edb52b34e8-s.p.3_xwflgq9fbqb.woff2",
+      "sha256": "254142e33d3fb74303ad01746155b7b0fd206790146d340656451bd1805006f6",
+      "names": {
+        "0": [
+          "Copyright 2019 IBM Corp. All rights reserved."
+        ],
+        "1": [
+          "IBM Plex Sans Thai Medium"
+        ],
+        "5": [
+          "Version 1.1"
+        ],
+        "6": [
+          "IBMPlexSansThai-Medium"
+        ],
+        "14": [
+          "http://scripts.sil.org/OFL"
+        ]
+      }
+    },
+    {
+      "file": ".next/static/media/7c31128e26fc9cb0-s.p.2wx1mw4dt7_s5.woff2",
+      "sha256": "e64e3cc6ea406c333b5d041f0e0d7cc83525e5a2f0215726c704473d205c738c",
+      "names": {
+        "0": [
+          "Copyright 2019 IBM Corp. All rights reserved."
+        ],
+        "1": [
+          "IBM Plex Sans Thai SemiBold"
+        ],
+        "5": [
+          "Version 1.1"
+        ],
+        "6": [
+          "IBMPlexSansThai-SemiBold"
+        ],
+        "14": [
+          "http://scripts.sil.org/OFL"
+        ]
+      }
+    },
+    {
+      "file": ".next/static/media/8056169c9d560660-s.p.41rroleoq1br7.woff2",
+      "sha256": "4fd48b2c1ab27220e71f15f990550261b35245c3bdfd8d8025b4bdac0459ee2d",
+      "names": {
+        "0": [
+          "Copyright 2022 The Bricolage Grotesque Project Authors (https://github.com/ateliertriay/bricolage)"
+        ],
+        "1": [
+          "Bricolage Grotesque 96pt ExtraBold"
+        ],
+        "5": [
+          "Version 1.001;gftools[0.9.33.dev8+g029e19f]"
+        ],
+        "6": [
+          "BricolageGrotesque96ptExtraBold-Regular"
+        ],
+        "14": [
+          "https://scripts.sil.org/OFL"
+        ]
+      }
+    },
+    {
+      "file": ".next/static/media/81b01dcd824434dd-s.p.3u0t_c_yzgtgw.woff2",
+      "sha256": "379cbfeb4c03a551180cb870124b2fcf1e7373bdaa10553328c1538f69352f73",
+      "names": {
+        "0": [
+          "Copyright 2019 IBM Corp. All rights reserved."
+        ],
+        "1": [
+          "IBM Plex Sans Thai"
+        ],
+        "5": [
+          "Version 1.1"
+        ],
+        "6": [
+          "IBMPlexSansThai-Regular"
+        ],
+        "14": [
+          "http://scripts.sil.org/OFL"
+        ]
+      }
+    },
+    {
+      "file": ".next/static/media/9eb5a876700c0028-s.1uyisp29ctx0d.woff2",
+      "sha256": "16e1d48b6dd29eb240aec5db36184eb182933c082cd43de7f35af686d58087d2",
+      "names": {
+        "0": [
+          "Copyright 2024 The Geist Project Authors (https://github.com/vercel/geist-font.git)"
+        ],
+        "1": [
+          "Geist Mono"
+        ],
+        "5": [
+          "Version 1.701"
+        ],
+        "6": [
+          "GeistMono-Regular"
+        ],
+        "14": [
+          "https://openfontlicense.org"
+        ]
+      }
+    },
+    {
+      "file": ".next/static/media/a86bc8e8711b62bb-s.p.2t1pwrt0o-zp3.woff2",
+      "sha256": "22905c0923fa4be05bf547703d855df7ae1fe545ee63f4a8141fa2d11ce338c8",
+      "names": {
+        "0": [
+          "Copyright 2019 IBM Corp. All rights reserved."
+        ],
+        "1": [
+          "IBM Plex Sans Thai Medium"
+        ],
+        "5": [
+          "Version 1.1"
+        ],
+        "6": [
+          "IBMPlexSansThai-Medium"
+        ],
+        "14": [
+          "http://scripts.sil.org/OFL"
+        ]
+      }
+    },
+    {
+      "file": ".next/static/media/b0c6b664fd57c2c6-s.31988l_ccedte.woff2",
+      "sha256": "e27f657e38d52887baa3b6b2f812bef93dfdd356f0810e40edd4ee284cc7e9f6",
+      "names": {
+        "0": [
+          "Copyright 2024 The Geist Project Authors (https://github.com/vercel/geist-font.git)"
+        ],
+        "1": [
+          "Geist Mono"
+        ],
+        "5": [
+          "Version 1.701"
+        ],
+        "6": [
+          "GeistMono-Regular"
+        ],
+        "14": [
+          "https://openfontlicense.org"
+        ]
+      }
+    },
+    {
+      "file": ".next/static/media/b4b14f44d63d21f2-s.09q3flbxo0w4e.woff2",
+      "sha256": "392e462a63f73bdfd05d55d7d7e75d0f6603185e98d7691954fe84e59e6ef61c",
+      "names": {
+        "0": [
+          "Copyright 2019 IBM Corp. All rights reserved."
+        ],
+        "1": [
+          "IBM Plex Sans Thai"
+        ],
+        "5": [
+          "Version 1.1"
+        ],
+        "6": [
+          "IBMPlexSansThai-Regular"
+        ],
+        "14": [
+          "http://scripts.sil.org/OFL"
+        ]
+      }
+    },
+    {
+      "file": ".next/static/media/caa157f60f748efa-s.20mrlfyovr0p8.woff2",
+      "sha256": "2b3701d18191d3522d7601f48f440de241fc7a1e4ce08fe122f37433bf6ba617",
+      "names": {
+        "0": [
+          "Copyright 2019 IBM Corp. All rights reserved."
+        ],
+        "1": [
+          "IBM Plex Sans Thai SemiBold"
+        ],
+        "5": [
+          "Version 1.1"
+        ],
+        "6": [
+          "IBMPlexSansThai-SemiBold"
+        ],
+        "14": [
+          "http://scripts.sil.org/OFL"
+        ]
+      }
+    },
+    {
+      "file": ".next/static/media/f34bcfed31234774-s.3fcxnszjbtksy.woff2",
+      "sha256": "135a3b9a28008e09ddf9e893ddd128aaf749b4ddf8c418d6b6813d762dfa3bad",
+      "names": {
+        "0": [
+          "Copyright 2019 IBM Corp. All rights reserved."
+        ],
+        "1": [
+          "IBM Plex Sans Thai"
+        ],
+        "5": [
+          "Version 1.1"
+        ],
+        "6": [
+          "IBMPlexSansThai-Regular"
+        ],
+        "14": [
+          "http://scripts.sil.org/OFL"
+        ]
+      }
+    },
+    {
+      "file": ".next/static/media/f4b234103afdc32a-s.197tvtifbphtu.woff2",
+      "sha256": "ea16948d4a91b77221f119ad27d4ac7a7581c98cf990712047f89a531a49ef28",
+      "names": {
+        "0": [
+          "Copyright 2022 The Bricolage Grotesque Project Authors (https://github.com/ateliertriay/bricolage)"
+        ],
+        "1": [
+          "Bricolage Grotesque 96pt ExtraBold"
+        ],
+        "5": [
+          "Version 1.001;gftools[0.9.33.dev8+g029e19f]"
+        ],
+        "6": [
+          "BricolageGrotesque96ptExtraBold-Regular"
+        ],
+        "14": [
+          "https://scripts.sil.org/OFL"
+        ]
+      }
+    }
+  ]
+}

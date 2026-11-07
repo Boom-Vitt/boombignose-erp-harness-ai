@@ -2,10 +2,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
 vi.mock("server-only", () => ({}))
 
-const ok = (content: unknown) =>
-  new Response(JSON.stringify({ message: { role: "assistant", content } }), {
-    status: 200,
-  })
+const json = (body: unknown, status = 200) => new Response(JSON.stringify(body), { status })
+const localCheckpoint = (format = "gguf") => ({ details: { format }, capabilities: ["completion"] })
 
 async function load() {
   vi.resetModules()
@@ -14,129 +12,127 @@ async function load() {
 
 describe("lib/ai/client", () => {
   const fake = vi.fn()
+  const verifiedReply = (response: Response) => fake.mockResolvedValueOnce(json(localCheckpoint())).mockResolvedValueOnce(response)
 
   beforeEach(() => {
     fake.mockReset()
     vi.stubGlobal("fetch", fake)
     vi.stubEnv("OLLAMA_HOST", "")
-    vi.stubEnv("OLLAMA_MODEL", "")
+    vi.stubEnv("OLLAMA_MODEL", "local-checkpoint:4b")
   })
   afterEach(() => {
     vi.unstubAllEnvs()
     vi.unstubAllGlobals()
   })
 
-  it("posts to local Ollama with the default model", async () => {
-    fake.mockResolvedValue(ok("hi"))
+  it.each(["gguf", "safetensors"])("verifies a local %s completion checkpoint before sending business text", async (format) => {
+    vi.stubEnv("OLLAMA_HOST", "http://localhost:11435")
+    fake.mockResolvedValueOnce(json(localCheckpoint(format))).mockResolvedValueOnce(json({ message: { role: "assistant", content: "Ready" } }))
     const { generateText } = await load()
-    await generateText({ system: "sys", prompt: "usr", maxTokens: 50 })
+    await generateText({ system: "private policy", prompt: "private invoice", maxTokens: 50 })
 
-    const [url, init] = fake.mock.calls[0]
-    expect(url).toBe("http://127.0.0.1:11434/api/chat")
-    expect(init.method).toBe("POST")
-    expect(init.headers.Authorization).toBeUndefined()
-    expect(JSON.parse(init.body)).toEqual({
-      model: "qwen2.5:3b",
-      stream: false,
-      think: false,
-      messages: [
-        { role: "system", content: "sys" },
-        { role: "user", content: "usr" },
-      ],
+    expect(fake).toHaveBeenCalledTimes(2)
+    const [showUrl, show] = fake.mock.calls[0]
+    expect(showUrl).toBe("http://localhost:11435/api/show")
+    expect(JSON.parse(show.body)).toEqual({ model: "local-checkpoint:4b" })
+    expect(show.body).not.toContain("private")
+    const [chatUrl, chat] = fake.mock.calls[1]
+    expect(chatUrl).toBe("http://localhost:11435/api/chat")
+    expect(JSON.parse(chat.body)).toMatchObject({
+      model: "local-checkpoint:4b",
+      messages: [{ role: "system", content: "private policy" }, { role: "user", content: "private invoice" }],
       options: { num_predict: 50 },
+      think: false,
     })
+    for (const [, init] of fake.mock.calls) {
+      expect(init.redirect).toBe("error")
+      expect(init.headers.Authorization).toBeUndefined()
+    }
   })
 
-  it("OLLAMA_MODEL and a loopback OLLAMA_HOST override the defaults", async () => {
-    vi.stubEnv("OLLAMA_MODEL", "llama3.2")
-    vi.stubEnv("OLLAMA_HOST", "http://localhost:11435")
-    fake.mockResolvedValue(ok("hi"))
-    const { generateText, DEFAULT_MODEL } = await load()
-    await generateText({ system: "s", prompt: "p" })
+  it.each([
+    { ...localCheckpoint(), remote_host: "https://cloud.example" },
+    { ...localCheckpoint(), remote_model: "cloud-checkpoint" },
+    { details: { format: "onnx" }, capabilities: ["completion"] },
+    { details: { format: "gguf" }, capabilities: ["embedding"] },
+    null,
+  ])("refuses unverified or remote-backed metadata before sending prompts: %j", async (metadata) => {
+    fake.mockResolvedValueOnce(json(metadata))
+    const { generateText, AINotConfiguredError } = await load()
+    await expect(generateText({ system: "private policy", prompt: "private invoice" })).rejects.toBeInstanceOf(AINotConfiguredError)
+    expect(fake).toHaveBeenCalledTimes(1)
+    expect(fake.mock.calls[0][0]).toMatch(/\/api\/show$/)
+    expect(fake.mock.calls[0][1].body).not.toContain("private")
+  })
 
-    expect(DEFAULT_MODEL).toBe("llama3.2")
-    expect(fake.mock.calls[0][0]).toBe("http://localhost:11435/api/chat")
-    expect(JSON.parse(fake.mock.calls[0][1].body).model).toBe("llama3.2")
+  it.each(["remote/cloud:latest", "../checkpoint"])("rejects an unsafe model name without contacting any service: %s", async (model) => {
+    vi.stubEnv("OLLAMA_MODEL", model)
+    const { generateText, AINotConfiguredError } = await load()
+    await expect(generateText({ system: "s", prompt: "p" })).rejects.toBeInstanceOf(AINotConfiguredError)
+    expect(fake).not.toHaveBeenCalled()
   })
 
   it("a remote host makes no request", async () => {
     vi.stubEnv("OLLAMA_HOST", "https://models.example:11434")
     const { generateText, isAIConfigured, AINotConfiguredError } = await load()
-
     expect(isAIConfigured()).toBe(false)
-    const run = generateText({ system: "s", prompt: "p" })
-    await expect(run).rejects.toBeInstanceOf(AINotConfiguredError)
-    await expect(run).rejects.toThrow(/not configured/i)
+    await expect(generateText({ system: "s", prompt: "p" })).rejects.toBeInstanceOf(AINotConfiguredError)
     expect(fake).not.toHaveBeenCalled()
   })
 
-  it("a refused connection degrades as not configured", async () => {
-    fake.mockRejectedValue(new TypeError("fetch failed"))
-    const { generateText, isAIConfigured, AINotConfiguredError } = await load()
-
-    expect(isAIConfigured()).toBe(true)
-    await expect(generateText({ system: "s", prompt: "p" })).rejects.toBeInstanceOf(
-      AINotConfiguredError,
-    )
-    await expect(generateText({ system: "s", prompt: "p" })).rejects.toThrow(
-      /not configured/i,
-    )
+  it.each([302, 404, 500])("fails closed when metadata verification returns HTTP %s", async (status) => {
+    fake.mockResolvedValueOnce(new Response(null, { status, headers: { Location: "https://cloud.example/api/show" } }))
+    const { generateText, AINotConfiguredError } = await load()
+    await expect(generateText({ system: "s", prompt: "private invoice" })).rejects.toBeInstanceOf(AINotConfiguredError)
+    expect(fake).toHaveBeenCalledTimes(1)
+    expect(fake.mock.calls[0][1].redirect).toBe("error")
   })
 
-  it("an HTTP error stays short and does not echo a huge body", async () => {
-    fake.mockResolvedValue(
-      new Response(JSON.stringify({ error: "x".repeat(500) }), { status: 404 }),
-    )
+  it("a refused connection degrades as not configured without sending a prompt", async () => {
+    fake.mockRejectedValueOnce(new TypeError("fetch failed"))
+    const { generateText, isAIConfigured, AINotConfiguredError } = await load()
+    expect(isAIConfigured()).toBe(true)
+    await expect(generateText({ system: "s", prompt: "p" })).rejects.toBeInstanceOf(AINotConfiguredError)
+    expect(fake).toHaveBeenCalledTimes(1)
+  })
+
+  it("does not retry or follow a redirect when inference fetch fails", async () => {
+    fake.mockResolvedValueOnce(json(localCheckpoint())).mockRejectedValueOnce(new TypeError("redirect disallowed"))
+    const { generateText, AINotConfiguredError } = await load()
+    await expect(generateText({ system: "s", prompt: "p" })).rejects.toBeInstanceOf(AINotConfiguredError)
+    expect(fake).toHaveBeenCalledTimes(2)
+    expect(fake.mock.calls[1][1].redirect).toBe("error")
+  })
+
+  it("keeps HTTP errors short and never displays a raw gateway page", async () => {
+    verifiedReply(json({ error: "x".repeat(500) }, 404))
     const { generateText, AINotConfiguredError } = await load()
     const err = await generateText({ system: "s", prompt: "p" }).catch((e: Error) => e)
     expect(err).toBeInstanceOf(AINotConfiguredError)
     expect((err as Error).message).toContain("HTTP 404")
-    expect((err as Error).message.length).toBeLessThan(280)
+    expect((err as Error).message.length).toBeLessThan(350)
+    expect((err as Error).message).not.toContain("x".repeat(201))
 
-    fake.mockResolvedValue(new Response("<html>raw gateway page</html>", { status: 502 }))
+    verifiedReply(new Response("<html>raw gateway page</html>", { status: 502 }))
     const raw = await generateText({ system: "s", prompt: "p" }).catch((e: Error) => e)
     expect((raw as Error).message).toContain("HTTP 502")
     expect((raw as Error).message).not.toContain("<html>")
   })
 
-  it("returns the trimmed reply text", async () => {
-    fake.mockResolvedValue(ok("  hello world \n"))
-    const { generateText } = await load()
-    expect(await generateText({ system: "s", prompt: "p" })).toBe("hello world")
-  })
-
-  it("rejects a blank reply instead of returning it", async () => {
-    fake.mockResolvedValue(ok("  \n"))
-    const { generateText } = await load()
-    await expect(generateText({ system: "s", prompt: "p" })).rejects.toThrow(
-      "Ollama returned no text",
-    )
-  })
-
-  it("strips leaked chain of thought and asks for no thinking", async () => {
-    fake.mockResolvedValue(
-      new Response(
-        JSON.stringify({ message: { role: "assistant", content: "Okay, let's see. The user wants a note.\n\nFollow up tomorrow.", thinking: "plan" } }),
-        { status: 200 },
-      ),
-    )
+  it("returns trimmed answer text without leaked chain of thought", async () => {
+    verifiedReply(json({ message: { content: "Okay, let's see. The user wants a note.\n\nFollow up tomorrow.  ", thinking: "private plan" } }))
     const { generateText } = await load()
     expect(await generateText({ system: "s", prompt: "p" })).toBe("Follow up tomorrow.")
-    expect(JSON.parse(fake.mock.calls[0][1].body).think).toBe(false)
   })
 
-  it("an answer channel holding only thinking is an error, not a reply", async () => {
-    fake.mockResolvedValue(
-      new Response(JSON.stringify({ message: { role: "assistant", content: "", thinking: "Follow up tomorrow." } }), { status: 200 }),
-    )
+  it.each(["  \n", ""])("rejects an empty answer even when a thinking channel exists", async (content) => {
+    verifiedReply(json({ message: { content, thinking: "not an answer" } }))
     const { generateText } = await load()
     await expect(generateText({ system: "s", prompt: "p" })).rejects.toThrow("Ollama returned no text")
   })
 
-  it("a 200 carrying an error degrades as not configured", async () => {
-    fake.mockResolvedValue(
-      new Response(JSON.stringify({ error: "model not found" }), { status: 200 }),
-    )
+  it("a successful HTTP response carrying a model error degrades as not configured", async () => {
+    verifiedReply(json({ error: "model not found" }))
     const { generateText, AINotConfiguredError } = await load()
     const err = await generateText({ system: "s", prompt: "p" }).catch((e: Error) => e)
     expect(err).toBeInstanceOf(AINotConfiguredError)

@@ -1,4 +1,6 @@
 import Link from "next/link"
+import { notFound } from "next/navigation"
+import { z } from "zod"
 import { Receipt, Users, Package } from "lucide-react"
 import { requireOrgContext } from "@/lib/auth"
 import { inventoryData, stockMoveCount } from "@/lib/inventory/queries"
@@ -27,6 +29,7 @@ import { VendorBills } from "../_components/bills"
 export const dynamic = "force-dynamic"
 export default async function PurchasePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
+  if (!z.guid().safeParse(id).success) notFound()
   const ctx = await requireOrgContext()
   const [{ order, lines, bills, matches, toleranceBps }, { warehouses }, receiptCount, lineRows] = await Promise.all([purchaseDetail(id), inventoryData(), stockMoveCount({ sourceId: id }), createClient().then(db => gridRows(db, ctx.orgId, "purchase_order", id))])
   const db = await createClient()

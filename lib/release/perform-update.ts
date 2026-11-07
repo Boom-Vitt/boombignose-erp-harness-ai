@@ -6,6 +6,7 @@ import { interpretRelease } from "@/lib/release/update-check"
 import {
   DEFERRED_MESSAGE,
   MACOS_ARM64_ASSET,
+  RELEASE_REPO,
   SHA256SUMS,
   WINDOW_MESSAGE,
   helperConfigured,
@@ -17,7 +18,7 @@ import {
   type UpdateCapability,
 } from "@/lib/release/update-plan"
 
-const RELEASE_API = "https://api.github.com/repos/Boom-Vitt/boombignose-erp-harness-ai/releases/latest"
+const RELEASE_API = `https://api.github.com/repos/${RELEASE_REPO}/releases/latest`
 const MAX_BYTES = 2 * 1024 * 1024 * 1024 - 1
 const USER_AGENT = "BoomBigNose"
 

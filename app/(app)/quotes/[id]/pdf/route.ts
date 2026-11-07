@@ -18,6 +18,7 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params
+  if (!z.guid().safeParse(id).success) notFound()
   const ctx = await requireOrgContext()
   const supabase = await createClient()
 

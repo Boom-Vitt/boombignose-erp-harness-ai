@@ -1,9 +1,10 @@
 import Link from "next/link"
 import { notFound } from "next/navigation"
 import { ArrowLeft } from "lucide-react"
+import { z } from "zod"
 
 import { createClient } from "@/lib/supabase/server"
-import { requireOrgContext } from "@/lib/auth"
+import { requireCapability, requireOrgContext } from "@/lib/auth"
 import { satangToBaht } from "@/lib/money"
 import { PageHeader } from "@/components/page-header"
 import { Button } from "@/components/ui/button"
@@ -27,22 +28,27 @@ export default async function EditTemplatePage({
   params: Promise<{ id: string }>
 }) {
   const { id } = await params
-  await requireOrgContext()
+  if (!z.guid().safeParse(id).success) notFound()
+  const ctx = await requireOrgContext()
+  requireCapability(ctx, "template:manage")
   const supabase = await createClient()
 
-  const [{ data: template }, { data: categories }] = await Promise.all([
+  const [{ data: template, error: templateError }, { data: categories, error: categoryError }] = await Promise.all([
     supabase
       .from("automation_templates")
       .select(
         "id, name, description, internal_value_satang, price_satang, reusable_notes, implementation_checklist, tags, category_id"
       )
       .eq("id", id)
+      .eq("org_id", ctx.orgId)
       .maybeSingle(),
     supabase
       .from("template_categories")
       .select("id, name")
+      .eq("org_id", ctx.orgId)
       .order("name", { ascending: true }),
   ])
+  if (templateError || categoryError) throw new Error("Template editor unavailable. Please reload.")
 
   if (!template) notFound()
 

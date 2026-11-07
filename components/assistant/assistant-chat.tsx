@@ -8,7 +8,12 @@ import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { MAX_ATTACHMENTS, MAX_IMAGE_BASE64, classifyFile, type WireAttachment, type WireMessage } from "@/lib/ai/chat-attachments"
+import { MAX_ATTACHMENTS, MAX_IMAGE_BASE64, MAX_MESSAGE_CHARS, classifyFile, type ChatDataScope, type WireAttachment, type WireMessage } from "@/lib/ai/chat-attachments"
+import { MAX_TEXT_BYTES } from "@/lib/ai/chat-attachments"
+import type { AssistantAnswer, AssistantSource } from "@/lib/ai/assistant-evidence"
+import { AssistantAnswerView } from "./answer"
+import { processOcrFile } from "@/lib/ocr/browser"
+import { rasterDimensions } from "@/lib/ocr/image"
 
 const LOCAL_AI = "/settings#local-models"
 const MCP_CONFIG = `{
@@ -35,7 +40,7 @@ const COPY = {
     toggleHint: "Switch to English",
     empty: "พิมพ์คำถาม หรือแนบภาพ / ไฟล์",
     thinking: "กำลังคิด…",
-    toolUsed: "ใช้เครื่องมือ ERP",
+    toolUsed: "อ่านแหล่งข้อมูล",
     toolFailed: "ล้มเหลว",
     rows: "รายการ",
     notReady: "AI ยังไม่พร้อม",
@@ -55,10 +60,10 @@ const COPY = {
     readOnly: "อ่านอย่างเดียว",
     tools: "เครื่องมือ",
     mcpNote: "แชทเรียกเครื่องมือเหล่านี้ได้เอง เฉพาะองค์กรของคุณ อ่านอย่างเดียว",
-    howTo: "วิธีเชื่อมกับ BigNose",
+    howTo: "เชื่อม MCP ภายนอก (ไม่จำเป็นสำหรับแชทนี้)",
     copy: "คัดลอก",
     copied: "คัดลอกแล้ว",
-    howToNote: "เพิ่มเป็นตัวเชื่อม stdio ใน BigNose · docs/desktop/erp-mcp.md",
+    howToNote: "แชท ERP ใช้เครื่องมือในโปรเซสเดิมอยู่แล้ว ไม่ต้องเปิด BigNose หรือ ERP/model server เพิ่ม ตัวเชื่อม stdio นี้เป็นทางเลือกภายนอก · docs/desktop/erp-mcp.md",
     formats: "PNG · JPEG · WebP · PDF · txt/md/csv/json",
   },
   en: {
@@ -69,9 +74,9 @@ const COPY = {
     toggleHint: "เปลี่ยนเป็นภาษาไทย",
     empty: "Ask a question, or attach an image or file.",
     thinking: "Thinking…",
-    toolUsed: "Used ERP tool",
+    toolUsed: "Read source",
     toolFailed: "failed",
-    rows: "rows",
+    rows: "items",
     notReady: "AI is not set up yet.",
     install: "Install a model in Settings",
     noCloud: "Nothing is sent to a cloud model.",
@@ -89,48 +94,63 @@ const COPY = {
     readOnly: "read-only",
     tools: "tools",
     mcpNote: "The chat calls these tools itself. Read-only, your organization only.",
-    howTo: "How to connect to BigNose",
+    howTo: "Optional external MCP connector",
     copy: "Copy",
     copied: "Copied",
-    howToNote: "Add as a stdio connector in BigNose · docs/desktop/erp-mcp.md",
+    howToNote: "ERP chat already uses in-process tools; no extra BigNose, ERP or model server is needed. This stdio connector is an optional external integration · docs/desktop/erp-mcp.md",
     formats: "PNG · JPEG · WebP · PDF · txt/md/csv/json",
   },
 } as const
 
 /** A thread entry. `thumb` is only for display; the wire attachment carries the bytes. */
-type Entry = WireMessage & { id: number; notice?: boolean; thumbs?: string[]; toolCalls?: Array<{ name: string; ok: boolean; total?: number }> }
-type Pending = { att: WireAttachment; thumb?: string }
+type Entry = WireMessage & { id: number; notice?: boolean; thumbs?: string[]; toolCalls?: Array<{ name: string; ok: boolean; total?: number }>; answer?: AssistantAnswer; sources?: AssistantSource[] }
+type Pending = { att: WireAttachment; thumb?: string; warnings?: string[] }
 type Mcp = { state: "loading" } | { state: "error"; message: string } | { state: "ok"; server: string; tools: Array<{ name: string; description: string }> }
 
-/** Screenshots are shrunk to a JPEG in the browser so the loopback model accepts them. They never leave this computer. */
+/** Previews are local; selected bytes go only to the authenticated ERP and its local model. */
 async function shrinkToJpeg(file: File): Promise<string> {
+  rasterDimensions(new Uint8Array(await file.arrayBuffer()))
   const bitmap = await createImageBitmap(file)
-  for (const edge of [1568, 1024, 640]) {
-    const scale = Math.min(1, edge / Math.max(bitmap.width, bitmap.height))
-    const canvas = document.createElement("canvas")
-    canvas.width = Math.max(1, Math.round(bitmap.width * scale))
-    canvas.height = Math.max(1, Math.round(bitmap.height * scale))
-    canvas.getContext("2d")!.drawImage(bitmap, 0, 0, canvas.width, canvas.height)
-    const b64 = canvas.toDataURL("image/jpeg", 0.85).split(",")[1]
-    if (b64.length <= MAX_IMAGE_BASE64) return b64
-  }
-  throw new Error("too large")
+  try {
+    for (const edge of [1568, 1024, 640]) {
+      const scale = Math.min(1, edge / Math.max(bitmap.width, bitmap.height))
+      const canvas = document.createElement("canvas")
+      canvas.width = Math.max(1, Math.round(bitmap.width * scale))
+      canvas.height = Math.max(1, Math.round(bitmap.height * scale))
+      const context = canvas.getContext("2d")
+      if (!context) throw new Error("Canvas is unavailable.")
+      context.fillStyle = "white"
+      context.fillRect(0, 0, canvas.width, canvas.height)
+      context.drawImage(bitmap, 0, 0, canvas.width, canvas.height)
+      const b64 = canvas.toDataURL("image/jpeg", 0.85).split(",")[1]
+      canvas.width = 0; canvas.height = 0
+      if (b64.length <= MAX_IMAGE_BASE64) return b64
+    }
+    throw new Error("The image is too large.")
+  } finally { bitmap.close() }
 }
 
-async function toPending(file: File): Promise<Pending | string> {
+async function toPending(file: File, signal: AbortSignal, progress: (text: string) => void): Promise<Pending | string> {
   const head = new Uint8Array(await file.slice(0, 16).arrayBuffer())
-  const c = classifyFile(file, head)
-  if (!c.ok) return `${file.name}: ${c.reason}`
-  if (c.kind === "image") {
-    try {
+  const classified = classifyFile(file, head)
+  if (!classified.ok) return `${file.name}: ${classified.reason}`
+  try {
+    if (classified.kind === "image") {
       const base64 = await shrinkToJpeg(file)
+      signal.throwIfAborted()
       return { att: { kind: "image", name: file.name, mediaType: "image/jpeg", base64 }, thumb: `data:image/jpeg;base64,${base64}` }
-    } catch {
-      return `${file.name}: could not be shrunk to a size the local model accepts.`
     }
+    if (classified.kind === "pdf") {
+      const document = await processOcrFile(file, { signal, onProgress: (status) => progress(`${file.name} · OCR ${status.page}/${status.totalPages || "?"}`) })
+      const text = document.pages.map((page) => `[Page ${page.page}/${page.totalPages} · source SHA256 ${page.sourceSha256} · ${page.model}]\n${page.text}\n[Review warnings: ${page.warnings.join("; ")}]`).join("\n\n")
+      if (new TextEncoder().encode(text).byteLength > MAX_TEXT_BYTES) return `${file.name}: OCR text exceeds the chat limit. Review the full document in Documents → OCR instead.`
+      return { att: { kind: "text", name: file.name, text }, warnings: ["PDF pages were OCR-read locally; compare with the original. The full accepted text is available through local source search and paged reads, not treated as an ERP balance."] }
+    }
+    return { att: { kind: "text", name: file.name, text: await file.text() } }
+  } catch (error) {
+    signal.throwIfAborted()
+    return `${file.name}: ${error instanceof Error ? error.message : "The file could not be read."}`
   }
-  if (c.kind === "pdf") return { att: { kind: "pdf", name: file.name, size: file.size } }
-  return { att: { kind: "text", name: file.name, text: await file.text() } }
 }
 
 function AttachmentChips({ atts, thumbs }: { atts: WireAttachment[]; thumbs?: string[] }) {
@@ -145,16 +165,17 @@ function AttachmentChips({ atts, thumbs }: { atts: WireAttachment[]; thumbs?: st
           <span key={i} className="bbn-chip inline-flex items-center gap-1">
             <FileText className="size-3" aria-hidden />
             {a.name}
-            {a.kind === "pdf" ? " · PDF" : ""}
+            {a.kind === "text" && /\.pdf$/i.test(a.name) ? " · OCR" : ""}
           </span>
         ),
       )}
+      {atts.filter((attachment) => attachment.kind === "text").map((attachment, index) => attachment.kind === "text" ? <details key={`text-${index}`} className="w-full text-xs"><summary className="cursor-pointer">{attachment.name} · text / ข้อความ</summary><pre className="max-h-64 overflow-auto whitespace-pre-wrap break-words">{attachment.text}</pre></details> : null)}
     </div>
   )
 }
 
 /** `profileLocale` is profiles.locale (default "th"); a choice made with the switch wins and is remembered in this browser. */
-export function AssistantChat({ profileLocale = "th" }: { profileLocale?: string }) {
+export function AssistantChat({ profileLocale = "th", workspaceName }: { profileLocale?: string; workspaceName: string }) {
   const saved = useSyncExternalStore(onLangChange, () => localStorage.getItem(LANG_KEY), () => null)
   const lang: Lang = saved === "th" || saved === "en" ? saved : profileLocale === "en" ? "en" : "th"
   const t = COPY[lang]
@@ -164,15 +185,25 @@ export function AssistantChat({ profileLocale = "th" }: { profileLocale?: string
   }
 
   const [thread, setThread] = useState<Entry[]>([])
+  const [dataScope, setDataScope] = useState<ChatDataScope>("erp")
   const [text, setText] = useState("")
   const [pending, setPending] = useState<Pending[]>([])
+  const [longText, setLongText] = useState("")
   const [busy, setBusy] = useState(false)
   const [notConfigured, setNotConfigured] = useState<string | null>(null)
+  const [failure, setFailure] = useState<string | null>(null)
   const [mcp, setMcp] = useState<Mcp>({ state: "loading" })
   const [copied, setCopied] = useState(false)
+  const [preparing, setPreparing] = useState<string | null>(null)
+  const conversationAbort = useRef<AbortController | null>(null)
+  const attachmentAbort = useRef<AbortController | null>(null)
   const fileRef = useRef<HTMLInputElement>(null)
   const idRef = useRef(0)
   const endRef = useRef<HTMLDivElement>(null)
+
+  function resetThread() {
+    setThread([]); setText(""); setLongText(""); setPending([]); setNotConfigured(null); setFailure(null)
+  }
 
   useEffect(() => {
     let live = true
@@ -185,37 +216,67 @@ export function AssistantChat({ profileLocale = "th" }: { profileLocale?: string
       .catch(() => live && setMcp({ state: "error", message: "" }))
     return () => { live = false }
   }, [])
+  useEffect(() => () => { conversationAbort.current?.abort(); attachmentAbort.current?.abort() }, [])
 
   useEffect(() => { endRef.current?.scrollIntoView?.({ block: "end" }) }, [thread, busy])
 
   async function addFiles(files: File[]) {
-    for (const file of files) {
-      if (pending.length >= MAX_ATTACHMENTS) return void toast.error(t.maxFiles(MAX_ATTACHMENTS))
-      const out = await toPending(file)
-      if (typeof out === "string") toast.error(out)
-      else setPending((p) => (p.length < MAX_ATTACHMENTS ? [...p, out] : p))
+    if (busy || preparing) return
+    const controller = new AbortController()
+    attachmentAbort.current = controller
+    setPreparing(lang === "th" ? "กำลังอ่านไฟล์…" : "Reading file…")
+    let count = pending.length
+    try {
+      for (const file of files) {
+        if (count >= MAX_ATTACHMENTS) { toast.error(t.maxFiles(MAX_ATTACHMENTS)); break }
+        const out = await toPending(file, controller.signal, setPreparing)
+        if (typeof out === "string") toast.error(out)
+        else { count++; setPending((current) => [...current, out]) }
+      }
+    } catch (error) {
+      if (!controller.signal.aborted) toast.error(error instanceof Error ? error.message : t.cannotAnswer)
+    } finally { setPreparing(null); attachmentAbort.current = null }
+  }
+
+  function attachPastedText(value: string): boolean {
+    if (busy || preparing || !value.trim()) return false
+    if (pending.length >= MAX_ATTACHMENTS) { toast.error(t.maxFiles(MAX_ATTACHMENTS)); return false }
+    if (new TextEncoder().encode(value).byteLength > MAX_TEXT_BYTES || value.includes("\u0000")) {
+      toast.error(lang === "th" ? "ข้อความแนบต้องเป็น UTF-8 ไม่เกิน 200 KB และไม่มี NUL ข้อความเดิมยังอยู่" : "Use UTF-8 text up to 200 KB without NUL. The original text has not been cleared.")
+      return false
     }
+    setPending((current) => [...current, { att: { kind: "text", name: `pasted-text-${++idRef.current}.txt`, text: value } }])
+    toast.success(lang === "th" ? "แนบข้อความครบแล้ว ไม่ตัดช่วงท้าย พิมพ์คำถามแยกในช่องข้อความ" : "Full text attached without dropping its tail. Enter your question separately.")
+    return true
   }
 
   async function send() {
     const content = text.trim()
-    if (busy || (!content && pending.length === 0)) return
+    if (busy || preparing || (!content && pending.length === 0)) return
+    if (content.length > MAX_MESSAGE_CHARS) {
+      toast.error(lang === "th" ? "ใช้ «แนบข้อความยาว» สำหรับเนื้อหา แล้วพิมพ์คำถามแยก" : "Attach long content with Add long text, then enter a separate question.")
+      return
+    }
     const entry: Entry = { id: ++idRef.current, role: "user", content, attachments: pending.map((p) => p.att), thumbs: pending.flatMap((p) => (p.thumb ? [p.thumb] : [])) }
     const next = [...thread.filter((m) => !m.notice), entry]
-    setThread([...thread, entry]); setText(""); setPending([]); setBusy(true); setNotConfigured(null)
+    setThread([...thread, entry]); setText(""); setPending([]); setBusy(true); setNotConfigured(null); setFailure(null)
+    const controller = new AbortController()
+    conversationAbort.current = controller
     try {
       const res = await fetch("/api/assistant/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages: next.slice(-20).map(({ role, content: c, attachments }) => ({ role, content: c, ...(attachments?.length ? { attachments } : {}) })) }),
+        body: JSON.stringify({ dataScope, messages: next.map(({ role, content: c, attachments }) => ({ role, content: c, ...(attachments?.length ? { attachments } : {}) })) }),
+        signal: controller.signal,
       })
-      const data = (await res.json().catch(() => null)) as { reply?: string; toolCalls?: Entry["toolCalls"]; notConfigured?: boolean; message?: string; error?: string } | null
-      if (data?.reply) setThread((t) => [...t, { id: ++idRef.current, role: "assistant", content: data.reply!, toolCalls: data.toolCalls }])
+      const data = (await res.json().catch(() => null)) as { reply?: string; answer?: AssistantAnswer; sources?: AssistantSource[]; toolCalls?: Entry["toolCalls"]; notConfigured?: boolean; message?: string; error?: string } | null
+      if (res.ok && data?.reply && data.answer) setThread((current) => [...current, { id: ++idRef.current, role: "assistant", content: data.reply!, answer: data.answer, sources: data.sources ?? [], toolCalls: data.toolCalls }])
       else if (data?.notConfigured) setNotConfigured(data.message ?? "-")
-      else toast.error(t.cannotAnswer)
+      else setFailure(data?.error ?? t.cannotAnswer)
     } catch {
-      toast.error(t.cannotAnswer)
+      if (!controller.signal.aborted) setFailure(t.cannotAnswer)
     } finally {
+      conversationAbort.current = null
       setBusy(false)
     }
   }
@@ -246,6 +307,7 @@ export function AssistantChat({ profileLocale = "th" }: { profileLocale?: string
             </Button>
           </CardTitle>
           <p className="text-muted-foreground text-sm">{t.intro}</p>
+          <p className="text-muted-foreground text-xs">{lang === "th" ? "Workspace ปัจจุบัน" : "Current workspace"}: <strong>{workspaceName}</strong> · {lang === "th" ? "เปลี่ยน workspace แล้วเริ่มบทสนทนาใหม่" : "Switching workspace starts a new thread"}</p>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-3" role="log" aria-live="polite" aria-label="Conversation" data-testid="assistant-thread">
@@ -268,10 +330,11 @@ export function AssistantChat({ profileLocale = "th" }: { profileLocale?: string
                     ))}
                   </ul>
                 ) : null}
-                {m.content ? <p className="text-sm leading-relaxed whitespace-pre-wrap">{m.content}</p> : null}
+                {m.answer ? <AssistantAnswerView answer={m.answer} sources={m.sources ?? []} messageId={m.id} lang={lang} /> : m.content ? <p className="text-sm leading-relaxed whitespace-pre-wrap">{m.content}</p> : null}
               </div>
             ))}
-            {busy ? <p className="text-muted-foreground text-sm">{t.thinking}</p> : null}
+            {busy ? <p className="text-muted-foreground text-sm" role="status">{t.thinking} <button type="button" className="underline" onClick={() => conversationAbort.current?.abort()}>{lang === "th" ? "หยุด" : "Stop"}</button></p> : null}
+            {failure ? <p className="bbn-sticky text-sm" role="alert">{failure}</p> : null}
             {notConfigured ? (
               <p className="bbn-sticky text-sm" data-testid="assistant-not-configured">
                 {t.notReady} {lang === "en" && notConfigured !== "-" ? notConfigured : ""}{" "}
@@ -282,6 +345,20 @@ export function AssistantChat({ profileLocale = "th" }: { profileLocale?: string
           </div>
 
           <div className="bbn-hud-composer space-y-2">
+            <div className="flex flex-wrap items-center gap-2 text-xs">
+              <label htmlFor="assistant-data-scope">{lang === "th" ? "การอ่านข้อมูล" : "Source access"}</label>
+              <select id="assistant-data-scope" className="bbn-chip max-w-full" value={dataScope} disabled={busy || !!preparing} onChange={(event) => { resetThread(); setDataScope(event.target.value as ChatDataScope) }}>
+                <option value="erp">{lang === "th" ? "ERP · อ่านข้อมูลใหม่ตามสิทธิ์" : "ERP records · fresh authorized reads"}</option>
+                <option value="guidance">{lang === "th" ? "คำแนะนำ/เอกสาร · ไม่อ่าน ERP" : "Guidance / documents · no ERP reads"}</option>
+              </select>
+              <span className="text-muted-foreground">{lang === "th" ? "เปลี่ยนขอบเขตจะเริ่มบทสนทนาใหม่ ใช้คำแนะนำ/เอกสารเมื่ออ่านไฟล์โดยไม่เทียบ ERP" : "Changing access starts a new thread. Choose guidance/documents for file-only interpretation."}</span>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {dataScope === "erp" && (lang === "th" ? ["สรุปยอดค้างรับพร้อมหลักฐาน", "แสดงดีลที่ต้องติดตามพร้อมวันที่", "สรุปสถานะโปรเจกต์และงานถัดไป"] : ["Summarize receivables with evidence", "List deals needing follow-up with dates", "Summarize project status and next actions"]).map((question) => <button key={question} type="button" className="bbn-chip text-left text-xs" disabled={busy || !!preparing} onClick={() => setText(question)}>{question}</button>)}
+              <button type="button" className="bbn-chip text-xs" disabled={busy || !!preparing} onClick={resetThread}>{lang === "th" ? "บทสนทนาใหม่" : "New thread"}</button>
+            </div>
+            {preparing ? <p className="text-sm" role="status">{preparing} <button type="button" className="underline" onClick={() => attachmentAbort.current?.abort()}>{lang === "th" ? "ยกเลิกอ่านไฟล์" : "Cancel file reading"}</button></p> : null}
+            {pending.flatMap((item) => item.warnings ?? []).map((warning, index) => <p key={index} className="text-muted-foreground text-xs">{warning}</p>)}
             {pending.length > 0 ? (
               <ul className="flex flex-wrap gap-2" aria-label={t.attachments}>
                 {pending.map((p, i) => (
@@ -304,15 +381,22 @@ export function AssistantChat({ profileLocale = "th" }: { profileLocale?: string
             <Textarea
               id="assistant-input"
               rows={3}
-              placeholder={t.placeholder}
+              placeholder={dataScope === "erp" ? (lang === "th" ? "ถามข้อมูล ERP ปัจจุบันหรือข้อความแนบ… (Enter เพื่อส่ง)" : "Ask about current ERP records or attached text… (Enter to send)") : t.placeholder}
               value={text}
+              maxLength={MAX_MESSAGE_CHARS}
               onChange={(e) => setText(e.target.value)}
               onKeyDown={(e) => {
                 if (e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing) { e.preventDefault(); void send() }
               }}
               onPaste={(e) => {
                 const files = Array.from(e.clipboardData.files)
-                if (files.length) { e.preventDefault(); void addFiles(files) }
+                if (files.length) { e.preventDefault(); void addFiles(files); return }
+                const pasted = e.clipboardData.getData("text/plain")
+                const input = e.currentTarget
+                if (input.value.length - (input.selectionEnd - input.selectionStart) + pasted.length > MAX_MESSAGE_CHARS) {
+                  e.preventDefault()
+                  attachPastedText(pasted)
+                }
               }}
             />
             <div className="flex flex-wrap items-center gap-2">
@@ -325,18 +409,26 @@ export function AssistantChat({ profileLocale = "th" }: { profileLocale?: string
                 onChange={(e) => { void addFiles(Array.from(e.target.files ?? [])); e.target.value = "" }}
                 data-testid="assistant-file"
               />
-              <Button type="button" variant="outline" onClick={() => fileRef.current?.click()}>
+              <Button type="button" variant="outline" disabled={busy || !!preparing} onClick={() => fileRef.current?.click()}>
                 <Paperclip className="size-3.5" aria-hidden />
                 {t.attach}
               </Button>
               <span className="text-muted-foreground inline-flex items-center gap-1 text-xs">
                 <ImageIcon className="size-3" aria-hidden /> {t.formats}
               </span>
-              <Button type="button" className="ml-auto" disabled={busy || (text.trim() === "" && pending.length === 0)} onClick={() => void send()}>
+              <Button type="button" className="ml-auto" disabled={busy || !!preparing || (text.trim() === "" && pending.length === 0)} onClick={() => void send()}>
                 <Send className="size-3.5" aria-hidden />
                 {t.send}
               </Button>
             </div>
+            <details className="text-xs">
+              <summary className="cursor-pointer">{lang === "th" ? "แนบข้อความยาว / แชท WhatsApp" : "Add long text / WhatsApp export"}</summary>
+              <div className="mt-2 space-y-2">
+                <label htmlFor="assistant-long-text">{lang === "th" ? "เนื้อหาฉบับเต็ม · UTF-8 สูงสุด 200 KB แล้วพิมพ์คำถามแยกด้านบน" : "Full source text · up to 200 KB UTF-8; enter the question separately above"}</label>
+                <Textarea id="assistant-long-text" rows={6} value={longText} disabled={busy || !!preparing} onChange={(event) => setLongText(event.target.value)} />
+                <Button type="button" variant="outline" size="sm" disabled={busy || !!preparing || !longText.trim()} onClick={() => { if (attachPastedText(longText)) setLongText("") }}>{lang === "th" ? "แนบฉบับเต็ม" : "Attach full text"}</Button>
+              </div>
+            </details>
           </div>
         </CardContent>
       </Card>

@@ -6,8 +6,8 @@ import { helperConfigured } from "@/lib/release/update-plan"
 
 export const dynamic = "force-dynamic"
 
-export async function POST() {
-  const block = await localModelAccess(true)
+export async function POST(request: Request) {
+  const block = await localModelAccess(true, request)
   if (block) return block
   const encoder = new TextEncoder()
   const stream = new ReadableStream({

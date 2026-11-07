@@ -74,9 +74,19 @@ export function DayCell({
           <ItemChip key={item.id} item={item} />
         ))}
         {overflow > 0 ? (
-          <span className="text-muted-foreground px-1 text-[11px]">
-            +{overflow} more
-          </span>
+          <details className="text-muted-foreground px-1 text-[11px]">
+            <summary
+              className="cursor-pointer rounded focus-visible:outline-2 focus-visible:outline-offset-2"
+              aria-label={`${overflow} more items on ${cell.iso}`}
+            >
+              +{overflow} more
+            </summary>
+            <div className="mt-1 flex flex-col gap-0.5">
+              {items.slice(MAX).map((item) => (
+                <ItemChip key={item.id} item={item} />
+              ))}
+            </div>
+          </details>
         ) : null}
       </div>
     </div>

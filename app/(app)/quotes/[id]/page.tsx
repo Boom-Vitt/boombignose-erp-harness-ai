@@ -4,6 +4,7 @@ import { DocumentTotals } from "@/components/document-totals"
 import { RecordHistory } from "@/components/record/record-history"
 import Link from "next/link"
 import { notFound } from "next/navigation"
+import { z } from "zod"
 import { Download, FolderKanban, ReceiptText } from "lucide-react"
 
 import { createClient } from "@/lib/supabase/server"
@@ -58,6 +59,7 @@ export default async function QuoteDetailPage({
   params: Promise<{ id: string }>
 }) {
   const { id } = await params
+  if (!z.guid().safeParse(id).success) notFound()
   const ctx = await requireOrgContext()
   const supabase = await createClient()
 

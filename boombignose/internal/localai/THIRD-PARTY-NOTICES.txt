@@ -1,0 +1,7 @@
+Thai dictionary: Unicode ICU
+Source: https://raw.githubusercontent.com/unicode-org/icu/6d18ecab418ac4cf5a3f51ec3b69b77ba713d719/icu4c/source/data/brkitr/dictionaries/thaidict.txt
+Pinned revision: 6d18ecab418ac4cf5a3f51ec3b69b77ba713d719
+SHA-256: 3166abde40c0f44ab91c28f5ce96d7d1472cb7882e1c0bda0a72f8f69dba4274
+Unmodified upstream dictionary, copyright notices retained in thaidict.txt.
+License: Unicode License V3, full upstream notice in UNICODE-LICENSE.txt.
+Used for bounded pure-Go dictionary word segmentation; no external NLP runtime.

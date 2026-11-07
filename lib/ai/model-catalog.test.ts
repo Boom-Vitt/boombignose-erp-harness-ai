@@ -2,12 +2,11 @@ import { describe, expect, it } from "vitest"
 
 import {
   buildSnapshot,
-  catalogModelIds,
+  catalogModels,
   createPullSanitizer,
   formatBytes,
   hostArch,
   hostOS,
-  imageMediaType,
   modelPullable,
   namesMatch,
   parseGenerateLine,
@@ -15,17 +14,16 @@ import {
   sanitizePullLine,
 } from "./model-catalog"
 
-describe("local model catalog", () => {
-  it("ships the allowlist and no other weights", () => {
-    expect(catalogModelIds()).toEqual(["qwen2.5:3b", "qwen2.5vl:3b", "x/flux2-klein:4b", "phonon"])
-  })
+const textModel = catalogModels().find(model => model.modality === "text")!
+const visionModel = catalogModels().find(model => model.modality === "vision")!
 
+describe("local model catalog", () => {
   it("maps Node's Windows and x64 names onto the catalog", () => {
     expect(hostOS("win32")).toBe("windows")
     expect(hostArch("x64")).toBe("amd64")
     const windows = { platform: "win32" as const, arch: "x64" }
-    expect(modelPullable("qwen2.5:3b", windows)).toBe(true)
-    expect(modelPullable("qwen2.5vl:3b", windows)).toBe(true)
+    expect(modelPullable(textModel.id, windows)).toBe(true)
+    expect(modelPullable(visionModel.id, windows)).toBe(true)
     expect(modelPullable("x/flux2-klein:4b", windows)).toBe(false)
     expect(modelPullable("phonon", windows)).toBe(false)
   })
@@ -37,12 +35,16 @@ describe("local model catalog", () => {
     expect(modelPullable("x/flux2-klein:4b", { platform: "linux", arch: "x64" })).toBe(false)
   })
 
-  it("refuses names that are not the catalog", () => {
-    expect(safeModelId("qwen2.5:3b")).toBe(true)
+  it("rejects unsafe model identifiers and prevents pulling unlisted identifiers", () => {
+    expect(safeModelId("local-checkpoint:3b")).toBe(true)
     expect(safeModelId("x/flux2-klein:4b")).toBe(true)
     expect(safeModelId("../qwen2.5:3b")).toBe(false)
     expect(safeModelId("qwen2.5:3b\nserve")).toBe(false)
     expect(safeModelId("Llama3")).toBe(false)
+    expect(safeModelId("a".repeat(81))).toBe(false)
+    expect(safeModelId("/absolute/model")).toBe(false)
+    expect(safeModelId("model\\path")).toBe(false)
+    expect(safeModelId("model\u0000name")).toBe(false)
     expect(modelPullable("llama3", { platform: "linux", arch: "x64" })).toBe(false)
   })
 
@@ -56,26 +58,25 @@ describe("local model catalog", () => {
   it("shows install rows for text and vision, and says what this Linux build cannot run", () => {
     const snapshot = buildSnapshot(
       { platform: "linux", arch: "x64" },
-      [{ name: "qwen2.5:3b", size: 2_500_000_000 }],
+      [{ name: `${textModel.id}:latest`, size: 2_500_000_000 }, { name: "unlisted-checkpoint", size: 42 }],
       { up: true },
     )
     expect(snapshot.daemonUp).toBe(true)
-    expect(snapshot.rows.map((row) => row.id)).toEqual(["qwen2.5:3b", "qwen2.5vl:3b"])
-    expect(snapshot.rows[0]?.installed).toBe(true)
-    expect(snapshot.rows[1]?.installed).toBe(false)
-    expect(snapshot.blocked.map((item) => item.modality)).toEqual(["image", "tts", "video", "asr", "voice-clone"])
-    expect(snapshot.blocked.map((item) => item.reasonEn).join(" ")).toMatch(/Not available in this build/)
-    expect(snapshot.blocked.find((item) => item.modality === "asr")?.reasonEn).toMatch(/Whisper/)
-    expect(snapshot.blocked.find((item) => item.modality === "video")?.reasonEn).toMatch(/ComfyUI/)
-    expect(snapshot.blocked.find((item) => item.modality === "voice-clone")?.reasonEn).toMatch(/not a clone|built-in voices/i)
+    expect(snapshot.rows.find(row => row.id === textModel.id)).toMatchObject({ installed: true, installedBytes: 2_500_000_000 })
+    expect(snapshot.rows.find(row => row.id === visionModel.id)).toMatchObject({ installed: false, installedBytes: null })
+    expect(snapshot.rows.some(row => row.id === "unlisted-checkpoint")).toBe(false)
+    expect(snapshot.rows.some(row => row.modality === "image" || row.modality === "tts")).toBe(false)
+    expect(snapshot.blocked.map(item => item.modality)).toEqual(expect.arrayContaining(["image", "tts", "video", "asr", "voice-clone"]))
+    expect(snapshot.daemonMessage).toBeNull()
   })
 
-  it("offers image and speech rows on Apple Silicon", () => {
-    const snapshot = buildSnapshot({ platform: "darwin", arch: "arm64" }, [], { up: false })
-    expect(snapshot.rows.map((row) => row.modality)).toEqual(["text", "vision", "image", "tts"])
-    expect(snapshot.blocked.map((item) => item.modality)).toEqual(["video", "asr", "voice-clone"])
-    expect(snapshot.daemonMessage).toMatch(/Ollama Desktop/)
-    expect(snapshot.daemonMessage).toMatch(/ไม่ต้องติดตั้ง/)
+  it("offers supported local media runtimes on Apple Silicon and preserves an actionable daemon error", () => {
+    const snapshot = buildSnapshot({ platform: "darwin", arch: "arm64" }, [], { up: false, message: "Local model service is offline." })
+    expect(snapshot.rows.map(row => row.modality)).toEqual(expect.arrayContaining(["text", "vision", "image", "tts"]))
+    expect(snapshot.rows.every(row => !row.installed && row.installedBytes === null)).toBe(true)
+    expect(snapshot.blocked.map(item => item.modality)).toEqual(expect.arrayContaining(["video", "asr", "voice-clone"]))
+    expect(snapshot.daemonUp).toBe(false)
+    expect(snapshot.daemonMessage).toBe("Local model service is offline.")
   })
 
   it("keeps download progress and drops digests", () => {
@@ -91,10 +92,34 @@ describe("local model catalog", () => {
     expect(sanitizer.finish()).toBe("")
   })
 
-  it("formats a byte size and recognizes a picture", () => {
+  it("formats unavailable and bounded byte sizes", () => {
     expect(formatBytes(2_500_000_000)).toBe("2.3 GB")
-    expect(imageMediaType("iVBORw0KGgoAAA")).toBe("image/png")
-    expect(parseGenerateLine('{"image":"/9j/abc","status":"done"}')).toEqual({ status: "done", image: "/9j/abc" })
-    expect(parseGenerateLine(`{"image":"${"a".repeat(8_000_001)}"}`)?.error).toMatch(/larger/)
+    expect(formatBytes(0)).toBe("0 B")
+    expect(formatBytes(null)).toBeNull()
+    expect(formatBytes(-1)).toBeNull()
+    expect(formatBytes(Number.NaN)).toBeNull()
+  })
+
+  it("rejects malformed or oversized generated-image events", () => {
+    expect(parseGenerateLine("not JSON")?.error).toMatch(/could not read/)
+    expect(parseGenerateLine("   ")).toBeNull()
+    expect(parseGenerateLine('{"ignored":true}')).toBeNull()
+    expect(parseGenerateLine(`{"image":"${"a".repeat(8_000_001)}"}`)).toEqual({ error: expect.stringMatching(/larger/) })
+  })
+
+  it("handles split progress events and an unterminated final event without exposing digests", () => {
+    const sanitizer = createPullSanitizer()
+    expect(sanitizer.push('{"status":"down')).toBe("")
+    const progress = sanitizer.push('loading","digest":"private-digest","completed":5,"total":10}\n{"status":"succ')
+    expect(JSON.parse(progress)).toEqual({ status: "downloading", completed: 5, total: 10 })
+    expect(sanitizer.push('ess"}')).toBe("")
+    expect(JSON.parse(sanitizer.finish())).toEqual({ status: "success", done: true })
+    expect(sanitizer.finish()).toBe("")
+  })
+
+  it("drops invalid counters and clips untrusted progress text", () => {
+    expect(sanitizePullLine(JSON.stringify({ status: "x".repeat(200), completed: -1, total: 0 }))).toEqual({ status: "x".repeat(120) })
+    expect(sanitizePullLine("not JSON")).toEqual({ error: expect.stringMatching(/could not read/) })
+    expect(sanitizePullLine('{"digest":"private-digest","total":100}')).toBeNull()
   })
 })

@@ -3,8 +3,8 @@ import { installAsr, removeAsr } from "@/lib/ai/asr-install"
 
 export const dynamic = "force-dynamic"
 
-export async function POST() {
-  const block = await localModelAccess(true)
+export async function POST(request: Request) {
+  const block = await localModelAccess(true, request)
   if (block) return block
   const result = await installAsr(process.platform, process.arch)
   if ("error" in result) {
@@ -14,8 +14,8 @@ export async function POST() {
   return Response.json(result)
 }
 
-export async function DELETE() {
-  const block = await localModelAccess(true)
+export async function DELETE(request: Request) {
+  const block = await localModelAccess(true, request)
   if (block) return block
   await removeAsr()
   return Response.json({ ok: true })

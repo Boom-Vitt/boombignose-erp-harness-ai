@@ -1,30 +1,30 @@
 {
   "models": [
     {
-      "id": "qwen2.5:3b",
-      "modality": "text",
-      "license": "Qwen Research",
-      "sizeNote": "about 1.9 GB",
-      "platforms": ["darwin", "linux", "windows"],
-      "arches": ["any"],
-      "try": "none",
-      "titleTh": "ข้อความ",
-      "titleEn": "Text",
-      "detailTh": "ใช้กับสรุปดีล ร่างข้อความติดตาม สรุปโน้ตประชุม และโน้ตปิดงบเดือน โมเดลนี้ไม่ได้ลงรายการบัญชีและไม่ได้ยื่น ภ.พ.30",
-      "detailEn": "Used for deal summaries, follow-up drafts, meeting notes, and the month-end note. It does not post a journal and it does not file VAT."
-    },
-    {
-      "id": "qwen2.5vl:3b",
+      "id": "qwen3.5:4b",
       "modality": "vision",
       "license": "Apache-2.0",
-      "sizeNote": "about 3.2 GB",
+      "sizeNote": "about 3.3–4.0 GB; allow 12 GB RAM for the ERP + model",
       "platforms": ["darwin", "linux", "windows"],
       "arches": ["any"],
       "try": "vision",
-      "titleTh": "อ่านรูป",
-      "titleEn": "Vision",
-      "detailTh": "อ่านรูปบนเครื่องนี้ เช่น เอกสารหรือสลิป ข้อความที่ได้อยู่แค่บนหน้านี้ ไม่ได้ถูกบันทึกเป็นรายการบัญชีและไม่ได้ยื่น ภ.พ.30",
-      "detailEn": "Reads an image on this computer, such as a document or a slip. The text stays on this page. It is not saved as an accounting entry and it does not file VAT."
+      "titleTh": "OCR ไทย/อังกฤษ · ต้องตรวจต้นฉบับ",
+      "titleEn": "Thai/English OCR · original review required",
+      "detailTh": "ค่าเริ่มต้น OCR รูป/บิล การทดสอบภาพสะอาดอ่านยอดและเลขเอกสารได้ แต่ภาพเอียงคุณภาพต่ำอ่านเดือนผิด แชท ERP ซับซ้อนแบบอ้างอิงหลักฐานยังไม่ผ่าน จึงใช้ 9B เป็นค่าเริ่มต้นแชท",
+      "detailEn": "OCR default. Clean test images preserved amounts and document IDs; a degraded rotated image had a wrong month. Complex evidence-reference ERP chat failed, so chat defaults to 9B."
+    },
+    {
+      "id": "qwen3.5:9b-q4_k_m",
+      "modality": "text",
+      "license": "Apache-2.0",
+      "sizeNote": "about 6.6 GB; recommend 24 GB+ RAM",
+      "platforms": ["darwin", "linux", "windows"],
+      "arches": ["any"],
+      "try": "none",
+      "titleTh": "แชท ERP ตามหลักฐาน · ค่าเริ่มต้น",
+      "titleEn": "Evidence-linked ERP chat · default",
+      "detailTh": "ค่าเริ่มต้น GGUF แบบพกพา รันไทม์ที่ทดสอบปฏิเสธอินพุตที่เกินขอบเขตจริงโดยไม่ทิ้งประวัติ ต่างจาก MLX รุ่นที่ทดสอบ ตัวเลขแสดงจาก ERP ไม่ใช่ AI คำนวณ ต้องตรวจทานทุกคำตอบ การควบคุม context ไม่รับรองความถูกต้องของข้อความ",
+      "detailEn": "Portable GGUF default. The tested runtime rejects actual context overflow without discarding history, unlike the tested MLX backend. Figures come from ERP, not model arithmetic. Review every answer; context control does not certify prose accuracy."
     },
     {
       "id": "x/flux2-klein:4b",

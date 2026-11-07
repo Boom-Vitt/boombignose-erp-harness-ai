@@ -1,14 +1,14 @@
-import { getOrgContext } from "@/lib/auth"
+import { getVerifiedApiContext } from "@/lib/auth"
 import { revokeDevice } from "@/lib/mobile/pairing"
 import { createAdminClient } from "@/lib/supabase/admin"
 
 export const dynamic = "force-dynamic"
 
-export async function DELETE(_request: Request, { params }: { params: Promise<{ id: string }> }) {
-  const ctx = await getOrgContext()
-  if (!ctx) return Response.json({ error: "Sign in required." }, { status: 401 })
-  if (ctx.role !== "owner" && ctx.role !== "admin") return Response.json({ error: "Forbidden." }, { status: 403 })
+export async function DELETE(request: Request, { params }: { params: Promise<{ id: string }> }) {
+  const verified = await getVerifiedApiContext(request, { roles: ["owner", "admin"], mutation: true })
+  if (verified.response) return verified.response
   const { id } = await params
-  const ok = await revokeDevice(createAdminClient(), ctx.orgId, id)
-  return ok ? Response.json({ ok: true }) : Response.json({ error: "Device not found." }, { status: 404 })
+  if (!/^[0-9a-f-]{36}$/i.test(id)) return Response.json({ error: "Device not found." }, { status: 404 })
+  const ok = await revokeDevice(createAdminClient(), verified.ctx.orgId, id)
+  return ok ? Response.json({ ok: true, browserSessionsSignedOut: false }, { headers: { "cache-control": "no-store" } }) : Response.json({ error: "Device not found." }, { status: 404 })
 }

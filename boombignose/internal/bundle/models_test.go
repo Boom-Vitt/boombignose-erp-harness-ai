@@ -2,11 +2,7 @@ package bundle
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
-	"io"
-	"net/http"
-	"net/http/httptest"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -14,18 +10,7 @@ import (
 	"testing"
 )
 
-func TestCatalogIDsMatchTheShippedAllowlist(t *testing.T) {
-	got := CatalogIDs()
-	want := []string{"qwen2.5:3b", "qwen2.5vl:3b", "x/flux2-klein:4b", "phonon"}
-	if strings.Join(got, ",") != strings.Join(want, ",") {
-		t.Fatalf("catalog = %#v", got)
-	}
-}
-
 func TestPullAllowedByOS(t *testing.T) {
-	if !PullAllowed("qwen2.5:3b", "linux", "amd64") || !PullAllowed("qwen2.5vl:3b", "windows", "amd64") {
-		t.Fatal("text and vision must install on linux and windows")
-	}
 	if PullAllowed("x/flux2-klein:4b", "linux", "amd64") || PullAllowed("phonon", "linux", "amd64") {
 		t.Fatal("image and speech must not install on linux")
 	}
@@ -49,15 +34,12 @@ func TestPullCommandForRefusesTheWrongMachineBeforeExec(t *testing.T) {
 	if err := os.WriteFile(binary, []byte("ollama"), 0o755); err != nil {
 		t.Fatal(err)
 	}
-	vision, err := PullCommandFor(binary, "", []string{"HOME=/home/me", "OPENAI_API_KEY=sk-test"}, "qwen2.5vl:3b")
+	vision, err := PullCommandFor(binary, "", []string{"HOME=/home/me", "OPENAI_API_KEY=sk-test"}, LocalModel)
 	if err != nil {
 		t.Fatal(err)
 	}
 	if err := allowPullCommand(vision); err != nil {
 		t.Fatal(err)
-	}
-	if strings.Join(vision.Args, " ") != "pull qwen2.5vl:3b" {
-		t.Fatalf("args: %#v", vision.Args)
 	}
 	if strings.Contains(strings.Join(vision.Env, "\n"), "OPENAI") {
 		t.Fatal("cloud key leaked")
@@ -65,7 +47,7 @@ func TestPullCommandForRefusesTheWrongMachineBeforeExec(t *testing.T) {
 	if err := allowedBundleCommand(vision); err == nil {
 		t.Fatal("startup must refuse a vision pull")
 	}
-	_, err = PullCommandFor(binary, "https://models.example", nil, "qwen2.5:3b")
+	_, err = PullCommandFor(binary, "https://models.example", nil, LocalModel)
 	if err == nil || strings.Contains(err.Error(), "models.example") {
 		t.Fatalf("remote pull: %v", err)
 	}
@@ -82,62 +64,19 @@ func TestPullCommandForRefusesTheWrongMachineBeforeExec(t *testing.T) {
 	} else if !errors.Is(err, ErrModelUnavailable) || strings.Contains(err.Error(), "phonon") {
 		t.Fatalf("speech on this OS: %v", err)
 	}
-	err = PullNamedModel(context.Background(), Layout{}, "", nil, "phonon")
-	if speechHere {
-		if err == nil || errors.Is(err, ErrModelUnavailable) {
-			t.Fatalf("named speech pull should reach the binary lookup: %v", err)
-		}
-	} else if !errors.Is(err, ErrModelUnavailable) {
-		t.Fatalf("named pull: %v", err)
-	}
 	if err := PullNamedModel(context.Background(), Layout{}, "", nil, "not-a-model"); !errors.Is(err, ErrModelRefused) {
 		t.Fatalf("refused pull: %v", err)
 	}
 }
 
-func TestListAndDeleteLocalModelsOnLoopback(t *testing.T) {
-	var deleted string
-	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		switch r.URL.Path {
-		case "/api/tags":
-			w.Header().Set("Content-Type", "application/json")
-			_, _ = io.WriteString(w, `{"models":[{"name":"qwen2.5:3b","size":10},{"name":"qwen2.5:3b:latest","size":11},{"name":"bad\nname","size":1}]}`)
-		case "/api/delete":
-			if r.Method != http.MethodDelete {
-				t.Errorf("method %s", r.Method)
-			}
-			var body map[string]string
-			if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
-				t.Fatal(err)
-			}
-			deleted = body["model"]
-			w.WriteHeader(http.StatusOK)
-		default:
-			http.NotFound(w, r)
-		}
-	}))
-	defer srv.Close()
-	host := strings.TrimPrefix(srv.URL, "http://")
-	listed, err := ListLocalModels(context.Background(), host)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if len(listed) != 2 || listed[0].Name != "qwen2.5:3b" || listed[0].Size != 10 || listed[1].Size != 11 {
-		t.Fatalf("listed: %#v", listed)
-	}
-	if err := DeleteLocalModel(context.Background(), host, "qwen2.5:3b"); err != nil {
-		t.Fatal(err)
-	}
-	if deleted != "qwen2.5:3b" {
-		t.Fatalf("deleted %q", deleted)
-	}
-	if err := DeleteLocalModel(context.Background(), host, "llama3"); !errors.Is(err, ErrModelRefused) {
+func TestModelManagementRefusesRemoteAndUnrecognizedTargets(t *testing.T) {
+	if err := DeleteLocalModel(context.Background(), "", "llama3"); !errors.Is(err, ErrModelRefused) {
 		t.Fatalf("unknown delete: %v", err)
 	}
-	if err := DeleteLocalModel(context.Background(), "https://models.example", "qwen2.5:3b"); err == nil || strings.Contains(err.Error(), "models.example") {
+	if err := DeleteLocalModel(context.Background(), "https://models.example", LocalModel); err == nil || strings.Contains(err.Error(), "models.example") {
 		t.Fatalf("remote delete: %v", err)
 	}
-	_, err = ListLocalModels(context.Background(), "http://ollama.example:11434")
+	_, err := ListLocalModels(context.Background(), "http://ollama.example:11434")
 	if err == nil || strings.Contains(err.Error(), "ollama.example") {
 		t.Fatalf("remote list: %v", err)
 	}

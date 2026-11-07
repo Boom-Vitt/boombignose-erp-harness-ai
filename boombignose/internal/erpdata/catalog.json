@@ -1,0 +1,7118 @@
+[
+  {
+    "key": "accounting_connections",
+    "labelEn": "Accounting connections",
+    "labelTh": "การเชื่อมต่อบัญชี",
+    "fields": [
+      {
+        "key": "id",
+        "labelEn": "Id",
+        "labelTh": "รหัส",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "org_id",
+        "labelEn": "Org id",
+        "labelTh": "รหัสองค์กร",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "created_at",
+        "labelEn": "Created at",
+        "labelTh": "สร้างเมื่อ",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "updated_at",
+        "labelEn": "Updated at",
+        "labelTh": "แก้ไขเมื่อ",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "provider",
+        "labelEn": "Provider",
+        "labelTh": "การเชื่อมต่อบัญชี · Provider",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "status",
+        "labelEn": "Status",
+        "labelTh": "สถานะ",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      }
+    ],
+    "primaryKey": [
+      "id"
+    ],
+    "requiredCapability": "accounting:manage",
+    "scope": "current organization; session RLS",
+    "exclusions": {
+      "config": "Opaque provider configuration contains accounting credentials."
+    }
+  },
+  {
+    "key": "accounting_sync_map",
+    "labelEn": "Accounting sync map",
+    "labelTh": "สถานะซิงก์บัญชี",
+    "fields": [
+      {
+        "key": "id",
+        "labelEn": "Id",
+        "labelTh": "รหัส",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "org_id",
+        "labelEn": "Org id",
+        "labelTh": "รหัสองค์กร",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "created_at",
+        "labelEn": "Created at",
+        "labelTh": "สร้างเมื่อ",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "updated_at",
+        "labelEn": "Updated at",
+        "labelTh": "แก้ไขเมื่อ",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "external_id",
+        "labelEn": "External id",
+        "labelTh": "สถานะซิงก์บัญชี · External id",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "last_synced_at",
+        "labelEn": "Last synced at",
+        "labelTh": "สถานะซิงก์บัญชี · Last synced at",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "local_entity",
+        "labelEn": "Local entity",
+        "labelTh": "สถานะซิงก์บัญชี · Local entity",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "local_id",
+        "labelEn": "Local id",
+        "labelTh": "สถานะซิงก์บัญชี · Local id",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "provider",
+        "labelEn": "Provider",
+        "labelTh": "สถานะซิงก์บัญชี · Provider",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "status",
+        "labelEn": "Status",
+        "labelTh": "สถานะ",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      }
+    ],
+    "primaryKey": [
+      "id"
+    ],
+    "requiredCapability": "accounting:manage",
+    "scope": "current organization; session RLS",
+    "exclusions": {
+      "last_error": "Provider diagnostics may contain credentials or credential-bearing URLs."
+    }
+  },
+  {
+    "key": "activities",
+    "labelEn": "Activities",
+    "labelTh": "กิจกรรม",
+    "fields": [
+      {
+        "key": "id",
+        "labelEn": "Id",
+        "labelTh": "รหัส",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "org_id",
+        "labelEn": "Org id",
+        "labelTh": "รหัสองค์กร",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "created_at",
+        "labelEn": "Created at",
+        "labelTh": "สร้างเมื่อ",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "updated_at",
+        "labelEn": "Updated at",
+        "labelTh": "แก้ไขเมื่อ",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "body",
+        "labelEn": "Body",
+        "labelTh": "เนื้อหา",
+        "kind": "text",
+        "searchable": true,
+        "textReadable": true
+      },
+      {
+        "key": "client_id",
+        "labelEn": "Client id",
+        "labelTh": "รหัสลูกค้า",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "deal_id",
+        "labelEn": "Deal id",
+        "labelTh": "กิจกรรม · Deal id",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "done",
+        "labelEn": "Done",
+        "labelTh": "กิจกรรม · Done",
+        "kind": "boolean",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "due_date",
+        "labelEn": "Due date",
+        "labelTh": "วันครบกำหนด",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "owner",
+        "labelEn": "Owner",
+        "labelTh": "กิจกรรม · Owner",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "type",
+        "labelEn": "Type",
+        "labelTh": "กิจกรรม · Type",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "record_type",
+        "labelEn": "Record type",
+        "labelTh": "กิจกรรม · Record type",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "record_id",
+        "labelEn": "Record id",
+        "labelTh": "กิจกรรม · Record id",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "completed_at",
+        "labelEn": "Completed at",
+        "labelTh": "กิจกรรม · Completed at",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "completed_by",
+        "labelEn": "Completed by",
+        "labelTh": "กิจกรรม · Completed by",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      }
+    ],
+    "primaryKey": [
+      "id"
+    ],
+    "requiredCapability": null,
+    "scope": "current organization; session RLS",
+    "exclusions": {}
+  },
+  {
+    "key": "ai_outputs",
+    "labelEn": "Ai outputs",
+    "labelTh": "ผลลัพธ์ AI ที่บันทึก",
+    "fields": [
+      {
+        "key": "id",
+        "labelEn": "Id",
+        "labelTh": "รหัส",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "org_id",
+        "labelEn": "Org id",
+        "labelTh": "รหัสองค์กร",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "content",
+        "labelEn": "Content",
+        "labelTh": "เนื้อหา",
+        "kind": "text",
+        "searchable": true,
+        "textReadable": true
+      },
+      {
+        "key": "created_at",
+        "labelEn": "Created at",
+        "labelTh": "สร้างเมื่อ",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "created_by",
+        "labelEn": "Created by",
+        "labelTh": "ผลลัพธ์ AI ที่บันทึก · Created by",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "entity",
+        "labelEn": "Entity",
+        "labelTh": "ผลลัพธ์ AI ที่บันทึก · Entity",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "entity_id",
+        "labelEn": "Entity id",
+        "labelTh": "ผลลัพธ์ AI ที่บันทึก · Entity id",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "kind",
+        "labelEn": "Kind",
+        "labelTh": "ผลลัพธ์ AI ที่บันทึก · Kind",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "model",
+        "labelEn": "Model",
+        "labelTh": "ผลลัพธ์ AI ที่บันทึก · Model",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      }
+    ],
+    "primaryKey": [
+      "id"
+    ],
+    "requiredCapability": null,
+    "scope": "current organization; session RLS",
+    "exclusions": {}
+  },
+  {
+    "key": "audit_log",
+    "labelEn": "Audit log",
+    "labelTh": "บันทึกตรวจสอบ",
+    "fields": [
+      {
+        "key": "id",
+        "labelEn": "Id",
+        "labelTh": "รหัส",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "org_id",
+        "labelEn": "Org id",
+        "labelTh": "รหัสองค์กร",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "action",
+        "labelEn": "Action",
+        "labelTh": "บันทึกตรวจสอบ · Action",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "actor_email",
+        "labelEn": "Actor email",
+        "labelTh": "บันทึกตรวจสอบ · Actor email",
+        "kind": "text",
+        "searchable": true,
+        "textReadable": true
+      },
+      {
+        "key": "actor_id",
+        "labelEn": "Actor id",
+        "labelTh": "บันทึกตรวจสอบ · Actor id",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "created_at",
+        "labelEn": "Created at",
+        "labelTh": "สร้างเมื่อ",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "entity",
+        "labelEn": "Entity",
+        "labelTh": "บันทึกตรวจสอบ · Entity",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "entity_id",
+        "labelEn": "Entity id",
+        "labelTh": "บันทึกตรวจสอบ · Entity id",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "summary",
+        "labelEn": "Summary",
+        "labelTh": "บันทึกตรวจสอบ · Summary",
+        "kind": "text",
+        "searchable": true,
+        "textReadable": true
+      },
+      {
+        "key": "close_chain_prev",
+        "labelEn": "Close chain prev",
+        "labelTh": "บันทึกตรวจสอบ · Close chain prev",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "close_chain_seq",
+        "labelEn": "Close chain seq",
+        "labelTh": "บันทึกตรวจสอบ · Close chain seq",
+        "kind": "integer",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "close_chain_sha256",
+        "labelEn": "Close chain sha256",
+        "labelTh": "บันทึกตรวจสอบ · Close chain sha256",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      }
+    ],
+    "primaryKey": [
+      "id"
+    ],
+    "requiredCapability": "audit:view",
+    "scope": "current organization; session RLS",
+    "exclusions": {
+      "meta": "Opaque audit metadata can retain command keys, invite/public codes and provider diagnostics."
+    }
+  },
+  {
+    "key": "automation_templates",
+    "labelEn": "Automation templates",
+    "labelTh": "แม่แบบอัตโนมัติ",
+    "fields": [
+      {
+        "key": "id",
+        "labelEn": "Id",
+        "labelTh": "รหัส",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "org_id",
+        "labelEn": "Org id",
+        "labelTh": "รหัสองค์กร",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "created_at",
+        "labelEn": "Created at",
+        "labelTh": "สร้างเมื่อ",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "updated_at",
+        "labelEn": "Updated at",
+        "labelTh": "แก้ไขเมื่อ",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "category_id",
+        "labelEn": "Category id",
+        "labelTh": "แม่แบบอัตโนมัติ · Category id",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "description",
+        "labelEn": "Description",
+        "labelTh": "รายละเอียด",
+        "kind": "text",
+        "searchable": true,
+        "textReadable": true
+      },
+      {
+        "key": "implementation_checklist",
+        "labelEn": "Implementation checklist",
+        "labelTh": "แม่แบบอัตโนมัติ · Implementation checklist",
+        "kind": "json",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "internal_value_satang",
+        "labelEn": "Internal value satang",
+        "labelTh": "แม่แบบอัตโนมัติ · Internal value satang",
+        "kind": "money-in-satang",
+        "unit": "satang",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "name",
+        "labelEn": "Name",
+        "labelTh": "ชื่อ",
+        "kind": "text",
+        "searchable": true,
+        "textReadable": true
+      },
+      {
+        "key": "price_satang",
+        "labelEn": "Price satang",
+        "labelTh": "แม่แบบอัตโนมัติ · Price satang",
+        "kind": "money-in-satang",
+        "unit": "satang",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "reusable_notes",
+        "labelEn": "Reusable notes",
+        "labelTh": "แม่แบบอัตโนมัติ · Reusable notes",
+        "kind": "text",
+        "searchable": true,
+        "textReadable": true
+      },
+      {
+        "key": "tags",
+        "labelEn": "Tags",
+        "labelTh": "แม่แบบอัตโนมัติ · Tags",
+        "kind": "text-array",
+        "searchable": false,
+        "textReadable": true
+      }
+    ],
+    "primaryKey": [
+      "id"
+    ],
+    "requiredCapability": null,
+    "scope": "current organization; session RLS",
+    "exclusions": {}
+  },
+  {
+    "key": "bank_lines",
+    "labelEn": "Bank lines",
+    "labelTh": "รายการธนาคาร",
+    "fields": [
+      {
+        "key": "id",
+        "labelEn": "Id",
+        "labelTh": "รหัส",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "org_id",
+        "labelEn": "Org id",
+        "labelTh": "รหัสองค์กร",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "booked_on",
+        "labelEn": "Booked on",
+        "labelTh": "รายการธนาคาร · Booked on",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "amount_satang",
+        "labelEn": "Amount satang",
+        "labelTh": "จำนวนเงิน (สตางค์)",
+        "kind": "money-in-satang",
+        "unit": "satang",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "reference",
+        "labelEn": "Reference",
+        "labelTh": "ข้อมูลอ้างอิง",
+        "kind": "text",
+        "searchable": true,
+        "textReadable": true
+      },
+      {
+        "key": "matched_payment_id",
+        "labelEn": "Matched payment id",
+        "labelTh": "รายการธนาคาร · Matched payment id",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "close_note",
+        "labelEn": "Close note",
+        "labelTh": "รายการธนาคาร · Close note",
+        "kind": "text",
+        "searchable": true,
+        "textReadable": true
+      },
+      {
+        "key": "created_at",
+        "labelEn": "Created at",
+        "labelTh": "สร้างเมื่อ",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      }
+    ],
+    "primaryKey": [
+      "id"
+    ],
+    "requiredCapability": "profit:view",
+    "scope": "current organization; session RLS",
+    "exclusions": {}
+  },
+  {
+    "key": "clients",
+    "labelEn": "Clients",
+    "labelTh": "ลูกค้า",
+    "fields": [
+      {
+        "key": "id",
+        "labelEn": "Id",
+        "labelTh": "รหัส",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "org_id",
+        "labelEn": "Org id",
+        "labelTh": "รหัสองค์กร",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "created_at",
+        "labelEn": "Created at",
+        "labelTh": "สร้างเมื่อ",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "updated_at",
+        "labelEn": "Updated at",
+        "labelTh": "แก้ไขเมื่อ",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "branch_label",
+        "labelEn": "Branch label",
+        "labelTh": "ลูกค้า · Branch label",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "billing_address",
+        "labelEn": "Billing address",
+        "labelTh": "ลูกค้า · Billing address",
+        "kind": "text",
+        "searchable": true,
+        "textReadable": true
+      },
+      {
+        "key": "industry",
+        "labelEn": "Industry",
+        "labelTh": "ลูกค้า · Industry",
+        "kind": "text",
+        "searchable": true,
+        "textReadable": true
+      },
+      {
+        "key": "name",
+        "labelEn": "Name",
+        "labelTh": "ชื่อ",
+        "kind": "text",
+        "searchable": true,
+        "textReadable": true
+      },
+      {
+        "key": "notes",
+        "labelEn": "Notes",
+        "labelTh": "หมายเหตุ",
+        "kind": "text",
+        "searchable": true,
+        "textReadable": true
+      },
+      {
+        "key": "owner",
+        "labelEn": "Owner",
+        "labelTh": "ลูกค้า · Owner",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "portal_enabled",
+        "labelEn": "Portal enabled",
+        "labelTh": "ลูกค้า · Portal enabled",
+        "kind": "boolean",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "source",
+        "labelEn": "Source",
+        "labelTh": "ลูกค้า · Source",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "tax_id",
+        "labelEn": "Tax id",
+        "labelTh": "ลูกค้า · Tax id",
+        "kind": "text",
+        "searchable": true,
+        "textReadable": true
+      }
+    ],
+    "primaryKey": [
+      "id"
+    ],
+    "requiredCapability": null,
+    "scope": "current organization; session RLS",
+    "exclusions": {
+      "portal_token": "Customer portal bearer credential."
+    },
+    "route": "/clients/{id}"
+  },
+  {
+    "key": "contacts",
+    "labelEn": "Contacts",
+    "labelTh": "ผู้ติดต่อ",
+    "fields": [
+      {
+        "key": "id",
+        "labelEn": "Id",
+        "labelTh": "รหัส",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "org_id",
+        "labelEn": "Org id",
+        "labelTh": "รหัสองค์กร",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "created_at",
+        "labelEn": "Created at",
+        "labelTh": "สร้างเมื่อ",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "updated_at",
+        "labelEn": "Updated at",
+        "labelTh": "แก้ไขเมื่อ",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "client_id",
+        "labelEn": "Client id",
+        "labelTh": "รหัสลูกค้า",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "email",
+        "labelEn": "Email",
+        "labelTh": "อีเมล",
+        "kind": "text",
+        "searchable": true,
+        "textReadable": true
+      },
+      {
+        "key": "name",
+        "labelEn": "Name",
+        "labelTh": "ชื่อ",
+        "kind": "text",
+        "searchable": true,
+        "textReadable": true
+      },
+      {
+        "key": "phone",
+        "labelEn": "Phone",
+        "labelTh": "โทรศัพท์",
+        "kind": "text",
+        "searchable": true,
+        "textReadable": true
+      },
+      {
+        "key": "role",
+        "labelEn": "Role",
+        "labelTh": "บทบาท",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      }
+    ],
+    "primaryKey": [
+      "id"
+    ],
+    "requiredCapability": null,
+    "scope": "current organization; session RLS",
+    "exclusions": {}
+  },
+  {
+    "key": "costs",
+    "labelEn": "Costs",
+    "labelTh": "ต้นทุน",
+    "fields": [
+      {
+        "key": "id",
+        "labelEn": "Id",
+        "labelTh": "รหัส",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "org_id",
+        "labelEn": "Org id",
+        "labelTh": "รหัสองค์กร",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "created_at",
+        "labelEn": "Created at",
+        "labelTh": "สร้างเมื่อ",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "updated_at",
+        "labelEn": "Updated at",
+        "labelTh": "แก้ไขเมื่อ",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "amount_satang",
+        "labelEn": "Amount satang",
+        "labelTh": "จำนวนเงิน (สตางค์)",
+        "kind": "money-in-satang",
+        "unit": "satang",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "category",
+        "labelEn": "Category",
+        "labelTh": "ต้นทุน · Category",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "incurred_on",
+        "labelEn": "Incurred on",
+        "labelTh": "ต้นทุน · Incurred on",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "notes",
+        "labelEn": "Notes",
+        "labelTh": "หมายเหตุ",
+        "kind": "text",
+        "searchable": true,
+        "textReadable": true
+      },
+      {
+        "key": "project_id",
+        "labelEn": "Project id",
+        "labelTh": "รหัสโครงการ",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "vendor",
+        "labelEn": "Vendor",
+        "labelTh": "ต้นทุน · Vendor",
+        "kind": "text",
+        "searchable": true,
+        "textReadable": true
+      },
+      {
+        "key": "vendor_id",
+        "labelEn": "Vendor id",
+        "labelTh": "ต้นทุน · Vendor id",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "purchase_order_id",
+        "labelEn": "Purchase order id",
+        "labelTh": "ต้นทุน · Purchase order id",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "expense_claim_id",
+        "labelEn": "Expense claim id",
+        "labelTh": "ต้นทุน · Expense claim id",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "bill_number",
+        "labelEn": "Bill number",
+        "labelTh": "ต้นทุน · Bill number",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "bill_date",
+        "labelEn": "Bill date",
+        "labelTh": "ต้นทุน · Bill date",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "due_date",
+        "labelEn": "Due date",
+        "labelTh": "วันครบกำหนด",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "paid_at",
+        "labelEn": "Paid at",
+        "labelTh": "ต้นทุน · Paid at",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "vendor_bill_match_id",
+        "labelEn": "Vendor bill match id",
+        "labelTh": "ต้นทุน · Vendor bill match id",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "vendor_invoice_reference",
+        "labelEn": "Vendor invoice reference",
+        "labelTh": "ต้นทุน · Vendor invoice reference",
+        "kind": "text",
+        "searchable": true,
+        "textReadable": true
+      },
+      {
+        "key": "input_vat_rate",
+        "labelEn": "Input vat rate",
+        "labelTh": "ต้นทุน · Input vat rate",
+        "kind": "number",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "input_vat_satang",
+        "labelEn": "Input vat satang",
+        "labelTh": "ต้นทุน · Input vat satang",
+        "kind": "money-in-satang",
+        "unit": "satang",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "purchase_cost_kind",
+        "labelEn": "Purchase cost kind",
+        "labelTh": "ต้นทุน · Purchase cost kind",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      }
+    ],
+    "primaryKey": [
+      "id"
+    ],
+    "requiredCapability": null,
+    "scope": "current organization; session RLS",
+    "exclusions": {}
+  },
+  {
+    "key": "credit_note_lines",
+    "labelEn": "Credit note lines",
+    "labelTh": "รายการใบลดหนี้",
+    "fields": [
+      {
+        "key": "id",
+        "labelEn": "Id",
+        "labelTh": "รหัส",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "org_id",
+        "labelEn": "Org id",
+        "labelTh": "รหัสองค์กร",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "credit_note_id",
+        "labelEn": "Credit note id",
+        "labelTh": "รายการใบลดหนี้ · Credit note id",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "invoice_item_id",
+        "labelEn": "Invoice item id",
+        "labelTh": "รายการใบลดหนี้ · Invoice item id",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "raw_satang",
+        "labelEn": "Raw satang",
+        "labelTh": "รายการใบลดหนี้ · Raw satang",
+        "kind": "money-in-satang",
+        "unit": "satang",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "quantity",
+        "labelEn": "Quantity",
+        "labelTh": "จำนวน",
+        "kind": "number",
+        "searchable": false,
+        "textReadable": false
+      }
+    ],
+    "primaryKey": [
+      "id"
+    ],
+    "requiredCapability": null,
+    "scope": "current organization; session RLS",
+    "exclusions": {}
+  },
+  {
+    "key": "credit_notes",
+    "labelEn": "Credit notes",
+    "labelTh": "ใบลดหนี้",
+    "fields": [
+      {
+        "key": "id",
+        "labelEn": "Id",
+        "labelTh": "รหัส",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "org_id",
+        "labelEn": "Org id",
+        "labelTh": "รหัสองค์กร",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "invoice_id",
+        "labelEn": "Invoice id",
+        "labelTh": "รหัสใบแจ้งหนี้",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "number",
+        "labelEn": "Number",
+        "labelTh": "เลขที่",
+        "kind": "text",
+        "searchable": true,
+        "textReadable": true
+      },
+      {
+        "key": "issue_date",
+        "labelEn": "Issue date",
+        "labelTh": "ใบลดหนี้ · Issue date",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "reason",
+        "labelEn": "Reason",
+        "labelTh": "เหตุผล",
+        "kind": "text",
+        "searchable": true,
+        "textReadable": true
+      },
+      {
+        "key": "amount_satang",
+        "labelEn": "Amount satang",
+        "labelTh": "จำนวนเงิน (สตางค์)",
+        "kind": "money-in-satang",
+        "unit": "satang",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "snapshot",
+        "labelEn": "Snapshot",
+        "labelTh": "ใบลดหนี้ · Snapshot",
+        "kind": "json",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "issued_by",
+        "labelEn": "Issued by",
+        "labelTh": "ใบลดหนี้ · Issued by",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "created_at",
+        "labelEn": "Created at",
+        "labelTh": "สร้างเมื่อ",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      }
+    ],
+    "primaryKey": [
+      "id"
+    ],
+    "requiredCapability": null,
+    "scope": "current organization; session RLS",
+    "exclusions": {}
+  },
+  {
+    "key": "deal_lost_reasons",
+    "labelEn": "Deal lost reasons",
+    "labelTh": "เหตุผลที่แพ้ดีล",
+    "fields": [
+      {
+        "key": "id",
+        "labelEn": "Id",
+        "labelTh": "รหัส",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "org_id",
+        "labelEn": "Org id",
+        "labelTh": "รหัสองค์กร",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "name",
+        "labelEn": "Name",
+        "labelTh": "ชื่อ",
+        "kind": "text",
+        "searchable": true,
+        "textReadable": true
+      },
+      {
+        "key": "active",
+        "labelEn": "Active",
+        "labelTh": "เหตุผลที่แพ้ดีล · Active",
+        "kind": "boolean",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "created_at",
+        "labelEn": "Created at",
+        "labelTh": "สร้างเมื่อ",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      }
+    ],
+    "primaryKey": [
+      "id"
+    ],
+    "requiredCapability": null,
+    "scope": "current organization; session RLS",
+    "exclusions": {}
+  },
+  {
+    "key": "deals",
+    "labelEn": "Deals",
+    "labelTh": "ดีล",
+    "fields": [
+      {
+        "key": "id",
+        "labelEn": "Id",
+        "labelTh": "รหัส",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "org_id",
+        "labelEn": "Org id",
+        "labelTh": "รหัสองค์กร",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "created_at",
+        "labelEn": "Created at",
+        "labelTh": "สร้างเมื่อ",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "updated_at",
+        "labelEn": "Updated at",
+        "labelTh": "แก้ไขเมื่อ",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "probability",
+        "labelEn": "Probability",
+        "labelTh": "ดีล · Probability",
+        "kind": "integer",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "lost_reason_id",
+        "labelEn": "Lost reason id",
+        "labelTh": "ดีล · Lost reason id",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "won_at",
+        "labelEn": "Won at",
+        "labelTh": "ดีล · Won at",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "lost_at",
+        "labelEn": "Lost at",
+        "labelTh": "ดีล · Lost at",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "sequence",
+        "labelEn": "Sequence",
+        "labelTh": "ดีล · Sequence",
+        "kind": "integer",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "client_id",
+        "labelEn": "Client id",
+        "labelTh": "รหัสลูกค้า",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "currency",
+        "labelEn": "Currency",
+        "labelTh": "ดีล · Currency",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "expected_close_date",
+        "labelEn": "Expected close date",
+        "labelTh": "ดีล · Expected close date",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "next_follow_up_date",
+        "labelEn": "Next follow up date",
+        "labelTh": "ดีล · Next follow up date",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "notes",
+        "labelEn": "Notes",
+        "labelTh": "หมายเหตุ",
+        "kind": "text",
+        "searchable": true,
+        "textReadable": true
+      },
+      {
+        "key": "owner",
+        "labelEn": "Owner",
+        "labelTh": "ดีล · Owner",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "source",
+        "labelEn": "Source",
+        "labelTh": "ดีล · Source",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "stage",
+        "labelEn": "Stage",
+        "labelTh": "ดีล · Stage",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "title",
+        "labelEn": "Title",
+        "labelTh": "หัวข้อ",
+        "kind": "text",
+        "searchable": true,
+        "textReadable": true
+      },
+      {
+        "key": "value_satang",
+        "labelEn": "Value satang",
+        "labelTh": "ดีล · Value satang",
+        "kind": "money-in-satang",
+        "unit": "satang",
+        "searchable": false,
+        "textReadable": false
+      }
+    ],
+    "primaryKey": [
+      "id"
+    ],
+    "requiredCapability": null,
+    "scope": "current organization; session RLS",
+    "exclusions": {},
+    "route": "/deals/{id}"
+  },
+  {
+    "key": "document_counters",
+    "labelEn": "Document counters",
+    "labelTh": "ตัวนับเอกสาร",
+    "fields": [],
+    "primaryKey": [
+      "id"
+    ],
+    "requiredCapability": null,
+    "scope": "current organization; session RLS",
+    "exclusions": {},
+    "readable": false,
+    "reason": "Internal issuance counters: authenticated has no SELECT grant or read policy. Issued document numbers remain readable on business records.",
+    "excludedFields": [
+      "org_id",
+      "kind",
+      "year",
+      "value"
+    ]
+  },
+  {
+    "key": "document_public_refs",
+    "labelEn": "Document public refs",
+    "labelTh": "การอ้างอิงเอกสารสาธารณะ",
+    "fields": [
+      {
+        "key": "org_id",
+        "labelEn": "Org id",
+        "labelTh": "รหัสองค์กร",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "kind",
+        "labelEn": "Kind",
+        "labelTh": "การอ้างอิงเอกสารสาธารณะ · Kind",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "record_id",
+        "labelEn": "Record id",
+        "labelTh": "การอ้างอิงเอกสารสาธารณะ · Record id",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "created_at",
+        "labelEn": "Created at",
+        "labelTh": "สร้างเมื่อ",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "created_by",
+        "labelEn": "Created by",
+        "labelTh": "การอ้างอิงเอกสารสาธารณะ · Created by",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      }
+    ],
+    "primaryKey": [
+      "kind",
+      "record_id"
+    ],
+    "requiredCapability": null,
+    "scope": "current organization; session RLS",
+    "exclusions": {
+      "reference": "Public document lookup bearer code."
+    }
+  },
+  {
+    "key": "document_sections",
+    "labelEn": "Document sections",
+    "labelTh": "ส่วนและบันทึกเอกสาร",
+    "fields": [
+      {
+        "key": "id",
+        "labelEn": "Id",
+        "labelTh": "รหัส",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "org_id",
+        "labelEn": "Org id",
+        "labelTh": "รหัสองค์กร",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "created_at",
+        "labelEn": "Created at",
+        "labelTh": "สร้างเมื่อ",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "updated_at",
+        "labelEn": "Updated at",
+        "labelTh": "แก้ไขเมื่อ",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "quote_id",
+        "labelEn": "Quote id",
+        "labelTh": "ส่วนและบันทึกเอกสาร · Quote id",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "invoice_id",
+        "labelEn": "Invoice id",
+        "labelTh": "รหัสใบแจ้งหนี้",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "purchase_order_id",
+        "labelEn": "Purchase order id",
+        "labelTh": "ส่วนและบันทึกเอกสาร · Purchase order id",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "kind",
+        "labelEn": "Kind",
+        "labelTh": "ส่วนและบันทึกเอกสาร · Kind",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "description",
+        "labelEn": "Description",
+        "labelTh": "รายละเอียด",
+        "kind": "text",
+        "searchable": true,
+        "textReadable": true
+      },
+      {
+        "key": "lines_before",
+        "labelEn": "Lines before",
+        "labelTh": "ส่วนและบันทึกเอกสาร · Lines before",
+        "kind": "integer",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "position",
+        "labelEn": "Position",
+        "labelTh": "ส่วนและบันทึกเอกสาร · Position",
+        "kind": "integer",
+        "searchable": false,
+        "textReadable": false
+      }
+    ],
+    "primaryKey": [
+      "id"
+    ],
+    "requiredCapability": null,
+    "scope": "current organization; session RLS",
+    "exclusions": {}
+  },
+  {
+    "key": "draft_close_acceptance_requests",
+    "labelEn": "Draft close acceptance requests",
+    "labelTh": "การรับรองยอดปิดบัญชีฉบับร่าง",
+    "fields": [
+      {
+        "key": "id",
+        "labelEn": "Id",
+        "labelTh": "รหัส",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "org_id",
+        "labelEn": "Org id",
+        "labelTh": "รหัสองค์กร",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "requested_by",
+        "labelEn": "Requested by",
+        "labelTh": "การรับรองยอดปิดบัญชีฉบับร่าง · Requested by",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "through_date",
+        "labelEn": "Through date",
+        "labelTh": "การรับรองยอดปิดบัญชีฉบับร่าง · Through date",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "debit_satang",
+        "labelEn": "Debit satang",
+        "labelTh": "การรับรองยอดปิดบัญชีฉบับร่าง · Debit satang",
+        "kind": "money-in-satang",
+        "unit": "satang",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "credit_satang",
+        "labelEn": "Credit satang",
+        "labelTh": "การรับรองยอดปิดบัญชีฉบับร่าง · Credit satang",
+        "kind": "money-in-satang",
+        "unit": "satang",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "line_count",
+        "labelEn": "Line count",
+        "labelTh": "การรับรองยอดปิดบัญชีฉบับร่าง · Line count",
+        "kind": "integer",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "figures_sha256",
+        "labelEn": "Figures sha256",
+        "labelTh": "การรับรองยอดปิดบัญชีฉบับร่าง · Figures sha256",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "status",
+        "labelEn": "Status",
+        "labelTh": "สถานะ",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "confirmed_by",
+        "labelEn": "Confirmed by",
+        "labelTh": "การรับรองยอดปิดบัญชีฉบับร่าง · Confirmed by",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "created_at",
+        "labelEn": "Created at",
+        "labelTh": "สร้างเมื่อ",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "confirmed_at",
+        "labelEn": "Confirmed at",
+        "labelTh": "การรับรองยอดปิดบัญชีฉบับร่าง · Confirmed at",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      }
+    ],
+    "primaryKey": [
+      "id"
+    ],
+    "requiredCapability": "profit:view",
+    "scope": "current organization; session RLS",
+    "exclusions": {}
+  },
+  {
+    "key": "expense_claims",
+    "labelEn": "Expense claims",
+    "labelTh": "ใบเบิกค่าใช้จ่าย",
+    "fields": [
+      {
+        "key": "id",
+        "labelEn": "Id",
+        "labelTh": "รหัส",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "org_id",
+        "labelEn": "Org id",
+        "labelTh": "รหัสองค์กร",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "created_at",
+        "labelEn": "Created at",
+        "labelTh": "สร้างเมื่อ",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "updated_at",
+        "labelEn": "Updated at",
+        "labelTh": "แก้ไขเมื่อ",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "number",
+        "labelEn": "Number",
+        "labelTh": "เลขที่",
+        "kind": "text",
+        "searchable": true,
+        "textReadable": true
+      },
+      {
+        "key": "employee",
+        "labelEn": "Employee",
+        "labelTh": "ใบเบิกค่าใช้จ่าย · Employee",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "title",
+        "labelEn": "Title",
+        "labelTh": "หัวข้อ",
+        "kind": "text",
+        "searchable": true,
+        "textReadable": true
+      },
+      {
+        "key": "status",
+        "labelEn": "Status",
+        "labelTh": "สถานะ",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "submitted_at",
+        "labelEn": "Submitted at",
+        "labelTh": "ใบเบิกค่าใช้จ่าย · Submitted at",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "decided_by",
+        "labelEn": "Decided by",
+        "labelTh": "ใบเบิกค่าใช้จ่าย · Decided by",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "decided_at",
+        "labelEn": "Decided at",
+        "labelTh": "ใบเบิกค่าใช้จ่าย · Decided at",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "decision_note",
+        "labelEn": "Decision note",
+        "labelTh": "ใบเบิกค่าใช้จ่าย · Decision note",
+        "kind": "text",
+        "searchable": true,
+        "textReadable": true
+      },
+      {
+        "key": "paid_at",
+        "labelEn": "Paid at",
+        "labelTh": "ใบเบิกค่าใช้จ่าย · Paid at",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      }
+    ],
+    "primaryKey": [
+      "id"
+    ],
+    "requiredCapability": null,
+    "scope": "current organization; staff see all, other roles see their own claims through RLS",
+    "exclusions": {},
+    "route": "/expenses/{id}"
+  },
+  {
+    "key": "expense_lines",
+    "labelEn": "Expense lines",
+    "labelTh": "รายการเบิกค่าใช้จ่าย",
+    "fields": [
+      {
+        "key": "id",
+        "labelEn": "Id",
+        "labelTh": "รหัส",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "org_id",
+        "labelEn": "Org id",
+        "labelTh": "รหัสองค์กร",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "claim_id",
+        "labelEn": "Claim id",
+        "labelTh": "รายการเบิกค่าใช้จ่าย · Claim id",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "spent_on",
+        "labelEn": "Spent on",
+        "labelTh": "รายการเบิกค่าใช้จ่าย · Spent on",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "category",
+        "labelEn": "Category",
+        "labelTh": "รายการเบิกค่าใช้จ่าย · Category",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "description",
+        "labelEn": "Description",
+        "labelTh": "รายละเอียด",
+        "kind": "text",
+        "searchable": true,
+        "textReadable": true
+      },
+      {
+        "key": "amount_satang",
+        "labelEn": "Amount satang",
+        "labelTh": "จำนวนเงิน (สตางค์)",
+        "kind": "money-in-satang",
+        "unit": "satang",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "project_id",
+        "labelEn": "Project id",
+        "labelTh": "รหัสโครงการ",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "position",
+        "labelEn": "Position",
+        "labelTh": "รายการเบิกค่าใช้จ่าย · Position",
+        "kind": "integer",
+        "searchable": false,
+        "textReadable": false
+      }
+    ],
+    "primaryKey": [
+      "id"
+    ],
+    "requiredCapability": null,
+    "scope": "current organization; visible parent expense claim through RLS",
+    "exclusions": {}
+  },
+  {
+    "key": "finance_lock_reopen_requests",
+    "labelEn": "Finance lock reopen requests",
+    "labelTh": "คำขอเปิดงวดบัญชี",
+    "fields": [
+      {
+        "key": "id",
+        "labelEn": "Id",
+        "labelTh": "รหัส",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "requested_by",
+        "labelEn": "Requested by",
+        "labelTh": "คำขอเปิดงวดบัญชี · Requested by",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "lock_date",
+        "labelEn": "Lock date",
+        "labelTh": "คำขอเปิดงวดบัญชี · Lock date",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "previous_lock_date",
+        "labelEn": "Previous lock date",
+        "labelTh": "คำขอเปิดงวดบัญชี · Previous lock date",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "reason",
+        "labelEn": "Reason",
+        "labelTh": "เหตุผล",
+        "kind": "text",
+        "searchable": true,
+        "textReadable": true
+      },
+      {
+        "key": "created_at",
+        "labelEn": "Created at",
+        "labelTh": "สร้างเมื่อ",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "requester_email",
+        "labelEn": "Requester email",
+        "labelTh": "คำขอเปิดงวดบัญชี · Requester email",
+        "kind": "text",
+        "searchable": true,
+        "textReadable": true
+      }
+    ],
+    "primaryKey": [
+      "id"
+    ],
+    "requiredCapability": "settings:manage",
+    "scope": "current organization; pending requests only via existing list_finance_lock_reopen_requests RPC; confirmed/cancelled history is in audit_log",
+    "exclusions": {
+      "status": "Existing authorized RPC returns pending requests only.",
+      "confirmed_by": "Not returned by the existing pending-request RPC.",
+      "confirmed_at": "Not returned by the existing pending-request RPC."
+    }
+  },
+  {
+    "key": "gl_accounts",
+    "labelEn": "Gl accounts",
+    "labelTh": "ผังบัญชี",
+    "fields": [
+      {
+        "key": "org_id",
+        "labelEn": "Org id",
+        "labelTh": "รหัสองค์กร",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "code",
+        "labelEn": "Code",
+        "labelTh": "ผังบัญชี · Code",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "name_th",
+        "labelEn": "Name th",
+        "labelTh": "ผังบัญชี · Name th",
+        "kind": "text",
+        "searchable": true,
+        "textReadable": true
+      },
+      {
+        "key": "name_en",
+        "labelEn": "Name en",
+        "labelTh": "ผังบัญชี · Name en",
+        "kind": "text",
+        "searchable": true,
+        "textReadable": true
+      },
+      {
+        "key": "kind",
+        "labelEn": "Kind",
+        "labelTh": "ผังบัญชี · Kind",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      }
+    ],
+    "primaryKey": [
+      "code"
+    ],
+    "requiredCapability": "profit:view",
+    "scope": "current organization; session RLS",
+    "exclusions": {}
+  },
+  {
+    "key": "integration_receipts",
+    "labelEn": "Integration receipts",
+    "labelTh": "ใบรับเหตุการณ์ระบบ",
+    "fields": [],
+    "primaryKey": [
+      "id"
+    ],
+    "requiredCapability": null,
+    "scope": "current organization; session RLS",
+    "exclusions": {},
+    "readable": false,
+    "reason": "Internal integration idempotency store: no authenticated read policy; payload may include integration secrets.",
+    "excludedFields": [
+      "id",
+      "org_id",
+      "key",
+      "event_type",
+      "payload",
+      "created_at"
+    ]
+  },
+  {
+    "key": "invitations",
+    "labelEn": "Invitations",
+    "labelTh": "คำเชิญทีม",
+    "fields": [
+      {
+        "key": "id",
+        "labelEn": "Id",
+        "labelTh": "รหัส",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "org_id",
+        "labelEn": "Org id",
+        "labelTh": "รหัสองค์กร",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "created_at",
+        "labelEn": "Created at",
+        "labelTh": "สร้างเมื่อ",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "updated_at",
+        "labelEn": "Updated at",
+        "labelTh": "แก้ไขเมื่อ",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "accepted_by",
+        "labelEn": "Accepted by",
+        "labelTh": "คำเชิญทีม · Accepted by",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "email",
+        "labelEn": "Email",
+        "labelTh": "อีเมล",
+        "kind": "text",
+        "searchable": true,
+        "textReadable": true
+      },
+      {
+        "key": "expires_at",
+        "labelEn": "Expires at",
+        "labelTh": "คำเชิญทีม · Expires at",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "invited_by",
+        "labelEn": "Invited by",
+        "labelTh": "คำเชิญทีม · Invited by",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "role",
+        "labelEn": "Role",
+        "labelTh": "บทบาท",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "status",
+        "labelEn": "Status",
+        "labelTh": "สถานะ",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      }
+    ],
+    "primaryKey": [
+      "id"
+    ],
+    "requiredCapability": "team:manage",
+    "scope": "current organization; session RLS",
+    "exclusions": {
+      "token": "Invitation bearer credential."
+    }
+  },
+  {
+    "key": "invoice_issue_requests",
+    "labelEn": "Invoice issue requests",
+    "labelTh": "คำสั่งออกใบแจ้งหนี้",
+    "fields": [],
+    "primaryKey": [
+      "id"
+    ],
+    "requiredCapability": null,
+    "scope": "current organization; session RLS",
+    "exclusions": {},
+    "readable": false,
+    "reason": "Internal issuance idempotency store: authenticated SELECT revoked and no read policy. Use invoices and invoice_snapshots.",
+    "excludedFields": [
+      "org_id",
+      "key",
+      "invoice_id",
+      "source_version",
+      "snapshot_id"
+    ]
+  },
+  {
+    "key": "invoice_items",
+    "labelEn": "Invoice items",
+    "labelTh": "รายการใบแจ้งหนี้",
+    "fields": [
+      {
+        "key": "id",
+        "labelEn": "Id",
+        "labelTh": "รหัส",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "org_id",
+        "labelEn": "Org id",
+        "labelTh": "รหัสองค์กร",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "created_at",
+        "labelEn": "Created at",
+        "labelTh": "สร้างเมื่อ",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "updated_at",
+        "labelEn": "Updated at",
+        "labelTh": "แก้ไขเมื่อ",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "quote_item_id",
+        "labelEn": "Quote item id",
+        "labelTh": "รายการใบแจ้งหนี้ · Quote item id",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "wht_rate_bps",
+        "labelEn": "Wht rate bps",
+        "labelTh": "รายการใบแจ้งหนี้ · Wht rate bps",
+        "kind": "integer",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "tax_rate_bps",
+        "labelEn": "Tax rate bps",
+        "labelTh": "รายการใบแจ้งหนี้ · Tax rate bps",
+        "kind": "integer",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "amount_satang",
+        "labelEn": "Amount satang",
+        "labelTh": "จำนวนเงิน (สตางค์)",
+        "kind": "money-in-satang",
+        "unit": "satang",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "description",
+        "labelEn": "Description",
+        "labelTh": "รายละเอียด",
+        "kind": "text",
+        "searchable": true,
+        "textReadable": true
+      },
+      {
+        "key": "invoice_id",
+        "labelEn": "Invoice id",
+        "labelTh": "รหัสใบแจ้งหนี้",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "position",
+        "labelEn": "Position",
+        "labelTh": "รายการใบแจ้งหนี้ · Position",
+        "kind": "integer",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "quantity",
+        "labelEn": "Quantity",
+        "labelTh": "จำนวน",
+        "kind": "number",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "unit_price_satang",
+        "labelEn": "Unit price satang",
+        "labelTh": "รายการใบแจ้งหนี้ · Unit price satang",
+        "kind": "money-in-satang",
+        "unit": "satang",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "product_id",
+        "labelEn": "Product id",
+        "labelTh": "รายการใบแจ้งหนี้ · Product id",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "unit",
+        "labelEn": "Unit",
+        "labelTh": "รายการใบแจ้งหนี้ · Unit",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      }
+    ],
+    "primaryKey": [
+      "id"
+    ],
+    "requiredCapability": null,
+    "scope": "current organization; session RLS",
+    "exclusions": {}
+  },
+  {
+    "key": "invoice_line_stock",
+    "labelEn": "Invoice line stock",
+    "labelTh": "การส่งสินค้าใบแจ้งหนี้",
+    "fields": [
+      {
+        "key": "org_id",
+        "labelEn": "Org id",
+        "labelTh": "รหัสองค์กร",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "line_id",
+        "labelEn": "Line id",
+        "labelTh": "การส่งสินค้าใบแจ้งหนี้ · Line id",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "invoice_id",
+        "labelEn": "Invoice id",
+        "labelTh": "รหัสใบแจ้งหนี้",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "delivered_quantity",
+        "labelEn": "Delivered quantity",
+        "labelTh": "การส่งสินค้าใบแจ้งหนี้ · Delivered quantity",
+        "kind": "number",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "returned_quantity",
+        "labelEn": "Returned quantity",
+        "labelTh": "การส่งสินค้าใบแจ้งหนี้ · Returned quantity",
+        "kind": "number",
+        "searchable": false,
+        "textReadable": false
+      }
+    ],
+    "primaryKey": [
+      "line_id"
+    ],
+    "requiredCapability": null,
+    "scope": "current organization; session RLS",
+    "exclusions": {}
+  },
+  {
+    "key": "invoice_snapshots",
+    "labelEn": "Invoice snapshots",
+    "labelTh": "เอกสารใบแจ้งหนี้ที่ออกแล้ว",
+    "fields": [
+      {
+        "key": "id",
+        "labelEn": "Id",
+        "labelTh": "รหัส",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "org_id",
+        "labelEn": "Org id",
+        "labelTh": "รหัสองค์กร",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "invoice_id",
+        "labelEn": "Invoice id",
+        "labelTh": "รหัสใบแจ้งหนี้",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "issued_at",
+        "labelEn": "Issued at",
+        "labelTh": "เอกสารใบแจ้งหนี้ที่ออกแล้ว · Issued at",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "issued_by",
+        "labelEn": "Issued by",
+        "labelTh": "เอกสารใบแจ้งหนี้ที่ออกแล้ว · Issued by",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "number",
+        "labelEn": "Number",
+        "labelTh": "เลขที่",
+        "kind": "text",
+        "searchable": true,
+        "textReadable": true
+      },
+      {
+        "key": "snapshot",
+        "labelEn": "Snapshot",
+        "labelTh": "เอกสารใบแจ้งหนี้ที่ออกแล้ว · Snapshot",
+        "kind": "json",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "source_version",
+        "labelEn": "Source version",
+        "labelTh": "เอกสารใบแจ้งหนี้ที่ออกแล้ว · Source version",
+        "kind": "integer",
+        "searchable": false,
+        "textReadable": false
+      }
+    ],
+    "primaryKey": [
+      "id"
+    ],
+    "requiredCapability": null,
+    "scope": "current organization; session RLS",
+    "exclusions": {}
+  },
+  {
+    "key": "invoices",
+    "labelEn": "Invoices",
+    "labelTh": "ใบแจ้งหนี้",
+    "fields": [
+      {
+        "key": "id",
+        "labelEn": "Id",
+        "labelTh": "รหัส",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "org_id",
+        "labelEn": "Org id",
+        "labelTh": "รหัสองค์กร",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "created_at",
+        "labelEn": "Created at",
+        "labelTh": "สร้างเมื่อ",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "updated_at",
+        "labelEn": "Updated at",
+        "labelTh": "แก้ไขเมื่อ",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "source_subscription_id",
+        "labelEn": "Source subscription id",
+        "labelTh": "ใบแจ้งหนี้ · Source subscription id",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "quote_invoice_kind",
+        "labelEn": "Quote invoice kind",
+        "labelTh": "ใบแจ้งหนี้ · Quote invoice kind",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "quote_invoice_sealed",
+        "labelEn": "Quote invoice sealed",
+        "labelTh": "ใบแจ้งหนี้ · Quote invoice sealed",
+        "kind": "boolean",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "quote_deposit_satang",
+        "labelEn": "Quote deposit satang",
+        "labelTh": "ใบแจ้งหนี้ · Quote deposit satang",
+        "kind": "money-in-satang",
+        "unit": "satang",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "quote_deposit_deduction_satang",
+        "labelEn": "Quote deposit deduction satang",
+        "labelTh": "ใบแจ้งหนี้ · Quote deposit deduction satang",
+        "kind": "money-in-satang",
+        "unit": "satang",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "quote_discount_satang",
+        "labelEn": "Quote discount satang",
+        "labelTh": "ใบแจ้งหนี้ · Quote discount satang",
+        "kind": "money-in-satang",
+        "unit": "satang",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "prices_include_vat",
+        "labelEn": "Prices include vat",
+        "labelTh": "ใบแจ้งหนี้ · Prices include vat",
+        "kind": "boolean",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "wht_rate_bps",
+        "labelEn": "Wht rate bps",
+        "labelTh": "ใบแจ้งหนี้ · Wht rate bps",
+        "kind": "integer",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "subtotal_satang",
+        "labelEn": "Subtotal satang",
+        "labelTh": "ใบแจ้งหนี้ · Subtotal satang",
+        "kind": "money-in-satang",
+        "unit": "satang",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "vat_satang",
+        "labelEn": "Vat satang",
+        "labelTh": "ใบแจ้งหนี้ · Vat satang",
+        "kind": "money-in-satang",
+        "unit": "satang",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "wht_satang",
+        "labelEn": "Wht satang",
+        "labelTh": "ใบแจ้งหนี้ · Wht satang",
+        "kind": "money-in-satang",
+        "unit": "satang",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "total_satang",
+        "labelEn": "Total satang",
+        "labelTh": "ยอดรวม (สตางค์)",
+        "kind": "money-in-satang",
+        "unit": "satang",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "tax_breakdown",
+        "labelEn": "Tax breakdown",
+        "labelTh": "ใบแจ้งหนี้ · Tax breakdown",
+        "kind": "json",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "amount_satang",
+        "labelEn": "Amount satang",
+        "labelTh": "จำนวนเงิน (สตางค์)",
+        "kind": "money-in-satang",
+        "unit": "satang",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "client_id",
+        "labelEn": "Client id",
+        "labelTh": "รหัสลูกค้า",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "discount_satang",
+        "labelEn": "Discount satang",
+        "labelTh": "ใบแจ้งหนี้ · Discount satang",
+        "kind": "money-in-satang",
+        "unit": "satang",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "due_date",
+        "labelEn": "Due date",
+        "labelTh": "วันครบกำหนด",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "is_recurring",
+        "labelEn": "Is recurring",
+        "labelTh": "ใบแจ้งหนี้ · Is recurring",
+        "kind": "boolean",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "issue_date",
+        "labelEn": "Issue date",
+        "labelTh": "ใบแจ้งหนี้ · Issue date",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "issued_snapshot_id",
+        "labelEn": "Issued snapshot id",
+        "labelTh": "ใบแจ้งหนี้ · Issued snapshot id",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "notes",
+        "labelEn": "Notes",
+        "labelTh": "หมายเหตุ",
+        "kind": "text",
+        "searchable": true,
+        "textReadable": true
+      },
+      {
+        "key": "number",
+        "labelEn": "Number",
+        "labelTh": "เลขที่",
+        "kind": "text",
+        "searchable": true,
+        "textReadable": true
+      },
+      {
+        "key": "project_id",
+        "labelEn": "Project id",
+        "labelTh": "รหัสโครงการ",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "recurring_interval",
+        "labelEn": "Recurring interval",
+        "labelTh": "ใบแจ้งหนี้ · Recurring interval",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "source_milestone_id",
+        "labelEn": "Source milestone id",
+        "labelTh": "ใบแจ้งหนี้ · Source milestone id",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "source_quote_id",
+        "labelEn": "Source quote id",
+        "labelTh": "ใบแจ้งหนี้ · Source quote id",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "status",
+        "labelEn": "Status",
+        "labelTh": "สถานะ",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "version",
+        "labelEn": "Version",
+        "labelTh": "ใบแจ้งหนี้ · Version",
+        "kind": "integer",
+        "searchable": false,
+        "textReadable": false
+      }
+    ],
+    "primaryKey": [
+      "id"
+    ],
+    "requiredCapability": null,
+    "scope": "current organization; session RLS",
+    "exclusions": {},
+    "route": "/finance/invoices/{id}",
+    "financialAuthority": "Raw document fields only. Use list_invoices for effective status, verified receipts, credits and complete issued-unpaid coverage; finance_summary for complete finance totals."
+  },
+  {
+    "key": "journal_entries",
+    "labelEn": "Journal entries",
+    "labelTh": "รายการสมุดรายวัน",
+    "fields": [
+      {
+        "key": "id",
+        "labelEn": "Id",
+        "labelTh": "รหัส",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "org_id",
+        "labelEn": "Org id",
+        "labelTh": "รหัสองค์กร",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "entry_date",
+        "labelEn": "Entry date",
+        "labelTh": "รายการสมุดรายวัน · Entry date",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "memo",
+        "labelEn": "Memo",
+        "labelTh": "รายการสมุดรายวัน · Memo",
+        "kind": "text",
+        "searchable": true,
+        "textReadable": true
+      },
+      {
+        "key": "created_by",
+        "labelEn": "Created by",
+        "labelTh": "รายการสมุดรายวัน · Created by",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "created_at",
+        "labelEn": "Created at",
+        "labelTh": "สร้างเมื่อ",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "source_invoice_id",
+        "labelEn": "Source invoice id",
+        "labelTh": "รายการสมุดรายวัน · Source invoice id",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "source_credit_note_id",
+        "labelEn": "Source credit note id",
+        "labelTh": "รายการสมุดรายวัน · Source credit note id",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "source_payment_id",
+        "labelEn": "Source payment id",
+        "labelTh": "รายการสมุดรายวัน · Source payment id",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      }
+    ],
+    "primaryKey": [
+      "id"
+    ],
+    "requiredCapability": "profit:view",
+    "scope": "current organization; session RLS",
+    "exclusions": {}
+  },
+  {
+    "key": "journal_lines",
+    "labelEn": "Journal lines",
+    "labelTh": "รายการย่อยสมุดรายวัน",
+    "fields": [
+      {
+        "key": "org_id",
+        "labelEn": "Org id",
+        "labelTh": "รหัสองค์กร",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "entry_id",
+        "labelEn": "Entry id",
+        "labelTh": "รายการย่อยสมุดรายวัน · Entry id",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "line_no",
+        "labelEn": "Line no",
+        "labelTh": "รายการย่อยสมุดรายวัน · Line no",
+        "kind": "integer",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "account_code",
+        "labelEn": "Account code",
+        "labelTh": "รายการย่อยสมุดรายวัน · Account code",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "debit_satang",
+        "labelEn": "Debit satang",
+        "labelTh": "รายการย่อยสมุดรายวัน · Debit satang",
+        "kind": "money-in-satang",
+        "unit": "satang",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "credit_satang",
+        "labelEn": "Credit satang",
+        "labelTh": "รายการย่อยสมุดรายวัน · Credit satang",
+        "kind": "money-in-satang",
+        "unit": "satang",
+        "searchable": false,
+        "textReadable": false
+      }
+    ],
+    "primaryKey": [
+      "entry_id",
+      "line_no"
+    ],
+    "requiredCapability": "profit:view",
+    "scope": "current organization; session RLS",
+    "exclusions": {}
+  },
+  {
+    "key": "lead_forms",
+    "labelEn": "Lead forms",
+    "labelTh": "แบบฟอร์มรับลูกค้า",
+    "fields": [
+      {
+        "key": "id",
+        "labelEn": "Id",
+        "labelTh": "รหัส",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "org_id",
+        "labelEn": "Org id",
+        "labelTh": "รหัสองค์กร",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "name",
+        "labelEn": "Name",
+        "labelTh": "ชื่อ",
+        "kind": "text",
+        "searchable": true,
+        "textReadable": true
+      },
+      {
+        "key": "enabled",
+        "labelEn": "Enabled",
+        "labelTh": "แบบฟอร์มรับลูกค้า · Enabled",
+        "kind": "boolean",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "default_owner",
+        "labelEn": "Default owner",
+        "labelTh": "แบบฟอร์มรับลูกค้า · Default owner",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "success_message",
+        "labelEn": "Success message",
+        "labelTh": "แบบฟอร์มรับลูกค้า · Success message",
+        "kind": "text",
+        "searchable": true,
+        "textReadable": true
+      },
+      {
+        "key": "created_at",
+        "labelEn": "Created at",
+        "labelTh": "สร้างเมื่อ",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      }
+    ],
+    "primaryKey": [
+      "id"
+    ],
+    "requiredCapability": "settings:manage",
+    "scope": "current organization; session RLS",
+    "exclusions": {
+      "token": "Public lead-form submission bearer code."
+    }
+  },
+  {
+    "key": "lead_submissions",
+    "labelEn": "Lead submissions",
+    "labelTh": "การส่งแบบฟอร์มลูกค้า",
+    "fields": [
+      {
+        "key": "id",
+        "labelEn": "Id",
+        "labelTh": "รหัส",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "org_id",
+        "labelEn": "Org id",
+        "labelTh": "รหัสองค์กร",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "form_id",
+        "labelEn": "Form id",
+        "labelTh": "การส่งแบบฟอร์มลูกค้า · Form id",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "client_id",
+        "labelEn": "Client id",
+        "labelTh": "รหัสลูกค้า",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "deal_id",
+        "labelEn": "Deal id",
+        "labelTh": "การส่งแบบฟอร์มลูกค้า · Deal id",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "created_at",
+        "labelEn": "Created at",
+        "labelTh": "สร้างเมื่อ",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      }
+    ],
+    "primaryKey": [
+      "id"
+    ],
+    "requiredCapability": "settings:manage",
+    "scope": "current organization; session RLS",
+    "exclusions": {
+      "ip_hash": "Anti-abuse network identity fingerprint, not business message content. Submitted business text is retained in the related client/deal/activity."
+    }
+  },
+  {
+    "key": "member_cost_rates",
+    "labelEn": "Member cost rates",
+    "labelTh": "อัตราต้นทุนบุคลากร",
+    "fields": [
+      {
+        "key": "org_id",
+        "labelEn": "Org id",
+        "labelTh": "รหัสองค์กร",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "user_id",
+        "labelEn": "User id",
+        "labelTh": "อัตราต้นทุนบุคลากร · User id",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "cost_rate_satang",
+        "labelEn": "Cost rate satang",
+        "labelTh": "อัตราต้นทุนบุคลากร · Cost rate satang",
+        "kind": "money-in-satang",
+        "unit": "satang",
+        "searchable": false,
+        "textReadable": false
+      }
+    ],
+    "primaryKey": [
+      "user_id"
+    ],
+    "requiredCapability": "team:manage",
+    "scope": "current organization; owner/admin only per member_cost_rates_staff_read (accountant profit:view does not grant individual rate access)",
+    "exclusions": {}
+  },
+  {
+    "key": "memberships",
+    "labelEn": "Memberships",
+    "labelTh": "สมาชิกองค์กร",
+    "fields": [
+      {
+        "key": "id",
+        "labelEn": "Id",
+        "labelTh": "รหัส",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "org_id",
+        "labelEn": "Org id",
+        "labelTh": "รหัสองค์กร",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "created_at",
+        "labelEn": "Created at",
+        "labelTh": "สร้างเมื่อ",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "updated_at",
+        "labelEn": "Updated at",
+        "labelTh": "แก้ไขเมื่อ",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "role",
+        "labelEn": "Role",
+        "labelTh": "บทบาท",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "user_id",
+        "labelEn": "User id",
+        "labelTh": "สมาชิกองค์กร · User id",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      }
+    ],
+    "primaryKey": [
+      "id"
+    ],
+    "requiredCapability": null,
+    "scope": "current organization; owner/admin see team, others see own membership through RLS",
+    "exclusions": {}
+  },
+  {
+    "key": "milestones",
+    "labelEn": "Milestones",
+    "labelTh": "หลักหมายโครงการ",
+    "fields": [
+      {
+        "key": "id",
+        "labelEn": "Id",
+        "labelTh": "รหัส",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "org_id",
+        "labelEn": "Org id",
+        "labelTh": "รหัสองค์กร",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "created_at",
+        "labelEn": "Created at",
+        "labelTh": "สร้างเมื่อ",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "updated_at",
+        "labelEn": "Updated at",
+        "labelTh": "แก้ไขเมื่อ",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "done",
+        "labelEn": "Done",
+        "labelTh": "หลักหมายโครงการ · Done",
+        "kind": "boolean",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "due_date",
+        "labelEn": "Due date",
+        "labelTh": "วันครบกำหนด",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "project_id",
+        "labelEn": "Project id",
+        "labelTh": "รหัสโครงการ",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "source_quote_id",
+        "labelEn": "Source quote id",
+        "labelTh": "หลักหมายโครงการ · Source quote id",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "title",
+        "labelEn": "Title",
+        "labelTh": "หัวข้อ",
+        "kind": "text",
+        "searchable": true,
+        "textReadable": true
+      }
+    ],
+    "primaryKey": [
+      "id"
+    ],
+    "requiredCapability": null,
+    "scope": "current organization; session RLS",
+    "exclusions": {}
+  },
+  {
+    "key": "mobile_devices",
+    "labelEn": "Mobile devices",
+    "labelTh": "อุปกรณ์มือถือ",
+    "fields": [],
+    "primaryKey": [
+      "id"
+    ],
+    "requiredCapability": null,
+    "scope": "current organization; session RLS",
+    "exclusions": {},
+    "readable": false,
+    "reason": "Service-only mobile authentication store: authenticated SELECT revoked; no read policy. Never expose token_hash.",
+    "excludedFields": [
+      "id",
+      "org_id",
+      "user_id",
+      "name",
+      "token_hash",
+      "created_at",
+      "last_seen_at",
+      "revoked_at"
+    ]
+  },
+  {
+    "key": "mobile_pairings",
+    "labelEn": "Mobile pairings",
+    "labelTh": "การจับคู่มือถือ",
+    "fields": [],
+    "primaryKey": [
+      "id"
+    ],
+    "requiredCapability": null,
+    "scope": "current organization; session RLS",
+    "exclusions": {},
+    "readable": false,
+    "reason": "Service-only one-time mobile pairing store: authenticated SELECT revoked; no read policy. Never expose token_hash.",
+    "excludedFields": [
+      "id",
+      "org_id",
+      "created_by",
+      "token_hash",
+      "created_at",
+      "expires_at",
+      "consumed_at"
+    ]
+  },
+  {
+    "key": "network_devices",
+    "labelEn": "Network devices",
+    "labelTh": "อุปกรณ์เครือข่าย",
+    "fields": [
+      {
+        "key": "id",
+        "labelEn": "Id",
+        "labelTh": "รหัส",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "org_id",
+        "labelEn": "Org id",
+        "labelTh": "รหัสองค์กร",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "name",
+        "labelEn": "Name",
+        "labelTh": "ชื่อ",
+        "kind": "text",
+        "searchable": true,
+        "textReadable": true
+      },
+      {
+        "key": "created_by",
+        "labelEn": "Created by",
+        "labelTh": "อุปกรณ์เครือข่าย · Created by",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "created_at",
+        "labelEn": "Created at",
+        "labelTh": "สร้างเมื่อ",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "revoked_at",
+        "labelEn": "Revoked at",
+        "labelTh": "อุปกรณ์เครือข่าย · Revoked at",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "last_received_at",
+        "labelEn": "Last received at",
+        "labelTh": "อุปกรณ์เครือข่าย · Last received at",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "latest_captured_at",
+        "labelEn": "Latest captured at",
+        "labelTh": "อุปกรณ์เครือข่าย · Latest captured at",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "latest_report",
+        "labelEn": "Latest report",
+        "labelTh": "อุปกรณ์เครือข่าย · Latest report",
+        "kind": "json",
+        "searchable": false,
+        "textReadable": true
+      }
+    ],
+    "primaryKey": [
+      "id"
+    ],
+    "requiredCapability": "settings:manage",
+    "scope": "current organization; owner/admin plus database MFA assurance gate",
+    "exclusions": {
+      "token_hash": "Ingest credential hash; session column SELECT explicitly denied."
+    }
+  },
+  {
+    "key": "network_policy",
+    "labelEn": "Network policy",
+    "labelTh": "นโยบายเครือข่าย",
+    "fields": [
+      {
+        "key": "org_id",
+        "labelEn": "Org id",
+        "labelTh": "รหัสองค์กร",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "allowed_cidrs",
+        "labelEn": "Allowed cidrs",
+        "labelTh": "นโยบายเครือข่าย · Allowed cidrs",
+        "kind": "text-array",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "updated_by",
+        "labelEn": "Updated by",
+        "labelTh": "นโยบายเครือข่าย · Updated by",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "updated_at",
+        "labelEn": "Updated at",
+        "labelTh": "แก้ไขเมื่อ",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      }
+    ],
+    "primaryKey": [
+      "org_id"
+    ],
+    "requiredCapability": "settings:manage",
+    "scope": "current organization; owner/admin plus database MFA assurance gate",
+    "exclusions": {}
+  },
+  {
+    "key": "org_settings",
+    "labelEn": "Org settings",
+    "labelTh": "ข้อมูลและการตั้งค่าองค์กร",
+    "fields": [
+      {
+        "key": "id",
+        "labelEn": "Id",
+        "labelTh": "รหัส",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "org_id",
+        "labelEn": "Org id",
+        "labelTh": "รหัสองค์กร",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "created_at",
+        "labelEn": "Created at",
+        "labelTh": "สร้างเมื่อ",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "updated_at",
+        "labelEn": "Updated at",
+        "labelTh": "แก้ไขเมื่อ",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "require_different_payment_reviewer",
+        "labelEn": "Require different payment reviewer",
+        "labelTh": "ข้อมูลและการตั้งค่าองค์กร · Require different payment reviewer",
+        "kind": "boolean",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "bill_variance_tolerance_bps",
+        "labelEn": "Bill variance tolerance bps",
+        "labelTh": "ข้อมูลและการตั้งค่าองค์กร · Bill variance tolerance bps",
+        "kind": "integer",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "scheduled_replenishment_enabled",
+        "labelEn": "Scheduled replenishment enabled",
+        "labelTh": "ข้อมูลและการตั้งค่าองค์กร · Scheduled replenishment enabled",
+        "kind": "boolean",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "public_document_refs_enabled",
+        "labelEn": "Public document refs enabled",
+        "labelTh": "ข้อมูลและการตั้งค่าองค์กร · Public document refs enabled",
+        "kind": "boolean",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "purchase_approval_threshold_satang",
+        "labelEn": "Purchase approval threshold satang",
+        "labelTh": "ข้อมูลและการตั้งค่าองค์กร · Purchase approval threshold satang",
+        "kind": "money-in-satang",
+        "unit": "satang",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "over_receipt_tolerance_percent",
+        "labelEn": "Over receipt tolerance percent",
+        "labelTh": "ข้อมูลและการตั้งค่าองค์กร · Over receipt tolerance percent",
+        "kind": "number",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "wht_rate_bps",
+        "labelEn": "Wht rate bps",
+        "labelTh": "ข้อมูลและการตั้งค่าองค์กร · Wht rate bps",
+        "kind": "integer",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "lock_date",
+        "labelEn": "Lock date",
+        "labelTh": "ข้อมูลและการตั้งค่าองค์กร · Lock date",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "vat_registered",
+        "labelEn": "Vat registered",
+        "labelTh": "ข้อมูลและการตั้งค่าองค์กร · Vat registered",
+        "kind": "boolean",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "vat_rate_bps",
+        "labelEn": "Vat rate bps",
+        "labelTh": "ข้อมูลและการตั้งค่าองค์กร · Vat rate bps",
+        "kind": "integer",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "prices_include_vat",
+        "labelEn": "Prices include vat",
+        "labelTh": "ข้อมูลและการตั้งค่าองค์กร · Prices include vat",
+        "kind": "boolean",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "branch_label",
+        "labelEn": "Branch label",
+        "labelTh": "ข้อมูลและการตั้งค่าองค์กร · Branch label",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "tax_invoice_template",
+        "labelEn": "Tax invoice template",
+        "labelTh": "ข้อมูลและการตั้งค่าองค์กร · Tax invoice template",
+        "kind": "json",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "allow_negative_stock",
+        "labelEn": "Allow negative stock",
+        "labelTh": "ข้อมูลและการตั้งค่าองค์กร · Allow negative stock",
+        "kind": "boolean",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "business_address",
+        "labelEn": "Business address",
+        "labelTh": "ข้อมูลและการตั้งค่าองค์กร · Business address",
+        "kind": "text",
+        "searchable": true,
+        "textReadable": true
+      },
+      {
+        "key": "cash_balance_satang",
+        "labelEn": "Cash balance satang",
+        "labelTh": "ข้อมูลและการตั้งค่าองค์กร · Cash balance satang",
+        "kind": "money-in-satang",
+        "unit": "satang",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "legal_name",
+        "labelEn": "Legal name",
+        "labelTh": "ข้อมูลและการตั้งค่าองค์กร · Legal name",
+        "kind": "text",
+        "searchable": true,
+        "textReadable": true
+      },
+      {
+        "key": "monthly_burn_satang",
+        "labelEn": "Monthly burn satang",
+        "labelTh": "ข้อมูลและการตั้งค่าองค์กร · Monthly burn satang",
+        "kind": "money-in-satang",
+        "unit": "satang",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "tax_id",
+        "labelEn": "Tax id",
+        "labelTh": "ข้อมูลและการตั้งค่าองค์กร · Tax id",
+        "kind": "text",
+        "searchable": true,
+        "textReadable": true
+      },
+      {
+        "key": "tax_status",
+        "labelEn": "Tax status",
+        "labelTh": "ข้อมูลและการตั้งค่าองค์กร · Tax status",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      }
+    ],
+    "primaryKey": [
+      "org_id"
+    ],
+    "requiredCapability": null,
+    "scope": "current organization; session RLS",
+    "exclusions": {}
+  },
+  {
+    "key": "organizations",
+    "labelEn": "Organizations",
+    "labelTh": "องค์กรปัจจุบัน",
+    "fields": [
+      {
+        "key": "id",
+        "labelEn": "Id",
+        "labelTh": "รหัส",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "name",
+        "labelEn": "Name",
+        "labelTh": "ชื่อ",
+        "kind": "text",
+        "searchable": true,
+        "textReadable": true
+      },
+      {
+        "key": "slug",
+        "labelEn": "Slug",
+        "labelTh": "องค์กรปัจจุบัน · Slug",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "created_at",
+        "labelEn": "Created at",
+        "labelTh": "สร้างเมื่อ",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "updated_at",
+        "labelEn": "Updated at",
+        "labelTh": "แก้ไขเมื่อ",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      }
+    ],
+    "primaryKey": [
+      "id"
+    ],
+    "requiredCapability": null,
+    "scope": "current organization; session RLS",
+    "exclusions": {}
+  },
+  {
+    "key": "outbound_events",
+    "labelEn": "Outbound events",
+    "labelTh": "สถานะการส่งข้อความ",
+    "fields": [
+      {
+        "key": "id",
+        "labelEn": "Id",
+        "labelTh": "รหัส",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "org_id",
+        "labelEn": "Org id",
+        "labelTh": "รหัสองค์กร",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "attempts",
+        "labelEn": "Attempts",
+        "labelTh": "สถานะการส่งข้อความ · Attempts",
+        "kind": "integer",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "created_at",
+        "labelEn": "Created at",
+        "labelTh": "สร้างเมื่อ",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "delivered_at",
+        "labelEn": "Delivered at",
+        "labelTh": "สถานะการส่งข้อความ · Delivered at",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "event_type",
+        "labelEn": "Event type",
+        "labelTh": "สถานะการส่งข้อความ · Event type",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "lease_expires_at",
+        "labelEn": "Lease expires at",
+        "labelTh": "สถานะการส่งข้อความ · Lease expires at",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "next_attempt_at",
+        "labelEn": "Next attempt at",
+        "labelTh": "สถานะการส่งข้อความ · Next attempt at",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "reminder_id",
+        "labelEn": "Reminder id",
+        "labelTh": "สถานะการส่งข้อความ · Reminder id",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "status",
+        "labelEn": "Status",
+        "labelTh": "สถานะ",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      }
+    ],
+    "primaryKey": [
+      "id"
+    ],
+    "requiredCapability": "settings:manage",
+    "scope": "current organization; session RLS",
+    "exclusions": {
+      "lease_token": "Worker lease bearer material.",
+      "payload": "Opaque outbound payload may contain portal links, recipients and credentials.",
+      "last_error": "Transport diagnostics may contain credential-bearing URLs."
+    }
+  },
+  {
+    "key": "payment_allocations",
+    "labelEn": "Payment allocations",
+    "labelTh": "การจัดสรรเงินรับ",
+    "fields": [
+      {
+        "key": "id",
+        "labelEn": "Id",
+        "labelTh": "รหัส",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "org_id",
+        "labelEn": "Org id",
+        "labelTh": "รหัสองค์กร",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "amount_satang",
+        "labelEn": "Amount satang",
+        "labelTh": "จำนวนเงิน (สตางค์)",
+        "kind": "money-in-satang",
+        "unit": "satang",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "created_at",
+        "labelEn": "Created at",
+        "labelTh": "สร้างเมื่อ",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "invoice_id",
+        "labelEn": "Invoice id",
+        "labelTh": "รหัสใบแจ้งหนี้",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "payment_id",
+        "labelEn": "Payment id",
+        "labelTh": "การจัดสรรเงินรับ · Payment id",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      }
+    ],
+    "primaryKey": [
+      "id"
+    ],
+    "requiredCapability": null,
+    "scope": "current organization; session RLS",
+    "exclusions": {}
+  },
+  {
+    "key": "payment_claims",
+    "labelEn": "Payment claims",
+    "labelTh": "รายการแจ้งชำระเงิน",
+    "fields": [
+      {
+        "key": "id",
+        "labelEn": "Id",
+        "labelTh": "รหัส",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "org_id",
+        "labelEn": "Org id",
+        "labelTh": "รหัสองค์กร",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "created_at",
+        "labelEn": "Created at",
+        "labelTh": "สร้างเมื่อ",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "updated_at",
+        "labelEn": "Updated at",
+        "labelTh": "แก้ไขเมื่อ",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "amount_satang",
+        "labelEn": "Amount satang",
+        "labelTh": "จำนวนเงิน (สตางค์)",
+        "kind": "money-in-satang",
+        "unit": "satang",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "client_id",
+        "labelEn": "Client id",
+        "labelTh": "รหัสลูกค้า",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "invoice_id",
+        "labelEn": "Invoice id",
+        "labelTh": "รหัสใบแจ้งหนี้",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "payment_id",
+        "labelEn": "Payment id",
+        "labelTh": "รายการแจ้งชำระเงิน · Payment id",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "reference",
+        "labelEn": "Reference",
+        "labelTh": "ข้อมูลอ้างอิง",
+        "kind": "text",
+        "searchable": true,
+        "textReadable": true
+      },
+      {
+        "key": "review_reference",
+        "labelEn": "Review reference",
+        "labelTh": "รายการแจ้งชำระเงิน · Review reference",
+        "kind": "text",
+        "searchable": true,
+        "textReadable": true
+      },
+      {
+        "key": "reviewed_at",
+        "labelEn": "Reviewed at",
+        "labelTh": "รายการแจ้งชำระเงิน · Reviewed at",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "reviewed_by",
+        "labelEn": "Reviewed by",
+        "labelTh": "รายการแจ้งชำระเงิน · Reviewed by",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "source",
+        "labelEn": "Source",
+        "labelTh": "รายการแจ้งชำระเงิน · Source",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "status",
+        "labelEn": "Status",
+        "labelTh": "สถานะ",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "submitted_by",
+        "labelEn": "Submitted by",
+        "labelTh": "รายการแจ้งชำระเงิน · Submitted by",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "requested_allocations",
+        "labelEn": "Requested allocations",
+        "labelTh": "รายการแจ้งชำระเงิน · Requested allocations",
+        "kind": "json",
+        "searchable": false,
+        "textReadable": true
+      }
+    ],
+    "primaryKey": [
+      "id"
+    ],
+    "requiredCapability": null,
+    "scope": "current organization; session RLS",
+    "exclusions": {
+      "idempotency_key": "Payment command replay identity, not business evidence."
+    }
+  },
+  {
+    "key": "payment_command_results",
+    "labelEn": "Payment command results",
+    "labelTh": "ผลคำสั่งชำระเงิน",
+    "fields": [],
+    "primaryKey": [
+      "id"
+    ],
+    "requiredCapability": null,
+    "scope": "current organization; session RLS",
+    "exclusions": {},
+    "readable": false,
+    "reason": "Internal payment command store: authenticated has no direct SELECT grant/read policy; request contains command evidence. Use payments, allocations and claims.",
+    "excludedFields": [
+      "org_id",
+      "key",
+      "request",
+      "result",
+      "created_at"
+    ]
+  },
+  {
+    "key": "payments",
+    "labelEn": "Payments",
+    "labelTh": "การรับชำระเงิน",
+    "fields": [
+      {
+        "key": "id",
+        "labelEn": "Id",
+        "labelTh": "รหัส",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "org_id",
+        "labelEn": "Org id",
+        "labelTh": "รหัสองค์กร",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "created_at",
+        "labelEn": "Created at",
+        "labelTh": "สร้างเมื่อ",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "updated_at",
+        "labelEn": "Updated at",
+        "labelTh": "แก้ไขเมื่อ",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "client_id",
+        "labelEn": "Client id",
+        "labelTh": "รหัสลูกค้า",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "reversal_of",
+        "labelEn": "Reversal of",
+        "labelTh": "การรับชำระเงิน · Reversal of",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "refund_of",
+        "labelEn": "Refund of",
+        "labelTh": "การรับชำระเงิน · Refund of",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "amount_satang",
+        "labelEn": "Amount satang",
+        "labelTh": "จำนวนเงิน (สตางค์)",
+        "kind": "money-in-satang",
+        "unit": "satang",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "invoice_id",
+        "labelEn": "Invoice id",
+        "labelTh": "รหัสใบแจ้งหนี้",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "method",
+        "labelEn": "Method",
+        "labelTh": "การรับชำระเงิน · Method",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "notes",
+        "labelEn": "Notes",
+        "labelTh": "หมายเหตุ",
+        "kind": "text",
+        "searchable": true,
+        "textReadable": true
+      },
+      {
+        "key": "paid_at",
+        "labelEn": "Paid at",
+        "labelTh": "การรับชำระเงิน · Paid at",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "reconciled_payment_id",
+        "labelEn": "Reconciled payment id",
+        "labelTh": "การรับชำระเงิน · Reconciled payment id",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "verification_reference",
+        "labelEn": "Verification reference",
+        "labelTh": "การรับชำระเงิน · Verification reference",
+        "kind": "text",
+        "searchable": true,
+        "textReadable": true
+      },
+      {
+        "key": "verification_state",
+        "labelEn": "Verification state",
+        "labelTh": "การรับชำระเงิน · Verification state",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "verified_by",
+        "labelEn": "Verified by",
+        "labelTh": "การรับชำระเงิน · Verified by",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      }
+    ],
+    "primaryKey": [
+      "id"
+    ],
+    "requiredCapability": null,
+    "scope": "current organization; session RLS",
+    "exclusions": {
+      "command_key": "Internal payment replay identity."
+    }
+  },
+  {
+    "key": "portal_claim_requests",
+    "labelEn": "Portal claim requests",
+    "labelTh": "คำสั่งแจ้งชำระจากพอร์ทัล",
+    "fields": [],
+    "primaryKey": [
+      "id"
+    ],
+    "requiredCapability": null,
+    "scope": "current organization; session RLS",
+    "exclusions": {},
+    "readable": false,
+    "reason": "Internal portal command idempotency store: no authenticated SELECT/read policy. Use payment_claims.",
+    "excludedFields": [
+      "org_id",
+      "key",
+      "request",
+      "result",
+      "created_at"
+    ]
+  },
+  {
+    "key": "product_vendor_lead_times",
+    "labelEn": "Product vendor lead times",
+    "labelTh": "ระยะเวลาจัดหาสินค้า",
+    "fields": [
+      {
+        "key": "org_id",
+        "labelEn": "Org id",
+        "labelTh": "รหัสองค์กร",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "product_id",
+        "labelEn": "Product id",
+        "labelTh": "ระยะเวลาจัดหาสินค้า · Product id",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "vendor_id",
+        "labelEn": "Vendor id",
+        "labelTh": "ระยะเวลาจัดหาสินค้า · Vendor id",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "lead_days",
+        "labelEn": "Lead days",
+        "labelTh": "ระยะเวลาจัดหาสินค้า · Lead days",
+        "kind": "integer",
+        "searchable": false,
+        "textReadable": false
+      }
+    ],
+    "primaryKey": [
+      "product_id",
+      "vendor_id"
+    ],
+    "requiredCapability": null,
+    "scope": "current organization; session RLS",
+    "exclusions": {}
+  },
+  {
+    "key": "products",
+    "labelEn": "Products",
+    "labelTh": "สินค้าและบริการ",
+    "fields": [
+      {
+        "key": "id",
+        "labelEn": "Id",
+        "labelTh": "รหัส",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "org_id",
+        "labelEn": "Org id",
+        "labelTh": "รหัสองค์กร",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "created_at",
+        "labelEn": "Created at",
+        "labelTh": "สร้างเมื่อ",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "updated_at",
+        "labelEn": "Updated at",
+        "labelTh": "แก้ไขเมื่อ",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "wht_rate_bps",
+        "labelEn": "Wht rate bps",
+        "labelTh": "สินค้าและบริการ · Wht rate bps",
+        "kind": "integer",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "sku",
+        "labelEn": "Sku",
+        "labelTh": "สินค้าและบริการ · Sku",
+        "kind": "text",
+        "searchable": true,
+        "textReadable": true
+      },
+      {
+        "key": "name",
+        "labelEn": "Name",
+        "labelTh": "ชื่อ",
+        "kind": "text",
+        "searchable": true,
+        "textReadable": true
+      },
+      {
+        "key": "description",
+        "labelEn": "Description",
+        "labelTh": "รายละเอียด",
+        "kind": "text",
+        "searchable": true,
+        "textReadable": true
+      },
+      {
+        "key": "type",
+        "labelEn": "Type",
+        "labelTh": "สินค้าและบริการ · Type",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "unit",
+        "labelEn": "Unit",
+        "labelTh": "สินค้าและบริการ · Unit",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "list_price_satang",
+        "labelEn": "List price satang",
+        "labelTh": "สินค้าและบริการ · List price satang",
+        "kind": "money-in-satang",
+        "unit": "satang",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "cost_satang",
+        "labelEn": "Cost satang",
+        "labelTh": "สินค้าและบริการ · Cost satang",
+        "kind": "money-in-satang",
+        "unit": "satang",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "reorder_min",
+        "labelEn": "Reorder min",
+        "labelTh": "สินค้าและบริการ · Reorder min",
+        "kind": "number",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "reorder_qty",
+        "labelEn": "Reorder qty",
+        "labelTh": "สินค้าและบริการ · Reorder qty",
+        "kind": "number",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "default_vendor_id",
+        "labelEn": "Default vendor id",
+        "labelTh": "สินค้าและบริการ · Default vendor id",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "tax_rate_bps",
+        "labelEn": "Tax rate bps",
+        "labelTh": "สินค้าและบริการ · Tax rate bps",
+        "kind": "integer",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "is_stockable",
+        "labelEn": "Is stockable",
+        "labelTh": "สินค้าและบริการ · Is stockable",
+        "kind": "boolean",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "active",
+        "labelEn": "Active",
+        "labelTh": "สินค้าและบริการ · Active",
+        "kind": "boolean",
+        "searchable": false,
+        "textReadable": false
+      }
+    ],
+    "primaryKey": [
+      "id"
+    ],
+    "requiredCapability": null,
+    "scope": "current organization; session RLS",
+    "exclusions": {},
+    "route": "/products/{id}"
+  },
+  {
+    "key": "profiles",
+    "labelEn": "Profiles",
+    "labelTh": "โปรไฟล์สมาชิก",
+    "fields": [
+      {
+        "key": "id",
+        "labelEn": "Id",
+        "labelTh": "รหัส",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "full_name",
+        "labelEn": "Full name",
+        "labelTh": "ชื่อเต็ม",
+        "kind": "text",
+        "searchable": true,
+        "textReadable": true
+      },
+      {
+        "key": "locale",
+        "labelEn": "Locale",
+        "labelTh": "โปรไฟล์สมาชิก · Locale",
+        "kind": "text",
+        "searchable": true,
+        "textReadable": true
+      },
+      {
+        "key": "created_at",
+        "labelEn": "Created at",
+        "labelTh": "สร้างเมื่อ",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "updated_at",
+        "labelEn": "Updated at",
+        "labelTh": "แก้ไขเมื่อ",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      }
+    ],
+    "primaryKey": [
+      "id"
+    ],
+    "requiredCapability": null,
+    "scope": "current organization via session-visible memberships; profile RLS also applies",
+    "exclusions": {
+      "avatar_url": "Untrusted external URL can contain bearer query material; no URL is needed to read a member profile."
+    }
+  },
+  {
+    "key": "project_tasks",
+    "labelEn": "Project tasks",
+    "labelTh": "งานโครงการ",
+    "fields": [
+      {
+        "key": "id",
+        "labelEn": "Id",
+        "labelTh": "รหัส",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "org_id",
+        "labelEn": "Org id",
+        "labelTh": "รหัสองค์กร",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "created_at",
+        "labelEn": "Created at",
+        "labelTh": "สร้างเมื่อ",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "updated_at",
+        "labelEn": "Updated at",
+        "labelTh": "แก้ไขเมื่อ",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "assignee",
+        "labelEn": "Assignee",
+        "labelTh": "งานโครงการ · Assignee",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "done",
+        "labelEn": "Done",
+        "labelTh": "งานโครงการ · Done",
+        "kind": "boolean",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "due_date",
+        "labelEn": "Due date",
+        "labelTh": "วันครบกำหนด",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "project_id",
+        "labelEn": "Project id",
+        "labelTh": "รหัสโครงการ",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "status",
+        "labelEn": "Status",
+        "labelTh": "สถานะ",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "title",
+        "labelEn": "Title",
+        "labelTh": "หัวข้อ",
+        "kind": "text",
+        "searchable": true,
+        "textReadable": true
+      }
+    ],
+    "primaryKey": [
+      "id"
+    ],
+    "requiredCapability": null,
+    "scope": "current organization; session RLS",
+    "exclusions": {}
+  },
+  {
+    "key": "projects",
+    "labelEn": "Projects",
+    "labelTh": "โครงการ",
+    "fields": [
+      {
+        "key": "id",
+        "labelEn": "Id",
+        "labelTh": "รหัส",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "org_id",
+        "labelEn": "Org id",
+        "labelTh": "รหัสองค์กร",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "created_at",
+        "labelEn": "Created at",
+        "labelTh": "สร้างเมื่อ",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "updated_at",
+        "labelEn": "Updated at",
+        "labelTh": "แก้ไขเมื่อ",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "budget_satang",
+        "labelEn": "Budget satang",
+        "labelTh": "โครงการ · Budget satang",
+        "kind": "money-in-satang",
+        "unit": "satang",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "client_id",
+        "labelEn": "Client id",
+        "labelTh": "รหัสลูกค้า",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "deadline",
+        "labelEn": "Deadline",
+        "labelTh": "โครงการ · Deadline",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "deal_id",
+        "labelEn": "Deal id",
+        "labelTh": "โครงการ · Deal id",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "name",
+        "labelEn": "Name",
+        "labelTh": "ชื่อ",
+        "kind": "text",
+        "searchable": true,
+        "textReadable": true
+      },
+      {
+        "key": "owner",
+        "labelEn": "Owner",
+        "labelTh": "โครงการ · Owner",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "source_quote_id",
+        "labelEn": "Source quote id",
+        "labelTh": "โครงการ · Source quote id",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "status",
+        "labelEn": "Status",
+        "labelTh": "สถานะ",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      }
+    ],
+    "primaryKey": [
+      "id"
+    ],
+    "requiredCapability": null,
+    "scope": "current organization; session RLS",
+    "exclusions": {},
+    "route": "/projects/{id}"
+  },
+  {
+    "key": "purchase_order_items",
+    "labelEn": "Purchase order items",
+    "labelTh": "รายการใบสั่งซื้อ",
+    "fields": [
+      {
+        "key": "id",
+        "labelEn": "Id",
+        "labelTh": "รหัส",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "org_id",
+        "labelEn": "Org id",
+        "labelTh": "รหัสองค์กร",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "purchase_order_id",
+        "labelEn": "Purchase order id",
+        "labelTh": "รายการใบสั่งซื้อ · Purchase order id",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "product_id",
+        "labelEn": "Product id",
+        "labelTh": "รายการใบสั่งซื้อ · Product id",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "description",
+        "labelEn": "Description",
+        "labelTh": "รายละเอียด",
+        "kind": "text",
+        "searchable": true,
+        "textReadable": true
+      },
+      {
+        "key": "quantity",
+        "labelEn": "Quantity",
+        "labelTh": "จำนวน",
+        "kind": "number",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "unit",
+        "labelEn": "Unit",
+        "labelTh": "รายการใบสั่งซื้อ · Unit",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "unit_cost_satang",
+        "labelEn": "Unit cost satang",
+        "labelTh": "รายการใบสั่งซื้อ · Unit cost satang",
+        "kind": "money-in-satang",
+        "unit": "satang",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "received_quantity",
+        "labelEn": "Received quantity",
+        "labelTh": "รายการใบสั่งซื้อ · Received quantity",
+        "kind": "number",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "returned_quantity",
+        "labelEn": "Returned quantity",
+        "labelTh": "รายการใบสั่งซื้อ · Returned quantity",
+        "kind": "number",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "billed_quantity",
+        "labelEn": "Billed quantity",
+        "labelTh": "รายการใบสั่งซื้อ · Billed quantity",
+        "kind": "number",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "position",
+        "labelEn": "Position",
+        "labelTh": "รายการใบสั่งซื้อ · Position",
+        "kind": "integer",
+        "searchable": false,
+        "textReadable": false
+      }
+    ],
+    "primaryKey": [
+      "id"
+    ],
+    "requiredCapability": null,
+    "scope": "current organization; session RLS",
+    "exclusions": {}
+  },
+  {
+    "key": "purchase_orders",
+    "labelEn": "Purchase orders",
+    "labelTh": "ใบสั่งซื้อ",
+    "fields": [
+      {
+        "key": "id",
+        "labelEn": "Id",
+        "labelTh": "รหัส",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "org_id",
+        "labelEn": "Org id",
+        "labelTh": "รหัสองค์กร",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "created_at",
+        "labelEn": "Created at",
+        "labelTh": "สร้างเมื่อ",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "updated_at",
+        "labelEn": "Updated at",
+        "labelTh": "แก้ไขเมื่อ",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "approved_by",
+        "labelEn": "Approved by",
+        "labelTh": "ใบสั่งซื้อ · Approved by",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "approved_at",
+        "labelEn": "Approved at",
+        "labelTh": "ใบสั่งซื้อ · Approved at",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "approval_snapshot",
+        "labelEn": "Approval snapshot",
+        "labelTh": "ใบสั่งซื้อ · Approval snapshot",
+        "kind": "json",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "rfq_snapshot",
+        "labelEn": "Rfq snapshot",
+        "labelTh": "ใบสั่งซื้อ · Rfq snapshot",
+        "kind": "json",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "rfq_delivered_at",
+        "labelEn": "Rfq delivered at",
+        "labelTh": "ใบสั่งซื้อ · Rfq delivered at",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "number",
+        "labelEn": "Number",
+        "labelTh": "เลขที่",
+        "kind": "text",
+        "searchable": true,
+        "textReadable": true
+      },
+      {
+        "key": "vendor_id",
+        "labelEn": "Vendor id",
+        "labelTh": "ใบสั่งซื้อ · Vendor id",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "status",
+        "labelEn": "Status",
+        "labelTh": "สถานะ",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "order_date",
+        "labelEn": "Order date",
+        "labelTh": "ใบสั่งซื้อ · Order date",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "expected_date",
+        "labelEn": "Expected date",
+        "labelTh": "ใบสั่งซื้อ · Expected date",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "notes",
+        "labelEn": "Notes",
+        "labelTh": "หมายเหตุ",
+        "kind": "text",
+        "searchable": true,
+        "textReadable": true
+      },
+      {
+        "key": "created_by",
+        "labelEn": "Created by",
+        "labelTh": "ใบสั่งซื้อ · Created by",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      }
+    ],
+    "primaryKey": [
+      "id"
+    ],
+    "requiredCapability": null,
+    "scope": "current organization; session RLS",
+    "exclusions": {
+      "rfq_delivery_key": "Delivery command replay identity.",
+      "rfq_delivery_error": "Transport diagnostics may contain credential-bearing URLs."
+    },
+    "route": "/purchases/{id}"
+  },
+  {
+    "key": "purchase_withholdings",
+    "labelEn": "Purchase withholdings",
+    "labelTh": "ภาษีหัก ณ ที่จ่ายซื้อ",
+    "fields": [
+      {
+        "key": "id",
+        "labelEn": "Id",
+        "labelTh": "รหัส",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "org_id",
+        "labelEn": "Org id",
+        "labelTh": "รหัสองค์กร",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "cost_id",
+        "labelEn": "Cost id",
+        "labelTh": "ภาษีหัก ณ ที่จ่ายซื้อ · Cost id",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "paid_on",
+        "labelEn": "Paid on",
+        "labelTh": "ภาษีหัก ณ ที่จ่ายซื้อ · Paid on",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "form",
+        "labelEn": "Form",
+        "labelTh": "ภาษีหัก ณ ที่จ่ายซื้อ · Form",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "income_type",
+        "labelEn": "Income type",
+        "labelTh": "ภาษีหัก ณ ที่จ่ายซื้อ · Income type",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "rate_bps",
+        "labelEn": "Rate bps",
+        "labelTh": "ภาษีหัก ณ ที่จ่ายซื้อ · Rate bps",
+        "kind": "integer",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "base_satang",
+        "labelEn": "Base satang",
+        "labelTh": "ภาษีหัก ณ ที่จ่ายซื้อ · Base satang",
+        "kind": "money-in-satang",
+        "unit": "satang",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "wht_satang",
+        "labelEn": "Wht satang",
+        "labelTh": "ภาษีหัก ณ ที่จ่ายซื้อ · Wht satang",
+        "kind": "money-in-satang",
+        "unit": "satang",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "certificate_year",
+        "labelEn": "Certificate year",
+        "labelTh": "ภาษีหัก ณ ที่จ่ายซื้อ · Certificate year",
+        "kind": "integer",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "certificate_seq",
+        "labelEn": "Certificate seq",
+        "labelTh": "ภาษีหัก ณ ที่จ่ายซื้อ · Certificate seq",
+        "kind": "integer",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "certificate_no",
+        "labelEn": "Certificate no",
+        "labelTh": "ภาษีหัก ณ ที่จ่ายซื้อ · Certificate no",
+        "kind": "text",
+        "searchable": true,
+        "textReadable": true
+      },
+      {
+        "key": "created_by",
+        "labelEn": "Created by",
+        "labelTh": "ภาษีหัก ณ ที่จ่ายซื้อ · Created by",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "created_at",
+        "labelEn": "Created at",
+        "labelTh": "สร้างเมื่อ",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      }
+    ],
+    "primaryKey": [
+      "id"
+    ],
+    "requiredCapability": "profit:view",
+    "scope": "current organization; session RLS",
+    "exclusions": {}
+  },
+  {
+    "key": "quote_conversion_requests",
+    "labelEn": "Quote conversion requests",
+    "labelTh": "คำสั่งแปลงใบเสนอราคา",
+    "fields": [],
+    "primaryKey": [
+      "id"
+    ],
+    "requiredCapability": null,
+    "scope": "current organization; session RLS",
+    "exclusions": {},
+    "readable": false,
+    "reason": "Internal conversion command store: authenticated SELECT revoked and no read policy. Use quotes and linked invoices.",
+    "excludedFields": [
+      "org_id",
+      "key",
+      "quote_id",
+      "invoice_id",
+      "created_at"
+    ]
+  },
+  {
+    "key": "quote_items",
+    "labelEn": "Quote items",
+    "labelTh": "รายการใบเสนอราคา",
+    "fields": [
+      {
+        "key": "id",
+        "labelEn": "Id",
+        "labelTh": "รหัส",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "org_id",
+        "labelEn": "Org id",
+        "labelTh": "รหัสองค์กร",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "created_at",
+        "labelEn": "Created at",
+        "labelTh": "สร้างเมื่อ",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "updated_at",
+        "labelEn": "Updated at",
+        "labelTh": "แก้ไขเมื่อ",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "invoiced_quantity",
+        "labelEn": "Invoiced quantity",
+        "labelTh": "รายการใบเสนอราคา · Invoiced quantity",
+        "kind": "number",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "tax_rate_bps",
+        "labelEn": "Tax rate bps",
+        "labelTh": "รายการใบเสนอราคา · Tax rate bps",
+        "kind": "integer",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "amount_satang",
+        "labelEn": "Amount satang",
+        "labelTh": "จำนวนเงิน (สตางค์)",
+        "kind": "money-in-satang",
+        "unit": "satang",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "description",
+        "labelEn": "Description",
+        "labelTh": "รายละเอียด",
+        "kind": "text",
+        "searchable": true,
+        "textReadable": true
+      },
+      {
+        "key": "position",
+        "labelEn": "Position",
+        "labelTh": "รายการใบเสนอราคา · Position",
+        "kind": "integer",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "quantity",
+        "labelEn": "Quantity",
+        "labelTh": "จำนวน",
+        "kind": "number",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "quote_id",
+        "labelEn": "Quote id",
+        "labelTh": "รายการใบเสนอราคา · Quote id",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "unit_price_satang",
+        "labelEn": "Unit price satang",
+        "labelTh": "รายการใบเสนอราคา · Unit price satang",
+        "kind": "money-in-satang",
+        "unit": "satang",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "product_id",
+        "labelEn": "Product id",
+        "labelTh": "รายการใบเสนอราคา · Product id",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "unit",
+        "labelEn": "Unit",
+        "labelTh": "รายการใบเสนอราคา · Unit",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      }
+    ],
+    "primaryKey": [
+      "id"
+    ],
+    "requiredCapability": null,
+    "scope": "current organization; session RLS",
+    "exclusions": {}
+  },
+  {
+    "key": "quotes",
+    "labelEn": "Quotes",
+    "labelTh": "ใบเสนอราคา",
+    "fields": [
+      {
+        "key": "id",
+        "labelEn": "Id",
+        "labelTh": "รหัส",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "org_id",
+        "labelEn": "Org id",
+        "labelTh": "รหัสองค์กร",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "created_at",
+        "labelEn": "Created at",
+        "labelTh": "สร้างเมื่อ",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "updated_at",
+        "labelEn": "Updated at",
+        "labelTh": "แก้ไขเมื่อ",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "deal_id",
+        "labelEn": "Deal id",
+        "labelTh": "ใบเสนอราคา · Deal id",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "accepted_at",
+        "labelEn": "Accepted at",
+        "labelTh": "ใบเสนอราคา · Accepted at",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "accepted_by_name",
+        "labelEn": "Accepted by name",
+        "labelTh": "ใบเสนอราคา · Accepted by name",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "accepted_by_email",
+        "labelEn": "Accepted by email",
+        "labelTh": "ใบเสนอราคา · Accepted by email",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "prices_include_vat",
+        "labelEn": "Prices include vat",
+        "labelTh": "ใบเสนอราคา · Prices include vat",
+        "kind": "boolean",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "vat_satang",
+        "labelEn": "Vat satang",
+        "labelTh": "ใบเสนอราคา · Vat satang",
+        "kind": "money-in-satang",
+        "unit": "satang",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "tax_breakdown",
+        "labelEn": "Tax breakdown",
+        "labelTh": "ใบเสนอราคา · Tax breakdown",
+        "kind": "json",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "client_id",
+        "labelEn": "Client id",
+        "labelTh": "รหัสลูกค้า",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "converted_invoice_id",
+        "labelEn": "Converted invoice id",
+        "labelTh": "ใบเสนอราคา · Converted invoice id",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "discount_satang",
+        "labelEn": "Discount satang",
+        "labelTh": "ใบเสนอราคา · Discount satang",
+        "kind": "money-in-satang",
+        "unit": "satang",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "issue_date",
+        "labelEn": "Issue date",
+        "labelTh": "ใบเสนอราคา · Issue date",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "notes",
+        "labelEn": "Notes",
+        "labelTh": "หมายเหตุ",
+        "kind": "text",
+        "searchable": true,
+        "textReadable": true
+      },
+      {
+        "key": "number",
+        "labelEn": "Number",
+        "labelTh": "เลขที่",
+        "kind": "text",
+        "searchable": true,
+        "textReadable": true
+      },
+      {
+        "key": "owner",
+        "labelEn": "Owner",
+        "labelTh": "ใบเสนอราคา · Owner",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "project_id",
+        "labelEn": "Project id",
+        "labelTh": "รหัสโครงการ",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "status",
+        "labelEn": "Status",
+        "labelTh": "สถานะ",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "subtotal_satang",
+        "labelEn": "Subtotal satang",
+        "labelTh": "ใบเสนอราคา · Subtotal satang",
+        "kind": "money-in-satang",
+        "unit": "satang",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "total_satang",
+        "labelEn": "Total satang",
+        "labelTh": "ยอดรวม (สตางค์)",
+        "kind": "money-in-satang",
+        "unit": "satang",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "valid_until",
+        "labelEn": "Valid until",
+        "labelTh": "ใบเสนอราคา · Valid until",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      }
+    ],
+    "primaryKey": [
+      "id"
+    ],
+    "requiredCapability": null,
+    "scope": "current organization; session RLS",
+    "exclusions": {},
+    "route": "/quotes/{id}"
+  },
+  {
+    "key": "record_attachments",
+    "labelEn": "Record attachments",
+    "labelTh": "ไฟล์แนบรายการ",
+    "fields": [
+      {
+        "key": "id",
+        "labelEn": "Id",
+        "labelTh": "รหัส",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "org_id",
+        "labelEn": "Org id",
+        "labelTh": "รหัสองค์กร",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "record_type",
+        "labelEn": "Record type",
+        "labelTh": "ไฟล์แนบรายการ · Record type",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "record_id",
+        "labelEn": "Record id",
+        "labelTh": "ไฟล์แนบรายการ · Record id",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "filename",
+        "labelEn": "Filename",
+        "labelTh": "ชื่อไฟล์",
+        "kind": "text",
+        "searchable": true,
+        "textReadable": true
+      },
+      {
+        "key": "size",
+        "labelEn": "Size",
+        "labelTh": "ไฟล์แนบรายการ · Size",
+        "kind": "integer",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "content_type",
+        "labelEn": "Content type",
+        "labelTh": "ไฟล์แนบรายการ · Content type",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "uploaded_by",
+        "labelEn": "Uploaded by",
+        "labelTh": "ไฟล์แนบรายการ · Uploaded by",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "created_at",
+        "labelEn": "Created at",
+        "labelTh": "สร้างเมื่อ",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      }
+    ],
+    "primaryKey": [
+      "id"
+    ],
+    "requiredCapability": null,
+    "scope": "current organization; attachment and parent record RLS; content requires the existing authorized storage helper",
+    "exclusions": {
+      "path": "Private storage locator; never return a public/invented file URL."
+    }
+  },
+  {
+    "key": "record_notes",
+    "labelEn": "Record notes",
+    "labelTh": "บันทึกรายการ",
+    "fields": [
+      {
+        "key": "id",
+        "labelEn": "Id",
+        "labelTh": "รหัส",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "org_id",
+        "labelEn": "Org id",
+        "labelTh": "รหัสองค์กร",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "record_type",
+        "labelEn": "Record type",
+        "labelTh": "บันทึกรายการ · Record type",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "record_id",
+        "labelEn": "Record id",
+        "labelTh": "บันทึกรายการ · Record id",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "author",
+        "labelEn": "Author",
+        "labelTh": "บันทึกรายการ · Author",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "body",
+        "labelEn": "Body",
+        "labelTh": "เนื้อหา",
+        "kind": "text",
+        "searchable": true,
+        "textReadable": true
+      },
+      {
+        "key": "created_at",
+        "labelEn": "Created at",
+        "labelTh": "สร้างเมื่อ",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      }
+    ],
+    "primaryKey": [
+      "id"
+    ],
+    "requiredCapability": null,
+    "scope": "current organization; session RLS",
+    "exclusions": {}
+  },
+  {
+    "key": "reminders",
+    "labelEn": "Reminders",
+    "labelTh": "การแจ้งเตือน",
+    "fields": [
+      {
+        "key": "id",
+        "labelEn": "Id",
+        "labelTh": "รหัส",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "org_id",
+        "labelEn": "Org id",
+        "labelTh": "รหัสองค์กร",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "created_at",
+        "labelEn": "Created at",
+        "labelTh": "สร้างเมื่อ",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "updated_at",
+        "labelEn": "Updated at",
+        "labelTh": "แก้ไขเมื่อ",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "channel",
+        "labelEn": "Channel",
+        "labelTh": "การแจ้งเตือน · Channel",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "due_date",
+        "labelEn": "Due date",
+        "labelTh": "วันครบกำหนด",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "entity",
+        "labelEn": "Entity",
+        "labelTh": "การแจ้งเตือน · Entity",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "entity_id",
+        "labelEn": "Entity id",
+        "labelTh": "การแจ้งเตือน · Entity id",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "sent_at",
+        "labelEn": "Sent at",
+        "labelTh": "การแจ้งเตือน · Sent at",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "status",
+        "labelEn": "Status",
+        "labelTh": "สถานะ",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "title",
+        "labelEn": "Title",
+        "labelTh": "หัวข้อ",
+        "kind": "text",
+        "searchable": true,
+        "textReadable": true
+      }
+    ],
+    "primaryKey": [
+      "id"
+    ],
+    "requiredCapability": "settings:manage",
+    "scope": "current organization; session RLS",
+    "exclusions": {
+      "meta": "Opaque delivery metadata may include credentials or bearer links."
+    }
+  },
+  {
+    "key": "saved_views",
+    "labelEn": "Saved views",
+    "labelTh": "มุมมองที่บันทึก",
+    "fields": [
+      {
+        "key": "id",
+        "labelEn": "Id",
+        "labelTh": "รหัส",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "org_id",
+        "labelEn": "Org id",
+        "labelTh": "รหัสองค์กร",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "created_at",
+        "labelEn": "Created at",
+        "labelTh": "สร้างเมื่อ",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "updated_at",
+        "labelEn": "Updated at",
+        "labelTh": "แก้ไขเมื่อ",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "module",
+        "labelEn": "Module",
+        "labelTh": "มุมมองที่บันทึก · Module",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "name",
+        "labelEn": "Name",
+        "labelTh": "ชื่อ",
+        "kind": "text",
+        "searchable": true,
+        "textReadable": true
+      },
+      {
+        "key": "user_id",
+        "labelEn": "User id",
+        "labelTh": "มุมมองที่บันทึก · User id",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "config",
+        "labelEn": "Config",
+        "labelTh": "มุมมองที่บันทึก · Config",
+        "kind": "json",
+        "searchable": false,
+        "textReadable": true
+      }
+    ],
+    "primaryKey": [
+      "id"
+    ],
+    "requiredCapability": null,
+    "scope": "current organization and authenticated user's own saved views; config exposes only the existing ViewConfig string keys",
+    "exclusions": {
+      "config.*": "Unknown/non-string JSON keys outside q/status/stage/period/mine/groupBy/warehouse/product/sourceId are not part of the readable business projection."
+    }
+  },
+  {
+    "key": "scheduled_replenishment_runs",
+    "labelEn": "Scheduled replenishment runs",
+    "labelTh": "การจัดซื้อเติมสต็อกอัตโนมัติ",
+    "fields": [
+      {
+        "key": "org_id",
+        "labelEn": "Org id",
+        "labelTh": "รหัสองค์กร",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "run_date",
+        "labelEn": "Run date",
+        "labelTh": "การจัดซื้อเติมสต็อกอัตโนมัติ · Run date",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "vendor_id",
+        "labelEn": "Vendor id",
+        "labelTh": "การจัดซื้อเติมสต็อกอัตโนมัติ · Vendor id",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "purchase_order_id",
+        "labelEn": "Purchase order id",
+        "labelTh": "การจัดซื้อเติมสต็อกอัตโนมัติ · Purchase order id",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "created_at",
+        "labelEn": "Created at",
+        "labelTh": "สร้างเมื่อ",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      }
+    ],
+    "primaryKey": [
+      "run_date",
+      "vendor_id"
+    ],
+    "requiredCapability": null,
+    "scope": "current organization; session RLS",
+    "exclusions": {}
+  },
+  {
+    "key": "stock_balances",
+    "labelEn": "Stock balances",
+    "labelTh": "ยอดสินค้าคงคลัง",
+    "fields": [
+      {
+        "key": "org_id",
+        "labelEn": "Org id",
+        "labelTh": "รหัสองค์กร",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "product_id",
+        "labelEn": "Product id",
+        "labelTh": "ยอดสินค้าคงคลัง · Product id",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "warehouse_id",
+        "labelEn": "Warehouse id",
+        "labelTh": "ยอดสินค้าคงคลัง · Warehouse id",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "quantity",
+        "labelEn": "Quantity",
+        "labelTh": "จำนวน",
+        "kind": "number",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "average_cost",
+        "labelEn": "Average cost",
+        "labelTh": "ยอดสินค้าคงคลัง · Average cost",
+        "kind": "number",
+        "unit": "satang-per-unit",
+        "searchable": false,
+        "textReadable": false
+      }
+    ],
+    "primaryKey": [
+      "product_id",
+      "warehouse_id"
+    ],
+    "requiredCapability": null,
+    "scope": "current organization; session RLS",
+    "exclusions": {}
+  },
+  {
+    "key": "stock_counts",
+    "labelEn": "Stock counts",
+    "labelTh": "ผลตรวจนับสินค้า",
+    "fields": [
+      {
+        "key": "org_id",
+        "labelEn": "Org id",
+        "labelTh": "รหัสองค์กร",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "key",
+        "labelEn": "Key",
+        "labelTh": "ผลตรวจนับสินค้า · Key",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "product_id",
+        "labelEn": "Product id",
+        "labelTh": "ผลตรวจนับสินค้า · Product id",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "warehouse_id",
+        "labelEn": "Warehouse id",
+        "labelTh": "ผลตรวจนับสินค้า · Warehouse id",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "quantity",
+        "labelEn": "Quantity",
+        "labelTh": "จำนวน",
+        "kind": "number",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "reason",
+        "labelEn": "Reason",
+        "labelTh": "เหตุผล",
+        "kind": "text",
+        "searchable": true,
+        "textReadable": true
+      },
+      {
+        "key": "unit_cost_satang",
+        "labelEn": "Unit cost satang",
+        "labelTh": "ผลตรวจนับสินค้า · Unit cost satang",
+        "kind": "money-in-satang",
+        "unit": "satang",
+        "searchable": false,
+        "textReadable": false
+      }
+    ],
+    "primaryKey": [
+      "key"
+    ],
+    "requiredCapability": null,
+    "scope": "current organization; session RLS",
+    "exclusions": {}
+  },
+  {
+    "key": "stock_document_lines",
+    "labelEn": "Stock document lines",
+    "labelTh": "รายการเอกสารคลัง",
+    "fields": [
+      {
+        "key": "id",
+        "labelEn": "Id",
+        "labelTh": "รหัส",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "org_id",
+        "labelEn": "Org id",
+        "labelTh": "รหัสองค์กร",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "document_id",
+        "labelEn": "Document id",
+        "labelTh": "รายการเอกสารคลัง · Document id",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "product_id",
+        "labelEn": "Product id",
+        "labelTh": "รายการเอกสารคลัง · Product id",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "source_line_id",
+        "labelEn": "Source line id",
+        "labelTh": "รายการเอกสารคลัง · Source line id",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "description",
+        "labelEn": "Description",
+        "labelTh": "รายละเอียด",
+        "kind": "text",
+        "searchable": true,
+        "textReadable": true
+      },
+      {
+        "key": "unit",
+        "labelEn": "Unit",
+        "labelTh": "รายการเอกสารคลัง · Unit",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "quantity",
+        "labelEn": "Quantity",
+        "labelTh": "จำนวน",
+        "kind": "number",
+        "searchable": false,
+        "textReadable": false
+      }
+    ],
+    "primaryKey": [
+      "id"
+    ],
+    "requiredCapability": null,
+    "scope": "current organization; session RLS",
+    "exclusions": {}
+  },
+  {
+    "key": "stock_documents",
+    "labelEn": "Stock documents",
+    "labelTh": "เอกสารรับส่งสินค้า",
+    "fields": [
+      {
+        "key": "id",
+        "labelEn": "Id",
+        "labelTh": "รหัส",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "org_id",
+        "labelEn": "Org id",
+        "labelTh": "รหัสองค์กร",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "kind",
+        "labelEn": "Kind",
+        "labelTh": "เอกสารรับส่งสินค้า · Kind",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "number",
+        "labelEn": "Number",
+        "labelTh": "เลขที่",
+        "kind": "text",
+        "searchable": true,
+        "textReadable": true
+      },
+      {
+        "key": "document_date",
+        "labelEn": "Document date",
+        "labelTh": "เอกสารรับส่งสินค้า · Document date",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "warehouse_id",
+        "labelEn": "Warehouse id",
+        "labelTh": "เอกสารรับส่งสินค้า · Warehouse id",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "purchase_order_id",
+        "labelEn": "Purchase order id",
+        "labelTh": "เอกสารรับส่งสินค้า · Purchase order id",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "invoice_id",
+        "labelEn": "Invoice id",
+        "labelTh": "รหัสใบแจ้งหนี้",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "created_at",
+        "labelEn": "Created at",
+        "labelTh": "สร้างเมื่อ",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "created_by",
+        "labelEn": "Created by",
+        "labelTh": "เอกสารรับส่งสินค้า · Created by",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      }
+    ],
+    "primaryKey": [
+      "id"
+    ],
+    "requiredCapability": null,
+    "scope": "current organization; session RLS",
+    "exclusions": {}
+  },
+  {
+    "key": "stock_moves",
+    "labelEn": "Stock moves",
+    "labelTh": "ความเคลื่อนไหวสินค้า",
+    "fields": [
+      {
+        "key": "id",
+        "labelEn": "Id",
+        "labelTh": "รหัส",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "org_id",
+        "labelEn": "Org id",
+        "labelTh": "รหัสองค์กร",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "document_id",
+        "labelEn": "Document id",
+        "labelTh": "ความเคลื่อนไหวสินค้า · Document id",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "stock_value_satang",
+        "labelEn": "Stock value satang",
+        "labelTh": "ความเคลื่อนไหวสินค้า · Stock value satang",
+        "kind": "money-in-satang",
+        "unit": "satang",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "source_line_id",
+        "labelEn": "Source line id",
+        "labelTh": "ความเคลื่อนไหวสินค้า · Source line id",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "return_of_move_id",
+        "labelEn": "Return of move id",
+        "labelTh": "ความเคลื่อนไหวสินค้า · Return of move id",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "sequence",
+        "labelEn": "Sequence",
+        "labelTh": "ความเคลื่อนไหวสินค้า · Sequence",
+        "kind": "integer",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "product_id",
+        "labelEn": "Product id",
+        "labelTh": "ความเคลื่อนไหวสินค้า · Product id",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "warehouse_id",
+        "labelEn": "Warehouse id",
+        "labelTh": "ความเคลื่อนไหวสินค้า · Warehouse id",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "kind",
+        "labelEn": "Kind",
+        "labelTh": "ความเคลื่อนไหวสินค้า · Kind",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "quantity",
+        "labelEn": "Quantity",
+        "labelTh": "จำนวน",
+        "kind": "number",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "unit_cost_satang",
+        "labelEn": "Unit cost satang",
+        "labelTh": "ความเคลื่อนไหวสินค้า · Unit cost satang",
+        "kind": "money-in-satang",
+        "unit": "satang",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "source_type",
+        "labelEn": "Source type",
+        "labelTh": "ความเคลื่อนไหวสินค้า · Source type",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "source_id",
+        "labelEn": "Source id",
+        "labelTh": "ความเคลื่อนไหวสินค้า · Source id",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "note",
+        "labelEn": "Note",
+        "labelTh": "ความเคลื่อนไหวสินค้า · Note",
+        "kind": "text",
+        "searchable": true,
+        "textReadable": true
+      },
+      {
+        "key": "moved_at",
+        "labelEn": "Moved at",
+        "labelTh": "ความเคลื่อนไหวสินค้า · Moved at",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "created_by",
+        "labelEn": "Created by",
+        "labelTh": "ความเคลื่อนไหวสินค้า · Created by",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "balance_after",
+        "labelEn": "Balance after",
+        "labelTh": "ความเคลื่อนไหวสินค้า · Balance after",
+        "kind": "number",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "average_cost_after",
+        "labelEn": "Average cost after",
+        "labelTh": "ความเคลื่อนไหวสินค้า · Average cost after",
+        "kind": "number",
+        "unit": "satang-per-unit",
+        "searchable": false,
+        "textReadable": false
+      }
+    ],
+    "primaryKey": [
+      "id"
+    ],
+    "requiredCapability": null,
+    "scope": "current organization; session RLS",
+    "exclusions": {}
+  },
+  {
+    "key": "stock_transfers",
+    "labelEn": "Stock transfers",
+    "labelTh": "การโอนคลังสินค้า",
+    "fields": [
+      {
+        "key": "org_id",
+        "labelEn": "Org id",
+        "labelTh": "รหัสองค์กร",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "key",
+        "labelEn": "Key",
+        "labelTh": "การโอนคลังสินค้า · Key",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "product_id",
+        "labelEn": "Product id",
+        "labelTh": "การโอนคลังสินค้า · Product id",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "from_warehouse_id",
+        "labelEn": "From warehouse id",
+        "labelTh": "การโอนคลังสินค้า · From warehouse id",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "to_warehouse_id",
+        "labelEn": "To warehouse id",
+        "labelTh": "การโอนคลังสินค้า · To warehouse id",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "quantity",
+        "labelEn": "Quantity",
+        "labelTh": "จำนวน",
+        "kind": "number",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "reason",
+        "labelEn": "Reason",
+        "labelTh": "เหตุผล",
+        "kind": "text",
+        "searchable": true,
+        "textReadable": true
+      },
+      {
+        "key": "created_at",
+        "labelEn": "Created at",
+        "labelTh": "สร้างเมื่อ",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "created_by",
+        "labelEn": "Created by",
+        "labelTh": "การโอนคลังสินค้า · Created by",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      }
+    ],
+    "primaryKey": [
+      "key"
+    ],
+    "requiredCapability": null,
+    "scope": "current organization; session RLS",
+    "exclusions": {}
+  },
+  {
+    "key": "subscription_occurrences",
+    "labelEn": "Subscription occurrences",
+    "labelTh": "รอบบิลสมาชิก",
+    "fields": [
+      {
+        "key": "org_id",
+        "labelEn": "Org id",
+        "labelTh": "รหัสองค์กร",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "subscription_id",
+        "labelEn": "Subscription id",
+        "labelTh": "รอบบิลสมาชิก · Subscription id",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "occurrence_date",
+        "labelEn": "Occurrence date",
+        "labelTh": "รอบบิลสมาชิก · Occurrence date",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "invoice_id",
+        "labelEn": "Invoice id",
+        "labelTh": "รหัสใบแจ้งหนี้",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "created_at",
+        "labelEn": "Created at",
+        "labelTh": "สร้างเมื่อ",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      }
+    ],
+    "primaryKey": [
+      "subscription_id",
+      "occurrence_date"
+    ],
+    "requiredCapability": null,
+    "scope": "current organization; session RLS",
+    "exclusions": {}
+  },
+  {
+    "key": "subscriptions",
+    "labelEn": "Subscriptions",
+    "labelTh": "รอบการเรียกเก็บเงิน",
+    "fields": [
+      {
+        "key": "id",
+        "labelEn": "Id",
+        "labelTh": "รหัส",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "org_id",
+        "labelEn": "Org id",
+        "labelTh": "รหัสองค์กร",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "created_at",
+        "labelEn": "Created at",
+        "labelTh": "สร้างเมื่อ",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "updated_at",
+        "labelEn": "Updated at",
+        "labelTh": "แก้ไขเมื่อ",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "tax_rate_bps",
+        "labelEn": "Tax rate bps",
+        "labelTh": "รอบการเรียกเก็บเงิน · Tax rate bps",
+        "kind": "integer",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "wht_rate_bps",
+        "labelEn": "Wht rate bps",
+        "labelTh": "รอบการเรียกเก็บเงิน · Wht rate bps",
+        "kind": "integer",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "prices_include_vat",
+        "labelEn": "Prices include vat",
+        "labelTh": "รอบการเรียกเก็บเงิน · Prices include vat",
+        "kind": "boolean",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "product_id",
+        "labelEn": "Product id",
+        "labelTh": "รอบการเรียกเก็บเงิน · Product id",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "unit",
+        "labelEn": "Unit",
+        "labelTh": "รอบการเรียกเก็บเงิน · Unit",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "amount_satang",
+        "labelEn": "Amount satang",
+        "labelTh": "จำนวนเงิน (สตางค์)",
+        "kind": "money-in-satang",
+        "unit": "satang",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "auto_generate",
+        "labelEn": "Auto generate",
+        "labelTh": "รอบการเรียกเก็บเงิน · Auto generate",
+        "kind": "boolean",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "client_id",
+        "labelEn": "Client id",
+        "labelTh": "รหัสลูกค้า",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "interval",
+        "labelEn": "Interval",
+        "labelTh": "รอบการเรียกเก็บเงิน · Interval",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "last_generated_on",
+        "labelEn": "Last generated on",
+        "labelTh": "รอบการเรียกเก็บเงิน · Last generated on",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "name",
+        "labelEn": "Name",
+        "labelTh": "ชื่อ",
+        "kind": "text",
+        "searchable": true,
+        "textReadable": true
+      },
+      {
+        "key": "next_run_date",
+        "labelEn": "Next run date",
+        "labelTh": "รอบการเรียกเก็บเงิน · Next run date",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "notes",
+        "labelEn": "Notes",
+        "labelTh": "หมายเหตุ",
+        "kind": "text",
+        "searchable": true,
+        "textReadable": true
+      },
+      {
+        "key": "project_id",
+        "labelEn": "Project id",
+        "labelTh": "รหัสโครงการ",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "start_date",
+        "labelEn": "Start date",
+        "labelTh": "รอบการเรียกเก็บเงิน · Start date",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "status",
+        "labelEn": "Status",
+        "labelTh": "สถานะ",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      }
+    ],
+    "primaryKey": [
+      "id"
+    ],
+    "requiredCapability": null,
+    "scope": "current organization; session RLS",
+    "exclusions": {},
+    "route": "/finance/subscriptions/{id}"
+  },
+  {
+    "key": "template_categories",
+    "labelEn": "Template categories",
+    "labelTh": "หมวดแม่แบบ",
+    "fields": [
+      {
+        "key": "id",
+        "labelEn": "Id",
+        "labelTh": "รหัส",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "org_id",
+        "labelEn": "Org id",
+        "labelTh": "รหัสองค์กร",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "created_at",
+        "labelEn": "Created at",
+        "labelTh": "สร้างเมื่อ",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "updated_at",
+        "labelEn": "Updated at",
+        "labelTh": "แก้ไขเมื่อ",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "name",
+        "labelEn": "Name",
+        "labelTh": "ชื่อ",
+        "kind": "text",
+        "searchable": true,
+        "textReadable": true
+      },
+      {
+        "key": "slug",
+        "labelEn": "Slug",
+        "labelTh": "หมวดแม่แบบ · Slug",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      }
+    ],
+    "primaryKey": [
+      "id"
+    ],
+    "requiredCapability": null,
+    "scope": "current organization; session RLS",
+    "exclusions": {}
+  },
+  {
+    "key": "time_billing_requests",
+    "labelEn": "Time billing requests",
+    "labelTh": "การเรียกเก็บเวลางาน",
+    "fields": [
+      {
+        "key": "org_id",
+        "labelEn": "Org id",
+        "labelTh": "รหัสองค์กร",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "key",
+        "labelEn": "Key",
+        "labelTh": "การเรียกเก็บเวลางาน · Key",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "project_id",
+        "labelEn": "Project id",
+        "labelTh": "รหัสโครงการ",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "invoice_id",
+        "labelEn": "Invoice id",
+        "labelTh": "รหัสใบแจ้งหนี้",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      }
+    ],
+    "primaryKey": [
+      "key"
+    ],
+    "requiredCapability": "settings:manage",
+    "scope": "current organization; session RLS",
+    "exclusions": {}
+  },
+  {
+    "key": "time_entries",
+    "labelEn": "Time entries",
+    "labelTh": "เวลาปฏิบัติงาน",
+    "fields": [
+      {
+        "key": "id",
+        "labelEn": "Id",
+        "labelTh": "รหัส",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "org_id",
+        "labelEn": "Org id",
+        "labelTh": "รหัสองค์กร",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "created_at",
+        "labelEn": "Created at",
+        "labelTh": "สร้างเมื่อ",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "updated_at",
+        "labelEn": "Updated at",
+        "labelTh": "แก้ไขเมื่อ",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "invoice_id",
+        "labelEn": "Invoice id",
+        "labelTh": "รหัสใบแจ้งหนี้",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "invoice_item_id",
+        "labelEn": "Invoice item id",
+        "labelTh": "เวลาปฏิบัติงาน · Invoice item id",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "billable",
+        "labelEn": "Billable",
+        "labelTh": "เวลาปฏิบัติงาน · Billable",
+        "kind": "boolean",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "minutes",
+        "labelEn": "Minutes",
+        "labelTh": "เวลาปฏิบัติงาน · Minutes",
+        "kind": "integer",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "notes",
+        "labelEn": "Notes",
+        "labelTh": "หมายเหตุ",
+        "kind": "text",
+        "searchable": true,
+        "textReadable": true
+      },
+      {
+        "key": "project_id",
+        "labelEn": "Project id",
+        "labelTh": "รหัสโครงการ",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "rate_satang",
+        "labelEn": "Rate satang",
+        "labelTh": "เวลาปฏิบัติงาน · Rate satang",
+        "kind": "money-in-satang",
+        "unit": "satang",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "task_id",
+        "labelEn": "Task id",
+        "labelTh": "เวลาปฏิบัติงาน · Task id",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "user_id",
+        "labelEn": "User id",
+        "labelTh": "เวลาปฏิบัติงาน · User id",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "work_date",
+        "labelEn": "Work date",
+        "labelTh": "เวลาปฏิบัติงาน · Work date",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      }
+    ],
+    "primaryKey": [
+      "id"
+    ],
+    "requiredCapability": null,
+    "scope": "current organization; session RLS",
+    "exclusions": {}
+  },
+  {
+    "key": "vendor_bill_matches",
+    "labelEn": "Vendor bill matches",
+    "labelTh": "การจับคู่ใบแจ้งหนี้ผู้ขาย",
+    "fields": [
+      {
+        "key": "id",
+        "labelEn": "Id",
+        "labelTh": "รหัส",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "org_id",
+        "labelEn": "Org id",
+        "labelTh": "รหัสองค์กร",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "vendor_id",
+        "labelEn": "Vendor id",
+        "labelTh": "การจับคู่ใบแจ้งหนี้ผู้ขาย · Vendor id",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "purchase_order_id",
+        "labelEn": "Purchase order id",
+        "labelTh": "การจับคู่ใบแจ้งหนี้ผู้ขาย · Purchase order id",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "vendor_reference",
+        "labelEn": "Vendor reference",
+        "labelTh": "การจับคู่ใบแจ้งหนี้ผู้ขาย · Vendor reference",
+        "kind": "text",
+        "searchable": true,
+        "textReadable": true
+      },
+      {
+        "key": "kind",
+        "labelEn": "Kind",
+        "labelTh": "การจับคู่ใบแจ้งหนี้ผู้ขาย · Kind",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "bill_date",
+        "labelEn": "Bill date",
+        "labelTh": "การจับคู่ใบแจ้งหนี้ผู้ขาย · Bill date",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "due_date",
+        "labelEn": "Due date",
+        "labelTh": "วันครบกำหนด",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "original_bill_id",
+        "labelEn": "Original bill id",
+        "labelTh": "การจับคู่ใบแจ้งหนี้ผู้ขาย · Original bill id",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "lines",
+        "labelEn": "Lines",
+        "labelTh": "การจับคู่ใบแจ้งหนี้ผู้ขาย · Lines",
+        "kind": "json",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "variances",
+        "labelEn": "Variances",
+        "labelTh": "การจับคู่ใบแจ้งหนี้ผู้ขาย · Variances",
+        "kind": "json",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "variance_reason",
+        "labelEn": "Variance reason",
+        "labelTh": "การจับคู่ใบแจ้งหนี้ผู้ขาย · Variance reason",
+        "kind": "text",
+        "searchable": true,
+        "textReadable": true
+      },
+      {
+        "key": "tolerance_bps",
+        "labelEn": "Tolerance bps",
+        "labelTh": "การจับคู่ใบแจ้งหนี้ผู้ขาย · Tolerance bps",
+        "kind": "integer",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "created_at",
+        "labelEn": "Created at",
+        "labelTh": "สร้างเมื่อ",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      }
+    ],
+    "primaryKey": [
+      "id"
+    ],
+    "requiredCapability": null,
+    "scope": "current organization; session RLS",
+    "exclusions": {
+      "credit_request": "Opaque command replay payload; readable bill lines/variances remain available."
+    }
+  },
+  {
+    "key": "vendor_return_credit_sources",
+    "labelEn": "Vendor return credit sources",
+    "labelTh": "ต้นทางลดหนี้คืนผู้ขาย",
+    "fields": [
+      {
+        "key": "org_id",
+        "labelEn": "Org id",
+        "labelTh": "รหัสองค์กร",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "cost_id",
+        "labelEn": "Cost id",
+        "labelTh": "ต้นทางลดหนี้คืนผู้ขาย · Cost id",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "purchase_order_item_id",
+        "labelEn": "Purchase order item id",
+        "labelTh": "ต้นทางลดหนี้คืนผู้ขาย · Purchase order item id",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "quantity",
+        "labelEn": "Quantity",
+        "labelTh": "จำนวน",
+        "kind": "number",
+        "searchable": false,
+        "textReadable": false
+      }
+    ],
+    "primaryKey": [
+      "cost_id",
+      "purchase_order_item_id"
+    ],
+    "requiredCapability": null,
+    "scope": "current organization; session RLS",
+    "exclusions": {}
+  },
+  {
+    "key": "vendors",
+    "labelEn": "Vendors",
+    "labelTh": "ผู้ขาย",
+    "fields": [
+      {
+        "key": "id",
+        "labelEn": "Id",
+        "labelTh": "รหัส",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "org_id",
+        "labelEn": "Org id",
+        "labelTh": "รหัสองค์กร",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "created_at",
+        "labelEn": "Created at",
+        "labelTh": "สร้างเมื่อ",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "updated_at",
+        "labelEn": "Updated at",
+        "labelTh": "แก้ไขเมื่อ",
+        "kind": "date",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "name",
+        "labelEn": "Name",
+        "labelTh": "ชื่อ",
+        "kind": "text",
+        "searchable": true,
+        "textReadable": true
+      },
+      {
+        "key": "tax_id",
+        "labelEn": "Tax id",
+        "labelTh": "ผู้ขาย · Tax id",
+        "kind": "text",
+        "searchable": true,
+        "textReadable": true
+      },
+      {
+        "key": "email",
+        "labelEn": "Email",
+        "labelTh": "อีเมล",
+        "kind": "text",
+        "searchable": true,
+        "textReadable": true
+      },
+      {
+        "key": "phone",
+        "labelEn": "Phone",
+        "labelTh": "โทรศัพท์",
+        "kind": "text",
+        "searchable": true,
+        "textReadable": true
+      },
+      {
+        "key": "address",
+        "labelEn": "Address",
+        "labelTh": "ผู้ขาย · Address",
+        "kind": "text",
+        "searchable": true,
+        "textReadable": true
+      },
+      {
+        "key": "payment_terms_days",
+        "labelEn": "Payment terms days",
+        "labelTh": "ผู้ขาย · Payment terms days",
+        "kind": "integer",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "notes",
+        "labelEn": "Notes",
+        "labelTh": "หมายเหตุ",
+        "kind": "text",
+        "searchable": true,
+        "textReadable": true
+      },
+      {
+        "key": "active",
+        "labelEn": "Active",
+        "labelTh": "ผู้ขาย · Active",
+        "kind": "boolean",
+        "searchable": false,
+        "textReadable": false
+      }
+    ],
+    "primaryKey": [
+      "id"
+    ],
+    "requiredCapability": null,
+    "scope": "current organization; session RLS",
+    "exclusions": {},
+    "route": "/vendors/{id}"
+  },
+  {
+    "key": "warehouses",
+    "labelEn": "Warehouses",
+    "labelTh": "คลังสินค้า",
+    "fields": [
+      {
+        "key": "id",
+        "labelEn": "Id",
+        "labelTh": "รหัส",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "org_id",
+        "labelEn": "Org id",
+        "labelTh": "รหัสองค์กร",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "code",
+        "labelEn": "Code",
+        "labelTh": "คลังสินค้า · Code",
+        "kind": "text",
+        "searchable": false,
+        "textReadable": true
+      },
+      {
+        "key": "name",
+        "labelEn": "Name",
+        "labelTh": "ชื่อ",
+        "kind": "text",
+        "searchable": true,
+        "textReadable": true
+      },
+      {
+        "key": "address",
+        "labelEn": "Address",
+        "labelTh": "คลังสินค้า · Address",
+        "kind": "text",
+        "searchable": true,
+        "textReadable": true
+      },
+      {
+        "key": "is_default",
+        "labelEn": "Is default",
+        "labelTh": "คลังสินค้า · Is default",
+        "kind": "boolean",
+        "searchable": false,
+        "textReadable": false
+      },
+      {
+        "key": "active",
+        "labelEn": "Active",
+        "labelTh": "คลังสินค้า · Active",
+        "kind": "boolean",
+        "searchable": false,
+        "textReadable": false
+      }
+    ],
+    "primaryKey": [
+      "id"
+    ],
+    "requiredCapability": null,
+    "scope": "current organization; session RLS",
+    "exclusions": {}
+  },
+  {
+    "key": "workspace_requests",
+    "labelEn": "Workspace requests",
+    "labelTh": "คำสั่งสร้างองค์กร",
+    "fields": [],
+    "primaryKey": [
+      "id"
+    ],
+    "requiredCapability": null,
+    "scope": "current organization; session RLS",
+    "exclusions": {},
+    "readable": false,
+    "reason": "Internal workspace provisioning command store: no authenticated SELECT/read policy; not a cross-workspace discovery interface. Current organization remains readable.",
+    "excludedFields": [
+      "user_id",
+      "key",
+      "name",
+      "org_id",
+      "created_at"
+    ]
+  }
+]

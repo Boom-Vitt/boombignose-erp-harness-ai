@@ -6,7 +6,7 @@ Updated 2026-10-28. No secrets.
 
 Status: done.
 
-Canonical page: https://boom-vitt.github.io/boombignose-erp-harness-ai/
+Canonical page: https://boom-vitt.github.io/nose-erp/
 
 The previous address https://boom-vitt.github.io/boombignose-erp/ is retired. It returned HTTP 404 after Pages run 40500045933 and again after Pages run 40502514277.
 
@@ -25,7 +25,7 @@ Status: installers are published. Click-through on a physical machine is not don
 Status: the published installer is `boombignose-v1.3.0`. The macOS bundle version, the Windows version resource, and `APP_VERSION` in this tree are `1.4.0`. Tag `boombignose-v1.4.0` is not created here. The in-app update is documented in `docs/boombignose/UPDATE.md`. https://github.com/Boom-Vitt/boombignose-erp-harness-ai/releases/latest redirects to `boombignose-v1.3.0`. The download page is updated when Pages deploys `site/`. Untested items below stay open.
 
 - Phases 1–10 are recorded in `docs/boombignose/PHASES.md`. `boombignose cutover` with no subcommand prints a plan and does not connect. `cutover dry-run` lists base-table names on two loopback databases and writes nothing. `cutover apply` writes a custom-format backup of the target, then restores the source into the target. `cutover rollback` restores that backup. The harness test starts two throwaway clusters and checks one row. It does not read a hosted database. Domain rules are still Postgres functions. The ERP Vitest, SQL, and Playwright suites were not re-run for this command.
-- The GitHub repository is https://github.com/Boom-Vitt/boombignose-erp-harness-ai . The Go module path is `github.com/Boom-Vitt/boombignose-erp-harness-ai/boombignose`. The local Supabase `project_id` stays `boombignose-erp`.
+- The GitHub repository is https://github.com/Boom-Vitt/nose-erp . The Go module path is `github.com/Boom-Vitt/nose-erp/boombignose`. The local Supabase `project_id` stays `boombignose-erp`.
 - Deal summaries, follow-up drafts, and meeting intake call Ollama on loopback. The default address is `127.0.0.1:11434`. A remote host is refused before any request. If Ollama is not running, the screen says AI is not configured.
 - The shipped bignose provider list is Ollama only. Cloud model hosts are refused before a request.
 - TOTP enroll and verify are on in `supabase/config.toml`. The screen at `/settings/security` stays closed unless `LOCAL_TOTP_ENROLL=1` (any other value, including unset, stays closed). `aal2Rollout` names four states: `one-step` (no factor, flag off), `enroll` (no factor, flag exactly `1`), `challenge` (verified factor, session not `aal2`, including when the flag is off), and `aal2`. An account with a verified TOTP factor is sent to `/login/mfa` from the login screen and from `requireOrgContext` until the session is `aal2`. An account with no verified factor stays on one step. The proxy does not call GoTrue to decide this, and no RLS policy reads `aal`. Phone MFA stays off. See `docs/boombignose/TOTP.md`.

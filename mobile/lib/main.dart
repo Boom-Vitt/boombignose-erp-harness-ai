@@ -150,7 +150,8 @@ class _HomeState extends State<Home> {
 
   Future<void> _open() async {
     try {
-      final url = await sessionUrl(widget.link);
+      await checkStatus(widget.link);
+      final url = erpLoginUrl(widget.link);
       if (!mounted) return;
       await Navigator.of(context).push(MaterialPageRoute(builder: (_) => ErpView(url: url)));
     } on NotLinked {
@@ -182,8 +183,10 @@ class _HomeState extends State<Home> {
           FilledButton(
               onPressed: _conn == _Conn.connected ? _open : null, child: const Text('Open ERP')),
           TextButton(onPressed: _check, child: const Text('Retry')),
+          const Text('Sign in as your own ERP user and complete your authenticator check. Pairing grants connection status only.'),
           const Spacer(),
           OutlinedButton(onPressed: _unlink, child: const Text('Unlink this phone')),
+          const Text('Unlinking does not sign out independent ERP browser sessions. Sign out inside ERP separately.'),
           const SizedBox(height: 12),
           Text('v$appVersion', textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.bodySmall),
@@ -203,6 +206,10 @@ class ErpView extends StatefulWidget {
 class _ErpViewState extends State<ErpView> {
   late final WebViewController _web = WebViewController()
     ..setJavaScriptMode(JavaScriptMode.unrestricted)
+    ..setNavigationDelegate(NavigationDelegate(
+      onNavigationRequest: (request) => allowedErpNavigation(Uri.parse(widget.url.origin), Uri.parse(request.url))
+          ? NavigationDecision.navigate : NavigationDecision.prevent,
+    ))
     ..loadRequest(widget.url);
 
   @override

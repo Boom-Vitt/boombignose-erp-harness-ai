@@ -3,9 +3,9 @@
 import { requireOrgContext } from "@/lib/auth"
 import { localDataDir, readStartLog } from "@/lib/install/logs"
 import { interpretRelease, type UpdateCheck } from "@/lib/release/update-check"
-import { helperConfigured, updateCapability, type UpdateCapability } from "@/lib/release/update-plan"
+import { RELEASE_REPO, helperConfigured, updateCapability, type UpdateCapability } from "@/lib/release/update-plan"
 
-const RELEASE_API = "https://api.github.com/repos/Boom-Vitt/boombignose-erp-harness-ai/releases/latest"
+const RELEASE_API = `https://api.github.com/repos/${RELEASE_REPO}/releases/latest`
 
 export type UpdateStatus = Exclude<UpdateCheck, { state: "unavailable" }> & { capability: UpdateCapability } | Extract<UpdateCheck, { state: "unavailable" }>
 
