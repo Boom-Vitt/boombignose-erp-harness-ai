@@ -28,9 +28,6 @@ fs.mkdirSync(bin, { recursive: true });
 fs.mkdirSync(path.join(root,'ghc-tmp'),{recursive:true});
 const env = { ...process.env, PATH: [bin, path.join(ghc, 'bin'), path.join(root, 'pkgconf/bin'), path.join(prefix, 'bin'), ...(process.platform === 'win32' ? [process.env.PATH] : ['/usr/bin', '/bin', '/usr/sbin', '/sbin'])].join(path.delimiter), CABAL_DIR: path.join(root, 'cabal'), PKG_CONFIG_LIBDIR: path.join(prefix, 'lib/pkgconfig'), PKG_CONFIG_PATH: '', MACOSX_DEPLOYMENT_TARGET: '12.0' };
 env.TMPDIR = path.join(root,'ghc-tmp');
-// The Hackage libpq configure links -lpq alone; the pinned static libpq needs its
-// companion static libraries too (nothing else is changed in the hermetic env).
-if (process.platform === 'linux') env.ac_cv_POSTGRESQL_LIBS = '-lpq -lpgcommon -lpgport -lssl -lcrypto -lz -lpthread -ldl';
 for (const k of ['CPPFLAGS','CFLAGS','CXXFLAGS','LDFLAGS','LIBS','CPATH','LIBRARY_PATH','LD_LIBRARY_PATH','DYLD_LIBRARY_PATH','GHC_PACKAGE_PATH','GHC_ENVIRONMENT']) delete env[k];
 const commandsFile = path.join(root,'commands.json');
 const commands = fs.existsSync(commandsFile) ? JSON.parse(fs.readFileSync(commandsFile,'utf8')) : [];
@@ -44,13 +41,6 @@ function run(cmd, args = [], cwd = root, capture = false) {
   const r = spawnSync(cmd, args, { cwd, env, encoding: 'utf8', stdio: capture ? ['ignore','pipe','pipe'] : 'inherit', maxBuffer: 128 * 1024 * 1024 });
   fs.writeFileSync(path.join(root, 'commands.json'), JSON.stringify(commands, null, 2) + '\n');
   if (capture && cmd === 'cabal' && args[0] === 'build' && !args.includes('--dry-run')) fs.appendFileSync(path.join(root,'build.log'),(r.stdout || '') + '\n' + (r.stderr || '') + '\n');
-  if (r.status !== 0 && cmd === 'cabal') {
-    // Make configure failures diagnosable in CI: print the tail of the newest config.log files.
-    const skip = new Set(['downloads', 'ghc', 'ghc-bindist', 'ghc-9.10.3', 'static-prefix', 'pkgconf', 'pkgconf-2.3.0', 'native-runtime']);
-    const walk = (d, depth = 0) => depth > 12 ? [] : fs.readdirSync(d, { withFileTypes: true }).flatMap((e) => e.isDirectory() ? (skip.has(e.name) && depth === 0 ? [] : walk(path.join(d, e.name), depth + 1)) : e.name === 'config.log' ? [path.join(d, e.name)] : []);
-    const logs = walk(root).sort((x, y) => fs.statSync(y).mtimeMs - fs.statSync(x).mtimeMs).slice(0, 2);
-    for (const log of logs) console.error(`--- ${log}\n${fs.readFileSync(log, 'utf8').split('\n').slice(-90).join('\n')}`);
-  }
   if (r.status !== 0) throw new Error(`${cmd} failed (${r.status}): ${r.stderr || r.error || ''}`);
   return r.stdout;
 }

@@ -130,7 +130,7 @@ includedir=\${prefix}/include
 Name: libpq
 Description: Pinned PostgreSQL static client library
 Version: 16.15
-Libs: -L\${libdir} -lpq
+Libs: -L\${libdir} -lpq -lm
 Cflags: -I\${includedir}
 EOF
   cat > "$static_prefix/lib/pkgconfig/zlib.pc" << EOF
