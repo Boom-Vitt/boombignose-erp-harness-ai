@@ -79,8 +79,8 @@ fi
   make -C src/backend generated-headers
   # Override the upstream link variable with the archive itself, not -lpq,
   # which could select a shared libpq and accidentally capture a build path.
-  make -j2 -C src/bin/psql "libpq=$tmp/postgresql-16.15/src/interfaces/libpq/libpq.a" psql
-  make -j2 -C src/bin/pg_dump "libpq=$tmp/postgresql-16.15/src/interfaces/libpq/libpq.a" pg_dump pg_restore
+  make -C src/bin/psql "libpq=$tmp/postgresql-16.15/src/interfaces/libpq/libpq.a" psql
+  make -C src/bin/pg_dump "libpq=$tmp/postgresql-16.15/src/interfaces/libpq/libpq.a" pg_dump pg_restore
 )
 cp "$tmp/postgresql-16.15/src/bin/psql/psql$suffix" "$destination/bin/psql$suffix"
 cp "$tmp/postgresql-16.15/src/bin/pg_dump/pg_dump$suffix" "$destination/bin/pg_dump$suffix"
