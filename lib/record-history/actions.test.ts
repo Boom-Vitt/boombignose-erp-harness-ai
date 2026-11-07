@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from "vitest"
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import { databaseFixture } from "@/lib/supabase/__tests__/tenant-fixture"
 const state = vi.hoisted(() => ({
   client: {} as unknown,
@@ -29,7 +29,7 @@ function client(failedTable?: string, failInsertInto?: string) {
       const read = query.then
       let mutate: ((rows: Rows) => void) | undefined
       query.then = (resolve, reject) => read(result => { if (mutate) mutate((result as { data: Rows }).data); return resolve(result) }, reject)
-      const failed = () => { query.then = (resolve, reject) => Promise.resolve({ data: null, error: { message: "Synthetic failure" } }).then(resolve, reject) }
+      const failed = () => { query.then = (resolve, reject) => Promise.resolve({ data: null, error: { message: "Synthetic failure", code: "23514" } }).then(resolve, reject) }
       if (table === failedTable) failed()
       if (table === failInsertInto) query.insert = () => { failed(); return query }
       return Object.assign(query, {
@@ -42,6 +42,7 @@ function client(failedTable?: string, failInsertInto?: string) {
   }
 }
 beforeEach(() => {
+  vi.stubEnv("BOOMBIGNOSE_NATIVE", "")
   vi.clearAllMocks()
   state.capability.mockReset()
   state.upload.mockResolvedValue({ error: null })
@@ -55,6 +56,7 @@ beforeEach(() => {
   }
   state.client = client()
 })
+afterEach(() => { vi.unstubAllEnvs() })
 it("saves trimmed notes under the active org and authenticated author", async () => {
   expect(await logRecordNote({ ...ref, body: "  Team context  ", author: "forged", org_id: "foreign" })).toEqual({})
   expect(tables.record_notes).toEqual([{ org_id: state.ctx.orgId, record_type: "quote", record_id: recordId, author: state.ctx.userId, body: "Team context" }])
@@ -117,9 +119,9 @@ it("cleans up uploaded objects when metadata cannot be saved", async () => {
   expect(state.remove).toHaveBeenCalledWith([state.upload.mock.calls[0][0]])
 })
 it("signs only active-org downloads for one minute with attachment disposition", async () => {
-  tables.record_attachments = [{ id: activityId, org_id: state.ctx.orgId, path: "private/path", filename: "scope.txt" }]
+  tables.record_attachments = [{ id: activityId, org_id: state.ctx.orgId, record_type: "quote", record_id: recordId, path: `${state.ctx.orgId}/quote/${recordId}/${activityId}`, filename: "scope.txt", size: 5, content_type: "text/plain" }]
   expect(await recordAttachmentUrl(activityId)).toEqual({ url: "https://storage.example.invalid/signed" })
-  expect(state.signed).toHaveBeenCalledWith("private/path", 60, { download: "scope.txt" })
+  expect(state.signed).toHaveBeenCalledWith(`${state.ctx.orgId}/quote/${recordId}/${activityId}`, 60, { download: "scope.txt" })
   state.signed.mockClear()
   tables.record_attachments[0].org_id = "foreign"
   expect(await recordAttachmentUrl(activityId)).toHaveProperty("error")
@@ -134,7 +136,7 @@ it("rejects forged or malformed timeline cursors before querying history", async
 it("completes activities and signs attachments whose ids lack RFC 9562 version bits", async () => {
   const [seedActivity, seedAttachment] = ["40000000-0000-0000-0000-000000000001", "40000000-0000-0000-0000-000000000002"]
   tables.activities[0].id = seedActivity
-  tables.record_attachments = [{ id: seedAttachment, org_id: state.ctx.orgId, path: "private/path", filename: "scope.txt" }]
+  tables.record_attachments = [{ id: seedAttachment, org_id: state.ctx.orgId, record_type: "quote", record_id: recordId, path: `${state.ctx.orgId}/quote/${recordId}/${seedAttachment}`, filename: "scope.txt", size: 5, content_type: "text/plain" }]
   expect(await completeRecordActivity(seedActivity)).toEqual({})
   expect(filters).toEqual(expect.arrayContaining([{ table: "activities", key: "id", value: seedActivity }]))
   expect(await recordAttachmentUrl(seedAttachment)).toEqual({ url: "https://storage.example.invalid/signed" })

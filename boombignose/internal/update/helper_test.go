@@ -6,6 +6,7 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
 	"os"
@@ -53,12 +54,23 @@ func writeAsset(t *testing.T, dir string, body []byte) string {
 	return hex.EncodeToString(sum[:])
 }
 
+func futureUpdateVersion(t *testing.T) string {
+	t.Helper()
+	var major, minor, patch uint
+	if n, err := fmt.Sscanf(AppVersion, "%d.%d.%d", &major, &minor, &patch); err != nil || n != 3 {
+		t.Fatalf("invalid installed version %q: %v", AppVersion, err)
+	}
+	return fmt.Sprintf("%d.0.0", major+1)
+}
+
 func TestApplyRequiresTheTokenAndAMatchingChecksum(t *testing.T) {
 	helper := testHelper(t)
+	version := futureUpdateVersion(t)
+	requestBody := fmt.Sprintf(`{"version":%q,"file":%q}`, version, MacOSAsset)
 	body := []byte("disk-image")
 	hash := writeAsset(t, helper.dir, body)
 	helper.sums = func(version, file string) (string, error) {
-		if version != "1.5.0" || file != MacOSAsset {
+		if version != futureUpdateVersion(t) || file != MacOSAsset {
 			t.Fatalf("sums lookup %s %s", version, file)
 		}
 		return hash, nil
@@ -71,25 +83,25 @@ func TestApplyRequiresTheTokenAndAMatchingChecksum(t *testing.T) {
 	quit := false
 	helper.SetQuit(func() { quit = true })
 
-	denied := postApply(t, helper, "", `{"version":"1.5.0","file":"BoomBigNose-macos-arm64.dmg"}`)
+	denied := postApply(t, helper, "", requestBody)
 	if denied.StatusCode != http.StatusUnauthorized || called {
 		t.Fatalf("unauthorized: %d called=%v", denied.StatusCode, called)
 	}
 
-	wrong := postApply(t, helper, strings.Repeat("ab", 32), `{"version":"1.5.0","file":"BoomBigNose-macos-arm64.dmg"}`)
+	wrong := postApply(t, helper, strings.Repeat("ab", 32), requestBody)
 	if wrong.StatusCode != http.StatusUnauthorized {
 		t.Fatalf("wrong token: %d", wrong.StatusCode)
 	}
 
 	helper.sums = func(string, string) (string, error) { return strings.Repeat("c", 64), nil }
-	mismatch := postApply(t, helper, helper.Token, `{"version":"1.5.0","file":"BoomBigNose-macos-arm64.dmg"}`)
+	mismatch := postApply(t, helper, helper.Token, requestBody)
 	payload, _ := io.ReadAll(mismatch.Body)
 	if mismatch.StatusCode != http.StatusBadRequest || !bytes.Contains(payload, []byte("checksum")) || called {
 		t.Fatalf("mismatch: %d %s called=%v", mismatch.StatusCode, payload, called)
 	}
 
 	helper.sums = func(string, string) (string, error) { return hash, nil }
-	ok := postApply(t, helper, helper.Token, `{"version":"1.5.0","file":"BoomBigNose-macos-arm64.dmg"}`)
+	ok := postApply(t, helper, helper.Token, requestBody)
 	if ok.StatusCode != http.StatusOK || !called || !quit {
 		raw, _ := io.ReadAll(ok.Body)
 		t.Fatalf("apply: %d %s called=%v quit=%v", ok.StatusCode, raw, called, quit)
@@ -101,6 +113,8 @@ func TestApplyRequiresTheTokenAndAMatchingChecksum(t *testing.T) {
 
 func TestApplyRefusesDowngradeTraversalAndDeferredReplace(t *testing.T) {
 	helper := testHelper(t)
+	version := futureUpdateVersion(t)
+	requestBody := fmt.Sprintf(`{"version":%q,"file":%q}`, version, MacOSAsset)
 	hash := writeAsset(t, helper.dir, []byte("disk-image"))
 	helper.sums = func(string, string) (string, error) { return hash, nil }
 	helper.apply = func(context.Context, string, string) error {
@@ -111,12 +125,12 @@ func TestApplyRefusesDowngradeTraversalAndDeferredReplace(t *testing.T) {
 	if old.StatusCode != http.StatusBadRequest {
 		t.Fatalf("downgrade: %d", old.StatusCode)
 	}
-	escape := postApply(t, helper, helper.Token, `{"version":"1.5.0","file":"../BoomBigNose-macos-arm64.dmg"}`)
+	escape := postApply(t, helper, helper.Token, fmt.Sprintf(`{"version":%q,"file":%q}`, version, "../"+MacOSAsset))
 	if escape.StatusCode != http.StatusBadRequest {
 		t.Fatalf("traversal: %d", escape.StatusCode)
 	}
 	helper.apply = func(context.Context, string, string) error { return ErrDeferred }
-	deferred := postApply(t, helper, helper.Token, `{"version":"1.5.0","file":"BoomBigNose-macos-arm64.dmg"}`)
+	deferred := postApply(t, helper, helper.Token, requestBody)
 	var decoded map[string]string
 	if err := json.NewDecoder(deferred.Body).Decode(&decoded); err != nil {
 		t.Fatal(err)

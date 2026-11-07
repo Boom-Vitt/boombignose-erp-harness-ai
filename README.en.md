@@ -17,14 +17,14 @@
 </div>
 
 <div align="center">
-	<a href="https://boom-vitt.github.io/boombignose-erp-harness-ai/">Website</a>
+	<a href="https://boom-vitt.github.io/nose-erp/">Website</a>
 	-
 	<a href="./docs">Documentation</a>
 	-
-	<a href="https://github.com/Boom-Vitt/boombignose-erp-harness-ai/issues">Issues</a>
+	<a href="https://github.com/Boom-Vitt/nose-erp/issues">Issues</a>
 </div>
 
-The download page is [https://boom-vitt.github.io/boombignose-erp-harness-ai/](https://boom-vitt.github.io/boombignose-erp-harness-ai/). The previous address [https://boom-vitt.github.io/boombignose-erp/](https://boom-vitt.github.io/boombignose-erp/) is retired and returned HTTP 404 after the rename deploy. Releases are at [https://github.com/Boom-Vitt/boombignose-erp-harness-ai/releases/latest](https://github.com/Boom-Vitt/boombignose-erp-harness-ai/releases/latest). Tag `boombignose-v0.2.0` is the desktop window. Tag `boombignose-v0.1.1` is the older harness command.
+The download page is [https://boom-vitt.github.io/nose-erp/](https://boom-vitt.github.io/nose-erp/). The previous address [https://boom-vitt.github.io/boombignose-erp/](https://boom-vitt.github.io/boombignose-erp/) is retired and returned HTTP 404 after the rename deploy. Releases are at [https://github.com/Boom-Vitt/nose-erp/releases/latest](https://github.com/Boom-Vitt/nose-erp/releases/latest). Tag `boombignose-v0.2.0` is the desktop window. Tag `boombignose-v0.1.1` is the older harness command.
 
 Release `boombignose-v0.2.0` is the Wails window. GitHub Actions builds it with Go and attaches:
 
@@ -39,6 +39,8 @@ Those v0.2.0 installers do not bundle Node, Docker, Postgres, or Ollama. They ha
 The desktop app name is BoomBigNose. From tag `boombignose-v0.3.0` the BoomBigNose installers include a private Node runtime, `server.js`, Postgres, Auth, PostgREST, and Ollama inside the app. Node is not the product name.
 
 The product you run is that desktop window. It opens the local ERP at `http://127.0.0.1:3100`. Month-end close, bank lines, cash at close, statements, the accountant pack, sheet import, and the local backup control are screens in that window. The page on GitHub Pages is the brochure and the installer download. It is not where those screens run.
+
+**Release boundary:** the confirmed published release is [1.4.4 (`ddc5c11`)](https://github.com/Boom-Vitt/nose-erp/releases/tag/boombignose-v1.4.4). New local AI/OCR, task profiles, organization workload 3D, headless server and private mobile controls described in current-source docs are not claimed as shipped there. Integrated page/AI/OCR/recovery/real-phone acceptance is not established by source changes or health checks.
 
 ## BoomBigNose ERP
 
@@ -67,23 +69,32 @@ Most businesses start with a CRM, a project tool, a spreadsheet of invoices and 
 ### Under the Hood
 
 - [**Next.js 16**](https://nextjs.org) with the App Router, React 19 Server Components and Server Actions, written in TypeScript. Server Actions validate their form input with [Zod](https://zod.dev).
-- [**Supabase**](https://supabase.com) for Postgres and authentication. Every table carries an `org_id` with forced Row Level Security, so one organization can never read another's data. The service-role key never reaches the browser.
+- [**Supabase**](https://supabase.com) for Postgres and authentication. Business access uses verified workspace membership, role/capability checks and RLS; review each table/RPC rather than assume every table has the same policy shape. Service-role is server-only, but not seed-only: dedicated cron, invitation/public token and device-ingest paths must authorize and scope their own privileged operations. Native browser login/MFA uses the same-origin loopback Auth relay; session cookies remain JavaScript-readable, not universally httpOnly. See [SECURITY.md](./SECURITY.md#current-source-security-boundaries).
 - Money is stored as integer satang (`bigint`), never as floating point. Business rules live as pure functions in `lib/` with Vitest unit tests that need no database. Database rules have their own SQL tests, and Playwright covers the main flows end to end.
 
 ### Local models
 
-The desktop window starts the bundled Ollama v0.40.11 on `127.0.0.1:11434`. It does not download a model at startup, and model weights are not in git or in the installer. Settings (`/settings#local-models`) is the install screen:
+The current-source native stack starts bundled Ollama on loopback (default `127.0.0.1:11434`) only when the address is unused; it does not replace an independently managed daemon. No model weights are in git/the installer or downloaded at startup. Use Settings (`/settings#local-models`) or an explicit CLI pull.
 
-| Modality | In this build | Model |
+| Workload / hardware planning guidance | Current-source model | License / boundary |
 |---|---|---|
-| Text (chat used by deals, meeting notes, and the month-end note) | Linux, Windows, and macOS | `qwen2.5:3b` |
-| Vision (read an image on this computer) | Linux, Windows, and macOS | `qwen2.5vl:3b` |
-| Image generation | macOS only | `x/flux2-klein:4b` (Apache-2.0) |
-| Speech synthesis | Apple Silicon only, English built-in voice | `phonon` (Apache-2.0). Thai speech is not in this build: espeak-ng's Thai voice drops tones, and a Piper binary that includes the Thai phonemizer is not pinned here. |
-| Speech to text | Linux and Windows. The app downloads whisper.cpp b5454 and `ggml-tiny.bin` when an owner asks. | Not on macOS until ggml-org publishes a `whisper-cli` archive. |
-| Video, voice clone | Not available in this build | none |
+| Thai/English OCR; allow 12 GB RAM for ERP+model | `qwen3.5:4b`; measured Mac artifact 3,973,305,013 bytes | [Apache-2.0](https://huggingface.co/Qwen/Qwen3.5-4B/resolve/main/LICENSE); Thai/English/Thai-numeral CER 1.227%/0%/3.004%; clean amounts/IDs matched, but degraded rotated JPEG/PDF had a wrong month; human review required |
+| ERP chat/assistant images; allow 24 GB+ RAM | `qwen3.5:9b-q4_k_m`; GGUF artifact 6,550,825,550 bytes | [Apache-2.0](https://huggingface.co/Qwen/Qwen3.5-9B/resolve/main/LICENSE); portable bounded-context GGUF required; no complete current AI quality acceptance has passed |
+| Image generation, macOS | `x/flux2-klein:4b` | Separate modality; see actual catalog |
+| Speech, Apple Silicon | `phonon` | English built-in voice, not Thai/voice cloning |
+| Speech-to-text, Linux/Windows | whisper.cpp b5454 + `ggml-tiny.bin` | No packaged macOS runtime in this build |
 
-A download starts only when an owner or admin presses Install. The screen shows progress and the daemon's error. Image generation and speech stay hidden, with the reason, on machines where Ollama 0.40.11 cannot run them. Phonon does not clone a voice and does not speak Thai. None of these models post a journal or file ภ.พ.30. `boombignose pull-model` still downloads `qwen2.5:3b`. An allowlisted name can be passed (`boombignose pull-model qwen2.5vl:3b`). Any other name is refused. See `docs/desktop/local-stack.md` and `docs/boombignose/BUNDLE.md`.
+`boombignose pull-model` or `boombignose pull-model qwen3.5:9b-q4_k_m` installs the chat/assistant-image default; `boombignose pull-model qwen3.5:4b` installs the separate OCR default. `OLLAMA_MODEL` and `OCR_MODEL` are separate selectors; restart after changing them. Browser installation/removal requires owner/admin capability **and** explicit OS-enrolled machine-operator authority. The [catalog](./boombignose/internal/bundle/ollama_models.json) controls named pulls/platform eligibility; see [Ollama](https://ollama.com/library/qwen3.5). RAM is planning guidance, not a measured minimum. Measurements use a 48 GiB Apple Silicon host and synthetic corpus, not cross-host accuracy/latency certification. Actual figures and coverage are server-owned; AI proposals await human review and cannot create, approve, pay or delete records.
+
+Chat requires GGUF and explicitly disables truncation/context shifting. Local GGUF rejected a 40,018-token prompt at requested context 32,768; bare `qwen3.5:9b` on Mac used MLX and accepted it, so that alias is not a portable bounded-context substitute. Separate OCR may still use local MLX. There is no silent model fallback or prompt truncation. Latest 9B GGUF candidates failed independent evidence validation; 27B is neither an approved default nor evidence that a larger model is better.
+
+Chat uses the publisher's [non-thinking sampling guidance](https://huggingface.co/Qwen/Qwen3.5-9B#best-practices): temperature 0.7, top-p 0.8, top-k 20, min-p 0 and repetition penalty 1; presence penalty is 1.5 for lookup and 0.5 for the final review plan. Near-greedy decoding produced a measured repeated-token loop; extending its output allowance is not a fix. Numeric/reference validation remains mandatory. Previous assistant replies are not current ERP evidence: record questions require fresh authorized reads, and source-free guidance cannot contain findings or be presented as verified workspace balances.
+
+Assistant **Source access** defaults to **ERP records**, which requires fresh authorized reads even for follow-ups. **Guidance / documents** performs no ERP reads; use it for file-only interpretation or unverified general guidance. Changing access explicitly starts a new thread. ERP answers contain server-owned facts plus selected human-review task codes, not model-authored amounts/status claims. Mandatory workspace receivables stay visible; other cited details can be expanded separately. UUID checks describe only the actual scoped/bounded read, not another tenant's record existence. Conversation text is not silently sliced to a shorter thread; exceeding the message/context bound requires an explicit new thread. Images are sent only from the current user message, so reattach an image for a visual follow-up.
+
+Typhoon OCR is not the default: despite its model-card Apache label, [official terms](https://opentyphoon.ai/tac) restrict personal-data input, competitive benchmarking and similar services and purport to apply through third-party/model access. Seek clarification/legal review rather than assume the label resolves that conflict. Pulls contact registries, but inference requires loopback and checks metadata for remote/cloud aliases before business bytes. Spawned Ollama has no-cloud mode; the owner must secure any pre-existing daemon. There is no permanent cloud fallback or hostile-OS sandbox.
+
+OCR uses a locally shipped PDF.js worker and a bounded pure-Go server raster decoder, supports JPEG/PNG/WebP/PDF with page/pixel/byte limits, and produces unverified review suggestions, not confidence scores. Sharp is development-only, not a runtime requirement. Unknown fields remain null, not zero; compare originals and use explicit expense/purchase save actions. Neither OCR nor chat posts accounts or files tax. See [privacy and limits](./docs/PDPA_SECURITY_NOTES.md#local-ai-ocr-and-attachments) and [distribution requirements](./NOTICE).
 
 ### Scope
 
@@ -116,8 +127,8 @@ The default build is Community. Pro code lives in [`ee/`](./ee/) and is built wi
 
 1. Clone the repository and install dependencies
    ```sh
-   git clone https://github.com/Boom-Vitt/boombignose-erp-harness-ai.git
-   cd boombignose-erp-harness-ai
+   git clone https://github.com/Boom-Vitt/nose-erp.git
+   cd nose-erp
    pnpm install
    ```
 
@@ -168,7 +179,9 @@ The **Use demo account** button on the login page appears only when `NEXT_PUBLIC
 | `LEAD_FORM_IP_SECRET` | No | Key for hashing lead-form visitor IPs. Falls back to the service-role key |
 | `BBN_EDITION` | No | `community` (default) or `pro`, chosen at build time |
 
-`NEXT_PUBLIC_*` values are baked into the build, so rebuild after you change them. [`.env.example`](./.env.example) is a commented template.
+For a conventional source web build, `NEXT_PUBLIC_*` values are inlined at build time. The native bundle also injects a strictly public runtime Supabase URL/anon-key/Auth-relay selector so one standalone build can run on private per-profile ports; private service credentials are never in that payload. See [`.env.example`](./.env.example) and the [native runbook](./docs/boombignose/BUNDLE.md).
+
+Server-side sessions, the Auth relay, and privileged clients also resolve their Supabase backend from the running process, not the public build-time defaults. When validating a standalone bundle on different ports, use a fixture present only in the intended database and confirm that reads and explicit writes stay there; identical copied workspaces alone cannot prove backend isolation.
 
 ### Scripts
 
@@ -184,7 +197,13 @@ pnpm local:up     # start the local Supabase stack and apply pending migrations
 
 ## Production Setup
 
-A packaged one-command install is planned. Today a production install takes four steps.
+### Native local-first desktop / headless server
+
+Use the [source-matched native deployment runbook](./docs/boombignose/BUNDLE.md#headless-server-installation-and-private-access) for current-source artifact paths, dedicated OS account/systemd setup, distinct ports/private data+secrets, first-owner local onboarding, explicit MFA enrollment, operator enrollment, offline `secure-db`, private Tailscale HTTPS and DB-only/full recovery. The native Go/Wails desktop remains the GUI; the separate Go CLI needs no WebKit/display. These new instructions are not an assertion that the published 1.4.4 binary supports the new commands. Do not expose Auth/REST/DB/model ports, use public Funnel or replace unrelated Serve mappings.
+
+### Separately managed hosted web deployment
+
+The following is a different deployment choice, not a prerequisite for native local mode:
 
 1. Create a Supabase project and apply the migrations with `pnpm exec supabase link` and `pnpm exec supabase db push`. Do not load the demo seed.
 2. In Supabase Auth, set the Site URL to your app URL, add `<app URL>/auth/confirm` to the redirect URLs, and configure custom SMTP so confirmation emails reach your users.
@@ -198,18 +217,18 @@ For the hosted Pro edition, contact [boombignose.org](https://boombignose.org).
 ## Learning and Community
 
 1. [Documentation](./docs): open-core boundary, n8n integration, testing gates, and security and PDPA notes.
-2. [Website](https://boom-vitt.github.io/boombignose-erp-harness-ai/): product overview.
-3. [Issues](https://github.com/Boom-Vitt/boombignose-erp-harness-ai/issues): bug reports and feature requests.
+2. [Website](https://boom-vitt.github.io/nose-erp/): product overview.
+3. [Issues](https://github.com/Boom-Vitt/nose-erp/issues): bug reports and feature requests.
 
 ## Contributing
 
 1. [Contributing guide](./CONTRIBUTING.md): run `pnpm lint`, `pnpm typecheck`, `pnpm test` and `pnpm build` before you open a pull request.
 2. [Contributor License Agreement](./CLA.md): required for every pull request.
-3. [Issue templates](https://github.com/Boom-Vitt/boombignose-erp-harness-ai/issues/new/choose): for bug reports and feature requests.
+3. [Issue templates](https://github.com/Boom-Vitt/nose-erp/issues/new/choose): for bug reports and feature requests.
 
 ## Security
 
-Report vulnerabilities privately through [GitHub Security Advisories](https://github.com/Boom-Vitt/boombignose-erp-harness-ai/security/advisories/new), never in a public issue. See [SECURITY.md](./SECURITY.md) for what to include and for the fallback contact. Do not put real customer data into a demo install, and read the [PDPA notes](./docs/PDPA_SECURITY_NOTES.md) before you go live.
+Report vulnerabilities privately through [GitHub Security Advisories](https://github.com/Boom-Vitt/nose-erp/security/advisories/new), never in a public issue. See [SECURITY.md](./SECURITY.md) for what to include and for the fallback contact. Do not put real customer data into a demo install, and read the [PDPA notes](./docs/PDPA_SECURITY_NOTES.md) before you go live.
 
 ## License
 

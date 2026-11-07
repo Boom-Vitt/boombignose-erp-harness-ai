@@ -33,11 +33,13 @@ import BlueprintPreviewPage from "@/app/blueprint-preview/page"
 const originalPreviewEnv = process.env.ERP_BLUEPRINT_PREVIEW
 
 beforeEach(() => {
+  vi.stubEnv("NEXT_PUBLIC_APP_URL", "https://app.example.test")
   state.user = null
   delete process.env.ERP_BLUEPRINT_PREVIEW
 })
 
 afterEach(() => {
+  vi.unstubAllEnvs()
   if (originalPreviewEnv === undefined) {
     delete process.env.ERP_BLUEPRINT_PREVIEW
   } else {

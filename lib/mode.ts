@@ -1,29 +1,45 @@
+// `startup` is the existing persisted Organization profile key. It is not an entity type.
 export const MODES = ["sme", "startup", "individual"] as const
 export type Mode = (typeof MODES)[number]
 export const DEFAULT_MODE: Mode = "sme"
 export const MODE_KEY = "bbn-mode"
 
-export const MODE_COPY: Record<Mode, { th: string; en: string; tipTh: string; tipEn: string; first: string[] }> = {
+type StarterTask = { href: string; th: string; en: string }
+type ModeProfile = { th: string; en: string; tipTh: string; tipEn: string; first: string[]; tasks: StarterTask[] }
+
+export const MODE_COPY: Record<Mode, ModeProfile> = {
+  individual: {
+    th: "งานส่วนตัว", en: "Individual",
+    tipTh: "งานส่วนตัวและฟรีแลนซ์: รับงาน บันทึกเวลา และติดตามเงินรับ",
+    tipEn: "Personal and freelance work: capture work, track time and get paid.",
+    first: ["/dashboard", "/intake", "/projects", "/timesheets", "/clients", "/finance", "/expenses", "/documents/ocr", "/assistant"],
+    tasks: [
+      { href: "/intake", th: "รับบรีฟงาน", en: "Capture a work brief" },
+      { href: "/timesheets", th: "บันทึกเวลางาน", en: "Log freelance time" },
+      { href: "/finance", th: "ติดตามใบแจ้งหนี้", en: "Track invoices" },
+    ],
+  },
   sme: {
-    th: "ธุรกิจ SME",
-    en: "SMEs",
-    tipTh: "เริ่มจากใบเสนอราคา ใบแจ้งหนี้ และการซื้อ",
-    tipEn: "Start with quotes, invoices and purchases.",
-    first: ["/dashboard", "/quotes", "/purchases", "/inventory", "/finance", "/warehouse"],
+    th: "ธุรกิจ SME", en: "SME",
+    tipTh: "งานประจำวัน: ขาย ซื้อ รับสินค้า และตรวจเอกสาร",
+    tipEn: "Daily operations: sell, purchase, receive stock and review documents.",
+    first: ["/dashboard", "/quotes", "/clients", "/purchases", "/vendors", "/inventory", "/products", "/finance", "/documents/ocr", "/assistant"],
+    tasks: [
+      { href: "/quotes/new", th: "สร้างใบเสนอราคา", en: "Prepare a quote" },
+      { href: "/purchases", th: "ติดตามการสั่งซื้อ", en: "Follow up purchases" },
+      { href: "/inventory", th: "ตรวจสต็อกพร้อมขาย", en: "Check available stock" },
+    ],
   },
   startup: {
-    th: "บริษัท",
-    en: "Company",
-    tipTh: "เริ่มจากดีล โปรเจกต์ และรายงานการเติบโต",
-    tipEn: "Start with deals, projects and growth reports.",
-    first: ["/dashboard", "/deals", "/projects", "/reports", "/automation", "/warehouse"],
-  },
-  individual: {
-    th: "บุคคลธรรมดา",
-    en: "Individual",
-    tipTh: "เริ่มจากไทม์ชีต ค่าใช้จ่าย และใบแจ้งหนี้ฟรีแลนซ์",
-    tipEn: "Start with timesheets, expenses and freelance invoices.",
-    first: ["/dashboard", "/intake", "/timesheets", "/expenses", "/clients", "/finance", "/warehouse"],
+    th: "องค์กร", en: "Organization",
+    tipTh: "ควบคุมงานข้ามทีม: ภาระงาน ส่งมอบ อนุมัติ และรายงาน",
+    tipEn: "Cross-team control: workload, delivery, approvals and reporting.",
+    first: ["/dashboard", "/warehouse", "/projects", "/deals", "/reports", "/expenses", "/automation", "/documents/ocr", "/assistant"],
+    tasks: [
+      { href: "/warehouse", th: "ตรวจภาระงานองค์กร", en: "Review organization workload" },
+      { href: "/projects?view=board", th: "ทบทวนการส่งมอบ", en: "Review delivery board" },
+      { href: "/reports", th: "ตรวจรายงานข้ามทีม", en: "Review cross-team reports" },
+    ],
   },
 }
 
@@ -31,12 +47,14 @@ export function parseMode(raw: unknown): Mode {
   return MODES.includes(raw as Mode) ? (raw as Mode) : DEFAULT_MODE
 }
 
-/** Stable sort: the mode's starter pages first, everything else keeps its order. */
-export function orderForMode<T extends { href: string }>(items: T[], mode: Mode): T[] {
-  const first = MODE_COPY[mode].first
-  const rank = (href: string) => {
-    const i = first.indexOf(href)
-    return i === -1 ? first.length : i
-  }
-  return items.map((item, i) => ({ item, i })).sort((a, b) => rank(a.item.href) - rank(b.item.href) || a.i - b.i).map((x) => x.item)
+/** Presentation only: callers authorize before partitioning. No records or permissions change. */
+export function navigationForMode<T extends { href: string }>(items: T[], mode: Mode): { primary: T[]; additional: T[] } {
+  const profile = MODE_COPY[mode].first
+  const byHref = new Map(items.map((item) => [item.href, item]))
+  const primary = profile.flatMap((href) => {
+    const item = byHref.get(href)
+    return item ? [item] : []
+  })
+  const selected = new Set(profile)
+  return { primary, additional: items.filter((item) => !selected.has(item.href)) }
 }

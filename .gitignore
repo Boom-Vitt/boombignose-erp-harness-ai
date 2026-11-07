@@ -8,6 +8,7 @@
 /.next/
 /out/
 /build
+/boombignose/bin/
 next-env.d.ts
 
 # testing

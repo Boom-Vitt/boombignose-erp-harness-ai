@@ -1,0 +1,22 @@
+{
+  "settings:manage": ["owner", "admin"],
+  "team:manage": ["owner", "admin"],
+  "accounting:manage": ["owner", "admin"],
+  "client:delete": ["owner", "admin"],
+  "deal:delete": ["owner", "admin"],
+  "template:manage": ["owner", "admin"],
+  "quote:convert": ["owner", "admin"],
+  "quote:delete": ["owner", "admin"],
+  "invoice:delete": ["owner", "admin"],
+  "cost:delete": ["owner", "admin"],
+  "subscription:manage": ["owner", "admin"],
+  "audit:view": ["owner", "admin", "accountant"],
+  "payment:verify": ["owner", "admin", "accountant"],
+  "inventory:manage": ["owner", "admin"],
+  "purchase:manage": ["owner", "admin"],
+  "purchase:approve": ["owner", "admin"],
+  "product:manage": ["owner", "admin"],
+  "expense:approve": ["owner", "admin"],
+  "profit:view": ["owner", "admin", "accountant"],
+  "record:write": ["owner", "admin", "accountant", "member"]
+}

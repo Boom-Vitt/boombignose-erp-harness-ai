@@ -4,11 +4,12 @@
 import "server-only"
 
 import { ollamaReplyText } from "@/lib/ai/ollama-reply"
+import { checkedLocalModel, LocalModelUnavailable } from "@/lib/ai/local-runtime"
 
 const DEFAULT_HOST = "127.0.0.1:11434"
 
 /** Default local model. Override with OLLAMA_MODEL. The model must already be pulled. */
-export const DEFAULT_MODEL = process.env.OLLAMA_MODEL?.trim() || "qwen2.5:3b"
+export const DEFAULT_MODEL = process.env.OLLAMA_MODEL?.trim() || "qwen3.5:9b-q4_k_m"
 
 /**
  * Thrown when Ollama is not usable on this machine. Callers catch this and
@@ -66,6 +67,11 @@ export async function generateText({
 }): Promise<string> {
   const origin = localOllamaOrigin()
   const model = process.env.OLLAMA_MODEL?.trim() || DEFAULT_MODEL
+  try {
+    await checkedLocalModel(origin, model)
+  } catch (error) {
+    throw new AINotConfiguredError(error instanceof LocalModelUnavailable ? error.message : "The local model could not be verified.")
+  }
 
   let res: Response
   try {
@@ -84,6 +90,7 @@ export async function generateText({
         options: { num_predict: maxTokens },
       }),
       signal: AbortSignal.timeout(60_000),
+      redirect: "error",
     })
   } catch {
     throw new AINotConfiguredError(

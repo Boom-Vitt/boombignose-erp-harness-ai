@@ -12,7 +12,6 @@ foreach ($rel in @(
   "node.exe",
   "erp\server.js",
   "postgres\bin\postgres.exe",
-  "postgres\prelude.sql",
   "postgres\prelude-after-auth.sql",
   "auth\auth.exe",
   "auth\migrations\00_init_auth_schema.up.sql",
@@ -28,6 +27,16 @@ foreach ($rel in @(
 foreach ($cuda in @("cuda_v12", "cuda_v13")) {
   if (Test-Path -LiteralPath (Join-Path $bundle "ollama\lib\ollama\$cuda")) {
     throw "cuda runner was packed"
+  }
+}
+& (Join-Path $bundle "node.exe") (Join-Path $root "packaging\erp-dependencies.mjs") smoke (Join-Path $bundle "erp") win32-x64
+if ($LASTEXITCODE -ne 0) { throw "bundled Go raster decode/corruption smoke failed: $LASTEXITCODE" }
+foreach ($tool in @("psql", "pg_dump", "pg_restore")) {
+  $client = Join-Path $bundle "postgres\bin\$tool.exe"
+  if (-not (Test-Path -LiteralPath $client -PathType Leaf)) { throw "shipped client missing: $client" }
+  $version = & $client --version
+  if ($LASTEXITCODE -ne 0 -or $version -notmatch '\(PostgreSQL\) 16\.15(?:\s|$)') {
+    throw "matching shipped PostgreSQL client failed: $tool"
   }
 }
 
@@ -65,7 +74,7 @@ foreach ($extra in @(54321, 54323, 54324)) { Assert-PortFree $extra }
 $data = Join-Path "C:\" ("bbn-smoke-" + [guid]::NewGuid().ToString("n"))
 if ($data -match " ") { throw "data path contains a space: $data" }
 $pgdata = Join-Path $data "pg"
-New-Item -ItemType Directory -Force -Path $pgdata | Out-Null
+New-Item -ItemType Directory -Force -Path $data | Out-Null
 
 foreach ($name in @(
   "OPENROUTER_API_KEY", "OPENAI_API_KEY", "ANTHROPIC_API_KEY",
@@ -77,6 +86,8 @@ $env:BOOMBIGNOSE_BUNDLE = $bundle
 $env:BOOMBIGNOSE_DATA = $pgdata
 $env:BOOMBIGNOSE_PG_PORT = "$pgPort"
 $env:BOOMBIGNOSE_ERP_URL = "http://127.0.0.1:3100"
+$env:BOOMBIGNOSE_ALLOW_SIGNUP = "1"
+Remove-Item Env:BOOMBIGNOSE_PUBLIC_ORIGIN -ErrorAction SilentlyContinue
 if (-not $env:NEXT_PUBLIC_SUPABASE_URL) {
   $env:NEXT_PUBLIC_SUPABASE_URL = "http://127.0.0.1:54321"
 }

@@ -8,7 +8,7 @@ Windows installers are unsigned. The macOS app and its nested native runtimes ar
 
 1. Open the BoomBigNose window. A browser tab on the same port cannot replace the program.
 2. Sign in as an owner or admin and open Settings. The update card is under the local-model card.
-3. Choose ตรวจอัปเดต / Check for updates. The app reads `https://api.github.com/repos/Boom-Vitt/boombignose-erp-harness-ai/releases/latest` only after that click. It keeps the release-page link and ignores `browser_download_url` values in the JSON.
+3. Choose ตรวจอัปเดต / Check for updates. The app reads `https://api.github.com/repos/Boom-Vitt/nose-erp/releases/latest` only after that click. It keeps the release-page link and ignores `browser_download_url` values in the JSON.
 4. On macOS Apple Silicon, choose ดาวน์โหลดและติดตั้ง / Download and install.
 5. The window quits and opens again on the new version. Postgres data in `~/.local/share/boombignose/pg` is not inside the app folder and is not replaced.
 
@@ -17,7 +17,7 @@ On Windows and Linux the same check shows that automatic replace is not in this 
 ## What the app does on macOS Apple Silicon
 
 1. The desktop process listens on `127.0.0.1` and a random port. It passes that URL and a random token to the bundled ERP process. The browser does not receive the token.
-2. The ERP downloads `SHA256SUMS` and `BoomBigNose-macos-arm64.dmg` from `https://github.com/Boom-Vitt/boombignose-erp-harness-ai/releases/download/boombignose-vX.Y.Z/`. Redirects are limited to GitHub's release hosts. The file is hashed while it is written under `~/.local/share/boombignose/updates` and kept only when the hash matches `SHA256SUMS`.
+2. The ERP downloads `SHA256SUMS` and `BoomBigNose-macos-arm64.dmg` from `https://github.com/Boom-Vitt/nose-erp/releases/download/boombignose-vX.Y.Z/`. Redirects are limited to GitHub's release hosts. The file is hashed while it is written under `~/.local/share/boombignose/updates` and kept only when the hash matches `SHA256SUMS`.
 3. The helper reads that file again, fetches `SHA256SUMS` itself, and refuses the file when the hash differs or the version is not newer than the helper's `AppVersion`.
 4. It mounts the image read-only, validates the complete app signature and required `Contents/Resources/bundle` files, copies the app intact to a payload folder, verifies the copied signature, detaches the image, and starts `relaunch.sh` in its own session.
 5. The script waits until the desktop process has exited, moves the old app aside, copies the complete signed replacement without moving or rewriting its resources, verifies the installed signature, and opens it. Copy, verification or launch failure restores the previous app. The Postgres data directory is never replaced.

@@ -6,7 +6,7 @@ type WindowState = { desktop?: boolean; fullscreen?: boolean }
 
 async function windowCall(init?: RequestInit): Promise<WindowState | null> {
   try {
-    const response = await fetch("/api/desktop-window", init)
+    const response = await fetch("/api/desktop-window", { cache: "no-store", ...init })
     return response.ok ? ((await response.json()) as WindowState) : null
   } catch {
     return null
@@ -20,9 +20,8 @@ export function useFullscreen() {
 
   const sync = useCallback(() => {
     void windowCall().then(state => {
-      if (!state?.desktop) return
-      setDesktop(true)
-      setOn(state.fullscreen === true)
+      setDesktop(state?.desktop === true)
+      setOn(state?.desktop ? state.fullscreen === true : Boolean(document.fullscreenElement))
     })
   }, [])
 

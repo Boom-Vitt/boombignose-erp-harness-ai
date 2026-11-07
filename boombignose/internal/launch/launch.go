@@ -18,7 +18,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Boom-Vitt/boombignose-erp-harness-ai/boombignose/internal/policy"
+	"github.com/Boom-Vitt/nose-erp/boombignose/internal/policy"
 )
 
 // ErrNotCheckout means the directory is not this ERP tree.

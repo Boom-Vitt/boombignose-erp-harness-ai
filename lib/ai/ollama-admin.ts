@@ -2,6 +2,8 @@ import "server-only"
 
 import { AINotConfiguredError, localOllamaOrigin } from "@/lib/ai/client"
 import { ollamaReplyText } from "@/lib/ai/ollama-reply"
+import { checkedLocalModel, LocalModelUnavailable } from "@/lib/ai/local-runtime"
+import { validateRaster, OcrError } from "@/lib/ocr/server"
 import {
   buildSnapshot,
   cleanPrompt,
@@ -15,6 +17,7 @@ import {
   speechBody,
   unavailableCopy,
   visionChatBody,
+  VISION_MODEL,
   type Host,
   type InstalledModel,
 } from "@/lib/ai/model-catalog"
@@ -161,16 +164,20 @@ export async function describeLocalImage(
   host: Host,
   fetchImpl: typeof fetch = fetch,
 ): Promise<{ text: string } | { error: string; status: number }> {
-  if (!modelPullable("qwen2.5vl:3b", host)) return { error: "Not available in this build.", status: 409 }
+  if (!modelPullable(VISION_MODEL, host)) return { error: "Not available in this build.", status: 409 }
   if (!VISION_TYPES.has(input.mediaType)) return { error: "Use a JPEG, PNG, or WebP image.", status: 400 }
   const image = input.imageBase64.replace(/\s/g, "")
   if (!/^[A-Za-z0-9+/]+={0,2}$/.test(image) || image.length < 16 || image.length > 2_000_000) {
     return { error: "That image is empty or larger than this page accepts.", status: 400 }
   }
-  const missing = await requireInstalled("qwen2.5vl:3b", fetchImpl)
+  try { await validateRaster(Buffer.from(image, "base64"), input.mediaType) }
+  catch (error) { return { error: error instanceof Error ? error.message : "Invalid image.", status: error instanceof OcrError ? error.status : 400 } }
+  const missing = await requireInstalled(VISION_MODEL, fetchImpl)
   if (missing) return missing
   const where = origin()
   if ("error" in where) return { error: where.error, status: 503 }
+  try { await checkedLocalModel(where.origin, VISION_MODEL, fetchImpl) }
+  catch (error) { return { error: error instanceof LocalModelUnavailable ? error.message : "The local model could not be verified.", status: 409 } }
   let res: Response
   try {
     res = await fetchImpl(`${where.origin}/api/chat`, {

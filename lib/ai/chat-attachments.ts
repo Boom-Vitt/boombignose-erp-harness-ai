@@ -2,10 +2,13 @@
 import { imageMediaType } from "@/lib/ai/model-catalog"
 
 export type AttachmentKind = "image" | "pdf" | "text"
+export type ChatDataScope = "erp" | "guidance"
 
 export const MAX_ATTACHMENTS = 4
 export const MAX_MESSAGES = 40
 export const MAX_MESSAGE_CHARS = 8000
+/** Valid structured replies include server figures and quotes beyond the user-input limit. */
+export const MAX_ASSISTANT_MESSAGE_CHARS = 64_000
 export const MAX_IMAGE_BASE64 = 2_800_000
 export const MAX_TEXT_BYTES = 200_000
 export const MAX_PDF_BYTES = 10_000_000
@@ -51,7 +54,7 @@ export function classifyFile(file: { name: string; size: number }, head: Uint8Ar
 export type WireAttachment =
   | { kind: "image"; name: string; mediaType: "image/png" | "image/jpeg" | "image/webp"; base64: string }
   | { kind: "text"; name: string; text: string }
-  | { kind: "pdf"; name: string; size: number }
+  // PDFs are rasterized/OCR-read in the browser workflow, then carried as attributed text.
 
 export type WireMessage = { role: "user" | "assistant"; content: string; attachments?: WireAttachment[] }
 
@@ -67,22 +70,24 @@ function parseAttachment(raw: unknown): WireAttachment | null {
     return mediaType ? { kind: "image", name, mediaType, base64 } : null
   }
   if (a.kind === "text" && typeof a.text === "string") {
-    if (a.text.length > MAX_TEXT_BYTES || a.text.includes("\u0000")) return null
+    if (new TextEncoder().encode(a.text).byteLength > MAX_TEXT_BYTES || a.text.includes("\u0000")) return null
     return { kind: "text", name, text: a.text }
   }
-  if (a.kind === "pdf" && typeof a.size === "number" && a.size > 0 && a.size <= MAX_PDF_BYTES) return { kind: "pdf", name, size: a.size }
   return null
 }
 
 /** Validate an untrusted chat request body. The last message must come from the user. */
-export function parseChatRequest(body: unknown): { messages: WireMessage[] } | { error: string } {
-  const list = body && typeof body === "object" ? (body as { messages?: unknown }).messages : null
+export function parseChatRequest(body: unknown): { messages: WireMessage[]; dataScope: ChatDataScope } | { error: string } {
+  const request = body && typeof body === "object" ? body as { messages?: unknown; dataScope?: unknown } : null
+  const dataScope = request?.dataScope ?? "erp"
+  if (dataScope !== "erp" && dataScope !== "guidance") return { error: "Choose ERP records or guidance/document review." }
+  const list = request?.messages
   if (!Array.isArray(list) || list.length === 0 || list.length > MAX_MESSAGES) return { error: "Send between 1 and 40 messages." }
   const messages: WireMessage[] = []
   for (const raw of list) {
     if (!raw || typeof raw !== "object") return { error: "Bad message." }
     const m = raw as Record<string, unknown>
-    if ((m.role !== "user" && m.role !== "assistant") || typeof m.content !== "string" || m.content.length > MAX_MESSAGE_CHARS) {
+    if ((m.role !== "user" && m.role !== "assistant") || typeof m.content !== "string" || m.content.length > (m.role === "assistant" ? MAX_ASSISTANT_MESSAGE_CHARS : MAX_MESSAGE_CHARS)) {
       return { error: "Bad message." }
     }
     const rawAtt = m.attachments === undefined ? [] : m.attachments
@@ -99,32 +104,30 @@ export function parseChatRequest(body: unknown): { messages: WireMessage[] } | {
     messages.push({ role: m.role, content: m.content, ...(attachments.length ? { attachments } : {}) })
   }
   if (messages[messages.length - 1].role !== "user") return { error: "The last message must be from you." }
-  return { messages }
+  return { messages, dataScope }
 }
 
-const TEXT_IN_PROMPT = 12_000
 
 /**
  * Turn a thread into Ollama messages. Only the newest user turn carries pixels; older images become
- * a label so the request stays small. Attached text is fenced as data, never as instructions.
+ * a label so the request stays small. Text bodies are source pointers prepared by the local document reader.
  */
-export function toOllamaMessages(messages: WireMessage[], system: string): { messages: Array<Record<string, unknown>>; hasImages: boolean } {
+export function toOllamaMessages(messages: WireMessage[], system: string): Array<Record<string, unknown>> {
   const last = messages.length - 1
-  let hasImages = false
   const out: Array<Record<string, unknown>> = [{ role: "system", content: system }]
   messages.forEach((m, i) => {
     let content = m.content
     const images: string[] = []
     for (const a of m.attachments ?? []) {
       if (a.kind === "image") {
-        if (i === last) { images.push(a.base64); hasImages = true } else content += `\n[image attached earlier: ${a.name}]`
+        if (i === last) images.push(a.base64); else content += `\n[image attached earlier: ${a.name}]`
       } else if (a.kind === "text") {
-        content += `\n\n<attached_file name="${a.name.replace(/"/g, "'")}">\n${a.text.slice(0, TEXT_IN_PROMPT)}\n</attached_file>`
-      } else {
-        content += `\n[PDF attached: ${a.name}. Its pages are not read in this version; ask the user to paste the text.]`
+        // Encoding angle brackets prevents a document from closing its transport fence.
+        const data = JSON.stringify({ name: a.name, text: a.text }).replace(/</g, "\\u003c").replace(/>/g, "\\u003e")
+        content += `\n\n<attached_file>\n${data}\n</attached_file>`
       }
     }
     out.push(images.length ? { role: m.role, content, images } : { role: m.role, content })
   })
-  return { messages: out, hasImages }
+  return out
 }

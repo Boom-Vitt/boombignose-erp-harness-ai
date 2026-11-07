@@ -2,7 +2,7 @@ import Link from "next/link"
 import { ArrowLeft } from "lucide-react"
 
 import { createClient } from "@/lib/supabase/server"
-import { requireOrgContext } from "@/lib/auth"
+import { requireCapability, requireOrgContext } from "@/lib/auth"
 import { PageHeader } from "@/components/page-header"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -12,12 +12,15 @@ import { createTemplate } from "../actions"
 export const dynamic = "force-dynamic"
 
 export default async function NewTemplatePage() {
-  await requireOrgContext()
+  const ctx = await requireOrgContext()
+  requireCapability(ctx, "template:manage")
   const supabase = await createClient()
-  const { data: categories } = await supabase
+  const { data: categories, error } = await supabase
     .from("template_categories")
     .select("id, name")
+    .eq("org_id", ctx.orgId)
     .order("name", { ascending: true })
+  if (error) throw new Error("Template categories unavailable. Please reload.")
 
   async function action(payload: Parameters<typeof createTemplate>[0]) {
     "use server"

@@ -31,10 +31,10 @@ beforeEach(() => {
   state.orgId = 'A'
   const date = `${currentMonthKey()}-05`
   state.client = databaseFixture({
-    clients: ['A','B'].map(org_id => ({ id: `client-${org_id}`, org_id, name: `CLIENT_${org_id}`, created_at: '2026-10-01' })),
-    deals: ['A','B'].map(org_id => ({ id: `deal-${org_id}`, org_id, title: `DEAL_${org_id}`, stage: 'lead', probability: 10, sequence: 0, value_satang: org_id === 'A' ? 100 : 999, client_id: `client-${org_id}`, created_at: '2026-10-01' })),
-    activities: ['A','B'].map(org_id => ({ id: `activity-${org_id}`, org_id, body: `ACTIVITY_${org_id}`, type: 'note', client_id: 'client-A', deal_id: 'deal-A', done: false, due_date: '2026-10-01' })),
-    contacts: ['A','B'].map(org_id => ({ id: `contact-${org_id}`, org_id, name: `CONTACT_${org_id}`, client_id: 'client-A' })),
+    clients: ['A','B'].map((org_id, index) => ({ id: `c0000000-0000-4000-8000-00000000000${index + 1}`, org_id, name: `CLIENT_${org_id}`, created_at: '2026-10-01' })),
+    deals: ['A','B'].map((org_id, index) => ({ id: `deal-${org_id}`, org_id, title: `DEAL_${org_id}`, stage: 'lead', probability: 10, sequence: 0, value_satang: org_id === 'A' ? 100 : 999, client_id: `c0000000-0000-4000-8000-00000000000${index + 1}`, created_at: '2026-10-01' })),
+    activities: ['A','B'].map(org_id => ({ id: `activity-${org_id}`, org_id, body: `ACTIVITY_${org_id}`, type: 'note', client_id: 'c0000000-0000-4000-8000-000000000001', deal_id: 'deal-A', done: false, due_date: '2026-10-01' })),
+    contacts: ['A','B'].map(org_id => ({ id: `contact-${org_id}`, org_id, name: `CONTACT_${org_id}`, client_id: 'c0000000-0000-4000-8000-000000000001' })),
     org_settings: ['A','B'].map(org_id => ({ org_id, cash_balance_satang: org_id === 'A' ? 500 : 800 })),
     invoices: ['A','B'].map(org_id => ({id:`invoice-${org_id}`,org_id,status:'sent',amount_satang:org_id==='A'?1000:3000,total_satang:org_id==='A'?1070:3210,vat_satang:org_id==='A'?70:210,issue_date:date,due_date:'2000-01-01',is_recurring:true,recurring_interval:'monthly'})),
     invoice_balances: ['A','B'].map(org_id => ({ org_id, invoice_id: `invoice-${org_id}`, paid_satang: org_id === 'A' ? 100 : 500, credited_satang: 0 })),
@@ -71,8 +71,8 @@ describe('active workspace business reads', () => {
   it('deal due dots survive the 1,000-row cap', async () => {
     const busy = Array.from({ length: 1000 }, (_, i) => `deal-busy-${i}`)
     state.client = databaseFixture({
-      clients: [{ id: 'client-A', org_id: 'A', name: 'CLIENT_A' }],
-      deals: [{ id: 'deal-A', org_id: 'A', title: 'DEAL_A', stage: 'lead', probability: 10, sequence: 0, value_satang: 100, client_id: 'client-A', next_follow_up_date: '2026-12-31', created_at: '2026-10-01' }],
+      clients: [{ id: 'c0000000-0000-4000-8000-000000000001', org_id: 'A', name: 'CLIENT_A' }],
+      deals: [{ id: 'deal-A', org_id: 'A', title: 'DEAL_A', stage: 'lead', probability: 10, sequence: 0, value_satang: 100, client_id: 'c0000000-0000-4000-8000-000000000001', next_follow_up_date: '2026-12-31', created_at: '2026-10-01' }],
       activities: [...busy, 'deal-A'].map((deal_id) => ({ org_id: 'A', deal_id, done: false, due_date: deal_id === 'deal-A' ? '2026-01-15' : '2026-01-01' })),
       deal_next_activity: [...busy, 'deal-A'].map((deal_id) => ({ org_id: 'A', deal_id, next_due_date: deal_id === 'deal-A' ? '2026-01-15' : '2026-01-01', open_count: 1 })),
     })
@@ -82,7 +82,7 @@ describe('active workspace business reads', () => {
 
   it('boards list every deal and project past the 1,000-row cap, so column counts and sums are complete', async () => {
     state.client = databaseFixture({
-      deals: Array.from({ length: 1001 }, (_, i) => ({ id: `deal-${i}`, org_id: 'A', title: `DEAL_${i}`, stage: 'lead', probability: 10, sequence: 0, value_satang: 1, client_id: 'client-A', created_at: '2026-10-01' })),
+      deals: Array.from({ length: 1001 }, (_, i) => ({ id: `deal-${i}`, org_id: 'A', title: `DEAL_${i}`, stage: 'lead', probability: 10, sequence: 0, value_satang: 1, client_id: 'c0000000-0000-4000-8000-000000000001', created_at: '2026-10-01' })),
       projects: Array.from({ length: 1001 }, (_, i) => ({ id: `project-${i}`, org_id: 'A', name: `PROJECT_${i}`, status: 'in_progress' })),
     })
     expect(pageContent(await DealsPage({ searchParams: Promise.resolve({}) }))).toContain('DEAL_1000')
@@ -125,8 +125,8 @@ describe('active workspace business reads', () => {
   })
 
   it.each([
-    ['client detail', ClientDetailPage, 'client-B'],
-    ['client edit', EditClientPage, 'client-B'],
+    ['client detail', ClientDetailPage, 'c0000000-0000-4000-8000-000000000002'],
+    ['client edit', EditClientPage, 'c0000000-0000-4000-8000-000000000002'],
     ['deal detail', DealDetailPage, 'deal-B'],
     ['deal edit', EditDealPage, 'deal-B'],
   ])('direct inactive workspace navigation to %s returns not found', async (_name, render, id) => {
@@ -134,7 +134,7 @@ describe('active workspace business reads', () => {
   })
 
   it('client children and deal views remain in the active workspace', async () => {
-    const content = pageContent(await ClientDetailPage({ params: Promise.resolve({ id: 'client-A' }) }))
+    const content = pageContent(await ClientDetailPage({ params: Promise.resolve({ id: 'c0000000-0000-4000-8000-000000000001' }) }))
     expect(content).toContain('CONTACT_A')
     expect(content).not.toContain('CONTACT_B')
     expect(content).not.toContain('ACTIVITY_B')
@@ -219,16 +219,16 @@ it('dashboard shows six zero months and safe bars when there are no issued invoi
 it('an inactive deal cannot create an activity in the active workspace', async () => {
  const id = '00000000-0000-4000-8000-000000000011'
  const activities: Record<string,unknown>[] = []
- state.client = databaseFixture({deals:[{id,org_id:'B',client_id:'client-B'}],activities})
+ state.client = databaseFixture({deals:[{id,org_id:'B',client_id:'c0000000-0000-4000-8000-000000000002'}],activities})
  expect(await addActivity({dealId:id,type:'note',body:'Wrong workspace'})).toEqual({error:'Deal not found in the active workspace'})
  expect(activities).toHaveLength(0)
 })
 it('an activity can be added to a deal whose seed-shaped id is not an RFC UUID', async () => {
  const id = '20000000-0000-0000-0000-000000000001'
  const activities: Record<string,unknown>[] = []
- state.client = databaseFixture({deals:[{id,org_id:'A',client_id:'client-A'}],activities})
+ state.client = databaseFixture({deals:[{id,org_id:'A',client_id:'c0000000-0000-4000-8000-000000000001'}],activities})
  expect(await addActivity({dealId:id,type:'note',body:'Seeded'})).toEqual({})
- expect(activities).toEqual([expect.objectContaining({org_id:'A',deal_id:id,client_id:'client-A'})])
+ expect(activities).toEqual([expect.objectContaining({org_id:'A',deal_id:id,client_id:'c0000000-0000-4000-8000-000000000001'})])
 })
 it('a failed dashboard query cannot report invented zero balances', async () => {
  const client = state.client as ReturnType<typeof databaseFixture>

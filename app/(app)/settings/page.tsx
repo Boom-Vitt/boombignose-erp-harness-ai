@@ -244,7 +244,7 @@ export default async function SettingsPage() {
         </Card>
       </div>
 
-      <Card id="local-models" className="bbn-deck-panel border-0">
+      <Card id="local-models" className="bbn-deck-panel scroll-mt-20 border-0">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-base"><Cpu className="text-primary size-4" aria-hidden />โมเดล AI บนเครื่องนี้ / Local AI models</CardTitle>
           <CardDescription>ดาวน์โหลดและใช้ในแอปนี้</CardDescription>

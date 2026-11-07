@@ -1,6 +1,7 @@
 "use client"
 
-import { useState, type FormEvent } from "react"
+import { Suspense, useState, type FormEvent } from "react"
+import { useSearchParams } from "next/navigation"
 import { Loader2 } from "lucide-react"
 import { toast } from "sonner"
 
@@ -9,8 +10,11 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { saveLoginLocale } from "../actions"
+import { safeReturnPath } from "@/lib/supabase/redirect"
 
-export default function MfaPage() {
+function MfaForm() {
+  const params = useSearchParams()
   const [code, setCode] = useState("")
   const [loading, setLoading] = useState(false)
 
@@ -43,7 +47,9 @@ export default function MfaPage() {
       toast.error("Code was not accepted", { description: checked.error.message })
       return
     }
-    window.location.assign("/dashboard")
+    const chosen = localStorage.getItem("bbn-lang")
+    if (chosen && await saveLoginLocale(chosen)) localStorage.removeItem("bbn-lang")
+    window.location.assign(safeReturnPath(params.get("redirect")))
   }
 
   return (
@@ -74,4 +80,8 @@ export default function MfaPage() {
       </Card>
     </div>
   )
+}
+
+export default function MfaPage() {
+  return <Suspense><MfaForm /></Suspense>
 }

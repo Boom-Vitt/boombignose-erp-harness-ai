@@ -7,6 +7,7 @@ import { z } from "zod"
 import { createClient as createSupabaseClient } from "@/lib/supabase/server"
 import { requireOrgContext, requireCapability } from "@/lib/auth"
 import { bahtToSatang } from "@/lib/money"
+import { can } from "@/lib/permissions"
 
 /** Turn a free-text name into a url-safe, lowercased, hyphenated slug. */
 function slugify(value: string): string {
@@ -58,6 +59,7 @@ export async function createTemplate(
   input: TemplateValues
 ): Promise<{ error?: string }> {
   const ctx = await requireOrgContext()
+  if (!can(ctx.role, "template:manage")) return { error: "Only owners and admins can manage templates." }
   const parsed = TemplateInput.safeParse(input)
   if (!parsed.success) return { error: "Invalid input" }
 
@@ -79,17 +81,22 @@ export async function updateTemplate(
   input: TemplateValues
 ): Promise<{ error?: string }> {
   const ctx = await requireOrgContext()
+  if (!can(ctx.role, "template:manage")) return { error: "Only owners and admins can manage templates." }
+  if (!z.guid().safeParse(id).success) return { error: "Invalid template." }
   const parsed = TemplateInput.safeParse(input)
   if (!parsed.success) return { error: "Invalid input" }
 
   const supabase = await createSupabaseClient()
-  const { error } = await supabase
+  const { data, error } = await supabase
     .from("automation_templates")
     .update(toRow(parsed.data, ctx.orgId))
     .eq("id", id)
     .eq("org_id", ctx.orgId)
+    .select("id")
+    .maybeSingle()
 
   if (error) return { error: error.message }
+  if (!data) return { error: "Template not found or unavailable." }
 
   revalidatePath("/templates")
   revalidatePath(`/templates/${id}`)
@@ -124,6 +131,7 @@ export async function createCategory(input: {
   name: string
 }): Promise<{ error?: string }> {
   const ctx = await requireOrgContext()
+  if (!can(ctx.role, "template:manage")) return { error: "Only owners and admins can manage template categories." }
   const parsed = CategoryInput.safeParse(input)
   if (!parsed.success) return { error: "Invalid input" }
 

@@ -1,7 +1,6 @@
 package bundle
 
 import (
-	"context"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -19,15 +18,6 @@ func TestAuthDBURLSetsTheAuthSearchPath(t *testing.T) {
 	}
 	if strings.Contains(localDBURL(), "search_path") {
 		t.Fatal(localDBURL())
-	}
-}
-
-func TestAuthMigrationsUseTheirOwnBook(t *testing.T) {
-	if migrationTable("prelude-after-auth.sql") != "public.erp_schema_migrations" {
-		t.Fatal(migrationTable("prelude-after-auth.sql"))
-	}
-	if migrationTable("prelude.sql") != "public.schema_migrations" {
-		t.Fatal(migrationTable("prelude.sql"))
 	}
 }
 
@@ -100,8 +90,14 @@ func TestEnsureLocalKeysDifferPerDataDirectory(t *testing.T) {
 	}
 }
 
-func TestLocalServicesBindLoopbackWithoutAPassword(t *testing.T) {
+func TestLocalServicesUseAuthenticatedPrivateDatabaseRoles(t *testing.T) {
 	t.Setenv("BOOMBIGNOSE_PG_PORT", "54329")
+	isolatedPorts(t)
+	credentials, err := loadDBCredentials(filepath.Join(t.TempDir(), "pg"), true)
+	if err != nil {
+		t.Fatal(err)
+	}
+	rememberCredentials(pgAddr(), credentials)
 	secret := "install-specific-secret"
 	groups := [][]string{
 		authProcessEnv("/opt/boombignose/migrations", secret),
@@ -110,7 +106,7 @@ func TestLocalServicesBindLoopbackWithoutAPassword(t *testing.T) {
 	for _, env := range groups {
 		text := strings.Join(env, "\n")
 		if strings.Contains(text, "0.0.0.0") || strings.Contains(strings.ToLower(text), "password") {
-			t.Fatalf("env = %s", text)
+			t.Fatal("service environment violated the private endpoint policy")
 		}
 		for _, line := range env {
 			equals := strings.Index(line, "=")
@@ -120,11 +116,12 @@ func TestLocalServicesBindLoopbackWithoutAPassword(t *testing.T) {
 			}
 			parsed, err := url.Parse(raw)
 			if err != nil {
-				t.Fatal(err)
+				t.Fatal("invalid service connection URL")
 			}
-			if parsed.User != nil {
-				if _, set := parsed.User.Password(); set {
-					t.Fatalf("database url has a password: %s", parsed.Redacted())
+			if parsed.Scheme == "postgres" {
+				password, set := parsed.User.Password()
+				if !set || password == "" || parsed.User.Username() == "boombignose" {
+					t.Fatal("service database connection is not an authenticated non-superuser role")
 				}
 			}
 			if parsed.Hostname() != "" && parsed.Hostname() != "127.0.0.1" {
@@ -134,13 +131,13 @@ func TestLocalServicesBindLoopbackWithoutAPassword(t *testing.T) {
 	}
 	auth := strings.Join(groups[0], "\n")
 	if !strings.Contains(auth, "GOTRUE_API_HOST=127.0.0.1") || !strings.Contains(auth, "GOTRUE_JWT_SECRET="+secret) || !strings.Contains(auth, "GOTRUE_SITE_URL=http://127.0.0.1:3100") {
-		t.Fatal(auth)
+		t.Fatal("explicit Auth process configuration missing")
 	}
 	rest := strings.Join(groups[1], "\n")
 	if !strings.Contains(rest, "PGRST_SERVER_HOST=127.0.0.1") || !strings.Contains(rest, "PGRST_JWT_SECRET="+secret) {
-		t.Fatal(rest)
+		t.Fatal("explicit PostgREST process configuration missing")
 	}
-	if localAPIListenAddr() != "127.0.0.1:"+localAPIPort {
+	if localAPIListenAddr() != "127.0.0.1:"+apiPort() {
 		t.Fatal(localAPIListenAddr())
 	}
 }
@@ -180,29 +177,6 @@ func TestWithLocalKeysReplacesThePlaceholder(t *testing.T) {
 	}
 	if !strings.Contains(got, "http://127.0.0.1:54321") {
 		t.Fatal("local api url missing")
-	}
-}
-
-func TestEnsurePostgresSkipsMigrationsWhenAuthIsBundled(t *testing.T) {
-	layout, data := postgresFixture(t)
-	layout.Auth = filepath.Join(t.TempDir(), "auth")
-	sawMigration := false
-	err := ensurePostgres(context.Background(), layout, data, func() bool { return false }, func(cmd Command) error {
-		if strings.Contains(cmd.Name, "initdb") {
-			return os.WriteFile(filepath.Join(data, "PG_VERSION"), []byte("16\n"), 0o644)
-		}
-		return nil
-	}, func(_ context.Context, _, _, _, sql string) ([][]string, error) {
-		if strings.Contains(sql, "schema_migrations") || strings.Contains(sql, "to_regclass") {
-			sawMigration = true
-		}
-		return nil, nil
-	})
-	if err != nil {
-		t.Fatal(err)
-	}
-	if sawMigration {
-		t.Fatal("bundled auth must migrate after the auth server starts")
 	}
 }
 

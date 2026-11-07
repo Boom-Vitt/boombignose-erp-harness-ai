@@ -1,11 +1,12 @@
 import { cache } from "react"
 import { cookies } from "next/headers"
-import { redirect } from "next/navigation"
+import { forbidden, redirect } from "next/navigation"
 
 import { createClient } from "@/lib/supabase/server"
 import type { Enums } from "@/lib/types/database"
 import { can, type Capability } from "@/lib/permissions"
 import { stepUpPath } from "@/lib/auth/totp"
+import { isTrustedRequestOrigin } from "@/lib/supabase/trusted-origin"
 
 export type Role = Enums<"role_enum">
 
@@ -23,8 +24,8 @@ export type OrgContext = {
 /** Authenticated actor, independent of whether workspace onboarding is complete. */
 export const getAuthenticatedUser = cache(async () => {
   const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  return user
+  const { data: { user }, error } = await supabase.auth.getUser()
+  return error ? null : user
 })
 
 /**
@@ -37,9 +38,7 @@ export const getAuthenticatedUser = cache(async () => {
 export const getOrgContext = cache(async (): Promise<OrgContext | null> => {
   const supabase = await createClient()
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+  const user = await getAuthenticatedUser()
   if (!user) return null
 
   const { data: memberships, error: membershipError } = await supabase
@@ -74,35 +73,35 @@ export const getOrgContext = cache(async (): Promise<OrgContext | null> => {
   }
 })
 
-function isNextRedirect(err: unknown): boolean {
-  return (
-    typeof err === "object" &&
-    err !== null &&
-    "digest" in err &&
-    String((err as { digest?: unknown }).digest).startsWith("NEXT_REDIRECT")
-  )
-}
-
-// An enrolled factor must be aal2. A lookup failure does not lock the session:
-// an account with no factor, and a machine whose auth server is down, stay usable.
-async function redirectIfAAL2Required(): Promise<void> {
+/** No network/unknown-assurance fallback: enrolled factors require AAL2. */
+const assuranceState = cache(async (): Promise<"allowed" | "step-up" | "unavailable"> => {
   try {
     const supabase = await createClient()
-    const level = await supabase.auth.mfa.getAuthenticatorAssuranceLevel()
-    if (level.error || !level.data) return
-    const next = stepUpPath({
-      hasVerifiedTotp: level.data.nextLevel === "aal2",
+    const user = await getAuthenticatedUser()
+    if (!user) return "unavailable"
+    const session = await supabase.auth.getSession()
+    if (session.error || !session.data.session?.access_token) return "unavailable"
+    // Passing the token makes auth-js verify it and read live factors with getUser,
+    // rather than reading the untrusted cached session.user.
+    const level = await supabase.auth.mfa.getAuthenticatorAssuranceLevel(session.data.session.access_token)
+    if (level.error || !level.data || !["aal1", "aal2"].includes(level.data.currentLevel ?? "") ||
+        !["aal1", "aal2"].includes(level.data.nextLevel ?? "")) return "unavailable"
+    return stepUpPath({
+      // auth-js may derive nextLevel from a stale cached session user.
+      hasVerifiedTotp: user.factors?.some((factor) => factor.status === "verified") === true || level.data.nextLevel === "aal2",
       authenticatorAssuranceLevel: level.data.currentLevel,
-    })
-    if (next) redirect(next)
-  } catch (err) {
-    if (isNextRedirect(err)) throw err
+    }) ? "step-up" : "allowed"
+  } catch {
+    return "unavailable"
   }
-}
+})
 
 /** Login is for signed-out actors; signed-in actors without a workspace onboard. */
 export async function requireOrgContext(): Promise<OrgContext> {
-  await redirectIfAAL2Required()
+  if (!await getAuthenticatedUser()) redirect("/login")
+  const assurance = await assuranceState()
+  if (assurance === "step-up") redirect("/login/mfa")
+  if (assurance === "unavailable") forbidden()
   const ctx = await getOrgContext()
   if (!ctx) {
     if (await getAuthenticatedUser()) redirect("/onboarding")
@@ -114,7 +113,7 @@ export async function requireOrgContext(): Promise<OrgContext> {
 /** Throws when the context's role is not in the allowed set. Defense-in-depth on top of RLS. */
 export function requireRole(ctx: OrgContext, allowed: Role[]): void {
   if (!allowed.includes(ctx.role)) {
-    throw new Error("Forbidden: your role does not permit this action.")
+    forbidden()
   }
 }
 
@@ -125,6 +124,37 @@ export function requireRole(ctx: OrgContext, allowed: Role[]): void {
  */
 export function requireCapability(ctx: OrgContext, capability: Capability): void {
   if (!can(ctx.role, capability)) {
-    throw new Error("Forbidden: your role does not permit this action.")
+    forbidden()
   }
+}
+
+/** JSON API boundary: verified identity, live membership, MFA, and mutation CSRF. */
+export async function getVerifiedApiContext(
+  request: Request,
+  options: { roles?: Role[]; mutation?: boolean } = {},
+): Promise<{ ctx: OrgContext; response?: never } | { ctx?: never; response: Response }> {
+  const deny = (error: string, status: number) => ({ response: Response.json({ error }, { status, headers: { "cache-control": "no-store" } }) })
+  if (options.mutation && !isTrustedRequestOrigin(request)) return deny("Untrusted request origin.", 403)
+  try {
+    if (!await getAuthenticatedUser()) return deny("Sign in required.", 401)
+    const assurance = await assuranceState()
+    if (assurance === "unavailable") return deny("Unable to verify session assurance. Please try again.", 503)
+    if (assurance === "step-up") return deny("Authenticator verification required.", 403)
+    const ctx = await getOrgContext()
+    if (!ctx) return deny("Workspace membership required.", 403)
+    if (options.roles && !options.roles.includes(ctx.role)) return deny("Your role does not permit this action.", 403)
+    return { ctx }
+  } catch {
+    return deny("Unable to verify workspace access. Please try again.", 503)
+  }
+}
+
+/** Host resources are shared by every workspace; workspace ownership is insufficient. */
+export function machineOperatorDenied(userId: string): Response | null {
+  const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
+  const operators = (process.env.BOOMBIGNOSE_OPERATOR_USER_IDS ?? "").split(",")
+  if (operators.every((id) => uuid.test(id)) && operators.includes(userId)) return null
+  return Response.json({
+    error: `Shared host changes and all-workspace backups require operating-system operator authorization. On the server, run boombignose configure-operators ${userId}, then restart it. Workspace ownership alone is insufficient.`,
+  }, { status: 403, headers: { "cache-control": "no-store" } })
 }

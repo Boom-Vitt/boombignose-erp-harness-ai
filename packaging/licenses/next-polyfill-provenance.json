@@ -1,0 +1,48 @@
+{
+  "format": 1,
+  "owner": "next@16.4.3",
+  "sourcePackage": {
+    "url": "https://raw.githubusercontent.com/vercel/next.js/29bbeab09981148ade186e8599ecdede15abc281/packages/next-polyfill-nomodule/package.json",
+    "sha256": "d532c343903a3b69127b816d5ef4939e9f966c79a0ef4f0664e1f857e074905f",
+    "manifest": {
+      "name": "@next/polyfill-nomodule",
+      "version": "16.4.3",
+      "description": "A polyfill for non-dead, nomodule browsers.",
+      "main": "dist/polyfill-nomodule.js",
+      "license": "MIT",
+      "repository": {
+        "url": "vercel/next.js",
+        "directory": "packages/next-polyfill-nomodule"
+      },
+      "scripts": {
+        "build": "microbundle -i src/index.js -o dist/polyfill-nomodule.js -f iife --no-sourcemap --external none --no-pkg-main",
+        "dev": "pnpm build"
+      },
+      "devDependencies": {
+        "core-js": "3.38.1",
+        "microbundle": "0.15.0",
+        "object-assign": "4.1.1",
+        "whatwg-fetch": "3.0.0"
+      }
+    }
+  },
+  "sourceImports": "https://raw.githubusercontent.com/vercel/next.js/29bbeab09981148ade186e8599ecdede15abc281/packages/next-polyfill-nomodule/src/index.js",
+  "installedAsset": {
+    "path": "dist/build/polyfills/polyfill-nomodule.js",
+    "sha256": "0973c1d64c88adc8e3c950410cb58b288f72118d5965b78049438deb8f2f9683"
+  },
+  "embeddedDependencies": [
+    {
+      "package": "core-js@3.38.1",
+      "notice": "upstream/core-js-3.38.1-LICENSE.txt"
+    },
+    {
+      "package": "whatwg-fetch@3.0.0",
+      "notice": "upstream/whatwg-fetch-3.0.0-LICENSE.txt"
+    },
+    {
+      "package": "object-assign@4.1.1",
+      "noticeSource": "installed original object-assign@4.1.1/license"
+    }
+  ]
+}

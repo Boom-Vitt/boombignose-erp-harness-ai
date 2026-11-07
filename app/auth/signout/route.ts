@@ -4,6 +4,8 @@ import { NextResponse } from "next/server"
 import { ACTIVE_ORG_COOKIE } from "@/lib/auth"
 import { authCookieNames, loopbackRedirect, supabaseStorageKey } from "@/lib/supabase/auth-cookies"
 import type { Database } from "@/lib/types/database"
+import { runtimeSupabaseEnv } from "@/lib/supabase/runtime-env"
+import { isTrustedRequestOrigin, configuredOrigins } from "@/lib/supabase/trusted-origin"
 
 const expired = { path: "/", maxAge: 0, sameSite: "lax" as const }
 
@@ -19,14 +21,16 @@ function cookiePairs(header: string) {
 }
 
 export async function POST(request: Request) {
+  if (!isTrustedRequestOrigin(request)) return Response.json({ error: "Untrusted request origin." }, { status: 403 })
+  const { url, anonKey } = runtimeSupabaseEnv()
   const response = NextResponse.redirect(
-    loopbackRedirect("/login", request, process.env.NEXT_PUBLIC_APP_URL || "http://127.0.0.1:3100"),
+    loopbackRedirect("/login", request, configuredOrigins()[0] ?? ""),
     { status: 303 },
   )
   const header = request.headers.get("cookie") ?? ""
   const supabase = createServerClient<Database>(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    url,
+    anonKey,
     {
       cookies: {
         getAll() {
@@ -43,7 +47,7 @@ export async function POST(request: Request) {
   await supabase.auth.signOut()
   // setAll only expires names it loaded. Expire every chunk from the request
   // as well, so a later sign-in is not combined with a leftover piece.
-  for (const name of authCookieNames(header, supabaseStorageKey(process.env.NEXT_PUBLIC_SUPABASE_URL!))) {
+  for (const name of authCookieNames(header, supabaseStorageKey(url))) {
     response.cookies.set(name, "", expired)
   }
   response.cookies.set(ACTIVE_ORG_COOKIE, "", expired)

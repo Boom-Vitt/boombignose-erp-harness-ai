@@ -12,7 +12,7 @@ import (
 
 func TestSumsURLAndVersionOrder(t *testing.T) {
 	got, err := SumsURL("1.4.0")
-	if err != nil || got != "https://github.com/Boom-Vitt/boombignose-erp-harness-ai/releases/download/boombignose-v1.4.0/SHA256SUMS" {
+	if err != nil || got != "https://github.com/Boom-Vitt/nose-erp/releases/download/boombignose-v1.4.0/SHA256SUMS" {
 		t.Fatalf("sums url: %s %v", got, err)
 	}
 	if _, err := SumsURL("1.4.0/evil"); err == nil {

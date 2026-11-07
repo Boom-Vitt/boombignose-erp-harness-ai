@@ -4,6 +4,7 @@ import "server-only"
 import { createClient } from "@supabase/supabase-js"
 
 import type { Database } from "@/lib/types/database"
+import { runtimeSupabaseEnv } from "@/lib/supabase/runtime-env"
 
 /**
  * SERVER-ONLY service-role Supabase client. Bypasses Row Level Security, so it
@@ -17,9 +18,11 @@ import type { Database } from "@/lib/types/database"
  * must never be logged or returned in a response.
  */
 export function createAdminClient() {
+  const { url } = runtimeSupabaseEnv()
+  const env = process.env
   return createClient<Database>(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    url,
+    env.SUPABASE_SERVICE_ROLE_KEY!,
     {
       auth: {
         persistSession: false,

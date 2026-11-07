@@ -12,7 +12,7 @@
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Prompt:wght@500;600;700;800&display=swap" rel="stylesheet" />
   <meta property="og:title" content="ติดตั้ง BoomBigNose บนเดสก์ท็อป" />
   <meta property="og:description" content="ดาวน์โหลดตรง ตรวจ SHA-256 แล้วเปิดแอปที่ไม่ได้ลงชื่อด้วยใบรับรองร้านค้า" />
-  <meta property="og:image" content="https://boom-vitt.github.io/boombignose-erp-harness-ai/assets/brandmark.png" />
+  <meta property="og:image" content="https://boom-vitt.github.io/nose-erp/assets/brandmark.png" />
   <meta property="og:type" content="website" />
   <link rel="stylesheet" href="assets/site.css" />
   <meta name="theme-color" content="#0B1222" />
@@ -36,22 +36,24 @@
   <main id="content">
     <div class="wrap hero">
       <h1>ติดตั้ง BoomBigNose</h1>
-      <p class="lead">แอปเดสก์ท็อปชื่อ BoomBigNose ดาวน์โหลดไฟล์ตรงจาก Release</p>
-      <p class="en">The desktop app is named BoomBigNose. Direct download only. No Apple App Store, Google Play, or Microsoft Store.</p>
+      <p class="lead">เลือกตัวติดตั้งที่ตรงเครื่อง ตรวจไฟล์ แล้วเลือกเปิดเดสก์ท็อปหรือ native server</p>
+      <p class="en">Direct downloads, explicit setup, private access. No app-store listing is claimed.</p>
       <p class="meta" id="primary-meta">รุ่น <span data-release="tag">boombignose-v0.3.0</span> ปุ่มหลักจะตรงกับ Windows, macOS หรือ Linux เมื่อเบราว์เซอร์บอกระบบได้</p>
       <div class="actions" id="download">
-        <a class="btn secondary" data-os="windows" data-release-href="windows" href="https://github.com/Boom-Vitt/boombignose-erp-harness-ai/releases/download/boombignose-v0.3.0/BoomBigNose-windows-x64-setup.exe">Windows x64 · <span data-release="size-windows">507,445,373 ไบต์</span> <span class="chip" data-chip hidden>เครื่องนี้</span></a>
-        <a class="btn secondary" data-os="macos" data-release-href="macos" href="https://github.com/Boom-Vitt/boombignose-erp-harness-ai/releases/download/boombignose-v0.3.0/BoomBigNose-macos-arm64.dmg">macOS arm64 · <span data-release="size-macos">505,963,961 ไบต์</span> <span class="chip" data-chip hidden>เครื่องนี้</span></a>
-        <a class="btn secondary" data-os="linux" data-release-href="linux" href="https://github.com/Boom-Vitt/boombignose-erp-harness-ai/releases/download/boombignose-v0.3.0/BoomBigNose-linux-amd64.tar.gz">Linux amd64 · <span data-release="size-linux">202,666,839 ไบต์</span> <span class="chip" data-chip hidden>เครื่องนี้</span></a>
-        <a class="btn secondary" data-os="appimage" data-release-href="appimage" href="https://github.com/Boom-Vitt/boombignose-erp-harness-ai/releases/download/boombignose-v0.3.0/BoomBigNose-linux-amd64.AppImage">AppImage · <span data-release="size-appimage">138,394,104 ไบต์</span></a>
+        <a class="btn secondary" data-os="windows" data-release-href="windows" href="https://github.com/Boom-Vitt/nose-erp/releases/download/boombignose-v0.3.0/BoomBigNose-windows-x64-setup.exe">Windows x64 · <span data-release="size-windows">507,445,373 ไบต์</span> <span class="chip" data-chip hidden>เครื่องนี้</span></a>
+        <a class="btn secondary" data-os="macos" data-release-href="macos" href="https://github.com/Boom-Vitt/nose-erp/releases/download/boombignose-v0.3.0/BoomBigNose-macos-arm64.dmg">macOS arm64 · <span data-release="size-macos">505,963,961 ไบต์</span> <span class="chip" data-chip hidden>เครื่องนี้</span></a>
+        <a class="btn secondary" data-os="linux" data-release-href="linux" href="https://github.com/Boom-Vitt/nose-erp/releases/download/boombignose-v0.3.0/BoomBigNose-linux-amd64.tar.gz">Linux amd64 · <span data-release="size-linux">202,666,839 ไบต์</span> <span class="chip" data-chip hidden>เครื่องนี้</span></a>
+        <a class="btn secondary" data-os="appimage" data-release-href="appimage" href="https://github.com/Boom-Vitt/nose-erp/releases/download/boombignose-v0.3.0/BoomBigNose-linux-amd64.AppImage">AppImage · <span data-release="size-appimage">138,394,104 ไบต์</span></a>
       </div>
       <p class="meta">ไฟล์หลักของลินุกซ์คือ tar.gz AppImage เป็นทางเลือก ขนาดเป็นจำนวนไบต์จาก Release <span data-release="tag">boombignose-v0.3.0</span></p>
+      <p class="capture-notice" data-integration-copy="install-status">ลิงก์ดาวน์โหลดตาม Release ที่เผยแพร่แล้ว ส่วนคำแนะนำ native server / AI / OCR ใหม่นี้ตามซอร์สที่ยังรอรวมและตรวจ runtime โปรดเทียบบันทึก Release ก่อนใช้ ไม่ถือว่าทุกคำสั่งมีในตัวติดตั้งเก่า</p>
+      <nav class="doc-toc" aria-label="หัวข้อติดตั้ง"><a href="#desktop">เดสก์ท็อป</a><a href="#server">Native server</a><a href="#models">Local AI / OCR</a><a href="#recovery">ข้อมูลและอัปเกรด</a></nav>
     </div>
 
     <section>
       <div class="wrap">
         <h2>ตรวจไฟล์ก่อนเปิด</h2>
-        <p class="sub">วางไฟล์ <a data-release-href="sums" href="https://github.com/Boom-Vitt/boombignose-erp-harness-ai/releases/download/boombignose-v0.3.0/SHA256SUMS">SHA256SUMS</a> ไว้โฟลเดอร์เดียวกับตัวติดตั้ง แล้วเทียบกับค่าด้านล่าง หน้านี้ไม่ได้รับรองว่าเครื่องของคุณเปิดคำสั่งเหล่านี้แล้ว</p>
+        <p class="sub">วางไฟล์ <a data-release-href="sums" href="https://github.com/Boom-Vitt/nose-erp/releases/download/boombignose-v0.3.0/SHA256SUMS">SHA256SUMS</a> ไว้โฟลเดอร์เดียวกับตัวติดตั้ง แล้วเทียบกับค่าด้านล่าง หน้านี้ไม่ได้รับรองว่าเครื่องของคุณเปิดคำสั่งเหล่านี้แล้ว</p>
         <div class="steps">
           <article class="card" data-os="windows">
             <h3>Windows <span class="chip" data-chip hidden>เครื่องนี้</span></h3>
@@ -75,7 +77,7 @@
             </div>
             <pre id="verify-macos" data-release="verify-macos">shasum -a 256 -c SHA256SUMS</pre>
             <button type="button" class="btn secondary" data-copy="verify-macos">คัดลอกคำสั่งตรวจ</button>
-            <p>ใช้ <code>shasum</code> ที่มีในเครื่อง <code>sha256sum</code> อาจไม่มี คำสั่งนี้ตรวจทุกไฟล์ที่อยู่ใน SHA256SUMS</p>
+            <p>ใช้ <code>shasum</code> ที่มีในเครื่อง คำสั่งตรวจทั้งชุดต้องมีไฟล์ที่ SHA256SUMS ระบุครบ ถ้าดาวน์โหลดเฉพาะ DMG ให้ใช้ <code>shasum -a 256</code> ตามด้วยชื่อ DMG แล้วเทียบค่าของไฟล์นั้นทุกตัว</p>
           </article>
           <article class="card" data-os="linux">
             <h3>Linux <span class="chip" data-chip hidden>เครื่องนี้</span></h3>
@@ -93,23 +95,23 @@
             </div>
             <pre id="verify-linux" data-release="verify-linux">sha256sum -c SHA256SUMS</pre>
             <button type="button" class="btn secondary" data-copy="verify-linux">คัดลอกคำสั่งตรวจ</button>
-            <p>คำสั่งเดียวตรวจทั้ง tar.gz และ AppImage เมื่อทั้งสองไฟล์กับ SHA256SUMS อยู่ในโฟลเดอร์เดียวกัน</p>
+            <p>คำสั่งตรวจทั้งชุดต้องมีไฟล์ที่ SHA256SUMS ระบุครบ ถ้าดาวน์โหลดไฟล์เดียว ให้ใช้ <code>sha256sum</code> ตามด้วยชื่อไฟล์แล้วเทียบกับแฮชของไฟล์นั้น การตรวจไม่ตรงต้องหยุด ไม่เปิดไฟล์ต่อ</p>
           </article>
         </div>
       </div>
     </section>
 
-    <section>
+    <section id="desktop">
       <div class="wrap">
-        <h2>วิธีติดตั้ง</h2>
-        <p class="sub">ตัวติดตั้งไม่ได้ลงชื่อด้วยใบรับรองที่ซื้อมา ระบบจึงถามก่อนเปิด ขั้นตอนนี้ยังไม่ถูกคลิกทดสอบบนเครื่องจริง</p>
+        <h2>เปิดเดสก์ท็อปตามระบบ</h2>
+        <p class="sub">แฮชไม่ใช่ลายเซ็นผู้พัฒนา macOS ใช้ ad-hoc signing ไม่ใช่ Developer ID/notarization; ไม่มี Authenticode หรือการอนุมัติจาก store ที่หน้านี้รับรอง อย่าปิดนโยบายความปลอดภัยของเครื่องเพื่อข้ามข้อห้าม</p>
         <div class="steps">
           <article class="card" data-os="windows">
             <h3>Windows <span class="chip" data-chip hidden>เครื่องนี้</span></h3>
             <ol>
               <li>เปิด <span data-release="name-windows">BoomBigNose-windows-x64-setup.exe</span></li>
-              <li>ถ้า SmartScreen ขึ้น ให้กด More info แล้วกด Run anyway</li>
-              <li>Smart App Control อาจยังบล็อกแอปที่ไม่ได้ลงชื่อ การกด Run anyway ไม่ได้รับรองว่าจะผ่านนโยบายนั้น</li>
+              <li>ถ้า SmartScreen เตือน ให้ตรวจแหล่งที่มาและแฮชก่อน หากเชื่อถือไฟล์และนโยบายองค์กรอนุญาต จึงใช้ More info → Run anyway</li>
+              <li>Smart App Control หรือนโยบายองค์กรอาจยังบล็อก ให้ผู้ดูแลทบทวน ไม่รับรองว่า Run anyway จะผ่าน และไม่แนะนำให้ปิดการป้องกัน</li>
               <li>ตัวติดตั้งเป็น NSIS ระดับผู้ใช้ โฟลเดอร์เริ่มต้นคือ <code>%LOCALAPPDATA%\BoomBigNose</code> ไม่ได้ขอสิทธิ์ผู้ดูแลระบบ</li>
               <li>เปิด BoomBigNose จากเมนู Start หน้าต่างจะสตาร์ท ERP ที่ <code>127.0.0.1:3100</code></li>
             </ol>
@@ -118,10 +120,10 @@
             <h3>macOS <span class="chip" data-chip hidden>เครื่องนี้</span></h3>
             <ol>
               <li>เปิดไฟล์ .dmg มีเฉพาะ Apple silicon (arm64) ไม่มีไฟล์สำหรับ Intel</li>
-              <li>คัดลอก BoomBigNose และโฟลเดอร์ bundle ออกจากแผ่นไปยังโฟลเดอร์ที่เขียนได้ แผ่นแบบอ่านอย่างเดียวอาจทำให้สิทธิ์รันหายไป จากนั้นรัน <code>chmod +x BoomBigNose</code></li>
-              <li>ถ้าแผ่นมี BoomBigNose.app ให้เปิดแอปนั้นได้ แอปลงชื่อแบบ ad-hoc ไม่ใช่ใบรับรองนักพัฒนาที่ซื้อจาก Apple</li>
-              <li>ถ้า Gatekeeper ปฏิเสธ ให้คลิกขวาที่ไฟล์แล้วเลือก Open หรือไปที่ System Settings &gt; Privacy &amp; Security แล้วกด Open Anyway</li>
-              <li>เครื่องจะไม่ข้ามคำเตือนให้เอง</li>
+              <li>คัดลอก BoomBigNose.app ทั้งชุดไป Applications หรือโฟลเดอร์ที่ผู้ใช้มีสิทธิ์ ไม่รันจาก DMG ที่อ่านอย่างเดียว และไม่แก้ไฟล์ใน .app หลังลงชื่อ</li>
+              <li>แอปลงชื่อแบบ ad-hoc เพื่อความสมบูรณ์ของแพ็กเกจ ไม่ใช่การยืนยันตัวตนนักพัฒนาจาก Apple หรือ notarization</li>
+              <li>ถ้า Gatekeeper เตือน ให้ตรวจต้นทางและ SHA-256 ก่อน หากนโยบายเครื่องอนุญาต จึงใช้ System Settings → Privacy &amp; Security → Open Anyway</li>
+              <li>อย่ารันคำสั่งล้าง quarantine ทั้งระบบหรือปิด Gatekeeper เพื่อข้ามนโยบาย</li>
             </ol>
           </article>
           <article class="card" data-os="linux">
@@ -144,7 +146,7 @@
           <article class="card">
             <h3>ระบบปฏิบัติการ</h3>
             <ul>
-              <li>Windows x64 ตัวติดตั้งไม่ได้ลงทะเบียนใน Apps &amp; features เพราะสคริปต์ไม่ได้เขียนรายการถอนการติดตั้งของระบบ</li>
+              <li>Windows x64 · ตรวจนโยบาย SmartScreen/Smart App Control ของเครื่อง</li>
               <li>macOS arm64 เท่านั้น</li>
               <li>Linux amd64 พร้อม WebKitGTK 4.1</li>
             </ul>
@@ -157,30 +159,60 @@
       </div>
     </section>
 
-    <section>
+    <section id="server">
       <div class="wrap">
-        <h2>สิ่งที่อยู่ในไฟล์</h2>
-        <p class="sub">รุ่น <span data-release="tag">boombignose-v0.3.0</span> รวมของเหล่านี้ไว้ในตัวติดตั้ง ไม่มี Docker</p>
-        <div class="grid">
-          <article class="card"><h3>BoomBigNose</h3><p>โปรแกรมที่เปิดชื่อ BoomBigNose และเป็นหน้าต่างที่ <code>127.0.0.1:3100</code> ไฟล์พก Node 22 กับ <code>server.js</code> ไว้ข้างใน เพื่อไม่ต้องลง Node แยก Node เป็นรันไทม์ในไฟล์ ไม่ใช่ชื่อแอป</p></article>
-          <article class="card"><h3>Postgres</h3><p>Postgres 16.10.0 แบบพกพา ฟังที่ <code>127.0.0.1:54329</code> ผู้ใช้ <code>boombignose</code> แบบ trust โฟลเดอร์ข้อมูลที่มีช่องว่างจะถูกปฏิเสธ</p></article>
-          <article class="card"><h3>Auth</h3><p>Auth v2.197.0 และ PostgREST v16.5 พร็อกซีที่ <code>127.0.0.1:54321</code> ส่ง <code>/auth/v1</code> ไปพอร์ต 54323 และ <code>/rest/v1</code> ไปพอร์ต 54324</p></article>
-          <article class="card"><h3>Ollama</h3><p>Ollama v0.40.11 ไม่รวมน้ำหนักโมเดล Linux กับ Windows ไม่รวมตัวรัน <code>cuda_v12</code> และ <code>cuda_v13</code> ปุ่มบนหน้าสแปลชหรือคำสั่ง <code>boombignose pull-model</code> เท่านั้นที่จะดึง <code>qwen2.5:3b</code> การเปิดโปรแกรมไม่ได้ดึงโมเดล</p></article>
+        <h2>Native server · ไม่ต้องมีหน้าต่าง</h2>
+        <p class="sub">ซอร์สใหม่มี headless CLI <code>boombignose</code> แยกจาก Go/Wails GUI ใช้ native supervisor เดียวกันโดยไม่ต้องมี WebKit หรือ Docker ขั้นตอนนี้สำหรับผู้ดูแลเครื่อง ไม่ใช่ให้เปิดบริการภายในออกอินเทอร์เน็ต</p>
+        <div class="steps">
+          <article class="card">
+            <h3>1. เตรียม release และ data</h3>
+            <p>บน Linux server ใช้ tar.gz ที่ตรวจแฮชแล้ว เก็บ release directory แยกจากข้อมูล ใช้บัญชีบริการที่ไม่ใช่ root ตั้ง <code>BOOMBIGNOSE_BUNDLE</code> และ <code>BOOMBIGNOSE_DATA</code> เป็น absolute path ที่ไม่มีช่องว่าง และพอร์ตไม่ชนของเดิม</p>
+            <p>บน macOS CLI อยู่ใน <code>BoomBigNose.app/Contents/MacOS/boombignose</code>; บน Windows คือ <code>boombignose.exe</code> ข้าง GUI ไม่ต้องติดตั้ง Node แยก</p>
+          </article>
+          <article class="card">
+            <h3>2. ตรวจและเริ่มเฉพาะ profile</h3>
+            <pre>boombignose check
+boombignose serve
+# Stop only this owned stack:
+boombignose stop</pre>
+            <p>คำสั่งใช้ environment ของ profile ที่ตั้งไว้ ค่าเริ่มต้น ERP เป็น loopback <code>127.0.0.1:3100</code> อ่าน log แบบ private; health บอก liveness ไม่ได้พิสูจน์ login การเงิน OCR หรือ restore</p>
+          </article>
+          <article class="card">
+            <h3>3. บัญชีก่อน remote</h3>
+            <p>สร้าง owner/workspace ผ่าน local-only onboarding ก่อน สำหรับเครื่องไกลใช้ SSH loopback forwarding แล้วจึงตั้ง exact HTTPS origin ที่ตรวจแล้ว การตั้ง remote origin ปิด open signup ผู้ใช้ถัดไปใช้กระบวนการคำเชิญตามสิทธิ์</p>
+            <p>systemd/service account, environment, credentials และการกู้คืนฉบับเต็มอยู่ใน <a href="https://github.com/Boom-Vitt/nose-erp/blob/main/docs/boombignose/BUNDLE.md#headless-server-installation-and-private-access">คู่มือ native server จากซอร์ส</a> ตรวจคู่มือให้ตรงรุ่นที่ติดตั้ง</p>
+          </article>
+        </div>
+        <div class="card server-boundary">
+          <h3>Private Tailscale → ERP เท่านั้น</h3>
+          <ol>
+            <li>ให้ผู้ดูแลอนุมัติเครื่องและ tailnet ก่อน ตรวจ Serve mapping เดิม อย่า reset หรือทับแอปอื่น ใช้ private HTTPS Serve ไม่ใช้ Funnel/public tunnel</li>
+            <li>ตั้ง origin ด้วย <code>boombignose configure-public-origin https://YOUR-ERP-HOST.ts.net</code> โดยแทนชื่อด้วย exact HTTPS hostname ของ ERP ที่ได้รับอนุมัติ ไม่มี path/query จากนั้น restart profile ค่านี้อยู่ใน private runtime state ไม่ใช่คำสั่งสร้าง tunnel</li>
+            <li>ให้ Serve ส่งไป ERP loopback port ของ profile เท่านั้น ห้าม forward API gateway, Auth, REST, Postgres หรือ Ollama ออกเครือข่าย</li>
+            <li>โทรศัพท์เข้า HTTPS origin ผ่าน tailnet ที่อนุญาต แล้ว login / MFA ของ ERP ตามปกติ Tailscale ไม่แทน session, บทบาท หรือ MFA ของแอป</li>
+          </ol>
+          <p>ไม่มีการเปิด tunnel ลงทะเบียน tailnet หรืออนุมัติอุปกรณ์ให้อัตโนมัติ <code>configure-public-origin off</code> เอานโยบาย origin ออกเมื่อ restart แต่ไม่ยกเลิก Serve mapping ภายนอกให้</p>
         </div>
       </div>
     </section>
 
-    <section>
+    <section id="models">
       <div class="wrap">
-        <h2>ครั้งแรกที่เปิด</h2>
+        <h2>Local AI / OCR · ดาวน์โหลดเมื่อสั่ง</h2>
+        <div class="grid">
+          <article class="card"><h3>โมเดลไม่อยู่ในตัวติดตั้ง</h3><p>การเปิด GUI หรือ serve ไม่ดึง weights ให้เอง ไป Settings → Local AI หรือติดตั้งแชทด้วย <code>boombignose pull-model</code> / <code>boombignose pull-model qwen3.5:9b-q4_k_m</code> และ OCR ด้วย <code>boombignose pull-model qwen3.5:4b</code> อย่างชัดเจน การติดตั้ง/ลบผ่านเว็บต้องมีทั้ง owner/admin และสิทธิ์ผู้ดูแลเครื่องที่ลงทะเบียนจาก OS</p><p>ค่าเริ่มต้นในซอร์สแยกแชท/ภาพของผู้ช่วย <code>qwen3.5:9b-q4_k_m</code> (GGUF 6,550,825,550 ไบต์) กับ OCR ไทย/อังกฤษ <code>qwen3.5:4b</code> (3,973,305,013 ไบต์) ทั้งคู่ Apache-2.0 แชทต้องใช้ GGUF เพื่อบังคับ context ไม่ใช้ bare 9B บน Mac ที่อาจเป็น MLX แทน และไม่ truncate/context shift หรือ fallback เงียบ; OCR แยกยังใช้ local MLX ได้ เผื่อ RAM ทั้ง ERP+โมเดล 24 GB+ สำหรับแชท/12 GB สำหรับ OCR เป็นแนวทาง ไม่ใช่ผลวัดขั้นต่ำ ผลจริงจาก Apple Silicon 48 GiB ไม่รับรองข้ามเครื่อง ยังไม่มีคุณภาพ AI ครบชุดที่ผ่าน และโมเดลใหญ่ไม่ได้แปลว่าดีกว่า</p></article>
+          <article class="card"><h3>ERP server เป็นเครื่องอนุมาน</h3><p>บริการ Ollama อยู่บน loopback ของเครื่อง ERP ไม่มี cloud inference fallback; การ pull ติดต่อ registry เพื่อดาวน์โหลดโมเดล เมื่อใช้ผ่านมือถือ เอกสารและคำถามถูกส่งผ่าน private HTTPS ไปเครื่อง ERP ไม่ได้อนุมานบนโทรศัพท์</p><p>OCR และผู้ช่วยไม่สร้างหรืออนุมัติรายการการเงินแทนคุณ ตรวจคำตอบ ที่มา วันที่ ยอดและต้นฉบับก่อนบันทึก อ่าน <a href="guide.html">คู่มือเวิร์กโฟลว์</a></p></article>
+        </div>
+      </div>
+    </section>
+
+    <section id="recovery">
+      <div class="wrap">
+        <h2>ข้อมูลและอัปเกรดไม่ใช่การ reset</h2>
         <div class="card">
-          <ol>
-            <li>เปิด BoomBigNose หลังติดตั้ง โปรแกรมสร้างคลัสเตอร์ถ้ายังไม่มี</li>
-            <li>ข้อมูลอยู่ที่ <code>BOOMBIGNOSE_DATA</code> หรือ <code>~/.local/share/boombignose/pg</code> บน Windows คือ <code>%USERPROFILE%\.local\share\boombignose\pg</code> เส้นทางที่มีช่องว่างใช้ไม่ได้</li>
-            <li>เบราว์เซอร์ในหน้าต่างเปิด ERP ที่ <code>http://127.0.0.1:3100</code> สมัครและเข้าสู่ระบบบนเครื่องนี้</li>
-            <li>ถ้าต้องการหน้า AI ให้กดปุ่ม “ดาวน์โหลดโมเดล qwen2.5:3b” บนสแปลช หรือรัน <code>boombignose pull-model</code> คำสั่งนี้ติดต่อคลังโมเดลของ Ollama แชทยังส่งไปที่ <code>127.0.0.1:11434</code></li>
-            <li>การสตาร์ทใน CI เป็นคำสั่ง health, สมัคร, และเข้าสู่ระบบ ไม่ใช่การคลิกบนเครื่องจริง และไม่ได้ดึงโมเดล</li>
-          </ol>
+          <p>ข้อมูลค่าเริ่มต้นอยู่ที่ <code>~/.local/share/boombignose/pg</code> หรือ <code>BOOMBIGNOSE_DATA</code> และ credentials/private runtime อยู่ใน <code>&lt;DATA&gt;.secrets</code> คลัสเตอร์ใหม่ใช้ SCRAM แยก credentials ของ admin/Auth/REST ไม่ใช่ trust ตามคู่มือเก่า</p>
+          <p>ข้อมูลเก่าที่ใช้ trust ต้องหยุดคลัสเตอร์ที่เป็นเจ้าของและทำ cold backup ทั้ง data กับ secrets ก่อนให้เจ้าของเครื่องใช้ <code>boombignose secure-db</code> ไม่รัน initdb ไม่ลบข้อมูล และไม่หยุดบริการคนอื่นเพื่อแย่งพอร์ต ทดลอง recovery ใน profile แยกก่อนย้าย release pointer</p>
+          <p>สำรองฐานข้อมูลอย่างเดียวไม่รวมไฟล์แนบ/state ทั้งหมด ดู <a href="first-run.html#recovery">ข้อมูลและการสำรองครั้งแรก</a> และคู่มือ native server สำหรับขั้นตอนกู้คืน ไม่มีผลการ restore หรือการเปิดบนเครื่องของคุณที่หน้านี้รับรอง</p>
         </div>
       </div>
     </section>
@@ -209,10 +241,10 @@
       <div class="wrap">
         <h2>เมื่อเปิดไม่ได้</h2>
         <div class="grid">
-          <article class="card"><h3>SmartScreen หรือ Gatekeeper</h3><p>Windows ใช้ More info แล้ว Run anyway macOS ใช้ Open Anyway ใน System Settings &gt; Privacy &amp; Security Smart App Control อาจบล็อกต่อไป ไม่มีใบรับรองที่ซื้อมาให้ข้ามขั้นตอนนี้</p></article>
-          <article class="card"><h3>สิทธิ์รันบน macOS หรือ Linux</h3><p>หลังคัดลอกจากแผ่นหรือหลังดาวน์โหลด ให้ <code>chmod +x</code> โปรแกรมหรือ AppImage ก่อนเปิด</p></article>
-          <article class="card"><h3>พอร์ตถูกใช้แล้ว</h3><p>ERP ใช้ <code>127.0.0.1:3100</code> และ Postgres ใช้ <code>127.0.0.1:54329</code> ถ้าโปรแกรมอื่นจับพอร์ตอยู่ หน้าต่างจะค้างที่ข้อความเปิดไม่สำเร็จ และจะไม่เข้าไปใช้พอร์ตนั้น ปิดโปรแกรมนั้นก่อน หรือตั้ง <code>BOOMBIGNOSE_PG_PORT</code> ข้อมูลจาก v0.3 อยู่ในโฟลเดอร์เดิม บันทึกของ Postgres คือ <code>server.log</code> ในโฟลเดอร์นั้น การถอนการติดตั้งไม่ลบโฟลเดอร์ข้อมูล</p></article>
-          <article class="card"><h3>แชทไม่มีคำตอบ</h3><p>Ollama ต้องทำงานอยู่และต้องมีการดึง qwen2.5:3b แล้ว การเปิดโปรแกรมไม่ได้ดึงให้ โฮสต์อื่นที่ไม่ใช่ loopback ถูกปฏิเสธ</p></article>
+          <article class="card"><h3>คำเตือนจากระบบ</h3><p>ตรวจต้นทางและ SHA-256 ก่อนเสมอ หากนโยบายอนุญาตจึงใช้ Open Anyway / Run anyway ไม่ปิด Gatekeeper, Smart App Control หรือนโยบายองค์กรเพื่อฝืนเปิดไฟล์</p></article>
+          <article class="card"><h3>แพ็กเกจ macOS หรือ Linux</h3><p>macOS ใช้ .app ทั้งชุดและไม่แก้ไฟล์ข้างใน Linux tar.gz ต้องมีไฟล์ executable และ bundle ตรงรุ่น AppImage อาจต้องมี FUSE; headless CLI ไม่ต้องมี WebKit แต่ GUI ต้องมี</p></article>
+          <article class="card"><h3>พอร์ตหรือ data ไม่ตรง</h3><p>ใช้ environment ของ profile ที่ต้องการ ตรวจด้วย <code>boombignose check</code> และอ่าน log แบบ private พอร์ตต้องไม่ชน ไม่ใช้ฐานข้อมูลหรือบริการอื่นแทน และไม่ลบ data เพื่อให้สตาร์ทผ่าน</p></article>
+          <article class="card"><h3>AI / OCR ไม่พร้อม</h3><p>ตรวจบริการ loopback และโมเดลที่กำหนดใน Settings โมเดลต้องติดตั้งและ runtime ต้องรองรับก่อน การเปิดแอปไม่ pull ให้อัตโนมัติ ถ้าล้มเหลวไม่มีการส่งต่อ cloud; ตรวจ runtime/model configuration ไม่เปลี่ยนไปโฮสต์ภายนอก</p></article>
         </div>
       </div>
     </section>
@@ -230,8 +262,8 @@
             <div class="answer"><p>ไม่มีใบรับรองที่ซื้อจาก Apple หรือ Authenticode macOS ที่เป็น .app ลงชื่อแบบ ad-hoc เท่านั้น ตัวติดตั้งรุ่นที่เผยแพร่จึงยังขึ้นคำเตือนของระบบ</p></div>
           </details>
           <details class="card">
-            <summary>ทดสอบคลิกบนเครื่องจริงแล้วหรือ</summary>
-            <div class="answer"><p>ยังไม่ทดสอบ การตรวจใน CI บูตชุดที่อยู่ในตัวติดตั้งแล้วเรียก health, สมัคร, และเข้าสู่ระบบ ไม่ได้คลิก SmartScreen หรือ Open Anyway</p></div>
+            <summary>หน้านี้รับรองว่าทดสอบเครื่องของฉันแล้วหรือ</summary>
+            <div class="answer"><p>ไม่รับรอง คำอธิบายซอร์ส ค่าแฮช CI และ health endpoint ไม่ใช่ผลเปิด GUI ผ่านนโยบาย OS ไม่ใช่ผลตรวจฟีเจอร์ใหม่หรือการ restore บนเครื่องของคุณ อ่านหลักฐานและข้อจำกัดในบันทึกของรุ่นแยกต่างหาก</p></div>
           </details>
           <details class="card">
             <summary>รุ่นนี้คือรุ่นไหน</summary>
@@ -245,9 +277,9 @@
             <summary>ซอร์สกับบันทึกของรุ่นอยู่ที่ไหน</summary>
             <div class="answer">
               <p>
-                <a data-release-href="notes" href="https://github.com/Boom-Vitt/boombignose-erp-harness-ai/releases/tag/boombignose-v0.3.0">บันทึกของรุ่นนี้</a>
+                <a data-release-href="notes" href="https://github.com/Boom-Vitt/nose-erp/releases/tag/boombignose-v0.3.0">บันทึกของรุ่นนี้</a>
                 และ
-                <a href="https://github.com/Boom-Vitt/boombignose-erp-harness-ai">ซอร์สโค้ด</a>
+                <a href="https://github.com/Boom-Vitt/nose-erp">ซอร์สโค้ด</a>
               </p>
             </div>
           </details>
@@ -263,8 +295,8 @@
       </a>
       <span>BoomBigNose ERP Harness AI</span>
       <div class="links">
-        <a data-release-href="notes" href="https://github.com/Boom-Vitt/boombignose-erp-harness-ai/releases/tag/boombignose-v0.3.0">บันทึกรุ่น</a>
-        <a href="https://github.com/Boom-Vitt/boombignose-erp-harness-ai">ซอร์สโค้ด</a>
+        <a data-release-href="notes" href="https://github.com/Boom-Vitt/nose-erp/releases/tag/boombignose-v0.3.0">บันทึกรุ่น</a>
+        <a href="https://github.com/Boom-Vitt/nose-erp">ซอร์สโค้ด</a>
       </div>
     </div>
     <span class="mega" aria-hidden="true">BoomBigNose</span>

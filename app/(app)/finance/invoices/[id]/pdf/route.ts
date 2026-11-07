@@ -28,6 +28,7 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params
+  if (!z.guid().safeParse(id).success) return new Response("Invoice not found", { status: 404 })
   const ctx = await requireOrgContext()
   const supabase = await createClient()
 

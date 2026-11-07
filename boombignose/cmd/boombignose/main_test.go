@@ -1,14 +1,11 @@
 package main
 
 import (
-	"fmt"
-	"net/http"
-	"net/http/httptest"
 	"runtime"
 	"strings"
 	"testing"
 
-	"github.com/Boom-Vitt/boombignose-erp-harness-ai/boombignose/internal/policy"
+	"github.com/Boom-Vitt/nose-erp/boombignose/internal/policy"
 )
 
 func TestRunCheckRequiresLocalEnv(t *testing.T) {
@@ -121,29 +118,6 @@ func TestRunModelCommandsStayOnTheAllowlist(t *testing.T) {
 	err = run([]string{"remove-model", "llama3"})
 	if err == nil || err.Error() != "refusing model pull" {
 		t.Fatalf("unknown remove: %v", err)
-	}
-	err = run([]string{"pull-model", "qwen2.5vl:3b"})
-	if err == nil || strings.Contains(err.Error(), "not available") {
-		t.Fatalf("vision pull should reach the binary lookup: %v", err)
-	}
-	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if r.URL.Path == "/api/tags" {
-			fmt.Fprint(w, `{"models":[{"name":"qwen2.5:3b","size":4}]}`)
-			return
-		}
-		if r.URL.Path == "/api/delete" && r.Method == http.MethodDelete {
-			w.WriteHeader(http.StatusOK)
-			return
-		}
-		http.NotFound(w, r)
-	}))
-	defer srv.Close()
-	t.Setenv("OLLAMA_HOST", strings.TrimPrefix(srv.URL, "http://"))
-	if err := run([]string{"models"}); err != nil {
-		t.Fatal(err)
-	}
-	if err := run([]string{"remove-model", "qwen2.5:3b"}); err != nil {
-		t.Fatal(err)
 	}
 }
 

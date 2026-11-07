@@ -1,14 +1,14 @@
 import { describe, expect, it } from "vitest"
 import { interpretRelease } from "@/lib/release/update-check"
 
-const page = (version: string) => `https://github.com/Boom-Vitt/boombignose-erp-harness-ai/releases/tag/boombignose-v${version}`
+const page = (version: string) => `https://github.com/Boom-Vitt/nose-erp/releases/tag/boombignose-v${version}`
 
 describe("interpretRelease", () => {
   it("links the release page when a newer tag is published", () => {
     const result = interpretRelease({
       tag_name: "boombignose-v1.3.0",
       html_url: page("1.3.0"),
-      assets: [{ browser_download_url: "https://github.com/Boom-Vitt/boombignose-erp-harness-ai/releases/download/boombignose-v1.3.0/app.exe" }],
+      assets: [{ browser_download_url: "https://github.com/Boom-Vitt/nose-erp/releases/download/boombignose-v1.3.0/app.exe" }],
     }, "1.2.0")
     expect(result).toEqual({ state: "available", version: "1.3.0", url: page("1.3.0") })
     expect(JSON.stringify(result)).not.toContain("download")

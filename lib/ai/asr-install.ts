@@ -115,8 +115,10 @@ export async function installAsr(platform: NodeJS.Platform, arch: string, fetchI
     }
     await chmod(path.join(dest, archive.binary), 0o755)
     const model = await downloadPinned(ASR_MODEL.url, ASR_MODEL.sha256, MODEL_CAP, fetchImpl)
-    await writeFile(path.join(root, ASR_MODEL.file), model)
-    await writeFile(path.join(root, `${ASR_MODEL.file}.sha256`), ASR_MODEL.sha256)
+    // Downloaded runtime data lives outside the installer; never snapshot its
+    // operator-selected directory as application source during compilation.
+    await writeFile(path.join(/* turbopackIgnore: true */ root, ASR_MODEL.file), model)
+    await writeFile(path.join(/* turbopackIgnore: true */ root, `${ASR_MODEL.file}.sha256`), ASR_MODEL.sha256)
     return { ok: true }
   } catch (err) {
     const message = err instanceof Error ? err.message : "The download failed."
@@ -128,8 +130,8 @@ export async function removeAsr(): Promise<void> {
   const root = asrRoot()
   if (!root) return
   await rm(runtimeDir(root), { recursive: true, force: true })
-  await rm(path.join(root, ASR_MODEL.file), { force: true })
-  await rm(path.join(root, `${ASR_MODEL.file}.sha256`), { force: true })
+  await rm(path.join(/* turbopackIgnore: true */ root, ASR_MODEL.file), { force: true })
+  await rm(path.join(/* turbopackIgnore: true */ root, `${ASR_MODEL.file}.sha256`), { force: true })
 }
 
 function childEnv(libraryDir: string): NodeJS.ProcessEnv {
@@ -150,7 +152,7 @@ export async function transcribeLocalAudio(audio: Buffer, platform: NodeJS.Platf
     return { error: "Use a WAV, MP3, FLAC, or Ogg file under 4 MB.", status: 400 }
   }
   const binary = path.join(runtimeDir(root), archive.binary)
-  const model = path.join(root, ASR_MODEL.file)
+  const model = path.join(/* turbopackIgnore: true */ root, ASR_MODEL.file)
   const input = path.join(root, "inbox.audio")
   await writeFile(input, audio)
   try {

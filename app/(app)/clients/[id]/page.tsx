@@ -3,6 +3,7 @@ import { todayISO } from "@/lib/dates"
 import { RecordHistory } from "@/components/record/record-history"
 import Link from "next/link"
 import { notFound } from "next/navigation"
+import { z } from "zod"
 import {
   Pencil,
   Users,
@@ -43,15 +44,17 @@ export default async function ClientDetailPage({
   params: Promise<{ id: string }>
 }) {
   const { id } = await params
+  if (!z.guid().safeParse(id).success) notFound()
   const ctx = await requireOrgContext()
   const supabase = await createClient()
 
-  const { data: client } = await supabase
+  const { data: client, error: clientError } = await supabase
     .from("clients")
     .select("id, name, industry, source, notes, created_at")
     .eq("org_id", ctx.orgId)
     .eq("id", id)
     .maybeSingle()
+  if (clientError) throw new Error("Client details unavailable. Please reload.")
 
   if (!client) notFound()
 

@@ -1,73 +1,57 @@
-# BoomBigNose mobile (iOS, Flutter)
+# Private mobile access
 
-Owner override 2026-11-03: an iOS app (Flutter) that links to your own BoomBigNose server by QR and
-talks to it **over Tailscale only**. No public tunnel, no cloud relay.
+The Flutter companion links to your own BoomBigNose ERP over **private Tailscale Serve HTTPS only**. It does not use a public tunnel, Funnel, cloud inference, or a second desktop shell. The ERP, Auth API and database continue to run behind the existing native Go/Wails supervisor; only the ERP front door is mapped by Serve.
 
-## What you need
+## Prerequisites and explicit setup
 
-- The desktop app (or `pnpm local:serve`) running on a computer, default `http://127.0.0.1:3100`.
-- [Tailscale](https://tailscale.com) on **both** the computer and the phone, signed in to the same tailnet,
-  with MagicDNS and HTTPS certificates enabled (Tailscale admin console → DNS).
-- On the computer, once (the ERP listens on loopback only, so Tailscale fronts it with HTTPS):
+1. Keep the computer's ERP running. Find its **actual loopback ERP origin/port**, rather than assuming the default 3100. API/Auth/REST/database ports must not be exposed.
+2. Install/sign in to Tailscale on the computer and phone yourself, approve the desired devices/ACLs, and enable MagicDNS/HTTPS certificates in your tailnet. The ERP never installs Tailscale, enrolls an account, resets an existing configuration or enables Funnel automatically.
+3. Configure private Serve to proxy the actual ERP backend, for example `tailscale serve --bg http://127.0.0.1:3100` when that really is this ERP's backend. Do not enable Funnel. If needed, the macOS app CLI is `/Applications/Tailscale.app/Contents/MacOS/Tailscale`.
+4. Set the native runtime's explicit public origin to the resulting **bare** `https://<computer>.<tailnet>.ts.net` origin using the native server configuration described in the desktop runbook. Restart the owned ERP instance after configuration changes. Its child environment must include `NEXT_PUBLIC_APP_URL=<public origin>` and `BOOMBIGNOSE_LOCAL_ORIGIN=<actual loopback ERP origin>`. These are trust boundaries, not arbitrary forwarded-host values.
 
-  ```sh
-  tailscale serve --bg 3100
-  ```
+Discovery is read-only. It requires Tailscale Running/online, an HTTPS listener on 443, a root Serve Web handler mapped to this ERP's exact loopback backend and no enabled Funnel mapping. A MagicDNS name alone is **not** readiness. The optional address entered in Settings must match both this verified mapping and a configured trusted app origin. Missing CLI/mapping/configuration is reported, not silently accepted as a working connection. Discovery does not prove phone-side reachability: test from the actual authorized phone/tailnet.
 
-  If `tailscale` is not on PATH, use the app's CLI:
-  `/Applications/Tailscale.app/Contents/MacOS/Tailscale serve --bg 3100`.
-  Your address is then `https://<computer>.<tailnet>.ts.net`.
+## Pair and sign in
 
-## Pair a phone
+1. Sign in on the computer as an **owner/admin** and complete any enrolled authenticator challenge. Open Settings → Link mobile.
+2. Generate the five-minute, one-use QR. The QR carries a connection-pairing token and workspace label, **never an ERP login session**. Keep it private.
+3. Scan with the companion. It stores a hashed-server-side, connection/status-only device credential in platform secure storage.
+4. **Open ERP** opens `/login` on the paired HTTPS origin. Sign in as the phone user's **own** account, with that user's password and enrolled MFA. The QR issuer's identity is never delegated. The WebView permits navigation only within the exact paired HTTPS origin; external links, other tailnet hosts, HTTP and executable schemes are refused.
+5. Use the normal workspace switcher/recipient invitation acceptance; pairing does not select or grant workspace membership.
 
-1. Sign in on the computer as an **owner or admin**: Settings → **Link mobile**.
-2. The address field is filled from `tailscale status` when the CLI is found. Otherwise type
-   the `https://…ts.net` address. Loopback addresses are refused.
-3. **Generate QR**. Open the iOS app and scan it. The phone lists in the same card; **Revoke** unlinks it.
-4. **Open ERP** in the app loads the ERP in a web view, signed in as the user who generated the QR.
+For native remote deployments, open public signup is disabled. An owner/admin creates a normal workspace invitation targeted at the intended email and privately sends its original link. New recipients follow that link → Sign up, choose their own password, then sign in normally and accept the invitation. Registration validates the live pending token, matching email and expiry server-side; it creates only that new user, not a session or membership, and never changes an existing password. Revoked/expired/wrong-email invitations fail. Local-only fresh installations retain normal signup; hosted Supabase retains its configured ordinary signup/confirmation flow. Invitation destinations survive login, signup, email confirmation and MFA navigation.
 
-## How it works
+## Unlink is not browser sign-out
 
-| Step | Endpoint | Auth |
+**Unlink** revokes only connection/status pairing access. It does **not** sign out independent ERP browser/WebView sessions, including sessions previously created by older releases. Sign out inside each ERP browser, or use the normal account/session controls as appropriate. Do not treat unlinking a lost phone as revocation of all user login sessions.
+
+Historical `mobile_pairings` and `mobile_devices` tables/rows are retained. Old device tokens now authorize only status. The former `/api/mobile/session` issuer-account magic-link minting endpoint has been removed; upgrade the companion rather than relying on an authentication shim.
+
+## API boundary
+
+| Operation | Endpoint | Authorization |
 | --- | --- | --- |
-| Issue QR | `POST /api/mobile/pair/start` `{baseUrl?}` | owner/admin session |
-| Redeem | `POST /api/mobile/pair/redeem` `{token, deviceName}` → `{deviceToken}` | the one-time token |
-| Status | `GET /api/mobile/status` | `Authorization: Bearer <deviceToken>` |
-| Web sign-in | `POST /api/mobile/session` → `{path}` (`/auth/confirm?...`) | Bearer device token |
-| List / revoke | `GET /api/mobile/devices`, `DELETE /api/mobile/devices/:id` | owner/admin session |
+| Issue QR | `POST /api/mobile/pair/start` `{baseUrl?}` | verified owner/admin session, MFA, exact trusted Origin |
+| Redeem connection QR | `POST /api/mobile/pair/redeem` `{token,deviceName}` | one-use five-minute token; bounded JSON; browser Origin if present must be trusted |
+| Connection status | `GET /api/mobile/status` | device bearer token; returns no account session or ERP records |
+| List | `GET /api/mobile/devices` | verified owner/admin session, MFA, trusted Origin/Referer |
+| Unlink | `DELETE /api/mobile/devices/:id` | verified owner/admin session, MFA, exact trusted Origin; org-scoped |
 
-QR content: `bbn-pair://redeem?u=<https base>&t=<one-time token>&o=<org name>&e=<expiry unix secs>`.
-Code: `lib/mobile/pairing.ts`, tables `mobile_pairings` / `mobile_devices`
-(`supabase/migrations/20261103090000_mobile_devices.sql`), app in `mobile/`.
+Sensitive responses use `Cache-Control: no-store`. Unknown/expired/used pairing codes fail, concurrent consumption is a conditional update, and only token hashes are stored. Possession of a QR during its validity can pair a connection; it cannot log in as its issuer.
 
-## Security notes
+## Native browser Auth and HTTPS
 
-- The QR carries a 256-bit one-time token, never a password or session. It expires in 5 minutes and is
-  consumed by one atomic `UPDATE`, so a second scan fails. Unknown, expired and used tokens get the same error.
-- The token is bound to the org and user that generated it. The server stores only SHA-256 hashes of the
-  pairing and device tokens; the tables have RLS on with no policies (service role only).
-- The device token lives in the iOS Keychain (`flutter_secure_storage`).
-- **Revoke** stops the device from getting new sessions and from the status check. A web session already
-  opened in the app's web view keeps working until it expires or that user signs out of the ERP.
-- Network trust is Tailscale; the device token is still required for every call.
-- Anyone who can see the QR within 5 minutes can pair. Do not share a screenshot of it.
+Native browser Auth uses `/auth/local/<operation>` on the ERP's current origin. A fixed loopback upstream serves only the required password/refresh, user lookup, logout and MFA-factor operations. There is no REST/admin/storage/DB proxy, arbitrary upstream, redirect relay, service-key forwarding or permissive CORS. Requests and responses are bounded; unsafe headers/internal error details are not returned. Server Supabase clients continue to use the runtime internal API URL.
 
-## Run on the iOS simulator
+The browser retains the original Supabase project identity solely for the existing cookie/storage key (`sb-127-auth-token` for the normal native 127.0.0.1 API), so upgrades do not rename sessions. Its actual native Auth requests are rewritten to HTTPS same-origin, never to the phone's loopback. Hosted Supabase browser operation remains direct and unchanged. Assurance lookup errors/unknown levels fail closed; role denial renders the shared designed 403 screen rather than a generic crash.
 
-Requires Xcode, Flutter and CocoaPods (`brew install cocoapods`).
+## Development and evidence
 
 ```sh
 cd mobile
 flutter pub get
-flutter analyze && flutter test
-flutter run -d "iPhone 18 Pro"        # or: flutter build ios --simulator --debug --no-codesign
+flutter test
+flutter run
 ```
 
-The simulator has no camera, so scanning is only testable on a real device (`flutter run` with the phone attached;
-sign with your Apple team in Xcode). The simulator shares the Mac's network, so it can reach the server through
-the Mac's own tailnet address.
-
-## Not in this MVP
-
-TestFlight / signing, native screens (the app is a web view), Android, push notifications, picking the
-paired org for users in several orgs (the web view opens their default org).
+Camera/Keychain/WebView require the appropriate iOS/macOS tooling and device permission. Flutter parsing/navigation/status tests and ERP Auth/origin/pairing tests are in source; check the integration report for which were actually executed. Source coverage is not a claim of TestFlight availability, signed-device installation, physical-phone reachability or completed tailnet consent.

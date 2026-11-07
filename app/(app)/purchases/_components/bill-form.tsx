@@ -10,6 +10,7 @@ import { billDueDate, defaultBillLines, matchBill } from "@/lib/purchasing/bill-
 import type { PurchaseLine } from "@/lib/purchasing/quantities"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
+import { OcrWorkbench } from "@/components/ocr/ocr-workbench"
 import { createPurchaseBill } from "../actions"
 
 export function BillForm({ orderId, lines, terms, toleranceBps }: { orderId: string; lines: (PurchaseLine & { description: string })[]; terms: number; toleranceBps: number }) {
@@ -20,6 +21,8 @@ export function BillForm({ orderId, lines, terms, toleranceBps }: { orderId: str
   const [rate, setRate] = useState("0")
   const [vat, setVat] = useState("")
   const [total, setTotal] = useState("")
+  const [reference, setReference] = useState("")
+  const [ocrNotice, setOcrNotice] = useState("")
   const [pending, start] = useTransition()
   const router = useRouter()
   let preview: ReturnType<typeof matchBill> | undefined
@@ -33,6 +36,16 @@ export function BillForm({ orderId, lines, terms, toleranceBps }: { orderId: str
   return <section id="match-bill" aria-label="Match vendor invoice" className="space-y-3 rounded-xl border p-4">
     <h2 className="font-semibold">Match vendor invoice</h2>
     <p className="text-sm text-muted-foreground">Defaults use unbilled received quantities at PO cost. Quantity and unit price differences over {toleranceBps / 100}% require a reason. Enter the amounts on the vendor invoice in THB.</p>
+    <details className="rounded-lg border p-3"><summary className="cursor-pointer font-medium">Read vendor bill / อ่านใบแจ้งหนี้ (review only)</summary>
+      <div className="mt-3"><OcrWorkbench onUseReviewedFields={fields => {
+        if (fields.documentNumber) setReference(fields.documentNumber)
+        if (fields.date) { setDate(fields.date); setDue(billDueDate(fields.date, terms)) }
+        if (fields.vatSatang !== null) setVat(serviceAmountBaht(fields.vatSatang))
+        if (fields.totalSatang !== null) setTotal(serviceAmountBaht(fields.totalSatang))
+        setOcrNotice("Reviewed reference/date/printed VAT/total copied where known. PO identity, quantities, unit costs and VAT rate are unchanged. Review matching and press Create bill separately.")
+      }} /></div>
+    </details>
+    {ocrNotice && <p role="status" className="text-sm text-muted-foreground">{ocrNotice}</p>}
     <form className="space-y-4" onSubmit={event => {
       event.preventDefault()
       if (!preview) { toast.error(previewError); return }
@@ -48,7 +61,7 @@ export function BillForm({ orderId, lines, terms, toleranceBps }: { orderId: str
       })
     }}>
       <fieldset disabled={pending} className="space-y-4">
-        <label className="block space-y-1">Vendor invoice reference<Input name="reference" required maxLength={200} /></label>
+        <label className="block space-y-1">Vendor invoice reference<Input name="reference" required maxLength={200} value={reference} onChange={event => setReference(event.target.value)} /></label>
         <div className="grid gap-3 sm:grid-cols-2">
           <label className="space-y-1">Bill date<Input type="date" required value={date} onChange={event => { setDate(event.target.value); if (event.target.value) setDue(billDueDate(event.target.value, terms)) }} /></label>
           <label className="space-y-1">Bill due date<Input type="date" required min={date} value={due} onChange={event => setDue(event.target.value)} /></label>

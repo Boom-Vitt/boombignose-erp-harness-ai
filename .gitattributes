@@ -1,1 +1,2 @@
-packaging/ollama/OLLAMA_LICENSE.txt text eol=lf
+# Preserve original attribution bytes and executed recipe hashes on every OS.
+packaging/** -text

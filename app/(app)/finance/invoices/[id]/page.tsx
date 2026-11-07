@@ -8,6 +8,7 @@ import { WithholdingForm } from "../../_components/withholding-form"
 import { RecordHistory } from "@/components/record/record-history"
 import Link from "next/link"
 import { notFound } from "next/navigation"
+import { z } from "zod"
 import { FileSignature, FileText, FolderKanban, Wallet, Truck } from "lucide-react"
 
 import { createClient } from "@/lib/supabase/server"
@@ -95,6 +96,7 @@ export default async function InvoiceDetailPage({
   params: Promise<{ id: string }>
 }) {
   const { id } = await params
+  if (!z.guid().safeParse(id).success) notFound()
   const ctx = await requireOrgContext()
   const supabase = await createClient()
   const today = todayISO()

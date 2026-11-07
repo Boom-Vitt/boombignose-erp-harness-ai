@@ -4,7 +4,7 @@ import { pullInstalledModel } from "@/lib/ai/ollama-admin"
 export const dynamic = "force-dynamic"
 
 export async function POST(request: Request) {
-  const block = await localModelAccess(true)
+  const block = await localModelAccess(true, request)
   if (block) return block
   const body = await readJson(request)
   const model = typeof body?.model === "string" ? body.model : ""

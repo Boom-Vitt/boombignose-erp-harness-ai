@@ -81,11 +81,28 @@ func logRunner(t *testing.T) Runner {
 }
 
 func postgresBinDir() string {
-	matches, _ := filepath.Glob("/usr/lib/postgresql/*/bin")
-	if len(matches) == 0 {
-		return ""
+	candidates := []string{os.Getenv("BOOMBIGNOSE_PG_BIN")}
+	if executable, err := exec.LookPath("initdb"); err == nil {
+		candidates = append(candidates, filepath.Dir(executable))
 	}
-	return matches[len(matches)-1]
+	matches, _ := filepath.Glob("/usr/lib/postgresql/*/bin")
+	candidates = append(candidates, matches...)
+	for _, candidate := range candidates {
+		if candidate == "" {
+			continue
+		}
+		complete := true
+		for _, name := range []string{"initdb", "pg_ctl", "psql", "pg_dump", "pg_restore"} {
+			if _, err := findTool(candidate, name); err != nil {
+				complete = false
+				break
+			}
+		}
+		if complete {
+			return candidate
+		}
+	}
+	return ""
 }
 
 func freePort(t *testing.T) int {
@@ -107,12 +124,15 @@ func startCluster(t *testing.T, bin string, port int) {
 	}
 	data := filepath.Join(dir, "pg")
 	runBin(t, bin, "initdb", "-D", data, "-U", "boombignose", "--auth-local=trust", "--auth-host=trust", "--encoding=UTF8", "--no-locale")
-	opts := fmt.Sprintf("-c listen_addresses=127.0.0.1 -c port=%d -c unix_socket_directories=%s", port, data)
-	runBin(t, bin, "pg_ctl", "-D", data, "-l", filepath.Join(dir, "server.log"), "-w", "-o", opts, "start")
+	opts := fmt.Sprintf("-c listen_addresses=127.0.0.1 -c port=%d -c unix_socket_directories=", port)
 	t.Cleanup(func() {
 		_ = execTool(bin, "pg_ctl", "-D", data, "-m", "immediate", "stop")
 	})
-	runBin(t, bin, "createdb", "-h", "127.0.0.1", "-p", strconv.Itoa(port), "-U", "boombignose", "boombignose")
+	if err := execTool(bin, "pg_ctl", "-D", data, "-l", filepath.Join(dir, "server.log"), "-w", "-o", opts, "start"); err != nil {
+		log, _ := os.ReadFile(filepath.Join(dir, "server.log"))
+		t.Fatalf("isolated PostgreSQL startup failed: %v\n%s", err, log)
+	}
+	runBin(t, bin, "psql", "-h", "127.0.0.1", "-p", strconv.Itoa(port), "-U", "boombignose", "-d", "postgres", "-v", "ON_ERROR_STOP=1", "-c", "CREATE DATABASE boombignose")
 }
 
 func psqlExec(t *testing.T, bin string, port int, sql string) {

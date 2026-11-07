@@ -1,6 +1,7 @@
 import { APP_VERSION } from "@/lib/release/version"
+import { RELEASE_REPO } from "@/lib/release/update-plan"
 
-const RELEASE_HOST = "https://github.com/Boom-Vitt/boombignose-erp-harness-ai/releases/tag/"
+const RELEASE_HOST = `https://github.com/${RELEASE_REPO}/releases/tag/`
 
 export type UpdateCheck =
   | { state: "current"; version: string; url: string }

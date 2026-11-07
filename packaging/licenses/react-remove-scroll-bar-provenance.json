@@ -1,0 +1,128 @@
+{
+  "format": 1,
+  "package": "react-remove-scroll-bar@2.3.8",
+  "licenseSource": "https://raw.githubusercontent.com/theKashey/react-remove-scroll-bar/8ca9ba5ea52de03308fe8ced94f7b159a44d28ff/LICENSE",
+  "sourceChain": {
+    "baselineNpmGitHead": "29e9fcd1eecf7d3b77a767941c4a57fe461fc1e4",
+    "authoritativeLicenseCommit": "8ca9ba5ea52de03308fe8ced94f7b159a44d28ff",
+    "compare": "https://api.github.com/repos/theKashey/react-remove-scroll-bar/compare/29e9fcd1eecf7d3b77a767941c4a57fe461fc1e4...8ca9ba5ea52de03308fe8ced94f7b159a44d28ff",
+    "comparison": "Only LICENSE added (maintainer-merged PR76); source files unchanged. Every published code/declaration file in npm2.3.8 is byte-identical to official npm2.3.7. package.json/README metadata are not used as code-equivalence evidence.",
+    "unreachableNpm238GitHead": "b3b1287aad81def2e2ae707274b74531b61ddbaf"
+  },
+  "archives": [
+    {
+      "version": "2.3.7",
+      "url": "https://registry.npmjs.org/react-remove-scroll-bar/-/react-remove-scroll-bar-2.3.7.tgz",
+      "sha256": "5ee31e784254a1a0c80b2a14a569c3dc254af4c75d709a04f79ff409e856df91",
+      "integrity": "sha512-UzA0npskGFA2bUqwWsSRJscuQEt7zyfVtMpCtBl/lk+k/ky6lzYImEks9jwgxTDe/B0tb5hyrYgbQv/JQaHjDw=="
+    },
+    {
+      "version": "2.3.8",
+      "url": "https://registry.npmjs.org/react-remove-scroll-bar/-/react-remove-scroll-bar-2.3.8.tgz",
+      "sha256": "ccc872d7a2dc007cbf9d755f30d56b8d80eabdbe22c44c95a709129bfdc46f01",
+      "integrity": "sha512-9r+yi9+mgU33AKcj6IbT9oRCO78WriSj6t/cF8DWBZJ9aOGPOTEDvdUDz1FwKim7QXWwmHqtdHnRJfhAxEG46Q=="
+    }
+  ],
+  "files": [
+    {
+      "path": "constants/package.json",
+      "sha256": "9b557c166960d4a096abc83259b8787a4072516f666856f8cf51656e38ed904b"
+    },
+    {
+      "path": "dist/es2015/component.d.ts",
+      "sha256": "8b9441c9166045f81e5000001f95521319692124baea142b228efdc370883736"
+    },
+    {
+      "path": "dist/es2015/component.js",
+      "sha256": "3baec61523006aedf14321423427b0c50aa17bfe48faf344bebff9d883149f29"
+    },
+    {
+      "path": "dist/es2015/constants.d.ts",
+      "sha256": "cd9dd3a7b0b95c3068f3b43b82da6dc6bee018f56d975b248d4bb6c484e61ed1"
+    },
+    {
+      "path": "dist/es2015/constants.js",
+      "sha256": "1c73582ef730bbca1d536a6995c7eea438dcd0632fee2856337627e44b5872e2"
+    },
+    {
+      "path": "dist/es2015/index.d.ts",
+      "sha256": "130bc4c810a84aeae180ba8fe1e7fd96f706d5d3a0cf6728419ff2c74708185f"
+    },
+    {
+      "path": "dist/es2015/index.js",
+      "sha256": "130bc4c810a84aeae180ba8fe1e7fd96f706d5d3a0cf6728419ff2c74708185f"
+    },
+    {
+      "path": "dist/es2015/utils.d.ts",
+      "sha256": "c4304c2114b48bb2778de565b4a0274ebbbbd71f6d7f5c57e116bd1656ea2c32"
+    },
+    {
+      "path": "dist/es2015/utils.js",
+      "sha256": "2c4105ab772a5cbf4b3d1e54f49e94d03fde867d20767b46bb3e5c27f4d82f00"
+    },
+    {
+      "path": "dist/es2019/component.d.ts",
+      "sha256": "8b9441c9166045f81e5000001f95521319692124baea142b228efdc370883736"
+    },
+    {
+      "path": "dist/es2019/component.js",
+      "sha256": "ac214bb2783fdf743a0c949fef47784741db109dcc6f4426f46e77386dee1c8f"
+    },
+    {
+      "path": "dist/es2019/constants.d.ts",
+      "sha256": "cd9dd3a7b0b95c3068f3b43b82da6dc6bee018f56d975b248d4bb6c484e61ed1"
+    },
+    {
+      "path": "dist/es2019/constants.js",
+      "sha256": "f597b4036280caca4cc58d3476ffc02dc5c16564090229e6685e98b80a8e2a33"
+    },
+    {
+      "path": "dist/es2019/index.d.ts",
+      "sha256": "130bc4c810a84aeae180ba8fe1e7fd96f706d5d3a0cf6728419ff2c74708185f"
+    },
+    {
+      "path": "dist/es2019/index.js",
+      "sha256": "130bc4c810a84aeae180ba8fe1e7fd96f706d5d3a0cf6728419ff2c74708185f"
+    },
+    {
+      "path": "dist/es2019/utils.d.ts",
+      "sha256": "c4304c2114b48bb2778de565b4a0274ebbbbd71f6d7f5c57e116bd1656ea2c32"
+    },
+    {
+      "path": "dist/es2019/utils.js",
+      "sha256": "dafd773a756cca848d359153df92315235becb2ed8e10b1146458be4bfd38826"
+    },
+    {
+      "path": "dist/es5/component.d.ts",
+      "sha256": "8b9441c9166045f81e5000001f95521319692124baea142b228efdc370883736"
+    },
+    {
+      "path": "dist/es5/component.js",
+      "sha256": "d95ae68cda75b262f01b7c3eba3d530c6a24579778cbb3e320b2449348dabb13"
+    },
+    {
+      "path": "dist/es5/constants.d.ts",
+      "sha256": "cd9dd3a7b0b95c3068f3b43b82da6dc6bee018f56d975b248d4bb6c484e61ed1"
+    },
+    {
+      "path": "dist/es5/constants.js",
+      "sha256": "20bf238e562be0830b10b1813d36fa321e81cd07fd99b27724833132304b73bc"
+    },
+    {
+      "path": "dist/es5/index.d.ts",
+      "sha256": "130bc4c810a84aeae180ba8fe1e7fd96f706d5d3a0cf6728419ff2c74708185f"
+    },
+    {
+      "path": "dist/es5/index.js",
+      "sha256": "0e1ab245d6b12ef80409b988b0f29b498c562b6cff6e7365714cb0c351914a12"
+    },
+    {
+      "path": "dist/es5/utils.d.ts",
+      "sha256": "c4304c2114b48bb2778de565b4a0274ebbbbd71f6d7f5c57e116bd1656ea2c32"
+    },
+    {
+      "path": "dist/es5/utils.js",
+      "sha256": "ee6c64e8690475db96ec1a1b2ede342ffdc45ccf739bd28dd6f86c8c9a5917c3"
+    }
+  ]
+}

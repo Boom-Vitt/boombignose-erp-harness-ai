@@ -35,14 +35,14 @@ import { GET as quotePdf } from "@/app/(app)/quotes/[id]/pdf/route"
 beforeEach(() => { state.issued = false; state.noLines = false; state.discount = 0; state.unit = "hour"; state.snapshotUnit = "hour" })
 
 describe.each([["invoice", invoicePdf], ["quote", quotePdf]] as const)("%s PDF", (_name, get) => {
-  it("queries and prints the line unit", async () => {
-    const response = await get(new Request("http://localhost/document"), { params: Promise.resolve({ id: "doc" }) })
+  it("prints the line unit", async () => {
+    const response = await get(new Request("http://localhost/document"), { params: Promise.resolve({ id: "d0000000-0000-4000-8000-000000000001" }) })
     expect(response.status).toBe(200)
     expect(await response.text()).toContain('<td class="num">2 hour</td>')
   })
   it("keeps legacy null-unit lines printable", async () => {
     state.unit = null
-    const response = await get(new Request("http://localhost/document"), { params: Promise.resolve({ id: "doc" }) })
+    const response = await get(new Request("http://localhost/document"), { params: Promise.resolve({ id: "d0000000-0000-4000-8000-000000000001" }) })
     expect(await response.text()).toContain('<td class="num">2</td>')
   })
 })
@@ -50,7 +50,7 @@ describe.each([["invoice", invoicePdf], ["quote", quotePdf]] as const)("%s PDF",
 it("prints the frozen issued unit instead of dropping it in snapshot parsing", async () => {
   state.issued = true
   state.unit = "month"
-  const response = await invoicePdf(new Request("http://localhost/document"), { params: Promise.resolve({ id: "doc" }) })
+  const response = await invoicePdf(new Request("http://localhost/document"), { params: Promise.resolve({ id: "d0000000-0000-4000-8000-000000000001" }) })
   const html = await response.text()
   expect(html).toContain('<td class="num">2 hour</td>')
   expect(html).not.toContain('<td class="num">2 month</td>')
@@ -60,7 +60,7 @@ it.each([undefined, null])("keeps old issued snapshots printable without substit
   state.issued = true
   state.snapshotUnit = unit
   state.unit = "month"
-  const response = await invoicePdf(new Request("http://localhost/document"), { params: Promise.resolve({ id: "doc" }) })
+  const response = await invoicePdf(new Request("http://localhost/document"), { params: Promise.resolve({ id: "d0000000-0000-4000-8000-000000000001" }) })
   const html = await response.text()
   expect(html).toContain('<td class="num">2</td>')
   expect(html).not.toContain('<td class="num">2 month</td>')
@@ -69,7 +69,7 @@ it.each([undefined, null])("keeps old issued snapshots printable without substit
 it("no-line manual invoice PDF uses the retained subtotal before discount", async () => {
   state.noLines = true
   state.discount = 100
-  const response = await invoicePdf(new Request("http://localhost/document"), { params: Promise.resolve({ id: "doc" }) })
+  const response = await invoicePdf(new Request("http://localhost/document"), { params: Promise.resolve({ id: "d0000000-0000-4000-8000-000000000001" }) })
   expect(response.status).toBe(200)
   expect(await response.text()).toContain("3.00")
 })

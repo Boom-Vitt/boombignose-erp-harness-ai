@@ -14,11 +14,10 @@ export const hashToken = (raw: string) => createHash("sha256").update(raw).diges
 /** 256-bit random, URL-safe. Tokens are never derived from user data. */
 export const newToken = () => randomBytes(32).toString("base64url")
 
-const LOOPBACK = /^(localhost|127\.|0\.0\.0\.0|\[?::1\]?$)/i
 
 /**
- * The phone cannot reach loopback, so a loopback base URL would pair and then never connect.
- * Returns the bare origin, or null when the input is not an http(s) URL the phone could use.
+ * Mobile pairing is private Tailscale HTTPS only, including a dedicated Serve
+ * port. Credentials, paths and public hostnames are not accepted.
  */
 export function normalizeBaseUrl(input: string): string | null {
   let url: URL
@@ -27,8 +26,8 @@ export function normalizeBaseUrl(input: string): string | null {
   } catch {
     return null
   }
-  if (url.protocol !== "https:" && url.protocol !== "http:") return null
-  if (LOOPBACK.test(url.hostname)) return null
+  if (url.protocol !== "https:" || !/^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.ts\.net$/i.test(url.hostname)) return null
+  if (url.username || url.password || url.port === "0" || url.pathname !== "/" || url.search || url.hash) return null
   return url.origin
 }
 

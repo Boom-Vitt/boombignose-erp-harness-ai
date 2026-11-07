@@ -18,7 +18,7 @@ import {
   Package,
   Wallet,
   Building2,
-  Rocket,
+  Building,
   UserRound,
   Boxes,
   Bot,
@@ -73,6 +73,7 @@ export const NAV_ITEMS: NavItem[] = [
   { title: "Calendar", th: "ปฏิทิน", group: "operate", href: "/calendar", icon: CalendarDays },
   { title: "Templates", th: "แม่แบบ", group: "workspace", href: "/templates", icon: Sparkles },
   { title: "ERP AI", th: "แชท AI องค์กร", group: "workspace", href: "/assistant", icon: Bot },
+  { title: "Document OCR", th: "อ่านเอกสาร OCR", group: "workspace", href: "/documents/ocr", icon: FileText },
   { title: "Intake", th: "รับงาน", group: "workspace", href: "/intake", icon: NotebookPen },
   { title: "Automation", th: "อัตโนมัติ", group: "workspace", href: "/automation", icon: Workflow },
   { title: "Activity", th: "กิจกรรม", group: "workspace", href: "/audit", icon: ScrollText, ownerAdminOnly: true },
@@ -86,6 +87,6 @@ export const NAV_ITEMS: NavItem[] = [
 /** Operator-mode glyphs (login, mode tip). The switch itself stays text-only. */
 export const MODE_ICON: Record<"sme" | "startup" | "individual", LucideIcon> = {
   sme: Building2,
-  startup: Rocket,
+  startup: Building,
   individual: UserRound,
 }

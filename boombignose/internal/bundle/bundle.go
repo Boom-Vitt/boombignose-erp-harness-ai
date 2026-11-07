@@ -17,15 +17,15 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Boom-Vitt/boombignose-erp-harness-ai/boombignose/internal/launch"
-	"github.com/Boom-Vitt/boombignose-erp-harness-ai/boombignose/internal/policy"
+	"github.com/Boom-Vitt/nose-erp/boombignose/internal/launch"
+	"github.com/Boom-Vitt/nose-erp/boombignose/internal/policy"
 )
 
 const (
 	// DefaultOllamaListen is the loopback address used when OLLAMA_HOST is empty.
 	DefaultOllamaListen = "127.0.0.1:11434"
 	// LocalModel is the text model the ERP screens call. The window does not pull it at startup.
-	LocalModel = "qwen2.5:3b"
+	LocalModel = "qwen3.5:9b-q4_k_m"
 )
 
 // DefaultRoot locates signed macOS application resources, or a portable sibling
@@ -76,6 +76,11 @@ func Valid(root string) bool {
 // Postgres and Ollama are recorded only when their files exist.
 func Discover(root string) (Layout, error) {
 	if strings.TrimSpace(root) == "" {
+		return Layout{}, ErrIncomplete
+	}
+	var err error
+	root, err = filepath.Abs(root)
+	if err != nil {
 		return Layout{}, ErrIncomplete
 	}
 	layout := Layout{Root: root}
@@ -168,6 +173,11 @@ func ERPCommand(layout Layout, rawURL string, parent []string) (Command, error) 
 	if err != nil {
 		return Command{}, err
 	}
+	cfg, err := ValidateConfig(rawURL)
+	if err != nil {
+		return Command{}, err
+	}
+	env = append(env, "BOOMBIGNOSE_LOCAL_ORIGIN="+cfg.ERPOrigin, "NEXT_PUBLIC_APP_URL="+cfg.AppOrigin())
 	return Command{
 		Name: layout.Node,
 		Args: []string{layout.Server},
@@ -218,7 +228,16 @@ func ChildEnv(parent []string, port string) ([]string, error) {
 			if strings.TrimSpace(value) != "" {
 				vals[key] = strings.TrimSpace(value)
 			}
-		case "OLLAMA_MODEL":
+		case "BOOMBIGNOSE_NATIVE":
+			if value == "1" {
+				vals[key] = value
+			}
+		case "BOOMBIGNOSE_FILES_ROOT":
+			if !absDataDir(value) {
+				return nil, errors.New("native files root must be absolute")
+			}
+			vals[key] = value
+		case "OLLAMA_MODEL", "OCR_MODEL":
 			if strings.TrimSpace(value) != "" {
 				vals[key] = strings.TrimSpace(value)
 			}
@@ -236,7 +255,7 @@ func ChildEnv(parent []string, port string) ([]string, error) {
 			if updateToken(value) {
 				vals[key] = value
 			}
-		case "BOOMBIGNOSE_DATA":
+		case "BOOMBIGNOSE_DATA", "BOOMBIGNOSE_BUNDLE":
 			if absDataDir(value) {
 				vals[key] = strings.TrimSpace(value)
 			}
@@ -250,6 +269,28 @@ func ChildEnv(parent []string, port string) ([]string, error) {
 			}
 		}
 	}
+	cfg, err := ValidateConfig("http://127.0.0.1:" + port)
+	if err != nil {
+		return nil, err
+	}
+	vals["OLLAMA_MODEL"] = modelOrDefault(vals["OLLAMA_MODEL"])
+	vals["OCR_MODEL"] = modelOrDefault(vals["OCR_MODEL"])
+	vals["OLLAMA_NO_CLOUD"] = "1"
+	vals["NEXT_TELEMETRY_DISABLED"] = "1"
+	vals["BOOMBIGNOSE_PG_PORT"] = cfg.PGPort
+	vals["BOOMBIGNOSE_ALLOW_SIGNUP"] = "0"
+	if cfg.SignupAllowed() {
+		vals["BOOMBIGNOSE_ALLOW_SIGNUP"] = "1"
+	}
+	if vals["BOOMBIGNOSE_NATIVE"] == "1" {
+		operators, err := nativeOperatorIDs(vals["BOOMBIGNOSE_DATA"])
+		if err != nil {
+			return nil, err
+		}
+		vals["BOOMBIGNOSE_OPERATOR_USER_IDS"] = operators
+	}
+	vals["NEXT_PUBLIC_APP_URL"] = cfg.AppOrigin()
+	vals["BOOMBIGNOSE_LOCAL_ORIGIN"] = cfg.ERPOrigin
 	vals["HOST"] = "127.0.0.1"
 	vals["HOSTNAME"] = "127.0.0.1"
 	vals["PORT"] = port
@@ -266,10 +307,11 @@ func ChildEnv(parent []string, port string) ([]string, error) {
 	return env, nil
 }
 
-// PullArgs is the default local model pull. Callers must not run it
-// from the window start path.
-func PullArgs() []string {
-	return []string{"pull", LocalModel}
+func modelOrDefault(value string) string {
+	if strings.TrimSpace(value) == "" {
+		return LocalModel
+	}
+	return strings.TrimSpace(value)
 }
 
 // OllamaBinary prefers the bundled binary, then PATH.
@@ -303,13 +345,12 @@ func OllamaServe(binary, host string) (Command, error) {
 	return Command{
 		Name: binary,
 		Args: []string{"serve"},
-		Env:  []string{"OLLAMA_HOST=" + listen},
+		Env:  pullEnv(os.Environ(), listen),
 	}, nil
 }
 
-// PullCommand is `ollama pull qwen2.5:3b` on loopback. It is not a startup
-// command: allowedBundleCommand refuses it. The child env keeps path and
-// home values and drops cloud keys.
+// PullCommand is an explicit allowlisted local model pull. Startup refuses it.
+// The child env keeps path and home values and drops cloud keys.
 func PullCommand(binary, host string, parent []string) (Command, error) {
 	return PullCommandFor(binary, host, parent, LocalModel)
 }
@@ -369,6 +410,9 @@ func pullEnv(parent []string, listen string) []string {
 		vals[key] = value
 	}
 	vals["OLLAMA_HOST"] = listen
+	vals["OLLAMA_NO_CLOUD"] = "1"
+	// Chat and OCR share one daemon; switching models must evict the previous runner.
+	vals["OLLAMA_MAX_LOADED_MODELS"] = "1"
 	keys := make([]string, 0, len(vals))
 	for key := range vals {
 		keys = append(keys, key)
@@ -436,7 +480,7 @@ func runPull(ctx context.Context, cmd Command) error {
 	return proc.Run()
 }
 
-// PullModel downloads qwen2.5:3b through the local ollama binary. Call it from
+// PullModel downloads the default model through the local ollama binary. Call it from
 // an explicit command or button. Do not call it from startup.
 func PullModel(ctx context.Context, layout Layout, host string, parent []string) error {
 	return PullNamedModel(ctx, layout, host, parent, LocalModel)
@@ -513,8 +557,17 @@ func defaultRunner(cmd Command) (func() error, func(), error) {
 	if err := proc.Start(); err != nil {
 		return nil, nil, err
 	}
-	if recordERP && erpPIDDir != "" && proc.Process != nil {
-		_ = writePID(erpPIDDir, proc.Process.Pid)
+	if recordERP && erpPIDDir != "" && proc.Process != nil && (filepath.Base(cmd.Name) == "node" || filepath.Base(cmd.Name) == "node.exe") {
+		if err := writePID(erpPIDDir, proc.Process.Pid); err != nil {
+			_ = proc.Process.Kill()
+			return nil, nil, err
+		}
+	}
+	if recordERP && erpPIDDir != "" && proc.Process != nil && (filepath.Base(cmd.Name) == "ollama" || filepath.Base(cmd.Name) == "ollama.exe") {
+		if err := writeProcessRecord(erpPIDDir, "ollama.pid", proc.Process.Pid); err != nil {
+			_ = proc.Process.Kill()
+			return nil, nil, err
+		}
 	}
 	return proc.Wait, func() {
 		if proc.Process != nil {
@@ -574,8 +627,8 @@ func EnsureOllama(ctx context.Context, layout Layout, host string, pathLookup fu
 		return err
 	}
 	listenURL := "http://" + DefaultOllamaListen
-	if len(cmd.Env) == 1 {
-		if _, value, ok := strings.Cut(cmd.Env[0], "="); ok && value != "" {
+	for _, item := range cmd.Env {
+		if value, ok := strings.CutPrefix(item, "OLLAMA_HOST="); ok {
 			listenURL = "http://" + value
 		}
 	}

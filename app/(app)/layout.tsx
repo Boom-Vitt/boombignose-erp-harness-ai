@@ -35,7 +35,7 @@ export default async function AppLayout({
       >
         Skip to content
       </a>
-      {/* The 3D base: one persistent full-bleed stage behind every page (layouts don't remount on navigation). */}
+      {/* Ambient decoration only; StageBackdrop suppresses itself on dedicated 3D pages. */}
       <StageBackdrop />
       <LangShell initial={lang}>
       <SidebarProvider className="relative z-10">
@@ -46,7 +46,7 @@ export default async function AppLayout({
         />
         {/* min-w-0: wide content (kanban boards) scrolls in its own container instead of widening the page. */}
         <SidebarInset className="bbn-shell min-w-0">
-          <header className="bbn-shell-header sticky top-0 z-10 flex h-14 min-w-0 items-center gap-2 px-3 backdrop-blur-md sm:px-5">
+          <header className="bbn-shell-header sticky top-0 z-10 flex min-h-14 min-w-0 flex-wrap items-center gap-2 px-3 py-2 backdrop-blur-md sm:px-5">
             <SidebarTrigger className="-ml-1 shrink-0" />
             <Separator orientation="vertical" className="mr-1 hidden h-5 sm:block" />
             <div className="min-w-0 flex-1 basis-0"><span className="bbn-chip max-w-full truncate">{ctx.orgName}</span></div>

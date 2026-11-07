@@ -1,13 +1,14 @@
 "use client"
 
-import { useState } from "react"
+import { Suspense, useState } from "react"
 import Link from "next/link"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { CheckCircle2, Loader2 } from "lucide-react"
 import { toast } from "sonner"
 
 import { signUp } from "@/app/signup/actions"
 import { validatePassword } from "@/lib/auth/password"
+import { safeReturnPath } from "@/lib/supabase/redirect"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -20,8 +21,12 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 
-export default function SignupPage() {
+function SignupForm() {
   const router = useRouter()
+  const params = useSearchParams()
+  const redirectTo = params.get("redirect") ? safeReturnPath(params.get("redirect")) : "/onboarding"
+  const inviteToken = /^\/invite\/([a-f0-9]{32})$/i.exec(redirectTo)?.[1]
+  const loginHref = `/login?redirect=${encodeURIComponent(redirectTo)}`
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [loading, setLoading] = useState(false)
@@ -43,15 +48,20 @@ export default function SignupPage() {
     }
 
     setLoading(true)
-    const result = await signUp({ email, password })
+    const result = await signUp({ email, password, inviteToken, redirectTo })
     setLoading(false)
 
     if (!result.ok) {
       toast.error("Sign up failed", { description: result.error })
       return
     }
+    if (result.requiresLogin) {
+      toast.success("Account created. Sign in with your own password.")
+      router.push(loginHref)
+      return
+    }
     if (!result.requiresConfirmation) {
-      router.push("/onboarding")
+      router.push(redirectTo)
       router.refresh()
       return
     }
@@ -77,7 +87,7 @@ export default function SignupPage() {
             <Button
               variant="outline"
               className="w-full"
-              render={<Link href="/login" />}
+              render={<Link href={loginHref} />}
             >
               Back to sign in
             </Button>
@@ -93,7 +103,7 @@ export default function SignupPage() {
         <CardHeader>
           <CardTitle className="text-xl">Create your account</CardTitle>
           <CardDescription>
-            Sign up for BoomBigNose ERP.
+            {inviteToken ? "Create your own account for this invitation, then sign in to accept it." : "Local signup is available on a local-only server. Private remote servers require your original workspace invitation link."}
           </CardDescription>
         </CardHeader>
         <form onSubmit={onSubmit}>
@@ -148,7 +158,7 @@ export default function SignupPage() {
             </Button>
             <p className="text-muted-foreground text-center text-xs">
               Already have an account?{" "}
-              <Link href="/login" className="underline underline-offset-4">
+              <Link href={loginHref} className="underline underline-offset-4">
                 Sign in
               </Link>
             </p>
@@ -157,4 +167,8 @@ export default function SignupPage() {
       </Card>
     </div>
   )
+}
+
+export default function SignupPage() {
+  return <Suspense><SignupForm /></Suspense>
 }

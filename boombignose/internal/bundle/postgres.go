@@ -17,7 +17,7 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/Boom-Vitt/boombignose-erp-harness-ai/boombignose/internal/launch"
+	"github.com/Boom-Vitt/nose-erp/boombignose/internal/launch"
 )
 
 const defaultPGPort = "54329"
@@ -26,26 +26,25 @@ const defaultPGPort = "54329"
 // so an AppImage mount can stay read-only.
 func DataDir() (string, error) {
 	if dir := strings.TrimSpace(os.Getenv("BOOMBIGNOSE_DATA")); dir != "" {
-		return dir, nil
+		if !safeDataDir(dir) {
+			return "", errors.New("BOOMBIGNOSE_DATA must be a private absolute path without spaces or traversal")
+		}
+		return canonicalPath(dir)
 	}
 	home, err := os.UserHomeDir()
 	if err != nil {
 		return "", err
 	}
-	return filepath.Join(home, ".local", "share", "boombignose", "pg"), nil
+	return canonicalPath(filepath.Join(home, ".local", "share", "boombignose", "pg"))
 }
 
 func pgAddr() string {
-	port := strings.TrimSpace(os.Getenv("BOOMBIGNOSE_PG_PORT"))
-	if port == "" {
-		port = defaultPGPort
-	}
-	return net.JoinHostPort("127.0.0.1", port)
+	return net.JoinHostPort("127.0.0.1", pgPort())
 }
 
 // ourCluster reports whether postmaster.pid in dataDir is a live process
-// for this directory and port. A v0.3 cluster in the same directory matches.
-// On Windows, signal 0 is unavailable, so a matching pid file is enough.
+// for this directory and port. This is only a preliminary ownership check;
+// stopping also requires authenticated confirmation of the data directory.
 func ourCluster(dataDir, port string) bool {
 	body, err := os.ReadFile(filepath.Join(dataDir, "postmaster.pid"))
 	if err != nil {
@@ -70,7 +69,8 @@ func processAlive(pid int) bool {
 		return false
 	}
 	if runtime.GOOS == "windows" {
-		return true
+		_, err := processIdentity(pid)
+		return err == nil
 	}
 	proc, err := os.FindProcess(pid)
 	if err != nil {
@@ -80,11 +80,7 @@ func processAlive(pid int) bool {
 }
 
 func pgPort() string {
-	_, port, err := net.SplitHostPort(pgAddr())
-	if err != nil || port == "" {
-		return defaultPGPort
-	}
-	return port
+	return servicePort("BOOMBIGNOSE_PG_PORT", defaultPGPort)
 }
 
 type sqlQuery func(ctx context.Context, addr, user, database, sql string) ([][]string, error)
@@ -108,27 +104,34 @@ func allowedPgCtl(args []string) bool {
 }
 
 func initdbAllowed(args []string) bool {
-	if len(args) != 8 || args[0] != "-D" || !safeDataDir(args[1]) || args[2] != "-U" || args[3] != "boombignose" {
+	if len(args) != 9 || args[0] != "-D" || !safeDataDir(args[1]) || args[2] != "-U" || args[3] != "boombignose" {
 		return false
 	}
-	if args[4] != "--auth-local=trust" || args[5] != "--auth-host=trust" || args[6] != "--encoding=UTF8" {
+	if args[4] != "--auth-local=scram-sha-256" || args[5] != "--auth-host=scram-sha-256" || args[6] != "--encoding=UTF8" || args[7] != "--pwfile="+passwordPath(args[1]) {
 		return false
 	}
-	return args[7] == "--locale=C" || args[7] == "--no-locale"
+	return args[8] == "--locale=C" || args[8] == "--no-locale"
 }
 
+const securePGOptions = " -c password_encryption=scram-sha-256 -c log_statement=none -c log_min_duration_statement=-1 -c log_min_error_statement=panic"
+
 func loopbackStartOptions(opts, dataDir string) bool {
-	const prefix = "-c listen_addresses=127.0.0.1 -c port="
-	rest, ok := strings.CutPrefix(opts, prefix)
+	base, ok := strings.CutSuffix(opts, securePGOptions)
 	if !ok {
 		return false
 	}
-	port := rest
-	if i := strings.IndexByte(rest, ' '); i >= 0 {
-		port = rest[:i]
-		if rest[i+1:] != "-c unix_socket_directories="+dataDir {
-			return false
-		}
+	base, ok = strings.CutSuffix(base, " -c hba_file="+filepath.Join(dataDir, "pg_hba.conf"))
+	if !ok {
+		return false
+	}
+	const prefix = "-c listen_addresses=127.0.0.1 -c port="
+	rest, ok := strings.CutPrefix(base, prefix)
+	if !ok {
+		return false
+	}
+	port, ok := strings.CutSuffix(rest, " -c unix_socket_directories=")
+	if !ok {
+		return false
 	}
 	n, err := strconv.Atoi(port)
 	return err == nil && n >= 1 && n <= 65535 && strconv.Itoa(n) == port
@@ -173,8 +176,8 @@ func defaultCmd(cmd Command) error {
 	return proc.Run()
 }
 
-// EnsurePostgres initializes a loopback cluster on first launch, starts it,
-// and applies prelude.sql plus any migration that is not yet recorded.
+// EnsurePostgres initializes and starts the private loopback cluster.
+// ERP migrations run only after the real Auth schema has been initialized.
 func EnsurePostgres(ctx context.Context, layout Layout, dataDir string) error {
 	return ensurePostgres(ctx, layout, dataDir, func() bool {
 		ok, _ := launch.Listening("http://" + pgAddr())
@@ -184,7 +187,7 @@ func EnsurePostgres(ctx context.Context, layout Layout, dataDir string) error {
 
 func ensurePostgres(ctx context.Context, layout Layout, dataDir string, up func() bool, run cmdRun, query sqlQuery) error {
 	if layout.Postgres == "" {
-		return nil
+		return errors.New("native PostgreSQL runtime missing; install the complete runtime bundle")
 	}
 	if dataDir == "" {
 		return errors.New("postgres data dir is empty")
@@ -196,9 +199,22 @@ func ensurePostgres(ctx context.Context, layout Layout, dataDir string, up func(
 	if listening && !ourCluster(dataDir, pgPort()) {
 		return fmt.Errorf("%s is already in use by another program. Stop that program, or set BOOMBIGNOSE_PG_PORT. The data directory stays at %s and the Postgres log is %s", pgAddr(), dataDir, filepath.Join(dataDir, "server.log"))
 	}
-	if err := os.MkdirAll(dataDir, 0o700); err != nil {
+	if err := privateDirectory(dataDir); err != nil {
 		return err
 	}
+	_, versionErr := os.Stat(filepath.Join(dataDir, "PG_VERSION"))
+	newCluster := os.IsNotExist(versionErr)
+	if versionErr != nil && !newCluster {
+		return versionErr
+	}
+	if !newCluster && !isSecureCluster(dataDir) {
+		return errors.New("legacy or unrecognized PostgreSQL cluster: stop its owned stack, take an offline backup, then explicitly run boombignose secure-db; data and configuration were not changed")
+	}
+	credentials, err := loadDBCredentials(dataDir, newCluster)
+	if err != nil {
+		return err
+	}
+	rememberCredentials(pgAddr(), credentials)
 	binDir := filepath.Dir(layout.Postgres)
 	env := postgresEnv(layout)
 	if !listening {
@@ -211,6 +227,9 @@ func ensurePostgres(ctx context.Context, layout Layout, dataDir string, up func(
 			}); err != nil {
 				return fmt.Errorf("initdb: %w", err)
 			}
+			if err := markSecureCluster(dataDir); err != nil {
+				return err
+			}
 		}
 		pgCtl := filepath.Join(binDir, exeName("pg_ctl"))
 		if err := run(Command{
@@ -219,7 +238,7 @@ func ensurePostgres(ctx context.Context, layout Layout, dataDir string, up func(
 				"-D", dataDir,
 				"-l", filepath.Join(dataDir, "server.log"),
 				"-w",
-				"-o", pgStartOptions(runtime.GOOS, dataDir),
+				"-o", pgStartOptions(dataDir),
 				"start",
 			},
 			Env: env,
@@ -230,9 +249,6 @@ func ensurePostgres(ctx context.Context, layout Layout, dataDir string, up func(
 	var last error
 	for i := 0; i < 25; i++ {
 		last = ensureDatabase(ctx, pgAddr(), query)
-		if last == nil && layout.Auth == "" {
-			last = applyMigrations(ctx, layout, pgAddr(), query)
-		}
 		if last == nil {
 			return nil
 		}
@@ -249,19 +265,18 @@ func ensurePostgres(ctx context.Context, layout Layout, dataDir string, up func(
 }
 
 func initdbArgs(goos, dataDir string) []string {
-	args := []string{"-D", dataDir, "-U", "boombignose", "--auth-local=trust", "--auth-host=trust", "--encoding=UTF8"}
+	args := []string{"-D", dataDir, "-U", "boombignose", "--auth-local=scram-sha-256", "--auth-host=scram-sha-256", "--encoding=UTF8", "--pwfile=" + passwordPath(dataDir)}
 	if goos == "windows" {
 		return append(args, "--no-locale")
 	}
 	return append(args, "--locale=C")
 }
 
-func pgStartOptions(goos, dataDir string) string {
-	opts := fmt.Sprintf("-c listen_addresses=127.0.0.1 -c port=%s", pgPort())
-	if goos != "windows" {
-		opts += " -c unix_socket_directories=" + dataDir
-	}
-	return opts
+func pgStartOptions(dataDir string) string {
+	// Every native client uses loopback TCP. Avoid unnecessary Unix sockets,
+	// whose path limit otherwise rejects valid long data directories on macOS.
+	opts := fmt.Sprintf("-c listen_addresses=127.0.0.1 -c port=%s -c unix_socket_directories=", pgPort())
+	return opts + " -c hba_file=" + filepath.Join(dataDir, "pg_hba.conf") + securePGOptions
 }
 
 func postgresEnv(layout Layout) []string {
@@ -306,39 +321,33 @@ func ensureDatabase(ctx context.Context, addr string, query sqlQuery) error {
 }
 
 func applyMigrations(ctx context.Context, layout Layout, addr string, query sqlQuery) error {
-	return applyMigrationsFrom(ctx, layout, addr, query, "prelude.sql")
-}
-
-// migrationTable is the bookkeeping table for ERP files. Auth's runner already
-// owns public.schema_migrations, so the bundled Auth path records filenames
-// separately.
-func migrationTable(preludeName string) string {
-	if preludeName == "prelude-after-auth.sql" {
-		return "public.erp_schema_migrations"
-	}
-	return "public.schema_migrations"
-}
-
-func applyMigrationsFrom(ctx context.Context, layout Layout, addr string, query sqlQuery, preludeName string) error {
+	// Auth owns its own migration journal; ERP filenames use a separate table.
+	const table = "public.erp_schema_migrations"
 	if query == nil {
 		query = queryPostgres
 	}
-	table := migrationTable(preludeName)
-	rows, err := query(ctx, addr, "boombignose", "boombignose", "select filename from "+table)
-	applied := map[string]bool{}
+	present, err := query(ctx, addr, "boombignose", "boombignose", "select to_regclass('"+table+"')")
 	if err != nil {
-		if !strings.Contains(strings.ToLower(err.Error()), "schema_migrations") {
-			return err
-		}
+		return err
+	}
+	if len(present) != 1 || len(present[0]) != 1 {
+		return errors.New("unable to inspect ERP migration journal")
+	}
+	applied := map[string]bool{}
+	if present[0][0] == "" {
 		root := filepath.Dir(filepath.Dir(layout.Postgres))
-		body, readErr := readBundleFile(root, preludeName)
-		if readErr != nil {
-			return readErr
+		body, err := readBundleFile(root, "prelude-after-auth.sql")
+		if err != nil {
+			return err
 		}
 		if _, err := query(ctx, addr, "boombignose", "boombignose", string(body)); err != nil {
 			return fmt.Errorf("prelude: %w", err)
 		}
 	} else {
+		rows, err := query(ctx, addr, "boombignose", "boombignose", "select filename from "+table)
+		if err != nil {
+			return err
+		}
 		for _, row := range rows {
 			if len(row) > 0 && row[0] != "" {
 				applied[row[0]] = true
@@ -393,11 +402,29 @@ func applyMigrationsFrom(ctx context.Context, layout Layout, addr string, query 
 
 // StopPostgres asks the cluster in dataDir to shut down.
 func StopPostgres(layout Layout, dataDir string) error {
+	return stopPostgres(layout, dataDir, queryPostgres)
+}
+
+func stopPostgres(layout Layout, dataDir string, query sqlQuery) error {
 	if layout.Postgres == "" || dataDir == "" {
 		return nil
 	}
 	if _, err := os.Stat(filepath.Join(dataDir, "PG_VERSION")); err != nil {
 		return nil
+	}
+	if !ourCluster(dataDir, pgPort()) {
+		return nil // A stale PID file is not permission to stop another service.
+	}
+	credentials, err := loadDBCredentials(dataDir, false)
+	if err != nil {
+		return errors.New("refusing to stop PostgreSQL without private ownership credentials")
+	}
+	rememberCredentials(pgAddr(), credentials)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	rows, err := query(ctx, pgAddr(), "boombignose", "postgres", "show data_directory")
+	if err != nil || len(rows) != 1 || len(rows[0]) != 1 || filepath.Clean(rows[0][0]) != filepath.Clean(dataDir) {
+		return errors.New("refusing to stop PostgreSQL: authenticated cluster ownership could not be established")
 	}
 	pgCtl := filepath.Join(filepath.Dir(layout.Postgres), exeName("pg_ctl"))
 	stopArgs := []string{"-D", dataDir, "-m", "fast", "stop"}
@@ -414,7 +441,7 @@ func StopPostgres(layout Layout, dataDir string) error {
 
 // pid helpers keep the ERP process stoppable without scanning the machine.
 func writePID(dataDir string, pid int) error {
-	return os.WriteFile(filepath.Join(dataDir, "erp.pid"), []byte(strconv.Itoa(pid)+"\n"), 0o600)
+	return writeProcessRecord(dataDir, "erp.pid", pid)
 }
 
 func writeDataFile(dir, name string, body []byte) error {
@@ -428,6 +455,9 @@ func writeDataFile(dir, name string, body []byte) error {
 		return err
 	}
 	defer file.Close()
+	if err := hardenCreated(filepath.Join(dir, name)); err != nil {
+		return err
+	}
 	_, err = file.Write(body)
 	return err
 }
@@ -447,20 +477,7 @@ func readBundleFile(root, name string) ([]byte, error) {
 }
 
 func stopPID(dataDir string) {
-	body, err := readBundleFile(dataDir, "erp.pid")
-	if err != nil {
-		return
-	}
-	pid, err := strconv.Atoi(strings.TrimSpace(string(body)))
-	if err != nil || pid <= 0 {
-		return
-	}
-	proc, err := os.FindProcess(pid)
-	if err != nil {
-		return
-	}
-	_ = proc.Kill()
-	_ = os.Remove(filepath.Join(dataDir, "erp.pid"))
+	stopOnePID(dataDir, "erp.pid")
 }
 
 var running struct {
@@ -479,6 +496,22 @@ var (
 // StartStack starts portable Postgres when the binary is present, applies
 // migrations, then starts the bundled ERP server.
 func StartStack(ctx context.Context, layout Layout, dataDir, rawURL string, parent []string, run Runner) error {
+	var pathErr error
+	dataDir, pathErr = canonicalPath(dataDir)
+	if pathErr != nil {
+		return pathErr
+	}
+	layout.Root, pathErr = canonicalPath(layout.Root)
+	if pathErr != nil {
+		return pathErr
+	}
+	cfg, err := ValidateConfig(rawURL)
+	if err != nil {
+		return err
+	}
+	if err := preflightPorts(cfg, dataDir); err != nil {
+		return err
+	}
 	running.Lock()
 	running.layout = layout
 	running.data = dataDir
@@ -496,7 +529,17 @@ func StartStack(ctx context.Context, layout Layout, dataDir, rawURL string, pare
 	if err := EnsureAuth(ctx, layout, dataDir); err != nil {
 		return err
 	}
-	return EnsureERP(ctx, layout, rawURL, withLocalKeys(parent, dataDir), run)
+	filesRoot := filepath.Join(dataDir, "attachments")
+	if err := privateDirectory(filesRoot); err != nil {
+		return err
+	}
+	nativeEnv := append([]string{}, parent...)
+	nativeEnv = append(nativeEnv, "BOOMBIGNOSE_NATIVE=1", "BOOMBIGNOSE_FILES_ROOT="+filesRoot,
+		"BOOMBIGNOSE_DATA="+dataDir, "BOOMBIGNOSE_BUNDLE="+layout.Root)
+	if err := EnsureOllama(ctx, layout, os.Getenv("OLLAMA_HOST"), nil, nil); err != nil {
+		return err
+	}
+	return EnsureERP(ctx, layout, rawURL, withLocalKeys(nativeEnv, dataDir), run)
 }
 
 // StopAt stops the recorded ERP pid and the portable cluster in dataDir.

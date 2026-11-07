@@ -1,6 +1,7 @@
 import { RecordHistory } from "@/components/record/record-history"
 import { notFound } from "next/navigation"
 import { FolderKanban, ReceiptText } from "lucide-react"
+import { z } from "zod"
 
 import { createClient } from "@/lib/supabase/server"
 import { requireOrgContext } from "@/lib/auth"
@@ -58,6 +59,7 @@ export default async function SubscriptionDetailPage({
   params: Promise<{ id: string }>
 }) {
   const { id } = await params
+  if (!z.guid().safeParse(id).success) notFound()
   const ctx = await requireOrgContext()
   const supabase = await createClient()
 
@@ -80,6 +82,9 @@ export default async function SubscriptionDetailPage({
       .limit(1),
     activeProductOptions(),
   ])
+  if (subRes.error || clientsRes.error || projectsRes.error || occurrencesRes.error) {
+    throw new Error("Subscription details unavailable. Please reload.")
+  }
 
   const sub = subRes.data
   if (!sub) notFound()

@@ -1,5 +1,5 @@
 # Publishes the static showcase page in site/ to GitHub Pages.
-# Canonical URL: https://boom-vitt.github.io/boombignose-erp-harness-ai/
+# Canonical URL: https://boom-vitt.github.io/nose-erp/
 # The previous URL https://boom-vitt.github.io/boombignose-erp/ is retired.
 # The app itself needs a server (Server Actions, Supabase auth, API routes),
 # so it can't run on Pages. Only the marketing page is deployed here.

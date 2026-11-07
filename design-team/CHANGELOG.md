@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-11-06 — canonical repository cutover
+
+Active source, release tooling, documentation and static links now use `Boom-Vitt/nose-erp`; GitHub Pages uses https://boom-vitt.github.io/nose-erp/ . The Go module/import namespace is `github.com/Boom-Vitt/nose-erp/boombignose`. Product names, installer tags, local directory paths and historical evidence stay unchanged. Release JSON and embedded snapshots are refreshed only by `site/fill-release.py` from the actual published release, not by manual edits.
+
 ## 2026-10-27 — repository slug
 
 Download and source links use `Boom-Vitt/boombignose-erp-harness-ai`. The Pages canonical URL is https://boom-vitt.github.io/boombignose-erp-harness-ai/ . The previous Pages address is retired.

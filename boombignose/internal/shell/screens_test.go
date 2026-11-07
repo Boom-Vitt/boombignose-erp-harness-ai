@@ -25,7 +25,7 @@ func TestFinanceScreensStayOnTheDesktopERP(t *testing.T) {
 	if err != nil || got != "http://127.0.0.1:3100/reports#month-end-close" {
 		t.Fatalf("checklist: %q %v", got, err)
 	}
-	if _, err := ScreenURL("https://boom-vitt.github.io/boombignose-erp-harness-ai/", "/finance"); err == nil {
+	if _, err := ScreenURL("https://boom-vitt.github.io/nose-erp/", "/finance"); err == nil {
 		t.Fatal("brochure host was accepted as the ERP")
 	}
 	if _, err := ScreenURL("", "/site/download"); err == nil {
@@ -48,7 +48,7 @@ func TestFinanceScreensStayOnTheDesktopERP(t *testing.T) {
 		if err != nil || got != DefaultERPURL+screen {
 			t.Fatalf("%s: %q %v", screen, got, err)
 		}
-		if _, err := ScreenURL("https://boom-vitt.github.io/boombignose-erp-harness-ai/", screen); err == nil {
+		if _, err := ScreenURL("https://boom-vitt.github.io/nose-erp/", screen); err == nil {
 			t.Fatalf("%s was placed on the brochure", screen)
 		}
 	}

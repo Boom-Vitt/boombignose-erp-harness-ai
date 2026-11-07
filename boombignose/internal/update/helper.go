@@ -19,7 +19,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/Boom-Vitt/boombignose-erp-harness-ai/boombignose/internal/bundle"
+	"github.com/Boom-Vitt/nose-erp/boombignose/internal/bundle"
 )
 
 // ErrDeferred means this operating system does not replace the app in place.

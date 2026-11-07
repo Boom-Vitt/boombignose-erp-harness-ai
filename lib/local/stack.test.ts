@@ -248,7 +248,7 @@ describe("local stack manager", () => {
           writeFileSync(path.join(target, ".env"), "LEAK=2")
           return { code: 0, stdout: "", stderr: "" }
         }
-        if (cmd === "pnpm") {
+        if (args.includes("install")) {
           buildEnvs.push(opts.env ?? {})
           return { code: 0, stdout: "", stderr: "" }
         }
@@ -558,7 +558,7 @@ describe("local stack manager", () => {
         if (cmd === "tar") {
           return { code: 0, stdout: "", stderr: "" }
         }
-        if (cmd === "pnpm") {
+        if (args.includes("install")) {
           return { code: 0, stdout: "", stderr: "" }
         }
         if (args.includes("build")) {

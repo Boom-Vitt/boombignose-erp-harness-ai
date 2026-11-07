@@ -16,6 +16,7 @@ import { Label } from "@/components/ui/label"
 import { MODE_ICON } from "@/components/nav"
 import { MODES, MODE_COPY } from "@/lib/mode"
 import { StageBackdrop } from "@/components/three/stage-backdrop"
+import { saveLoginLocale } from "./actions"
 
 // Local-dev convenience, off by default: the demo button renders only when both
 // vars are set at build time. Never set them for a real deployment.
@@ -56,16 +57,13 @@ function LoginForm() {
       toast.error(t.failed, { description: error.message })
       return
     }
-    // A choice made on this screen becomes the profile language; otherwise profiles.locale rules.
-    const chosen = localStorage.getItem(LANG_KEY)
-    if (chosen === "th" || chosen === "en") {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (user) {
-        await supabase.from("profiles").update({ locale: chosen }).eq("id", user.id)
-        localStorage.removeItem(LANG_KEY)
-      }
-    }
     const level = await supabase.auth.mfa.getAuthenticatorAssuranceLevel()
+    if (level.error || !level.data || !["aal1", "aal2"].includes(level.data.currentLevel ?? "") ||
+        !["aal1", "aal2"].includes(level.data.nextLevel ?? "")) {
+      setLoading(false)
+      toast.error("Session assurance could not be verified. Please try again.")
+      return
+    }
     if (!level.error && level.data) {
       const next = stepUpPath({
         hasVerifiedTotp: level.data.nextLevel === "aal2",
@@ -73,10 +71,12 @@ function LoginForm() {
       })
       if (next) {
         // Full load, so the cookie write is finished before the app renders.
-        window.location.assign(next)
+        window.location.assign(`${next}?redirect=${encodeURIComponent(redirectTo)}`)
         return
       }
     }
+    const chosen = localStorage.getItem(LANG_KEY)
+    if (chosen && await saveLoginLocale(chosen)) localStorage.removeItem(LANG_KEY)
     window.location.assign(redirectTo)
   }
 
@@ -181,7 +181,7 @@ function LoginForm() {
           </form>
           <p className="text-muted-foreground border-t pt-4 text-sm">
             {t.noAccount}{" "}
-            <Link href="/signup" className="text-primary underline underline-offset-4">
+            <Link href={`/signup?redirect=${encodeURIComponent(redirectTo)}`} className="text-primary underline underline-offset-4">
               {t.signUp}
             </Link>
           </p>

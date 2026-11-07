@@ -4,7 +4,7 @@ import { transcribeLocalAudio } from "@/lib/ai/asr-install"
 export const dynamic = "force-dynamic"
 
 export async function POST(request: Request) {
-  const block = await localModelAccess(false)
+  const block = await localModelAccess(false, request)
   if (block) return block
   const body = await readJson(request)
   const encoded = typeof body?.audioBase64 === "string" ? body.audioBase64.replace(/\s/g, "") : ""

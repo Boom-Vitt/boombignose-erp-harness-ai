@@ -1,9 +1,11 @@
 import Link from "next/link"
 import { notFound } from "next/navigation"
 import { ArrowLeft, CheckCircle2, Pencil } from "lucide-react"
+import { z } from "zod"
 
 import { createClient } from "@/lib/supabase/server"
 import { requireOrgContext } from "@/lib/auth"
+import { can } from "@/lib/permissions"
 import { PageHeader } from "@/components/page-header"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -29,26 +31,32 @@ export default async function TemplateDetailPage({
   params: Promise<{ id: string }>
 }) {
   const { id } = await params
-  await requireOrgContext()
+  if (!z.guid().safeParse(id).success) notFound()
+  const ctx = await requireOrgContext()
+  const manage = can(ctx.role, "template:manage")
   const supabase = await createClient()
 
-  const { data: template } = await supabase
+  const { data: template, error: templateError } = await supabase
     .from("automation_templates")
     .select(
       "id, name, description, internal_value_satang, price_satang, reusable_notes, implementation_checklist, tags, category_id"
     )
     .eq("id", id)
+    .eq("org_id", ctx.orgId)
     .maybeSingle()
 
+  if (templateError) throw new Error("Template unavailable. Please reload.")
   if (!template) notFound()
 
-  const { data: category } = template.category_id
+  const { data: category, error: categoryError } = template.category_id
     ? await supabase
         .from("template_categories")
         .select("name")
         .eq("id", template.category_id)
+        .eq("org_id", ctx.orgId)
         .maybeSingle()
-    : { data: null }
+    : { data: null, error: null }
+  if (categoryError) throw new Error("Template category unavailable. Please reload.")
 
   const steps = toSteps(template.implementation_checklist)
   const tags = template.tags ?? []
@@ -59,10 +67,12 @@ export default async function TemplateDetailPage({
         <Button variant="outline" render={<Link href="/templates" />}>
           <ArrowLeft /> Back
         </Button>
-        <Button variant="outline" render={<Link href={`/templates/${template.id}/edit`} />}>
-          <Pencil /> Edit
-        </Button>
-        <DeleteTemplateButton id={template.id} name={template.name} />
+        {manage && <>
+          <Button variant="outline" render={<Link href={`/templates/${template.id}/edit`} />}>
+            <Pencil /> Edit
+          </Button>
+          <DeleteTemplateButton id={template.id} name={template.name} />
+        </>}
       </PageHeader>
 
       <div className="grid gap-6 lg:grid-cols-3">

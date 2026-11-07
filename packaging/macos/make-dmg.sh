@@ -20,8 +20,10 @@ bin=$root/dist/boombignose-desktop
 bundle=$root/dist/bundle
 bg=$root/packaging/macos/dmg-background.png
 test -s "$bin"
+test -s "$root/dist/boombignose"
 test -s "$bundle/node"
 test -s "$bundle/erp/server.js"
+test -s "$bundle/erp/boombignose/bin/boombignose-image"
 test -s "$bundle/postgres/bin/postgres"
 test -d "$bundle/erp/.next/static"
 test -s "$bundle/auth/auth"
@@ -39,6 +41,8 @@ app="$stage/BoomBigNose.app/Contents"
 mkdir -p "$app/MacOS" "$app/Resources" "$stage/.background"
 cp "$bin" "$app/MacOS/BoomBigNose"
 chmod 755 "$app/MacOS/BoomBigNose"
+cp "$root/dist/boombignose" "$app/MacOS/boombignose"
+chmod 755 "$app/MacOS/boombignose"
 # All executable permissions and payload copies must precede final signing.
 cp "$icon" "$app/Resources/icon.icns"
 cp "$icon" "$stage/icon.icns"
@@ -57,8 +61,8 @@ cat > "$app/Info.plist" << 'PLIST'
   <key>CFBundleIdentifier</key><string>ai.boombignose.harness</string>
   <key>CFBundleIconFile</key><string>icon</string>
   <key>CFBundlePackageType</key><string>APPL</string>
-  <key>CFBundleShortVersionString</key><string>1.4.4</string>
-  <key>CFBundleVersion</key><string>1.4.4</string>
+  <key>CFBundleShortVersionString</key><string>1.5.0</string>
+  <key>CFBundleVersion</key><string>1.5.0</string>
   <key>LSMinimumSystemVersion</key><string>12.0</string>
   <key>NSHighResolutionCapable</key><true/>
 </dict>
@@ -72,6 +76,7 @@ fi
 cp -a "$bundle" "$app/Resources/bundle"
 chmod 755 \
   "$app/Resources/bundle/node" \
+  "$app/Resources/bundle/erp/boombignose/bin/boombignose-image" \
   "$app/Resources/bundle/postgres/bin/initdb" \
   "$app/Resources/bundle/postgres/bin/pg_ctl" \
   "$app/Resources/bundle/postgres/bin/postgres" \
@@ -90,6 +95,7 @@ find "$app/Resources/bundle" -type f \( -perm -u+x -o -name '*.dylib' -o -name '
     fi
   done
 codesign --force --sign - "$app/MacOS/BoomBigNose"
+codesign --force --sign - "$app/MacOS/boombignose"
 codesign --force --sign - "$stage/BoomBigNose.app"
 codesign --verify --deep --strict "$stage/BoomBigNose.app"
 

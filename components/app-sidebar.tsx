@@ -7,7 +7,7 @@ import { LogOut, Pin } from "lucide-react"
 import { NAV_GROUPS, NAV_ITEMS, showNavItem, type NavItem } from "@/components/nav"
 import { useMode } from "@/components/mode-switch"
 import { useLang } from "@/components/lang-scope"
-import { MODE_COPY, orderForMode } from "@/lib/mode"
+import { navigationForMode } from "@/lib/mode"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import {
@@ -37,13 +37,11 @@ export function AppSidebar({
   const mode = useMode()
 
   const visible = NAV_ITEMS.filter((item) => showNavItem(role, item))
-  // Mode-first: the current mode's starter pages lead the rail; the rest sit in their sections.
   const lang = useLang()
-  const ordered = orderForMode(visible, mode)
-  const starters = ordered.filter((item) => MODE_COPY[mode].first.includes(item.href))
+  const { primary, additional } = navigationForMode(visible, mode)
   const sections = NAV_GROUPS.map((g) => ({
     ...g,
-    items: ordered.filter((item) => item.group === g.id && !starters.includes(item)),
+    items: additional.filter((item) => item.group === g.id),
   })).filter((g) => g.items.length > 0)
 
   function renderItem(item: NavItem) {
@@ -74,12 +72,16 @@ export function AppSidebar({
         <SidebarGroup>
           <SidebarGroupLabel data-start="true" className="bbn-nav-label h-auto! rounded-full!">
             <Pin className="size-3" aria-hidden />
-            {lang === "th" ? "เริ่มที่นี่" : "Start here"}
+            {lang === "th" ? "โมดูลหลักของโปรไฟล์" : "Profile modules"}
           </SidebarGroupLabel>
           <SidebarGroupContent>
-            <SidebarMenu>{starters.map(renderItem)}</SidebarMenu>
+            <SidebarMenu>{primary.map(renderItem)}</SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
+        <details key={mode} open={additional.some((item) => pathname === item.href || pathname.startsWith(`${item.href}/`))} className="group-data-[collapsible=icon]:hidden">
+          <summary className="cursor-pointer px-4 py-2 text-xs text-muted-foreground">
+            {lang === "th" ? "โมดูลอื่นทั้งหมด" : "All other modules"} ({additional.length})
+          </summary>
         {sections.map((section) => (
           <SidebarGroup key={section.id}>
             <SidebarGroupLabel className="bbn-nav-label h-auto! rounded-full!">{lang === "th" ? section.th : section.label}</SidebarGroupLabel>
@@ -88,6 +90,7 @@ export function AppSidebar({
             </SidebarGroupContent>
           </SidebarGroup>
         ))}
+        </details>
       </SidebarContent>
 
       <SidebarFooter className="border-sidebar-border border-t">

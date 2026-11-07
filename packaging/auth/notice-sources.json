@@ -1,0 +1,47 @@
+{
+  "format": 1,
+  "auth": {
+    "version": "v2.197.0",
+    "commit": "4eee58f296d9698a1c2c0ae14d7a0b379c7622d3",
+    "tagEvidence": "https://api.github.com/repos/supabase/auth/git/ref/tags/v2.197.0",
+    "url": "https://codeload.github.com/supabase/auth/zip/4eee58f296d9698a1c2c0ae14d7a0b379c7622d3",
+    "sha256": "b35bab74f6a45e0593e7a113e30f85c12c83bbb540940c3e82eeb0a9af76a297",
+    "prefix": "auth-4eee58f296d9698a1c2c0ae14d7a0b379c7622d3/"
+  },
+  "toolchain": {
+    "version": "go1.27.0",
+    "url": "https://codeload.github.com/golang/go/zip/refs/tags/go1.27.0",
+    "sha256": "130b39d1cc8a9bc8b6e960aa857bf465e876c63f3e0026f8032688a3bd4b8c75",
+    "prefix": "go-go1.27.0/"
+  },
+  "officialDarwinArm64": {
+    "url": "https://github.com/supabase/auth/releases/download/v2.197.0/auth-v2.197.0-darwin-arm64.tar.gz",
+    "releaseEvidence": "https://api.github.com/repos/supabase/auth/releases/tags/v2.197.0",
+    "archiveSha256": "3fb7998e7061e2c14f3f9555b1d94d447358c965395728e0d81eac82e0e5868b",
+    "binarySha256": "54a5afe7997bd16ab5244ab12c02905048b270a8f76eebf95739a6d364ffe01f",
+    "binaryBytes": 51627202,
+    "signatureNormalizedSha256": "bb5d6061ac0975fe85c54cd1b08637df311d6009ca29accf43daa3cf90cfe33f",
+    "signatureNormalizedBytes": 51226864,
+    "normalization": "Mach-O 64-bit little-endian arm64: omit terminal code signature; zero LC_CODE_SIGNATURE, __LINKEDIT vmsize/filesize, and header ncmds/sizeofcmds. All remaining bytes, including executable code, data, symbol tables, and Go build info, must match."
+  },
+  "officialLinux": {
+    "amd64": {
+      "url": "https://github.com/supabase/auth/releases/download/v2.197.0/auth-v2.197.0-amd64.tar.xz",
+      "archiveSha256": "b5c2991d1df760c9b099c1c2395a94bd1c2f83ed58901934921997179dc9f7ea",
+      "binarySha256": "c66b5efc816ccf3e13c24022bdefd5c6a9bea1fd1a1aeb9c586e1279c75a6306"
+    },
+    "arm64": {
+      "url": "https://github.com/supabase/auth/releases/download/v2.197.0/auth-v2.197.0-arm64.tar.xz",
+      "archiveSha256": "a9da2e668137cb280c830d900df4081b3fdd42a289469485634426a7587f9f76",
+      "binarySha256": "4d89678513b6ea574bb69c5d7b4a917afc46c2fd4f0105c9f869f8b24176c9d1"
+    }
+  },
+  "windows": {
+    "GOOS": "windows",
+    "GOARCH": "amd64",
+    "toolchain": "go1.27.0",
+    "patch": "windows-no-reuseport.patch",
+    "patchSha256": "3ee8250456d660d1c60ae5117a5c7a3c32d1b817e26e0e5be6a283cd778dafaa",
+    "witness": "build-provenance.json"
+  }
+}

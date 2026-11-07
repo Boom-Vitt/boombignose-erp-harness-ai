@@ -14,7 +14,10 @@ async function currentRollout(): Promise<Aal2Rollout> {
   const enrollFlag = process.env.LOCAL_TOTP_ENROLL
   try {
     const supabase = await createClient()
-    const level = await supabase.auth.mfa.getAuthenticatorAssuranceLevel()
+    const session = await supabase.auth.getSession()
+    const token = session.data.session?.access_token
+    if (session.error || !token) throw new Error("Session assurance unavailable")
+    const level = await supabase.auth.mfa.getAuthenticatorAssuranceLevel(token)
     if (level.error || !level.data) {
       return aal2Rollout({
         enrollFlag,
