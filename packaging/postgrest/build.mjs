@@ -45,9 +45,11 @@ function run(cmd, args = [], cwd = root, capture = false) {
   fs.writeFileSync(path.join(root, 'commands.json'), JSON.stringify(commands, null, 2) + '\n');
   if (capture && cmd === 'cabal' && args[0] === 'build' && !args.includes('--dry-run')) fs.appendFileSync(path.join(root,'build.log'),(r.stdout || '') + '\n' + (r.stderr || '') + '\n');
   if (r.status !== 0 && cmd === 'cabal') {
-    // Make configure failures diagnosable in CI: print the tail of each config.log.
-    const walk = (d, depth = 0) => depth > 8 ? [] : fs.readdirSync(d, { withFileTypes: true }).flatMap((e) => e.isDirectory() ? walk(path.join(d, e.name), depth + 1) : e.name === 'config.log' ? [path.join(d, e.name)] : []);
-    for (const log of walk(cwd).slice(-3)) console.error(`--- ${log}\n${fs.readFileSync(log, 'utf8').split('\n').slice(-60).join('\n')}`);
+    // Make configure failures diagnosable in CI: print the tail of the newest config.log files.
+    const skip = new Set(['downloads', 'ghc', 'ghc-bindist', 'ghc-9.10.3', 'static-prefix', 'pkgconf', 'pkgconf-2.3.0', 'native-runtime']);
+    const walk = (d, depth = 0) => depth > 12 ? [] : fs.readdirSync(d, { withFileTypes: true }).flatMap((e) => e.isDirectory() ? (skip.has(e.name) && depth === 0 ? [] : walk(path.join(d, e.name), depth + 1)) : e.name === 'config.log' ? [path.join(d, e.name)] : []);
+    const logs = walk(root).sort((x, y) => fs.statSync(y).mtimeMs - fs.statSync(x).mtimeMs).slice(0, 2);
+    for (const log of logs) console.error(`--- ${log}\n${fs.readFileSync(log, 'utf8').split('\n').slice(-90).join('\n')}`);
   }
   if (r.status !== 0) throw new Error(`${cmd} failed (${r.status}): ${r.stderr || r.error || ''}`);
   return r.stdout;
