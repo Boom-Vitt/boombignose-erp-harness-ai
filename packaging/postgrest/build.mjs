@@ -105,7 +105,9 @@ if (process.platform === 'linux') {
     if(fs.existsSync(path.join(prefix,'lib',dep.lib)))continue;
     run('tar',['-xf',archive,'-C',native]);
     const dir=path.join(native,dep.name);
-    run('sh',['./configure',`--prefix=${prefix}`,`--libdir=${path.join(prefix,'lib')}`,'--disable-shared','--enable-static',...dep.flags],dir);
+    // GMP 6.3.0's configure probes use pre-C23 syntax; GCC 14+/15 reject them as
+    // "no working compiler". Pin the language dialect for these pinned old sources.
+    run('sh',['./configure',`--prefix=${prefix}`,`--libdir=${path.join(prefix,'lib')}`,'--disable-shared','--enable-static',...dep.flags,'CC=cc -std=gnu17'],dir);
     run('make',['-j2'],dir);
     run('make',['install'],dir);
   }
